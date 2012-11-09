@@ -56,7 +56,7 @@ import com.antew.redditinpictures.library.utils.Util;
  * cache is retained over configuration changes like orientation change so the images are populated
  * quickly if, for example, the user rotates the device.
  */
-public abstract class ImageGridFragment extends SherlockFragment implements AdapterView.OnItemClickListener {
+public class ImageGridFragment extends SherlockFragment implements AdapterView.OnItemClickListener {
     public static final String  TAG             = "ImageGridFragment";
     private static final String IMAGE_CACHE_DIR = "thumbs";
     public static final String  ENTRIES         = "Entries";

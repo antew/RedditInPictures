@@ -54,13 +54,16 @@ import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.preferences.RedditInPicturesFreePreferences;
+import com.antew.redditinpictures.preferences.RedditInPicturesFreePreferencesFragment;
+import com.antew.redditinpictures.ui.ImageGridActivityFree;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
  * Simple FragmentActivity to hold the main {@link ImageGridFragment} and not much else.
  */
-public abstract class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoadMoreImages,
+public class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoadMoreImages,
         LoginDialogListener, LogoutDialogListener {
     private static final String TAG                     = "ImageGridActivity";
     public static final int     POSTS_TO_FETCH          = 50;
@@ -200,7 +203,9 @@ public abstract class ImageGridActivity extends SherlockFragmentActivity impleme
         return frag;
     }
 
-    public abstract ImageGridFragment getImageGridFragment();
+    public ImageGridFragment getImageGridFragment() {
+        return new ImageGridFragment();
+    }
 
     private void requestComplete() {
         mRequestInProgress = false;
@@ -385,7 +390,17 @@ public abstract class ImageGridActivity extends SherlockFragmentActivity impleme
         startActivityForResult(intent, EDIT_SUBREDDITS_REQUEST);
     }
 
-    public abstract void startPreferences();
+    public void startPreferences() {
+        if (Util.hasHoneycomb()) {
+            Intent intent = new Intent(ImageGridActivity.this, RedditInPicturesPreferencesFragment.class);
+            intent.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES, mShowNsfwImages);
+            startActivityForResult(intent, SETTINGS_REQUEST);
+        } else {
+            Intent intent = new Intent(ImageGridActivity.this, RedditInPicturesPreferences.class);
+            intent.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES, mShowNsfwImages);
+            startActivityForResult(intent, SETTINGS_REQUEST);
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
