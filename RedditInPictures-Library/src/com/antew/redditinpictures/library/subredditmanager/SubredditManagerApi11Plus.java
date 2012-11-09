@@ -1,0 +1,298 @@
+package com.antew.redditinpictures.library.subredditmanager;
+
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.SparseBooleanArray;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.androidquery.callback.AjaxStatus;
+import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
+import com.antew.redditinpictures.library.reddit.MySubreddits;
+import com.antew.redditinpictures.library.reddit.MySubreddits.SubredditData;
+import com.antew.redditinpictures.library.reddit.RedditApiManager;
+import com.antew.redditinpictures.library.reddit.RedditApiManager.SubscribeAction;
+import com.antew.redditinpictures.library.reddit.RedditUrl;
+import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.StringUtil;
+import com.google.gson.Gson;
+
+@TargetApi(11)
+public class SubredditManagerApi11Plus extends SubredditManager {
+
+    private ArrayAdapter<String> mAdapter;
+    private String               mSelectedSubreddit       = RedditUrl.REDDIT_FRONTPAGE;
+    private MenuItem             mResetToDefaultSubreddits;
+    private MenuItem             mResyncWithReddit;
+
+    protected void onCreate(android.os.Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getIntent().hasExtra(Consts.EXTRA_SELECTED_SUBREDDIT))
+            mSelectedSubreddit = getIntent().getStringExtra(Consts.EXTRA_SELECTED_SUBREDDIT);
+
+        List<String> subReddits = SharedPreferencesHelper.loadArray(PREFS_NAME, ARRAY_NAME, SubredditManagerApi11Plus.this);
+
+        if (subReddits.size() == 0) {
+            String[] reddits = getResources().getStringArray(R.array.default_reddits);
+            for (int i = 0; i < reddits.length; i++) {
+                subReddits.add(reddits[i]);
+            }
+        }
+
+        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
+
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, subReddits);
+
+        setListAdapter(mAdapter);
+
+        final ListView listView = getListView();
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setMultiChoiceModeListener(new ModeCallback());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    };
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.i("onPrepareOptionsMenu", "called");
+        mResetToDefaultSubreddits = menu.findItem(R.id.reset_subreddits);
+        mResyncWithReddit = menu.findItem(R.id.resync_subreddits);
+
+        if (RedditApiManager.isLoggedIn()) {
+            mResetToDefaultSubreddits.setEnabled(false);
+            mResyncWithReddit.setEnabled(true);
+            mResetToDefaultSubreddits.setVisible(false);
+            mResyncWithReddit.setVisible(true);
+        } else {
+            mResetToDefaultSubreddits.setEnabled(true);
+            mResyncWithReddit.setEnabled(false);
+            mResetToDefaultSubreddits.setVisible(true);
+            mResyncWithReddit.setVisible(false);
+        }
+
+        return true;
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        Intent i = new Intent();
+        i.putExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT, mAdapter.getItem(position));
+        setResult(RESULT_OK, i);
+        finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getSupportMenuInflater();
+        inflater.inflate(R.menu.edit_subreddits_api_11_plus, menu);
+        return true;
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        getSupportActionBar().setSubtitle("Long press to start selection");
+    }
+
+    @Override
+    public void resyncSubredditsWithReddit()
+    {
+        RedditApiManager.getMySubreddits("mySubredditsCallback", SubredditManagerApi11Plus.this);
+    }
+   
+    @Override
+    public void mySubredditsCallback(String url, String json, AjaxStatus status) {
+        if (status.getCode() == HttpURLConnection.HTTP_OK) {
+            Gson gson = new Gson();
+            MySubreddits mMySubreddits = gson.fromJson(json, MySubreddits.class);
+            Log.i("MyRedditsJson", json);
+            
+            List<String> subReddits = new ArrayList<String>();
+            
+            for (MySubreddits.Children c : mMySubreddits.getData().getChildren()) {
+                SubredditData data = c.getData();
+                subReddits.add(data.getDisplay_name());
+                Log.i("Subscribed Subreddits", data.getDisplay_name());
+            }
+            
+            SharedPreferencesHelper.saveArray(subReddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, SubredditManagerApi11Plus.this);
+            Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
+            
+            mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, subReddits);
+            setListAdapter(mAdapter);
+        } else {
+            Log.e("MySubreddits", "Something went wrong on mySubreddits! status = " + status.getCode() + " | json = " + json == null ? "null" : json);
+            
+        }
+    }   
+    
+    @Override
+    public void resetToDefaultSubreddits() {
+        List<String> subReddits = new ArrayList<String>();
+
+        String[] reddits = getResources().getStringArray(R.array.default_reddits);
+        for (int i = 0; i < reddits.length; i++) {
+            subReddits.add(reddits[i]);
+        }
+
+        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
+
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, subReddits);
+        setListAdapter(mAdapter);
+        SharedPreferencesHelper.saveArray(getReddits(), PREFS_NAME, ARRAY_NAME, SubredditManagerApi11Plus.this);
+    }
+
+    @Override
+    public List<String> getReddits() {
+        List<String> returnList = new ArrayList<String>();
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            returnList.add(mAdapter.getItem(i));
+            Log.i("getReddits", "" + mAdapter.getItem(i));
+        }
+
+        Collections.sort(returnList, StringUtil.getCaseInsensitiveComparator());
+        return returnList;
+    }
+
+    @Override
+    public void createAddSubredditAlertDialog() {//@formatter:off
+        if (isFinishing())
+            return;
+        
+        final EditText input = new EditText(SubredditManagerApi11Plus.this);
+        
+        new AlertDialog.Builder(SubredditManagerApi11Plus.this)
+                       .setTitle("Add Subreddit")
+                       .setMessage("Enter the subreddit")
+                       .setView(input)
+                       .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton)
+                            {
+                                String value = input.getText().toString();
+                                
+                                if (value.length() > 0)
+                                {
+                                    mAdapter.add(value);
+                                    mAdapter.sort(StringUtil.getCaseInsensitiveComparator());
+                                    mAdapter.notifyDataSetChanged();
+                                    
+                                    if (RedditApiManager.isLoggedIn())
+                                    {
+                                        RedditApiManager.subscribe(value, SubscribeAction.SUBSCRIBE, getApplicationContext());
+                                    }
+                                }
+                            }
+                       }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton)
+                            {
+                                // Do nothing.
+                            }
+                       }).show();
+
+    } //@formatter:off
+
+    private class ModeCallback implements ListView.MultiChoiceModeListener
+    {
+
+        @Override
+        public boolean onCreateActionMode(android.view.ActionMode mode, android.view.Menu menu)
+        {
+            //@formatter:off
+            menu.add("Delete")
+                .setIcon(R.drawable.ic_menu_delete)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            
+            //@formatter:on
+            mode.setTitle("Select Items");
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(android.view.ActionMode mode, android.view.Menu menu) {
+            return true;
+        }
+
+        @Override
+        public boolean onActionItemClicked(android.view.ActionMode mode, android.view.MenuItem item) {
+            if (item.getTitle().equals("Delete")) {
+                final ListView listView = getListView();
+                final SparseBooleanArray checkedItems = listView.getCheckedItemPositions();
+
+                if (checkedItems == null)
+                    return true;
+
+                List<String> itemsToRemove = new ArrayList<String>();
+                final int checkedItemsCount = checkedItems.size();
+                for (int j = 0; j < checkedItemsCount; j++) {
+                    if (checkedItems.valueAt(j)) {
+                        final int position = checkedItems.keyAt(j);
+                        final String currentItem = (String) listView.getItemAtPosition(position);
+                        itemsToRemove.add(currentItem);
+                        listView.setItemChecked(position, false);
+
+                    }
+                }
+
+                for (String s : itemsToRemove) {
+                    mAdapter.remove(s);
+                    if (RedditApiManager.isLoggedIn()) {
+                        RedditApiManager.subscribe(s, SubscribeAction.UNSUBSCRIBE, getApplicationContext());
+                    }
+                }
+
+                mAdapter.notifyDataSetChanged();
+
+            }
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(android.view.ActionMode mode) {
+
+        }
+
+        @Override
+        public void onItemCheckedStateChanged(android.view.ActionMode mode, int position, long id, boolean checked) {
+            final int checkedCount = getListView().getCheckedItemCount();
+            switch (checkedCount) {
+                case 0:
+                    mode.setSubtitle(null);
+                    break;
+                case 1:
+                    mode.setSubtitle("One item selected");
+                    break;
+                default:
+                    mode.setSubtitle("" + checkedCount + " items selected");
+                    break;
+            }
+
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent i = new Intent();
+        i.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
+        setResult(RESULT_OK, i);
+        super.onBackPressed();
+    }
+
+}

@@ -1,0 +1,36 @@
+For the last two weeks I've been working on a new Android application in my spare time, an image browser for Reddit that I'm calling [Reddit In Pictures](https://play.google.com/store/apps/details?id=com.antew.redditinpictures) (Market)
+
+The main features:
+
+* Browse any subreddit
+* Swipe between images to go backwards or forwards (new images are loaded automatically)
+* Ads can be disabled.
+* Toggle Nsfw images on/off
+* Supports decoding Imgur URLs and albums
+* Sort by age and category (Hot, Top - All Time, etc)
+* View a post summary with title, upvotes, subreddit, comments, submitter
+* Pinch-to-zoom on any image
+* View animated Gifs
+* Share posts with other apps
+* View the full post on the Reddit Mobile site (or open it in another Reddit mobile app)
+* Images are cached to avoid repeated downloads, available cache size will vary by device.
+
+I am trying something new with this app i'm calling "RateWare".  Ads can be disabled at any time via the settings menu, in exchange for disabling ads I ask that users rate the app in the Google Play Store.  It works on the honor system, you don't have to e-mail me for a key, all I'm really looking for here is more ratings and more reviews - whether they be positive or negative.
+
+I tried to find other examples of RateWare on the market, but I was unsuccessful, if anyone has encountered other examples I'd love to hear of them.
+
+I'm releasing the free version with the features above, and later a Pro version that includes additional features like:
+
+* Logging in
+* Loading subscribed reddits
+* Upvoting and downvoting posts
+* Saving posts
+* Saving images
+
+It will be a bit of a hybrid between freemium and ad supported apps.
+
+Previous postings: 
+
+* Diablo 3 Skill Calculator [[Reddit](http://www.reddit.com/r/androiddev/comments/tvrqk/my_second_app_a_diablo_3_skill_calculator/)] [[Market](https://play.google.com/store/apps/details?id=com.wemakestuff.diablo3builder)]
+
+* Tip Calculator [[Reddit](http://www.reddit.com/r/androiddev/comments/t074q/my_first_app_an_open_source_tip_calculator/)] [[Market](https://play.google.com/store/apps/details?id=com.antew.tipcalc)]

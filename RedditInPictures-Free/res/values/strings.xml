@@ -1,0 +1,13 @@
+<resources>
+
+    <string name="app_name">Reddit In Pictures Free</string>
+
+    <string name="disable_ads">Disable Ads</string>
+
+    <string name="in_exchange_for_disabling_ads">In exchange for disabling ads, we ask that you rate the application on the Google Play store. Thank you for your support!</string>
+
+    <string name="ive_rated_it">I\'ve Rated It</string>
+
+    <string name="go_to_market">Go to Market</string>
+
+</resources>

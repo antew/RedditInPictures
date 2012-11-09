@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#fff</color>
+    <color name="transparent_gray">#77000000</color>
+    <color name="grid_state_pressed">#BB7dbcd3</color>
+    <color name="grid_state_focused">#777dbcd3</color>
+    <color name="translucent_black">#80000000</color>
+    <color name="dark_gray">#FF202020</color>
+    <color name="post_information_background">#99008fd5</color>
+</resources>

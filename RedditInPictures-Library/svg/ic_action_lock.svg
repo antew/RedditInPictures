@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg4008"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   width="64"
+   height="64"
+   sodipodi:docname="ic_action_lock.svg"
+   inkscape:export-filename="C:\git\redditinpictures\res\drawable-mdpi\ic_action_lock_orange.png"
+   inkscape:export-xdpi="45"
+   inkscape:export-ydpi="45">
+  <metadata
+     id="metadata4014">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs4012" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     id="namedview4010"
+     showgrid="false"
+     inkscape:zoom="4"
+     inkscape:cx="101.625"
+     inkscape:cy="33.280085"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4008" />
+  <path
+     style="opacity:0.8;fill:#ff8b60;fill-opacity:0.80000000999999998;stroke:none"
+     d="m 32,11.640625 c -6.077109,0 -11.045321,4.98914 -11.0625,11.0625 -3e-5,0.01053 0,0.02071 0,0.03125 l 0,7.25 -5.8125,0 0,22.375 33.75,0 0,-22.375 -5.8125,0 0,-7.25 0,-0.65625 -0.03125,0 C 42.686815,16.293305 37.865797,11.640625 32,11.640625 z m 0,5 c 3.385444,0 6.0625,2.708306 6.0625,6.09375 l 0,7.25 -12.125,0 0,-7.25 0,-0.03125 c 0.01662,-3.370663 2.687609,-6.0625 6.0625,-6.0625 z"
+     id="rect4532"
+     inkscape:connector-curvature="0" />
+  <rect
+     style="opacity:0.2;fill:#000000;fill-opacity:0.32535885;stroke:none"
+     id="rect4574"
+     width="190"
+     height="91"
+     x="66.25"
+     y="-12" />
+  <path
+     style="opacity:0.8;fill:#ff8b60;fill-opacity:1;stroke:none;display:inline"
+     d="m 79,-54.036426 -8.792569,9.778651 -8.751482,9.819738 9.984085,0 0,22.474464 15.119932,0 0,-22.474464 9.984085,0 -8.751482,-9.819738 L 79,-54.036426 z"
+     id="rect3792"
+     inkscape:connector-curvature="0" />
+</svg>
