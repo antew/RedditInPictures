@@ -54,9 +54,6 @@ import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.library.utils.Util;
-import com.antew.redditinpictures.preferences.RedditInPicturesFreePreferences;
-import com.antew.redditinpictures.preferences.RedditInPicturesFreePreferencesFragment;
-import com.antew.redditinpictures.ui.ImageGridActivityFree;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
