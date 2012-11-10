@@ -6,6 +6,7 @@ public class Consts {
     // Constants for extras
     public static final String EXTRA_FILENAME                 = "filenameExtra";
     public static final String EXTRA_IMAGE_HASH               = "imageHash";
+    public static final String EXTRA_IS_SYSTEM_UI_VISIBLE     = "isSystemUiVisible";
     public static final String EXTRA_NAV_POSITION             = "navPosition";
     public static final String EXTRA_NEWLY_SELECTED_SUBREDDIT = "newSelectedSubreddit";
     public static final String EXTRA_PERMALINK                = "permalink";

@@ -201,7 +201,9 @@ public abstract class ImageViewerFragment extends SherlockFragment {
 
             @Override
             public void onPhotoTap(View view, float x, float y) {
-                LocalBroadcastManager.getInstance(activity).sendBroadcast(new Intent(Consts.BROADCAST_TOGGLE_FULLSCREEN));
+                Intent intent = new Intent(Consts.BROADCAST_TOGGLE_FULLSCREEN);
+                intent.putExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
+                LocalBroadcastManager.getInstance(activity).sendBroadcastSync(intent);
             }
         };
     }
@@ -245,10 +247,12 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     }
 
     public void hidePostDetails() {
+        Log.i(TAG, "hidePostDetails");
         animate(mPostInformationWrapper).setDuration(500).y(-400);
     }
 
     public void showPostDetails() {
+        Log.i(TAG, "showPostDetails");
         if (shouldShowPostInformation()) {
             mPostInformationWrapper.setVisibility(View.VISIBLE);
             animate(mPostInformationWrapper).setDuration(500).y(mActionBarHeight);
@@ -334,10 +338,11 @@ public abstract class ImageViewerFragment extends SherlockFragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (mSystemUiStateProvider.isSystemUiVisible())
-                showPostDetails();
-            else
+            boolean isSystemUiVisible = intent.getBooleanExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
+            if (isSystemUiVisible)
                 hidePostDetails();
+            else
+                showPostDetails();
         }
     };
     

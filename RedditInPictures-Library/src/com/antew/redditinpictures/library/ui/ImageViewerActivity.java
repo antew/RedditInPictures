@@ -383,9 +383,9 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "Received broadcast!");
+            boolean isSystemUiVisible = intent.getBooleanExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
             if (mPager != null) {
-                if (isSystemUiVisible())
+                if (isSystemUiVisible)
                     goFullscreen();
                 else
                     exitFullscreen();
