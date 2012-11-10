@@ -19,7 +19,7 @@ import com.antew.redditinpictures.library.utils.Consts;
 // This really only requires API 11, the Lint check for setOnPreferenceChangeListener seems to be incorrect and reports that it requires API level 14
 // http://developer.android.com/reference/android/preference/Preference.html#setOnPreferenceChangeListener(android.preference.Preference.OnPreferenceChangeListener)
 @TargetApi(14)
-public abstract class RedditInPicturesPreferencesFragment extends PreferenceActivity {
+public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
     private boolean showNsfwImagesNewValue;
     private boolean showNsfwImagesOldValue;
 
@@ -34,7 +34,9 @@ public abstract class RedditInPicturesPreferencesFragment extends PreferenceActi
         getFragmentManager().beginTransaction().replace(android.R.id.content, getPrefsFragment()).commit();
     }
 
-    public abstract Fragment getPrefsFragment();
+    public Fragment getPrefsFragment() {
+        return new PrefsFragment();
+    }
 
     @Override
     public void onBackPressed() {
