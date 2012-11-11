@@ -16,12 +16,12 @@ import android.preference.PreferenceManager;
 
 import com.antew.redditinpictures.R;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment;
+import com.antew.redditinpictures.util.ConstsFree;
 
 // This really only requires API 11, the Lint check for setOnPreferenceChangeListener seems to be incorrect and reports that it requires API level 14
 // http://developer.android.com/reference/android/preference/Preference.html#setOnPreferenceChangeListener(android.preference.Preference.OnPreferenceChangeListener)
 @TargetApi(14)
 public class RedditInPicturesFreePreferencesFragment extends RedditInPicturesPreferencesFragment {
-    public static final String MARKET_INTENT = "market://details?id=";
     public Fragment getPrefsFragment() {
         return new PrefsFragment();
     }
@@ -55,7 +55,7 @@ public class RedditInPicturesFreePreferencesFragment extends RedditInPicturesPre
                             public void onClick(DialogInterface dialog, int whichButton)
                             {
                                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                                intent.setData(Uri.parse(MARKET_INTENT + getActivity().getPackageName()));
+                                intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + getActivity().getPackageName()));
                                 startActivity(intent);
                             }
                         }).show();                

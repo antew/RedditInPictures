@@ -12,6 +12,7 @@ import com.antew.redditinpictures.R;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.util.ConstsFree;
 
 public class RedditInPicturesFreePreferences extends RedditInPicturesPreferences {
     CheckBoxPreference adsPreference;
@@ -52,7 +53,7 @@ public class RedditInPicturesFreePreferences extends RedditInPicturesPreferences
                                    public void onClick(DialogInterface dialog, int whichButton) {
                                        if (!Util.isUserAMonkey()) {
                                            Intent intent = new Intent(Intent.ACTION_VIEW);
-                                           intent.setData(Uri.parse(RedditInPicturesFreePreferencesFragment.MARKET_INTENT + getPackageName()));
+                                           intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + getPackageName()));
                                            startActivity(intent);
                                        }
                                    }

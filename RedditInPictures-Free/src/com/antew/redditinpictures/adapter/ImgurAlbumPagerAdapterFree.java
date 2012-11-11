@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 
 import com.antew.redditinpictures.library.adapter.ImgurAlbumPagerAdapter;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.ui.ImgurAlbumFragment;
 import com.antew.redditinpictures.ui.ImgurAlbumFragmentFree;
 
 /**

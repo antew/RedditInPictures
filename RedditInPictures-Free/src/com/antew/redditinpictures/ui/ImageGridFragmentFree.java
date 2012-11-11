@@ -14,11 +14,10 @@ import android.widget.GridView;
 import android.widget.RelativeLayout;
 
 import com.antew.redditinpictures.R;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
 import com.antew.redditinpictures.util.AdUtil;
-import com.antew.redditinpictures.util.Consts;
+import com.antew.redditinpictures.util.ConstsFree;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
@@ -50,12 +49,12 @@ public class ImageGridFragmentFree extends com.antew.redditinpictures.library.ui
         RelativeLayout v = (RelativeLayout) super.onCreateView(inflater, container, savedInstanceState);
         mGridView = (GridView) v.findViewById(R.id.gridView);
         
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mHideAds , new IntentFilter(Consts.REMOVE_ADS));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mHideAds , new IntentFilter(ConstsFree.REMOVE_ADS));
         /**
          * If ads are disabled we don't need to load any
          */
         if (!SharedPreferencesHelperFree.getDisableAds(getActivity())) {
-            adView = new AdView(getActivity(), AdSize.SMART_BANNER, Consts.ADMOB_ID);
+            adView = new AdView(getActivity(), AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
             
             /**
              * The AdView should be attached to the bottom of the screen, with the GridView position above it

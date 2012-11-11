@@ -8,11 +8,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.ui.ImgurAlbumFragment;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
 import com.antew.redditinpictures.util.AdUtil;
-import com.antew.redditinpictures.util.Consts;
+import com.antew.redditinpictures.util.ConstsFree;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
@@ -44,7 +43,7 @@ public class ImgurAlbumFragmentFree extends ImgurAlbumFragment {
          * If ads are disabled we don't need to load any
          */
         if (!SharedPreferencesHelperFree.getDisableAds(getActivity())) {
-            adView = new AdView(getActivity(), AdSize.SMART_BANNER, Consts.ADMOB_ID);
+            adView = new AdView(getActivity(), AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
             
             /**
              * The AdView should be attached to the bottom of the screen
