@@ -36,6 +36,7 @@
     <string name="no_image_to_load">No image to load!</string>
     <string name="no_image_to_share">No image to share!</string>
     <string name="no_network_connection_toast">No network connection found</string>
+    <string name="no_thanks">No thanks</string>
     <string name="ok">Ok</string>
     <string name="password">Password:</string>
     <string name="save">Save</string>
@@ -45,6 +46,8 @@
     <string name="swiping_disabled">Swiping disabled</string>
     <string name="swiping_enabled">Swiping enabled</string>
     <string name="thank_you_for_your_support">Thank you for your support!</string>
+    <string name="upgrade">Upgrade</string>
+    <string name="upgrade_to_full_version">Upgrade to pro version</string>
     <string name="username">Username:</string>
     <string name="vote">Vote</string>
     <string name="yes">Yes</string>
