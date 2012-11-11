@@ -123,7 +123,13 @@ public class ImageResizer extends ImageWorker {
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeResource(res, resId, options);
+        Bitmap b = null;
+        try {
+            b = BitmapFactory.decodeResource(res, resId, options);
+        } catch (OutOfMemoryError e) {
+            Log.e(TAG, "Out of memory decoding bitmap, returning null", e);
+        }
+        return b;
     }
 
     /**
@@ -148,7 +154,13 @@ public class ImageResizer extends ImageWorker {
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(filename, options);
+        Bitmap b = null;
+        try {
+            b = BitmapFactory.decodeFile(filename, options);
+        } catch (OutOfMemoryError e) {
+            Log.e(TAG, "Out of memory decoding bitmap, returning null", e);
+        }
+        return b;
     }
 
     /**
@@ -230,9 +242,14 @@ public class ImageResizer extends ImageWorker {
             }
         }
         
+        //@formatter:off
         // We want to support hardware accelerated views, but we're constrained by the OpenGL maximum texture size
         // The android framework team added getMaximumBitmapWidth() and getMaximumBitmapHeight() in API Level 14
         // so we take advantage of that here if necessary
+        /**
+         * Commenting this out for now as getMaximumBitmapHeight just returns 32766 in 4.1.1 :-\
+         * http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android/4.1.1_r1/android/graphics/Canvas.java#Canvas.getMaximumBitmapHeight%28%29
+         * 
         if (Util.hasIcs()) {
             Canvas canvas = new Canvas();
             boolean resize = true;
@@ -260,6 +277,8 @@ public class ImageResizer extends ImageWorker {
             }
             
         }
+         */
+        //@formatter:on
         
         
         return inSampleSize;
