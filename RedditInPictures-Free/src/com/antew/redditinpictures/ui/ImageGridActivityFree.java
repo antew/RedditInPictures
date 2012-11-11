@@ -17,7 +17,7 @@ import com.antew.redditinpictures.util.ConstsFree;
 
 public class ImageGridActivityFree extends ImageGridActivity implements UpdateToFullVersionDialogListener {
     public static final String TAG = ImageGridActivityFree.class.getSimpleName();
-    
+
     @Override
     public ImageGridFragment getImageGridFragment() {
         return new ImageGridFragmentFree();
@@ -52,12 +52,14 @@ public class ImageGridActivityFree extends ImageGridActivity implements UpdateTo
         DialogFragment upgrade = UpdateToFullVersionDialogFragment.newInstance();
         upgrade.show(getSupportFragmentManager(), ConstsFree.DIALOG_UPGRADE);
     }
-    
+
     @Override
     public void onFinishUpgradeDialog() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
-        startActivity(intent);        
+        if (!Util.isUserAMonkey()) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
+            startActivity(intent);
+        }
     }
 
 }
