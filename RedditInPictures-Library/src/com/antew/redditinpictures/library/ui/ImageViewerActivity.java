@@ -311,11 +311,15 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, getPostUri());
                 startActivity(browserIntent);
             } else if (itemId == R.id.save_post) {
-                SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance();
-                saveImageDialog.show(getSupportFragmentManager(), Consts.DIALOG_GET_FILENAME);
+                handleSaveImage();
             }
 
         return true;
+    }
+    
+    public void handleSaveImage() {
+        SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance();
+        saveImageDialog.show(getSupportFragmentManager(), Consts.DIALOG_GET_FILENAME);
     }
 
     @Override

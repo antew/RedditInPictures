@@ -12,7 +12,7 @@ import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
 import com.antew.redditinpictures.util.AdUtil;
-import com.antew.redditinpictures.util.Consts;
+import com.antew.redditinpictures.util.ConstsFree;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
@@ -45,7 +45,7 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
          * If ads are disabled we don't need to load any
          */
         if (!SharedPreferencesHelperFree.getDisableAds(getActivity())) {
-            adView = new AdView(getActivity(), AdSize.SMART_BANNER, Consts.ADMOB_ID);
+            adView = new AdView(getActivity(), AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
             
             /**
              * The AdView should be attached to the bottom of the screen

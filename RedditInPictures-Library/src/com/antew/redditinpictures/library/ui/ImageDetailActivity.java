@@ -87,13 +87,20 @@ public class ImageDetailActivity extends ImageViewerActivity {
         super.onOptionsItemSelected(item);
 
         int itemId = item.getItemId();
+        if (itemId == R.id.upvote || itemId == R.id.downvote) {
+            handleVote(item);
+        }
+
+        return true;
+    }
+
+    public void handleVote(MenuItem item) {
+        int itemId = item.getItemId();
         if (itemId == R.id.upvote) {
             vote(Vote.UP, item, getAdapter().getPost(mPager.getCurrentItem()));
         } else if (itemId == R.id.downvote) {
             vote(Vote.DOWN, item, getAdapter().getPost(mPager.getCurrentItem()));
         }
-
-        return true;
     }
 
     /**

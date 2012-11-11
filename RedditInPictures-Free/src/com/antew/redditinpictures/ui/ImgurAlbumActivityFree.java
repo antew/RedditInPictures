@@ -1,24 +1,32 @@
 package com.antew.redditinpictures.ui;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.actionbarsherlock.view.Menu;
 import com.antew.redditinpictures.adapter.ImgurAlbumPagerAdapterFree;
-import com.antew.redditinpictures.library.R;
-import com.antew.redditinpictures.library.adapter.ImgurAlbumPagerAdapter;
+import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
+import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
+import com.antew.redditinpictures.util.ConstsFree;
 
-public class ImgurAlbumActivityFree extends ImgurAlbumActivity {
+public class ImgurAlbumActivityFree extends ImgurAlbumActivity implements UpdateToFullVersionDialogListener{
 
     public FragmentStatePagerAdapter getPagerAdapter() {
         return new ImgurAlbumPagerAdapterFree(getSupportFragmentManager(), getImages());   
     }
     
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        menu.removeItem(R.id.save_post);
-        
-        return true;
+    public void handleSaveImage() {
+        DialogFragment upgrade = UpdateToFullVersionDialogFragment.newInstance();
+        upgrade.show(getSupportFragmentManager(), ConstsFree.DIALOG_UPGRADE);
+    }
+
+    @Override
+    public void onFinishUpgradeDialog() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
+        startActivity(intent);        
     }
 }

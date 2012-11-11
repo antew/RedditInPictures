@@ -412,13 +412,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         } else if (itemId == R.id.refresh_all) {
             populateViewPagerFromSpinner(getSupportActionBar().getSelectedNavigationIndex());
         } else if (itemId == R.id.login) {
-            if (!RedditApiManager.isLoggedIn()) {
-                LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-                loginFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGIN);
-            } else {
-                DialogFragment logoutFragment = LogoutDialogFragment.newInstance();
-                logoutFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGOUT);
-            }
+            handleLoginAndLogout();
         }
 //@formatter:off
         else if (itemId == R.id.category_hot)                    { mCategory = Category.HOT;                                   loadFromUrl = true; }
@@ -443,6 +437,16 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         }
 
         return true;
+    }
+    
+    public void handleLoginAndLogout() {
+        if (!RedditApiManager.isLoggedIn()) {
+            LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
+            loginFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGIN);
+        } else {
+            DialogFragment logoutFragment = LogoutDialogFragment.newInstance();
+            logoutFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGOUT);
+        }
     }
 
     @Override
