@@ -58,7 +58,7 @@ public class ImgurResolver {
 
             case IMGUR_GALLERY:
                 container = resolveImgurGallery(url);
-                 break;
+                break;
             case UNSUPPORTED_IMAGE:
                 break;
         }
@@ -69,8 +69,11 @@ public class ImgurResolver {
     /**
      * Return the URL for the requested image size.
      * 
-     * @param image The image container from which the link to the specified size image will be returned
-     * @param size The size of the image to return
+     * @param image
+     *            The image container from which the link to the specified size image will be
+     *            returned
+     * @param size
+     *            The size of the image to return
      * @return The url to the image of the requested size
      */
     public static String getSize(ImageContainer image, ImageSize size) {
@@ -118,36 +121,37 @@ public class ImgurResolver {
             image = ImgurApiCache.getInstance().getImgurImage(url);
         } else {
             String hash = getHash(url, ImageType.IMGUR_IMAGE);
-            
             image = resolveImgurImageFromHash(hash);
         }
-        
+
         if (image != null && image.getImage() != null)
             container = new ImageContainer(image.getImage());
 
         return container;
     }
-    
+
     /**
      * 
-     * @param url The url to extract the hash from
-     * @param type The {@link ImageType} of image the URL represents
+     * @param url
+     *            The url to extract the hash from
+     * @param type
+     *            The {@link ImageType} of image the URL represents
      * @return
      */
     public static String getHash(String url, ImageType type) {
         String hash = null;
         Pattern pattern = null;
-        
-        switch  (type) {
+
+        switch (type) {
             case IMGUR_IMAGE:
                 pattern = Pattern.compile("imgur.com/(?:gallery/)?([A-Za-z0-9]+)", Pattern.CASE_INSENSITIVE);
-                
+
                 break;
-                
+
             case IMGUR_ALBUM:
                 pattern = Pattern.compile("imgur.com/a/([A-Za-z0-9]+)", Pattern.CASE_INSENSITIVE);
                 break;
-                
+
             case IMGUR_GALLERY:
                 pattern = Pattern.compile("imgur.com/gallery/([A-Za-z0-9]+)", Pattern.CASE_INSENSITIVE);
                 break;
@@ -155,25 +159,25 @@ public class ImgurResolver {
             case OTHER_SUPPORTED_IMAGE:
                 if (BuildConfig.DEBUG)
                     throw new UnsupportedOperationException("Unable to get a hash from a non-imgur image URL!");
-                
+
                 break;
-                
+
             case UNSUPPORTED_IMAGE:
                 if (BuildConfig.DEBUG)
                     throw new UnsupportedOperationException("Unable to get a hash from an unsupported image URL!");
                 break;
         }
-        
+
         if (pattern != null) {
             Matcher m = pattern.matcher(url);
             while (m.find())
                 hash = m.group(1);
         }
-        
+
         Log.i(TAG, "getHash(" + url + ", " + type.name() + ") returning " + hash);
         return hash;
     }
-    
+
     public static ImgurImageApi resolveImgurImageFromHash(String hash) {
         Gson gson = new Gson();
         String json = null;
@@ -182,10 +186,13 @@ public class ImgurResolver {
         String newUrl = URL_IMGUR_IMAGE_API + hash + JSON;
         if (ImgurApiCache.getInstance().containsImgurImage(hash)) {
             image = ImgurApiCache.getInstance().getImgurImage(hash);
-        }
-        else {
+        } else {
             try {
                 json = downloadUrl(newUrl);
+
+                if (json == null)
+                    return null;
+
                 image = gson.fromJson(json, ImgurImageApi.class);
                 ImgurApiCache.getInstance().addImgurImage(hash, image);
             } catch (JsonSyntaxException e) {
@@ -194,19 +201,19 @@ public class ImgurResolver {
                 Log.e(TAG, "resolveImgurImageFromHash", e);
             }
         }
-        
+
         return image;
     }
 
     public static ImageContainer resolveImgurAlbum(String url) {
         ImageContainer container = null;
         ImgurAlbumApi album = null;
-        
+
         Log.i(TAG, "resolveImgurAlbum url = " + url);
         String hash = getHash(url, ImageType.IMGUR_ALBUM);
         if (hash != null)
             album = resolveImgurAlbumFromHash(hash);
-        
+
         if (album != null && album.getAlbum() != null)
             container = new ImageContainer(album.getAlbum());
 
@@ -216,7 +223,7 @@ public class ImgurResolver {
     public static ImgurAlbumApi resolveImgurAlbumFromHash(String hash) {
         if (hash == null)
             Log.e(TAG, "resolveImgurAlbumFromHash - hash was null");
-            
+
         Log.i(TAG, "resolveImgurAlbumFromHash, hash = " + hash);
         ImgurAlbumApi album = null;
         Gson gson = new Gson();
@@ -228,6 +235,10 @@ public class ImgurResolver {
         } else {
             try {
                 json = downloadUrl(newUrl);
+
+                if (json == null)
+                    return null;
+
                 album = gson.fromJson(json, ImgurAlbumApi.class);
                 ImgurApiCache.getInstance().addImgurAlbum(hash, album);
             } catch (JsonSyntaxException e) {
@@ -249,63 +260,66 @@ public class ImgurResolver {
         } else {
 
             String hash = getHash(url, ImageType.IMGUR_GALLERY);
-            
+
             if (hash != null)
                 gallery = getImgurGalleryFromHash(hash);
         }
-        
+
         if (gallery != null && gallery.getImageContainer() != null)
             container = gallery.getImageContainer();
-        
 
         return container;
 
     }
-    
+
     private static ImgurGallery getImgurGalleryFromHash(String hash) {
         ImgurGallery gallery = null;
         ImgurAlbumApi album = null;
         ImgurImageApi image = null;
-        
+
         String newUrl = URL_IMGUR_GALLERY_API + hash + JSON;
 
         if (ImgurApiCache.getInstance().containsImgurGallery(hash)) {
             gallery = ImgurApiCache.getInstance().getImgurGallery(hash);
         } else {
-            
+
             try {
                 Gson gson = new Gson();
                 String json = downloadUrl(newUrl);
+
+                if (json == null)
+                    return null;
+
                 gallery = gson.fromJson(json, ImgurGallery.class);
-                
+
                 // Resolve the image as a standard ImgurImage or an Album
                 if (gallery.isSuccess()) {
                     String imageHash = gallery.getData().getImage().getHash();
-                    
+
                     if (gallery.getData().getImage().isAlbum()) {
                         album = resolveImgurAlbumFromHash(imageHash);
                         if (album != null && album.getAlbum() != null)
                             gallery.setImageContainer(new ImageContainer(album.getAlbum()));
-                        
+
                     } else {
                         image = resolveImgurImageFromHash(imageHash);
                         if (image != null && image.getImage() != null)
                             gallery.setImageContainer(new ImageContainer(image.getImage()));
-                        
+
                     }
-                    
+
                     ImgurApiCache.getInstance().addImgurGallery(hash, gallery);
                 } else {
                     Log.e(TAG, "resolveImgurGallery, error resolving image");
                 }
-                
+
             } catch (JsonSyntaxException e) {
                 Log.e(TAG, "resolveImgurGallery", e);
             } catch (IOException e) {
                 Log.e(TAG, "resolveImgurGallery", e);
             }
         }
-              
+
         return gallery;
     }
 
@@ -324,7 +338,10 @@ public class ImgurResolver {
             conn.setDoInput(true);
             conn.connect();
             stream = conn.getInputStream();
-            json = StringUtil.convertStreamToString(stream);
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK)
+                json = StringUtil.convertStreamToString(stream);
+        } catch (IOException e) {
+            Log.e(TAG, "Error in downloadUrl, connection returned status code = " + conn.getResponseCode(), e);
         } finally {
             if (conn != null)
                 conn.disconnect();
