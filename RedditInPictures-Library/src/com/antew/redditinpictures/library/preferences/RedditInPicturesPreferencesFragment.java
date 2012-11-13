@@ -65,7 +65,7 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
             final CheckBoxPreference showNsfwImages = (CheckBoxPreference) getPreferenceManager().findPreference(
                     SharedPreferencesHelper.SHOW_NSFW_IMAGES);
 
-            getPreferenceManager().findPreference("about").setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            getPreferenceManager().findPreference(SharedPreferencesHelper.ABOUT).setOnPreferenceClickListener(new OnPreferenceClickListener() {
                 
                 @Override
                 public boolean onPreferenceClick(Preference preference) {

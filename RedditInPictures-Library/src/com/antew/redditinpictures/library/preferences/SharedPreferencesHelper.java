@@ -18,6 +18,7 @@ public class SharedPreferencesHelper {
     public static final String  ENABLE_HW_ACCEL      = "enableHwAccel";
     public static final String  USE_MOBILE_INTERFACE = "launchMobile";
     public static final String  SHOW_NSFW_IMAGES     = "showNsfwImages";
+    public static final String  ABOUT                = "about";
 
     public static boolean saveArray(List<String> array, String prefsName, String arrayName, Context context) {
         SharedPreferences prefs = context.getSharedPreferences(prefsName, 0);
@@ -93,7 +94,8 @@ public class SharedPreferencesHelper {
     }
 
     public static boolean clearLoginInformation(Context context) {
-        return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).edit().remove(LOGIN_JSON).remove(USERNAME).remove(MOD_HASH).remove(COOKIE).commit();
+        return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).edit().remove(LOGIN_JSON).remove(USERNAME).remove(MOD_HASH)
+                .remove(COOKIE).commit();
     }
 
     public static boolean getEnableHwAccel(Context context) {

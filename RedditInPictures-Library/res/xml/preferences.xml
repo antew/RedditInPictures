@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-        <PreferenceCategory
-                android:title="Reddit Options">
-                <CheckBoxPreference
-                        android:title="Use Mobile Interface"
-                        android:defaultValue="true"
-                        android:summary="Launch links to the reddit mobile interface."
-                        android:key="launchMobile" />
-                <CheckBoxPreference
-                        android:title="Show NSFW Images"
-                        android:defaultValue="false"
-                        android:summary="Show NSFW images while browsing."
-                        android:key="showNsfwImages" />
-        </PreferenceCategory>
-        
-        <PreferenceCategory android:title="About" >
-            <PreferenceScreen android:title="About Reddit In Pictures" >
-                <intent android:action=".About" />
-            </PreferenceScreen>
-        </PreferenceCategory>
-        
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Reddit Options" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="launchMobile"
+            android:summary="Launch links to the reddit mobile interface."
+            android:title="Use Mobile Interface" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="showNsfwImages"
+            android:summary="Show NSFW images while browsing."
+            android:title="Show NSFW Images" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="About" >
+        <Preference
+            android:key="about"
+            android:title="About Reddit In Pictures" >
+        </Preference>
+    </PreferenceCategory>
+
 </PreferenceScreen>

@@ -42,7 +42,7 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
         useMobileInterface = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelper.USE_MOBILE_INTERFACE);
         showNsfwImages = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelper.SHOW_NSFW_IMAGES);
         
-        getPreferenceScreen().findPreference("about").setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        getPreferenceScreen().findPreference(SharedPreferencesHelper.ABOUT).setOnPreferenceClickListener(new OnPreferenceClickListener() {
             
             @Override
             public boolean onPreferenceClick(Preference preference) {
