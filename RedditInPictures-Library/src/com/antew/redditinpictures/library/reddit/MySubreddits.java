@@ -1,5 +1,6 @@
 package com.antew.redditinpictures.library.reddit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MySubreddits {
@@ -21,6 +22,9 @@ public class MySubreddits {
         String         before;
 
         public void addChildren(List<Children> children) {
+            if (this.children == null)
+                this.children = new ArrayList<MySubreddits.Children>();
+            
             this.children.addAll(children);
         }
 
