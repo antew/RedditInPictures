@@ -5,11 +5,14 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.library.utils.Consts;
 
 public class RedditInPicturesPreferences extends SherlockPreferenceActivity implements OnSharedPreferenceChangeListener {
@@ -38,6 +41,15 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
 
         useMobileInterface = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelper.USE_MOBILE_INTERFACE);
         showNsfwImages = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelper.SHOW_NSFW_IMAGES);
+        
+        getPreferenceScreen().findPreference("about").setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                startActivity(new Intent(RedditInPicturesPreferences.this, About.class));
+                return true;
+            }
+        });
 
     }
 

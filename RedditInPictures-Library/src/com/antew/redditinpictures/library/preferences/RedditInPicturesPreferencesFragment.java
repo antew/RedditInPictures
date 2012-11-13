@@ -5,24 +5,27 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.library.utils.Consts;
 
-// This really only requires API 11, the Lint check for setOnPreferenceChangeListener seems to be incorrect and reports that it requires API level 14
-// http://developer.android.com/reference/android/preference/Preference.html#setOnPreferenceChangeListener(android.preference.Preference.OnPreferenceChangeListener)
-@TargetApi(14)
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
     private boolean showNsfwImagesNewValue;
     private boolean showNsfwImagesOldValue;
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +65,14 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
             final CheckBoxPreference showNsfwImages = (CheckBoxPreference) getPreferenceManager().findPreference(
                     SharedPreferencesHelper.SHOW_NSFW_IMAGES);
 
+            getPreferenceManager().findPreference("about").setOnPreferenceClickListener(new OnPreferenceClickListener() {
+                
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    startActivity(new Intent(getActivity(), About.class));
+                    return true;
+                }
+            });
             useMobileInterface.setOnPreferenceChangeListener(getMobileInterfaceOnChangeListener());
 
             showNsfwImages.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
