@@ -29,6 +29,7 @@ import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 public class RedditApiManager {
     private static final String        USER_AGENT               = "Reddit In Pictures Android by /u/antew";
@@ -47,6 +48,7 @@ public class RedditApiManager {
     private static boolean             mIsLoggedIn              = false;
     private static String              mUsername;
     private static String              mJson;
+    private static About               about;
 
     public enum SubscribeAction {
         SUBSCRIBE("sub"), UNSUBSCRIBE("unsub");
@@ -104,11 +106,15 @@ public class RedditApiManager {
     }
 
     public static void parseRedditLoginResponse(String username, String modHash, String cookie, String response) {
-        mRedditLoginResponse = new Gson().fromJson(response, RedditLoginResponse.class);
-        mUsername = username;
-        mModHash = modHash;
-        mCookie = cookie;
-        mIsLoggedIn = true;
+        try {
+            mRedditLoginResponse = new Gson().fromJson(response, RedditLoginResponse.class);
+            mUsername = username;
+            mModHash = modHash;
+            mCookie = cookie;
+            mIsLoggedIn = true;
+        } catch (JsonSyntaxException e) {
+            Log.e(TAG, "parseRedditLoginResponse", e);
+        }
     }
 
     public static void login(String username, String password, final Context context, final String callbackFunc) {
@@ -134,24 +140,23 @@ public class RedditApiManager {
                     Method mthd = null;
                     try {
                         mthd = context.getClass().getMethod(callbackFunc, new Class[] { String.class, String.class, AjaxStatus.class });
+                        mRedditLoginResponse = gson.fromJson(object, RedditLoginResponse.class);
+
+                        if (mRedditLoginResponse.getLoginResponse().getErrors().size() > 0) {
+                            mIsLoggedIn = false;
+                            showLoginError(mRedditLoginResponse);
+                        } else {
+                            mIsLoggedIn = true;
+                            mModHash = mRedditLoginResponse.getLoginResponse().getData().getModhash();
+                            mCookie = mRedditLoginResponse.getLoginResponse().getData().getCookie();
+                            SharedPreferencesHelper.saveLoginInformation(mUsername, mModHash, mCookie, mJson, context);
+                        }
+
+                        mthd.invoke(context, url, object, status);
                     } catch (NoSuchMethodException e) {
                         Log.e(TAG, callbackFunc, e);
-                    }
-
-                    mRedditLoginResponse = gson.fromJson(object, RedditLoginResponse.class);
-
-                    if (mRedditLoginResponse.getLoginResponse().getErrors().size() > 0) {
-                        mIsLoggedIn = false;
-                        showLoginError(mRedditLoginResponse);
-                    } else {
-                        mIsLoggedIn = true;
-                        mModHash = mRedditLoginResponse.getLoginResponse().getData().getModhash();
-                        mCookie = mRedditLoginResponse.getLoginResponse().getData().getCookie();
-                        SharedPreferencesHelper.saveLoginInformation(mUsername, mModHash, mCookie, mJson, context);
-                    }
-
-                    try {
-                        mthd.invoke(context, url, object, status);
+                    } catch (JsonSyntaxException e) {
+                        Log.e(TAG, "Error parsing login response from String = " + object, e);
                     } catch (IllegalArgumentException e) {
                         Log.e(TAG, callbackFunc, e);
                     } catch (IllegalAccessException e) {
@@ -166,11 +171,11 @@ public class RedditApiManager {
             }
 
             private void showLoginError(RedditLoginResponse rlp) {
-                String errorText = "";
-                for (String[] error : rlp.getLoginResponse().getErrors())
-                    errorText += error[1] + " ";
+                StringBuilder buf = new StringBuilder();
+                for (String[] err : rlp.getLoginResponse().getErrors())
+                    buf.append(err[1] + " ");
 
-                Toast.makeText(context, "Error: " + errorText, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Error: " + buf.toString(), Toast.LENGTH_SHORT).show();
             }
 
         };
@@ -230,7 +235,7 @@ public class RedditApiManager {
 
         aQuery.ajax(callback);
     }
-    
+
     public static void resetToDefaultSubreddits(Context context) {
         List<String> subreddits = Arrays.asList(context.getResources().getStringArray(R.array.default_reddits));
         Collections.sort(subreddits, StringUtil.getCaseInsensitiveComparator());
@@ -347,8 +352,6 @@ public class RedditApiManager {
         }
     }
 
-    public static About about;
-
     public static AjaxCallback<String> getSubredditAbout(String subreddit, final SubscribeAction action, final Context context) {
         final AQuery aQuery = new AQuery(context);
 
@@ -360,7 +363,16 @@ public class RedditApiManager {
                 Log.i("Got back from about!", object);
                 if (status.getCode() == HttpURLConnection.HTTP_OK) {
                     Gson gson = new Gson();
-                    about = gson.fromJson(object, About.class);
+                    try {
+                        about = gson.fromJson(object, About.class);
+                    } catch (JsonSyntaxException e) {
+                        Log.e(TAG, "getSubredditAbout", e);
+                    }
+
+                    if (about == null) {
+                        Log.e(TAG, "getSubredditAbout null after parsing response");
+                        return;
+                    }
 
                     Map<String, Object> params = new HashMap<String, Object>();
                     params.put("action", action.getAction());

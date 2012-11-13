@@ -6,5 +6,5 @@
     <color name="grid_state_focused">#777dbcd3</color>
     <color name="translucent_black">#80000000</color>
     <color name="dark_gray">#FF202020</color>
-    <color name="post_information_background">#99008fd5</color>
+    <color name="post_information_background">#99000000</color>
 </resources>
