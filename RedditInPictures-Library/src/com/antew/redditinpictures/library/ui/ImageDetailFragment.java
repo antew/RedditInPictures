@@ -83,10 +83,10 @@ public class ImageDetailFragment extends ImageViewerFragment {
     }
 
     public void populatePostData(View v) {
-        String separator = " • ";
+        String separator = " " + "\u2022" + " ";
         TextView postTitle = (TextView) v.findViewById(R.id.post_title);
         TextView postInformation = (TextView) v.findViewById(R.id.post_information);
-
+        
         mVotes.setText("" + mImage.getScore());
         postTitle.setText(mImage.getTitle());
 
