@@ -1,7 +1,7 @@
 package com.antew.redditinpictures.library.logging;
 
 public class Log {
-    public static int LEVEL = android.util.Log.VERBOSE;
+    public static final int LEVEL = android.util.Log.VERBOSE;
 
     public static void d(String tag, String message) {
         if (LEVEL <= android.util.Log.DEBUG) {
