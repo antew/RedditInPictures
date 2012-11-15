@@ -87,6 +87,7 @@
 		<maven-release-plugin.version>2.2.2</maven-release-plugin.version>
 		<maven-jarsigner.version>1.2</maven-jarsigner.version>
 		<build-helper-maven-plugin.version>1.5</build-helper-maven-plugin.version>
+        <findbugs.version>2.5.2</findbugs.version>
 	</properties>
 
 
@@ -230,6 +231,18 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
 			</plugin>
+            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>${findbugs.version}</version>
+                <configuration>
+                    <findbugsXmlOutput>true</findbugsXmlOutput>
+                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+                    <xmlOutput>true</xmlOutput>
+                    <excludeFilterFile>./findbugs-exclude.xml</excludeFilterFile>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 	
