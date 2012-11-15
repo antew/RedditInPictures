@@ -72,7 +72,7 @@
 		<android.platform>16</android.platform>
 		<android-support.version>r7</android-support.version>
 
-		<android-maven.version>3.3.2</android-maven.version>
+		<android-maven.version>3.4.0</android-maven.version>
 		<nineoldandroids.version>2.4.0</nineoldandroids.version>
 		<robolectric.version>1.0</robolectric.version>
 		<junit.version>4.10</junit.version>
@@ -85,6 +85,8 @@
 		<maven-checkstyle-plugin.version>2.9.1</maven-checkstyle-plugin.version>
 		<maven-site-plugin.version>3.0</maven-site-plugin.version>
 		<maven-release-plugin.version>2.2.2</maven-release-plugin.version>
+		<maven-jarsigner.version>1.2</maven-jarsigner.version>
+		<build-helper-maven-plugin.version>1.5</build-helper-maven-plugin.version>
 	</properties>
 
 
@@ -135,7 +137,20 @@
 			<artifactId>library</artifactId>
 			<version>1.1</version>
 			<type>jar</type>
-			
+		</dependency>
+		
+		<!--
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+		</dependency>
+		-->
+		
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android-test</artifactId>
+			<version>${android.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -155,6 +170,11 @@
 				</plugin>
 				
 				<plugin>
+					<artifactId>maven-jarsigner-plugin</artifactId>
+					<version>${maven-jarsigner.version}</version>
+				</plugin>
+				
+				<plugin>
 					<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 					<artifactId>android-maven-plugin</artifactId>
 					<version>${android-maven.version}</version>
@@ -162,6 +182,10 @@
 						<sdk>
 							<platform>${android.platform}</platform>
 						</sdk>
+						<zipalign>
+							<verbose>true</verbose>
+						</zipalign>
+						<undeployBeforeDeploy>true</undeployBeforeDeploy>
 					</configuration>
 				</plugin>
 				
@@ -188,6 +212,12 @@
 						<skip>true</skip>
 					</configuration>
 				</plugin>
+				
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>${build-helper-maven-plugin.version}</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		
@@ -202,4 +232,23 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>release</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<modules>
+				<module>RedditInPictures-Library</module>
+				<module>RedditInPictures-Free</module>
+				<module>RedditInPictures-Pro</module>
+			</modules>
+			<properties>
+			</properties>
+		</profile>
+	</profiles>
 </project>
