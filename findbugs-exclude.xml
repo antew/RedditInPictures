@@ -5,6 +5,6 @@
 		<Bug code="Nm"/>
 	</Match>
     <Match>
-        <Package name="com.actionbarsherlock.*" />
-    </Match>
+		<Class name="~com\.actionbarsherlock.*" />
+	</Match>
 </FindBugsFilter>

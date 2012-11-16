@@ -341,7 +341,10 @@ public class ImgurResolver {
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK)
                 json = StringUtil.convertStreamToString(stream);
         } catch (IOException e) {
-            Log.e(TAG, "Error in downloadUrl, connection returned status code = " + conn.getResponseCode(), e);
+            String status = "null";
+            if (conn != null)
+                status = Integer.toString(conn.getResponseCode());
+            Log.e(TAG, "Error in downloadUrl, connection returned status code = " + status, e);
         } finally {
             if (conn != null)
                 conn.disconnect();

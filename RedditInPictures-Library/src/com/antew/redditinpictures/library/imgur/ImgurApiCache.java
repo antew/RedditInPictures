@@ -23,7 +23,7 @@ public class ImgurApiCache {
         return imgurGalleries != null && imgurGalleries.containsKey(url);
     }
 
-    public void addImgurImage(String url, ImgurImageApi image) {
+    public synchronized void addImgurImage(String url, ImgurImageApi image) {
         if (imgurImages == null) {
             imgurImages = new HashMap<String, ImgurImageApi>();
         }
@@ -31,7 +31,7 @@ public class ImgurApiCache {
         imgurImages.put(url, image);
     }
 
-    public void addImgurAlbum(String url, ImgurAlbumApi album) {
+    public synchronized void addImgurAlbum(String url, ImgurAlbumApi album) {
         if (imgurAlbums == null) {
             imgurAlbums = new HashMap<String, ImgurAlbumApi>();
         }
@@ -39,7 +39,7 @@ public class ImgurApiCache {
         imgurAlbums.put(url, album);
     }
     
-    public void addImgurGallery(String url, ImgurGallery album) {
+    public synchronized void addImgurGallery(String url, ImgurGallery album) {
         if (imgurGalleries == null) {
             imgurGalleries = new HashMap<String, ImgurGallery>();
         }
