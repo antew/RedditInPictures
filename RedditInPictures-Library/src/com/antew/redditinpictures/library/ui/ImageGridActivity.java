@@ -86,7 +86,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) {
+        if (Util.DEBUG) {
             Util.enableStrictMode();
         }
         super.onCreate(savedInstanceState);

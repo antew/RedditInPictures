@@ -23,10 +23,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.util.Log;
 
-import com.antew.redditinpictures.library.BuildConfig;
+import com.antew.redditinpictures.library.logging.Log;
 
 /**
  * A simple subclass of {@link ImageWorker} that resizes images from resources given a target width
@@ -89,9 +87,7 @@ public class ImageResizer extends ImageWorker {
      * @return
      */
     private Bitmap processBitmap(int resId) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "processBitmap - " + resId);
-        }
+        Log.d(TAG, "processBitmap - " + resId);
         return decodeSampledBitmapFromResource(mResources, resId, mImageWidth, mImageHeight);
     }
 

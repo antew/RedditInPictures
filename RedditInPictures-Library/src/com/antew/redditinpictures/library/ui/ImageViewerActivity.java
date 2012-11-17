@@ -86,7 +86,7 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
-        if (BuildConfig.DEBUG) {
+        if (Util.DEBUG) {
             Util.enableStrictMode();
         }
         super.onCreate(savedInstanceState);

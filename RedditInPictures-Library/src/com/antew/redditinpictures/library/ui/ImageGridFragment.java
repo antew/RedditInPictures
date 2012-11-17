@@ -175,9 +175,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                         final int columnWidth = (gridView.getWidth() / numColumns) - mImageThumbSpacing;
                         mAdapter.setNumColumns(numColumns);
                         mAdapter.setItemHeight(columnWidth);
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "onCreateView - numColumns set to " + numColumns);
-                        }
+                        Log.d(TAG, "onCreateView - numColumns set to " + numColumns);
                     }
                 }
             }

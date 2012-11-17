@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
 
+import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.ui.ImageGridActivity;
@@ -15,6 +16,12 @@ import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 public class Util {
     private Util() {};
 
+    /**
+     * Using this rather than {@link BuildConfig#DEBUG} because it is broken 
+     * @see <a href="http://code.google.com/p/android/issues/detail?id=27940">Issue 27940</a>
+     */
+    public static final boolean DEBUG = true;
+    
     public static boolean isUserAMonkey() {
         boolean isUserAMonkey = false;
         try {

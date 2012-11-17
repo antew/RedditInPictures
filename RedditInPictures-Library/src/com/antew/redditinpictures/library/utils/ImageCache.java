@@ -35,9 +35,9 @@ import android.os.StatFs;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.util.LruCache;
-import android.util.Log;
 
-import com.antew.redditinpictures.library.BuildConfig;
+import com.antew.redditinpictures.library.logging.Log;
+
 
 /**
  * This class holds our bitmap caches (memory and disk).
@@ -123,9 +123,7 @@ public class ImageCache {
 
         // Set up memory cache
         if (mCacheParams.memoryCacheEnabled) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Memory cache created (size = " + mCacheParams.memCacheSize + ")");
-            }
+            Log.d(TAG, "Memory cache created (size = " + mCacheParams.memCacheSize + ")");
             mMemoryCache = new LruCache<String, Bitmap>(mCacheParams.memCacheSize) {
                 /**
                  * Measure item size in bytes rather than units which is more practical
@@ -165,9 +163,7 @@ public class ImageCache {
                         try {
                             mDiskLruCache = DiskLruCache.open(
                                     diskCacheDir, 1, 1, mCacheParams.diskCacheSize);
-                            if (BuildConfig.DEBUG) {
-                                Log.d(TAG, "Disk cache initialized");
-                            }
+                            Log.d(TAG, "Disk cache initialized");
                         } catch (final IOException e) {
                             mCacheParams.diskCacheDir = null;
                             Log.e(TAG, "initDiskCache - " + e);
@@ -239,9 +235,7 @@ public class ImageCache {
         if (mMemoryCache != null) {
             final Bitmap memBitmap = mMemoryCache.get(data);
             if (memBitmap != null) {
-                if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "Memory cache hit");
-                }
+                Log.d(TAG, "Memory cache hit");
                 return memBitmap;
             }
         }
@@ -267,9 +261,7 @@ public class ImageCache {
                 try {
                     final DiskLruCache.Snapshot snapshot = mDiskLruCache.get(key);
                     if (snapshot != null) {
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "Disk cache hit");
-                        }
+                        Log.d(TAG, "Disk cache hit");
                         inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
                         if (inputStream != null) {
                             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -301,9 +293,7 @@ public class ImageCache {
     public void clearCache() {
         if (mMemoryCache != null) {
             mMemoryCache.evictAll();
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Memory cache cleared");
-            }
+            Log.d(TAG, "Memory cache cleared");
         }
 
         synchronized (mDiskCacheLock) {
@@ -311,9 +301,7 @@ public class ImageCache {
             if (mDiskLruCache != null && !mDiskLruCache.isClosed()) {
                 try {
                     mDiskLruCache.delete();
-                    if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "Disk cache cleared");
-                    }
+                    Log.d(TAG, "Disk cache cleared");
                 } catch (IOException e) {
                     Log.e(TAG, "clearCache - " + e);
                 }
@@ -332,9 +320,7 @@ public class ImageCache {
             if (mDiskLruCache != null) {
                 try {
                     mDiskLruCache.flush();
-                    if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "Disk cache flushed");
-                    }
+                    Log.d(TAG, "Disk cache flushed");
                 } catch (IOException e) {
                     Log.e(TAG, "flush - " + e);
                 }
@@ -353,9 +339,7 @@ public class ImageCache {
                     if (!mDiskLruCache.isClosed()) {
                         mDiskLruCache.close();
                         mDiskLruCache = null;
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "Disk cache closed");
-                        }
+                        Log.d(TAG, "Disk cache closed");
                     }
                 } catch (IOException e) {
                     Log.e(TAG, "close - " + e);

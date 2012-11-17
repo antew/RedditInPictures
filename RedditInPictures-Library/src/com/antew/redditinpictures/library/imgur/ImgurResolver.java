@@ -16,6 +16,7 @@ import com.antew.redditinpictures.library.utils.ImageContainer;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.ImageUtil.ImageType;
 import com.antew.redditinpictures.library.utils.StringUtil;
+import com.antew.redditinpictures.library.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -78,7 +79,7 @@ public class ImgurResolver {
      */
     public static String getSize(ImageContainer image, ImageSize size) {
         if (image == null) {
-            if (BuildConfig.DEBUG)
+            if (Util.DEBUG)
                 throw new NullPointerException();
             else
                 return null;
@@ -157,13 +158,13 @@ public class ImgurResolver {
                 break;
 
             case OTHER_SUPPORTED_IMAGE:
-                if (BuildConfig.DEBUG)
+                if (Util.DEBUG)
                     throw new UnsupportedOperationException("Unable to get a hash from a non-imgur image URL!");
 
                 break;
 
             case UNSUPPORTED_IMAGE:
-                if (BuildConfig.DEBUG)
+                if (Util.DEBUG)
                     throw new UnsupportedOperationException("Unable to get a hash from an unsupported image URL!");
                 break;
         }

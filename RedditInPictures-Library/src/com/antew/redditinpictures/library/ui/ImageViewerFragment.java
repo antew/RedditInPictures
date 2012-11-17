@@ -36,6 +36,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -369,9 +370,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
          */
         @Override
         protected ImageContainer doInBackground(String... params) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "doInBackground - starting work");
-            }
+            Log.d(TAG, "doInBackground - starting work");
 
             data = params[0];
             ImageContainer image = null;
@@ -390,9 +389,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
                 image = ((ImgurOriginalFetcher) mImageFetcher).decode(data);
             }
 
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "doInBackground - finished work");
-            }
+            Log.d(TAG, "doInBackground - finished work");
 
             return image;
         }
@@ -474,10 +471,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
                 Log.e(TAG, "DownloadImageTask - Error creating file", e);
             }
 
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "DownloadImageTask - doInBackground - finished work");
-            }
-
+            Log.d(TAG, "DownloadImageTask - doInBackground - finished work");
             return returnVal.toString();
         }
 
