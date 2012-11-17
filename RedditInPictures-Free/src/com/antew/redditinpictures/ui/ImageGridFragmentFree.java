@@ -10,29 +10,36 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 
 import com.antew.redditinpictures.R;
+import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
 import com.antew.redditinpictures.util.AdUtil;
 import com.antew.redditinpictures.util.ConstsFree;
+import com.google.ads.Ad;
+import com.google.ads.AdListener;
+import com.google.ads.AdRequest.ErrorCode;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
 public class ImageGridFragmentFree extends com.antew.redditinpictures.library.ui.ImageGridFragment {
     public static final String TAG = ImageGridFragmentFree.class.getSimpleName();
-    private AdView adView;
+    private AdView mAdView;
     private GridView mGridView;
     
     private BroadcastReceiver mHideAds = new BroadcastReceiver() {
         
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (adView != null) {
-                adView.setVisibility(View.GONE);
-                adView.destroy();
+            if (mAdView != null) {
+                mAdView.setVisibility(View.GONE);
+                mAdView.destroy();
             }
             
             // Remove the margin from the GridView
@@ -54,26 +61,37 @@ public class ImageGridFragmentFree extends com.antew.redditinpictures.library.ui
          * If ads are disabled we don't need to load any
          */
         if (!SharedPreferencesHelperFree.getDisableAds(getActivity())) {
-            adView = new AdView(getActivity(), AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
-            
+            mAdView = new AdView(getActivity(), AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
+
             /**
              * The AdView should be attached to the bottom of the screen, with the GridView position above it
              */
             RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            v.addView(adView, adParams);
+            v.addView(mAdView, adParams);
             
             /**
-             * We want the GridView laid out above the AdView
+             * We use the onGlobalLayoutListener here in order to adjust the bottom margin of the GridView
+             * so that when the user scrolls to the bottom of the GridView the last images are not obscured
+             * by the AdView
              */
-            RelativeLayout.LayoutParams gridViewParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            gridViewParams.addRule(RelativeLayout.ABOVE, adView.getId());
-            // The largest ad that admob currently show for the SMART_BANNER is 90px high
-            // we match that so that the ad doesn't overlap the last row of images in the GridView
-            gridViewParams.setMargins(0, 0, 0, 90);
-            mGridView.setLayoutParams(gridViewParams);
-            
-            adView.loadAd(AdUtil.getAdRequest());
+            mAdView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+                
+                @Override
+                public void onGlobalLayout() {
+                    if (mAdView != null && mGridView != null) {
+                        int height = mAdView.getHeight();
+                        if (height > 0) {
+                            RelativeLayout.LayoutParams gridViewParams = (RelativeLayout.LayoutParams) mGridView.getLayoutParams();
+                            gridViewParams.setMargins(0, 0, 0, height);
+                            mGridView.setLayoutParams(gridViewParams);
+                            mAdView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        }
+                    }
+                    Log.i("onGlobalLayout", mAdView.getHeight() + "");
+                }
+            });
+            mAdView.loadAd(AdUtil.getAdRequest());
         }
 
         return v;
@@ -93,6 +111,5 @@ public class ImageGridFragmentFree extends com.antew.redditinpictures.library.ui
     public Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
         return ImageDetailActivityFree.class;
     }
-    
-    
+
 }

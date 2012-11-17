@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.RelativeLayout;
 
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
@@ -18,7 +19,7 @@ import com.google.ads.AdView;
 
 public class ImageDetailFragmentFree extends ImageDetailFragment {
     public static final String TAG = ImageDetailFragmentFree.class.getSimpleName();
-    private AdView adView;
+    private AdView mAdView;
 
     /**
      * Factory method to generate a new instance of the fragment given an image number.
@@ -45,15 +46,15 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
          * If ads are disabled we don't need to load any
          */
         if (!SharedPreferencesHelperFree.getDisableAds(getActivity())) {
-            adView = new AdView(getActivity(), AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
+            mAdView = new AdView(getActivity(), AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
             
             /**
              * The AdView should be attached to the bottom of the screen
              */
             RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            adView.setLayoutParams(adParams);
-            v.addView(adView, adParams);
+            mAdView.setLayoutParams(adParams);
+            v.addView(mAdView, adParams);
         }
         
         return v;
@@ -62,24 +63,50 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (adView != null)
-            adView.destroy();
+        if (mAdView != null)
+            mAdView.destroy();
     }
     
     @Override
     public void hidePostDetails() {
         super.hidePostDetails();
-        if (adView != null) {
-            adView.setVisibility(View.VISIBLE);
-            adView.loadAd(AdUtil.getAdRequest());
+        if (mAdView != null) {
+            RelativeLayout.LayoutParams imageParams = (RelativeLayout.LayoutParams) mImageView.getLayoutParams();
+            mImageView.setLayoutParams(imageParams);
+            mAdView.setVisibility(View.VISIBLE);
+            mAdView.loadAd(AdUtil.getAdRequest());
+            
+            /**
+             * We use the onGlobalLayoutListener here in order to adjust the bottom margin of the ImageView
+             * so that the ad doesn't obscure the image
+             */
+            mAdView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+                
+                @Override
+                public void onGlobalLayout() {
+                    if (mAdView != null && mImageView != null) {
+                        int height = mAdView.getHeight();
+                        if (height > 0) {
+                            RelativeLayout.LayoutParams imageParams = (RelativeLayout.LayoutParams) mImageView.getLayoutParams();
+                            imageParams.setMargins(0, 0, 0, height);
+                            mImageView.setLayoutParams(imageParams);
+                            mAdView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        }
+                    }
+                }
+            });
         }
     }
     
     @Override
     public void showPostDetails() {
         super.showPostDetails();
-        if (adView != null)
-            adView.setVisibility(View.GONE);
+        if (mAdView != null && mImageView != null) {
+            mAdView.setVisibility(View.GONE);
+            RelativeLayout.LayoutParams imageParams = (RelativeLayout.LayoutParams) mImageView.getLayoutParams();
+            imageParams.setMargins(0, 0, 0, 0);
+            mImageView.setLayoutParams(imageParams);
+        }
     }
     
     @Override
