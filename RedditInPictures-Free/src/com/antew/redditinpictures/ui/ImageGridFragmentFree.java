@@ -88,7 +88,6 @@ public class ImageGridFragmentFree extends com.antew.redditinpictures.library.ui
                             mAdView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                         }
                     }
-                    Log.i("onGlobalLayout", mAdView.getHeight() + "");
                 }
             });
             mAdView.loadAd(AdUtil.getAdRequest());
