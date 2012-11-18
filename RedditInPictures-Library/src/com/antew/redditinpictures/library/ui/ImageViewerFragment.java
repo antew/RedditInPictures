@@ -204,7 +204,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             public void onPhotoTap(View view, float x, float y) {
                 Intent intent = new Intent(Consts.BROADCAST_TOGGLE_FULLSCREEN);
                 intent.putExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
-                LocalBroadcastManager.getInstance(activity).sendBroadcastSync(intent);
+                LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
             }
         };
     }
@@ -272,8 +272,12 @@ public abstract class ImageViewerFragment extends SherlockFragment {
                         mDownYPos = event.getY();
                         break;
                     case MotionEvent.ACTION_UP:
-                        if (!mCancelClick)
-                            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(Consts.BROADCAST_TOGGLE_FULLSCREEN));
+                        if (!mCancelClick) {
+                            
+                            Intent intent = new Intent(Consts.BROADCAST_TOGGLE_FULLSCREEN);
+                            intent.putExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
+                            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+                        }
                         break;
                     case MotionEvent.ACTION_MOVE:
                         if (Math.abs(event.getX() - mDownXPos) > MOVE_THRESHOLD || Math.abs(event.getY() - mDownYPos) > MOVE_THRESHOLD)
