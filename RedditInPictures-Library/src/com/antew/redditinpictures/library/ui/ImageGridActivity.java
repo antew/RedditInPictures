@@ -57,9 +57,6 @@ import com.antew.redditinpictures.library.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-/**
- * Simple FragmentActivity to hold the main {@link ImageGridFragment} and not much else.
- */
 public class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoadMoreImages,
         LoginDialogListener, LogoutDialogListener {
     private static final String TAG                     = "ImageGridActivity";
@@ -148,13 +145,16 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     private SpinnerAdapter getListNavigationSpinner() {
         List<String> subReddits = SharedPreferencesHelper.loadArray(SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME,
                 ImageGridActivity.this);
+        
+        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
+        
         subReddits = addHeaderSubreddits(subReddits);
 
         if (!(subReddits.size() > 2)) {
             subReddits = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.default_reddits)));
             subReddits = addHeaderSubreddits(subReddits);
         }
-
+        
         mSpinnerAdapter = new SubredditMenuAdapter(ImageGridActivity.this, subReddits, mAge, mCategory);
 
         return mSpinnerAdapter;
