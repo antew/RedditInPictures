@@ -1,5 +1,6 @@
 package com.antew.redditinpictures.ui;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.RelativeLayout;
 
+import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
@@ -39,14 +41,16 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     }
     
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        RelativeLayout v = (RelativeLayout) super.onCreateView(inflater, container, savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Activity activity = getActivity();
+        RelativeLayout wrapper = (RelativeLayout) getView().findViewById(R.id.fragment_wrapper);
         
         /**
          * If ads are disabled we don't need to load any
          */
-        if (!SharedPreferencesHelperFree.getDisableAds(getActivity())) {
-            mAdView = new AdView(getActivity(), AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
+        if (!SharedPreferencesHelperFree.getDisableAds(activity)) {
+            mAdView = new AdView(activity, AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
             
             /**
              * The AdView should be attached to the bottom of the screen
@@ -54,17 +58,25 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
             RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
             mAdView.setLayoutParams(adParams);
-            v.addView(mAdView, adParams);
+            wrapper.addView(mAdView, adParams);
         }
         
+    }
+    
+    
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        RelativeLayout v = (RelativeLayout) super.onCreateView(inflater, container, savedInstanceState);
         return v;
     }
     
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mAdView != null)
+        if (mAdView != null) {
             mAdView.destroy();
+            mAdView = null;
+        }
     }
     
     @Override
