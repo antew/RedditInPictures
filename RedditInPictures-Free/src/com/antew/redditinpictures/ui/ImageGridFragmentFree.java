@@ -103,6 +103,10 @@ public class ImageGridFragmentFree extends com.antew.redditinpictures.library.ui
     @Override
     public void onDestroy() {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mHideAds);
+        if (mAdView != null) {
+            mAdView.destroy();
+            mAdView = null;
+        }
         super.onDestroy();
         
     }
