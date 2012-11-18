@@ -28,8 +28,7 @@ public class Util {
             Class<?> pointClass = Class.forName("android.app.ActivityManager");
             Method monkey = pointClass.getMethod("isUserAMonkey");
             // no exception, so new method is available, just use it
-            monkey.invoke(isUserAMonkey);
-            isUserAMonkey = true;
+            isUserAMonkey = (Boolean) monkey.invoke(pointClass);
         } catch (Exception e) {
             // Do nothing
         }
