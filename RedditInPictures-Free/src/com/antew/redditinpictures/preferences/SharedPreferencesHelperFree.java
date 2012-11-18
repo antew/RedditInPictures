@@ -8,6 +8,7 @@ import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 
 public class SharedPreferencesHelperFree extends SharedPreferencesHelper {
     public static final String  DISABLE_ADS          = "disableAds";
+    public static final String  UPGRADE              = "upgrade";
 
     public static boolean getDisableAds(Context context) {
         Log.i("getDisableAds", "" + PreferenceManager.getDefaultSharedPreferences(context).getBoolean(DISABLE_ADS, false));

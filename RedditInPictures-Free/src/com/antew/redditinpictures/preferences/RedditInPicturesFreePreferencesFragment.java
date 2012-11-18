@@ -12,10 +12,13 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 
 import com.antew.redditinpictures.R;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment;
+import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
+import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.util.ConstsFree;
 
 // This really only requires API 11, the Lint check for setOnPreferenceChangeListener seems to be incorrect and reports that it requires API level 14
@@ -35,6 +38,17 @@ public class RedditInPicturesFreePreferencesFragment extends RedditInPicturesPre
 
             final CheckBoxPreference adsPreference = (CheckBoxPreference) getPreferenceManager().findPreference(SharedPreferencesHelperFree.DISABLE_ADS);
             adsPreference.setOnPreferenceChangeListener(getAdsPreferenceOnChangeListener());
+            
+            getPreferenceManager().findPreference(SharedPreferencesHelperFree.UPGRADE).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
+                    startActivity(intent);
+                    return true;
+                }
+            });
         }
 
         private OnPreferenceChangeListener getAdsPreferenceOnChangeListener() {

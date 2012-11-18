@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 
 import com.antew.redditinpictures.R;
 import com.antew.redditinpictures.library.logging.Log;
@@ -27,7 +29,17 @@ public class RedditInPicturesFreePreferences extends RedditInPicturesPreferences
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences_free);
         adsPreference = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelperFree.DISABLE_ADS);
-
+        
+        getPreferenceScreen().findPreference(SharedPreferencesHelperFree.UPGRADE).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
+                startActivity(intent);
+                return true;
+            }
+        });
     }
 
     @Override

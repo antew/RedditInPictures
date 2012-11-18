@@ -8,5 +8,12 @@
                         android:summary="@string/in_exchange_for_disabling_ads"
                         android:key="disableAds" />
         </PreferenceCategory>
-        
+        <PreferenceCategory
+                android:title="Upgrade">
+                <Preference
+                        android:title="Upgrade to Pro"
+                        android:defaultValue="false"
+                        android:summary="Upgrade to the Pro version to log in, view your subscribed subreddits, vote, save images, and support future development."
+                        android:key="upgrade" />
+        </PreferenceCategory>
 </PreferenceScreen>
