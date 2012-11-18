@@ -17,7 +17,7 @@ public class Util {
     private Util() {};
 
     /**
-     * Using this rather than {@link BuildConfig#DEBUG} because it is broken 
+     * Using this rather than {@link BuildConfig#DEBUG} because it seems broken with Maven
      * @see <a href="http://code.google.com/p/android/issues/detail?id=27940">Issue 27940</a>
      */
     public static final boolean DEBUG = true;

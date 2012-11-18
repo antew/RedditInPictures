@@ -36,7 +36,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -51,7 +50,6 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.androidquery.AQuery;
-import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurOriginalFetcher;
@@ -233,7 +231,6 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     @Override
     public void onDestroy() {
         Log.i(TAG, "onDestroy");
-        super.onDestroy();
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mScoreUpdateReceiver);
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mToggleFullscreenIntent);
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mDownloadImageIntent);
@@ -245,6 +242,8 @@ public abstract class ImageViewerFragment extends SherlockFragment {
 
         if (mWebView != null)
             mWebView.destroy();
+        
+        super.onDestroy();
     }
 
     public void hidePostDetails() {
