@@ -30,7 +30,9 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
 
 /**
@@ -72,22 +74,23 @@ public abstract class ImageWorker {
      * @param data The URL of the image to download.
      * @param imageView The ImageView to bind the downloaded image to.
      */
-    public void loadImage(Object data, ImageView imageView, ProgressBar progressBar) {
+    public void loadImage(Object data, ImageView imageView, ProgressBar progressBar, TextView errorMessage) {
         if (data == null) {
             return;
         }
 
         Bitmap bitmap = null;
 
-        if (mImageCache != null) {
+        if (mImageCache != null)
             bitmap = mImageCache.getBitmapFromMemCache(String.valueOf(data));
-        }
 
         if (bitmap != null) {
+            Log.i(TAG, "found bitmap in memcache for " + String.valueOf(data));
             // Bitmap found in memory cache
             imageView.setImageBitmap(bitmap);
         } else if (cancelPotentialWork(data, imageView)) {
-            final BitmapWorkerTask task = new BitmapWorkerTask(imageView, progressBar);
+            Log.i(TAG, "Did not find URL in cache, url = " + String.valueOf(data));
+            final BitmapWorkerTask task = new BitmapWorkerTask(imageView, progressBar, errorMessage);
             final AsyncDrawable asyncDrawable =
                     new AsyncDrawable(mResources, mLoadingBitmap, task);
             imageView.setImageDrawable(asyncDrawable);
@@ -95,7 +98,7 @@ public abstract class ImageWorker {
             // NOTE: This uses a custom version of AsyncTask that has been pulled from the
             // framework and slightly modified. Refer to the docs at the top of the class
             // for more info on what was changed.
-            task.executeOnExecutor(AsyncTask.DUAL_THREAD_EXECUTOR, data);
+            task.executeOnExecutor(AsyncTask.QUINTUPLE_THREAD_EXECUTOR, data);
         }
     }
 
@@ -222,10 +225,12 @@ public abstract class ImageWorker {
         private Object data;
         private final WeakReference<ImageView> imageViewReference;
         private final WeakReference<ProgressBar> progressBarReference;
-
-        public BitmapWorkerTask(ImageView imageView, ProgressBar progressBar) {
+        private final WeakReference<TextView> errorMessageReference;
+        
+        public BitmapWorkerTask(ImageView imageView, ProgressBar progressBar, TextView errorMessage) {
             imageViewReference = new WeakReference<ImageView>(imageView);
             progressBarReference = new WeakReference<ProgressBar>(progressBar);
+            errorMessageReference = new WeakReference<TextView>(errorMessage);
         }
 
         /**
@@ -256,6 +261,8 @@ public abstract class ImageWorker {
                     && !mExitTasksEarly) {
                 try {
                     bitmap = mImageCache.getBitmapFromDiskCache(dataString);
+                    if (bitmap != null)
+                        Log.i(TAG, "Got bitmap from disk cache for URL = " + dataString);
                 } catch (OutOfMemoryError e) {
                     Log.e(TAG, "Error pulling the bitmap from the disk cache", e);
                 }
@@ -296,13 +303,19 @@ public abstract class ImageWorker {
 
             final ImageView imageView = getAttachedImageView();
             final ProgressBar progressBar = progressBarReference.get();
+            final TextView errorMessage = errorMessageReference.get();
             if (bitmap != null && imageView != null) {
                 Log.d(TAG, "onPostExecute - setting bitmap");
                 setImageBitmap(imageView, bitmap);
-                
+            } else {
                 if (progressBar != null)
                     progressBar.setVisibility(View.GONE);
+                
+                if (errorMessage != null)
+                    errorMessage.setText(R.string.error_loading_image);
+                
             }
+            
         }
 
         @Override
