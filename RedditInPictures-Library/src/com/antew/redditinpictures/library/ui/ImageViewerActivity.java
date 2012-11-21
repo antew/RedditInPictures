@@ -26,12 +26,12 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.anim.FadeInThenOut;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
 import com.antew.redditinpictures.library.imgur.ImgurOriginalFetcher;
+import com.antew.redditinpictures.library.imgur.ImgurThumbnailFetcher;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.Consts;
@@ -152,7 +152,7 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
 
         invalidateOptionsMenu();
     }
-    
+
     /**
      * Initialize the Adapter and ViewPager for the ViewPager
      * 
@@ -225,18 +225,13 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
             @Override
             public void onPageSelected(int position) {
                 //@formatter:off
-                    if (isSystemUiVisible())
-                        exitFullscreen();
-                    else
-                        goFullscreen();
-
-                    updateDisplay(position);
-                }
+                updateDisplay(position);
+            }
 
 
-                @Override public void onPageScrolled(int arg0, float arg1, int arg2) {}
-                @Override public void onPageScrollStateChanged(int arg0) {}
-                //@formatter:on
+            @Override public void onPageScrolled(int arg0, float arg1, int arg2) {}
+            @Override public void onPageScrollStateChanged(int arg0) {}
+            //@formatter:on
         };
 
         return viewPagerOnPageChangeListener;
@@ -296,27 +291,27 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-            if (itemId == android.R.id.home) {
-                finish();
-            } else if (itemId == R.id.lock_viewpager) {
-                toggleViewPagerLock();
-            } else if (itemId == R.id.share_post) {
-                String subject = getString(R.string.check_out_this_image);
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-                intent.putExtra(Intent.EXTRA_TEXT, subject + " " + getUrlForSharing());
-                startActivity(Intent.createChooser(intent, getString(R.string.share_using_)));
-            } else if (itemId == R.id.view_post) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, getPostUri());
-                startActivity(browserIntent);
-            } else if (itemId == R.id.save_post) {
-                handleSaveImage();
-            }
+        if (itemId == android.R.id.home) {
+            finish();
+        } else if (itemId == R.id.lock_viewpager) {
+            toggleViewPagerLock();
+        } else if (itemId == R.id.share_post) {
+            String subject = getString(R.string.check_out_this_image);
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            intent.putExtra(Intent.EXTRA_TEXT, subject + " " + getUrlForSharing());
+            startActivity(Intent.createChooser(intent, getString(R.string.share_using_)));
+        } else if (itemId == R.id.view_post) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, getPostUri());
+            startActivity(browserIntent);
+        } else if (itemId == R.id.save_post) {
+            handleSaveImage();
+        }
 
         return true;
     }
-    
+
     public void handleSaveImage() {
         SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance();
         saveImageDialog.show(getSupportFragmentManager(), Consts.DIALOG_GET_FILENAME);
@@ -414,16 +409,16 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public OnSystemUiVisibilityChangeListener getOnSystemUiVisibilityChangeListener() {
         return new OnSystemUiVisibilityChangeListener() {
-            
+
             @Override
             public void onSystemUiVisibilityChange(int visibility) {
                 if ((visibility & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) {
                     getSupportActionBar().hide();
                 } else {
                     getSupportActionBar().show();
-                }                
+                }
             }
         };
-        
+
     }
 }
