@@ -6,7 +6,7 @@
 	<artifactId>RedditInPictures-Free</artifactId>
 	<packaging>apk</packaging>
 	<name>Reddit in Pictures Free</name>
-	<version>2.0</version>
+	<version>2.1</version>
 
 	<parent>
 		<groupId>com.antew.redditinpictures</groupId>
@@ -148,7 +148,7 @@
 							</zipalign>
 							<manifest>
 								<debuggable>false</debuggable>
-								<versionCode>2</versionCode>
+								<versionCode>3</versionCode>
 							</manifest>
 							<proguard>
 								<skip>true</skip>
