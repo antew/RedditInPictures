@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/background_holo_dark" >
+    android:background="@android:color/black" >
 
     <com.antew.redditinpictures.library.widgets.CustomViewPager
         android:id="@+id/pager"
