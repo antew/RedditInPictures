@@ -102,6 +102,13 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     }
 
     @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        if (mImageFetcher != null)
+            mImageFetcher.clearCache();
+    }
+    
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -200,6 +207,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     public void onDestroy() {
         super.onDestroy();
         mImageFetcher.closeCache();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mRemoveNsfwImages);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
