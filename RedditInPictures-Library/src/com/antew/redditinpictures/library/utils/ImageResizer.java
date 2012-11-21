@@ -32,13 +32,14 @@ import com.antew.redditinpictures.library.logging.Log;
  * memory.
  */
 public class ImageResizer extends ImageWorker {
-    private static final String TAG = "ImageResizer";
-    protected int mImageWidth;
-    protected int mImageHeight;
+    private static final String TAG       = "ImageResizer";
+    protected int               mImageWidth;
+    protected int               mImageHeight;
+    protected static final int  MAX_TRIES = 5;
 
     /**
      * Initialize providing a single target image size (used for both width and height);
-     *
+     * 
      * @param context
      * @param imageWidth
      * @param imageHeight
@@ -50,7 +51,7 @@ public class ImageResizer extends ImageWorker {
 
     /**
      * Initialize providing a single target image size (used for both width and height);
-     *
+     * 
      * @param context
      * @param imageSize
      */
@@ -61,7 +62,7 @@ public class ImageResizer extends ImageWorker {
 
     /**
      * Set the target image width and height.
-     *
+     * 
      * @param width
      * @param height
      */
@@ -72,7 +73,7 @@ public class ImageResizer extends ImageWorker {
 
     /**
      * Set the target image size (width and height will be the same).
-     *
+     * 
      * @param size
      */
     public void setImageSize(int size) {
@@ -82,7 +83,7 @@ public class ImageResizer extends ImageWorker {
     /**
      * The main processing method. This happens in a background task. In this case we are just
      * sampling down the bitmap and returning it from a resource.
-     *
+     * 
      * @param resId
      * @return
      */
@@ -98,16 +99,19 @@ public class ImageResizer extends ImageWorker {
 
     /**
      * Decode and sample down a bitmap from resources to the requested width and height.
-     *
-     * @param res The resources object containing the image data
-     * @param resId The resource id of the image data
-     * @param reqWidth The requested width of the resulting bitmap
-     * @param reqHeight The requested height of the resulting bitmap
+     * 
+     * @param res
+     *            The resources object containing the image data
+     * @param resId
+     *            The resource id of the image data
+     * @param reqWidth
+     *            The requested width of the resulting bitmap
+     * @param reqHeight
+     *            The requested height of the resulting bitmap
      * @return A bitmap sampled down from the original with the same aspect ratio and dimensions
      *         that are equal to or greater than the requested width and height
      */
-    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId,
-            int reqWidth, int reqHeight) {
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -120,25 +124,33 @@ public class ImageResizer extends ImageWorker {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         Bitmap b = null;
-        try {
-            b = BitmapFactory.decodeResource(res, resId, options);
-        } catch (OutOfMemoryError e) {
-            Log.e(TAG, "Out of memory decoding bitmap, returning null", e);
+        int count = 0;
+        while (b == null && count < MAX_TRIES) {
+            try {
+                b = BitmapFactory.decodeResource(res, resId, options);
+            } catch (OutOfMemoryError e) {
+                b = null;
+                options.inSampleSize *= 2;
+                count++;
+                Log.e(TAG, "Out of memory decoding bitmap from Resource", e);
+            }
         }
         return b;
     }
 
     /**
      * Decode and sample down a bitmap from a file to the requested width and height.
-     *
-     * @param filename The full path of the file to decode
-     * @param reqWidth The requested width of the resulting bitmap
-     * @param reqHeight The requested height of the resulting bitmap
+     * 
+     * @param filename
+     *            The full path of the file to decode
+     * @param reqWidth
+     *            The requested width of the resulting bitmap
+     * @param reqHeight
+     *            The requested height of the resulting bitmap
      * @return A bitmap sampled down from the original with the same aspect ratio and dimensions
      *         that are equal to or greater than the requested width and height
      */
-    public static Bitmap decodeSampledBitmapFromFile(String filename,
-            int reqWidth, int reqHeight) {
+    public static Bitmap decodeSampledBitmapFromFile(String filename, int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -151,25 +163,32 @@ public class ImageResizer extends ImageWorker {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         Bitmap b = null;
-        try {
-            b = BitmapFactory.decodeFile(filename, options);
-        } catch (OutOfMemoryError e) {
-            Log.e(TAG, "Out of memory decoding bitmap, returning null", e);
+        int count = 0;
+        while (b == null && count < MAX_TRIES) {
+            try {
+                b = BitmapFactory.decodeFile(filename, options);
+            } catch (OutOfMemoryError e) {
+                b = null;
+                options.inSampleSize *= 2;
+                Log.e(TAG, "Out of memory decoding bitmap from File", e);
+            }
         }
         return b;
     }
 
     /**
      * Decode and sample down a bitmap from a file input stream to the requested width and height.
-     *
-     * @param fileDescriptor The file descriptor to read from
-     * @param reqWidth The requested width of the resulting bitmap
-     * @param reqHeight The requested height of the resulting bitmap
+     * 
+     * @param fileDescriptor
+     *            The file descriptor to read from
+     * @param reqWidth
+     *            The requested width of the resulting bitmap
+     * @param reqHeight
+     *            The requested height of the resulting bitmap
      * @return A bitmap sampled down from the original with the same aspect ratio and dimensions
      *         that are equal to or greater than the requested width and height
      */
-    public static Bitmap decodeSampledBitmapFromDescriptor(
-            FileDescriptor fileDescriptor, int reqWidth, int reqHeight) {
+    public static Bitmap decodeSampledBitmapFromDescriptor(FileDescriptor fileDescriptor, int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -182,12 +201,17 @@ public class ImageResizer extends ImageWorker {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         Bitmap b = null;
-        try {
-            b = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
-        } catch (OutOfMemoryError e) {
-            Log.e(TAG, "Out of memory decoding bitmap, returning null", e);
+        int count = 0;
+        while (b == null && count < MAX_TRIES) {
+            try {
+                b = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
+            } catch (OutOfMemoryError e) {
+                options.inSampleSize *= 2;
+                b = null;
+                Log.e(TAG, "Out of memory decoding bitmap from Descriptor", e);
+            }
         }
-        
+
         return b;
     }
 
@@ -198,16 +222,18 @@ public class ImageResizer extends ImageWorker {
      * height equal to or larger than the requested width and height. This implementation does not
      * ensure a power of 2 is returned for inSampleSize which can be faster when decoding but
      * results in a larger bitmap which isn't as useful for caching purposes.
-     *
-     * @param options An options object with out* params already populated (run through a decode*
-     *            method with inJustDecodeBounds==true
-     * @param reqWidth The requested width of the resulting bitmap
-     * @param reqHeight The requested height of the resulting bitmap
+     * 
+     * @param options
+     *            An options object with out* params already populated (run through a decode* method
+     *            with inJustDecodeBounds==true
+     * @param reqWidth
+     *            The requested width of the resulting bitmap
+     * @param reqHeight
+     *            The requested height of the resulting bitmap
      * @return The value to be used for inSampleSize
      */
     @TargetApi(14)
-    public static int calculateInSampleSize(BitmapFactory.Options options,
-            int reqWidth, int reqHeight) {
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
@@ -237,7 +263,7 @@ public class ImageResizer extends ImageWorker {
                 inSampleSize++;
             }
         }
-        
+
         //@formatter:off
         // We want to support hardware accelerated views, but we're constrained by the OpenGL maximum texture size
         // The android framework team added getMaximumBitmapWidth() and getMaximumBitmapHeight() in API Level 14
@@ -275,8 +301,7 @@ public class ImageResizer extends ImageWorker {
         }
          */
         //@formatter:on
-        
-        
+
         return inSampleSize;
     }
 }
