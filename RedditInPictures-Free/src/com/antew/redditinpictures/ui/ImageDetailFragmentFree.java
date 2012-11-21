@@ -1,6 +1,5 @@
 package com.antew.redditinpictures.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +21,8 @@ import com.google.ads.AdView;
 public class ImageDetailFragmentFree extends ImageDetailFragment {
     public static final String TAG = ImageDetailFragmentFree.class.getSimpleName();
     private AdView mAdView;
+    private boolean mAdsDisabled;
+    private RelativeLayout mWrapper;
 
     /**
      * Factory method to generate a new instance of the fragment given an image number.
@@ -43,23 +44,8 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Activity activity = getActivity();
-        RelativeLayout wrapper = (RelativeLayout) getView().findViewById(R.id.fragment_wrapper);
-        
-        /**
-         * If ads are disabled we don't need to load any
-         */
-        if (!SharedPreferencesHelperFree.getDisableAds(activity)) {
-            mAdView = new AdView(activity, AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
-            
-            /**
-             * The AdView should be attached to the bottom of the screen
-             */
-            RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            mAdView.setLayoutParams(adParams);
-            wrapper.addView(mAdView, adParams);
-        }
+        mWrapper = (RelativeLayout) getView().findViewById(R.id.fragment_wrapper);
+        mAdsDisabled = SharedPreferencesHelperFree.getDisableAds(getActivity());
         
     }
     
@@ -82,12 +68,24 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     @Override
     public void hidePostDetails() {
         super.hidePostDetails();
-        if (mAdView != null) {
-            RelativeLayout.LayoutParams imageParams = (RelativeLayout.LayoutParams) mImageView.getLayoutParams();
-            mImageView.setLayoutParams(imageParams);
+        /**
+         * If ads are disabled we don't need to load any
+         */
+        if (!mAdsDisabled) {
+            mAdView = new AdView(getActivity(), AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
+
+            /**
+             * The AdView should be attached to the bottom of the screen
+             */
+            RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            mAdView.setLayoutParams(adParams);
+            mWrapper.addView(mAdView, adParams);
             mAdView.setVisibility(View.VISIBLE);
             mAdView.loadAd(AdUtil.getAdRequest());
+        }
             
+        if (mAdView != null) {
             /**
              * We use the onGlobalLayoutListener here in order to adjust the bottom margin of the ImageView
              * so that the ad doesn't obscure the image
@@ -125,4 +123,5 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     public Class<? extends ImgurAlbumActivity> getImgurAlbumActivity() {
         return ImgurAlbumActivityFree.class;
     }
+    
 }
