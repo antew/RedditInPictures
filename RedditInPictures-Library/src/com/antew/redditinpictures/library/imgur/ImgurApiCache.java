@@ -3,12 +3,14 @@ package com.antew.redditinpictures.library.imgur;
 import java.util.HashMap;
 
 public class ImgurApiCache {
-    private static ImgurApiCache                  instance    = null;
-    private static HashMap<String, ImgurImageApi> imgurImages = null;
-    private static HashMap<String, ImgurAlbumApi> imgurAlbums = null;
+    private static HashMap<String, ImgurImageApi> imgurImages    = null;
+    private static HashMap<String, ImgurAlbumApi> imgurAlbums    = null;
     private static HashMap<String, ImgurGallery>  imgurGalleries = null;
 
-    private ImgurApiCache() {
+    private ImgurApiCache() {}
+
+    private static class ImgurApiCacheHolder {
+        public static final ImgurApiCache INSTANCE = new ImgurApiCache();
     }
 
     public boolean containsImgurImage(String url) {
@@ -18,7 +20,7 @@ public class ImgurApiCache {
     public boolean containsImgurAlbum(String url) {
         return imgurAlbums != null && imgurAlbums.containsKey(url);
     }
-    
+
     public boolean containsImgurGallery(String url) {
         return imgurGalleries != null && imgurGalleries.containsKey(url);
     }
@@ -38,12 +40,12 @@ public class ImgurApiCache {
 
         imgurAlbums.put(url, album);
     }
-    
+
     public synchronized void addImgurGallery(String url, ImgurGallery album) {
         if (imgurGalleries == null) {
             imgurGalleries = new HashMap<String, ImgurGallery>();
         }
-        
+
         imgurGalleries.put(url, album);
     }
 
@@ -64,22 +66,18 @@ public class ImgurApiCache {
 
         return retVal;
     }
-    
+
     public ImgurGallery getImgurGallery(String url) {
         ImgurGallery retVal = null;
-        
+
         if (imgurGalleries != null)
             retVal = imgurGalleries.get(url);
-        
+
         return retVal;
     }
 
-    public static synchronized ImgurApiCache getInstance() {
-        if (instance == null) {
-            instance = new ImgurApiCache();
-        }
-
-        return instance;
+    public static ImgurApiCache getInstance() {
+        return ImgurApiCacheHolder.INSTANCE;
     }
 
 }
