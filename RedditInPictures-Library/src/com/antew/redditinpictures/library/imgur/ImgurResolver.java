@@ -115,15 +115,9 @@ public class ImgurResolver {
     public static ImageContainer resolveImgurImage(String url) {
         ImageContainer container = null;
         ImgurImageApi image = null;
-        Log.i(TAG, "resolveImgurImage - URL = " + url);
-        // See if we have it in the cache
-        if (ImgurApiCache.getInstance().containsImgurImage(url)) {
-            Log.i(TAG, "resolveImgurImage " + url + " found in cache");
-            image = ImgurApiCache.getInstance().getImgurImage(url);
-        } else {
-            String hash = getHash(url, ImageType.IMGUR_IMAGE);
+        String hash = getHash(url, ImageType.IMGUR_IMAGE);
+        if (hash != null)
             image = resolveImgurImageFromHash(hash);
-        }
 
         if (image != null && image.getImage() != null)
             container = new ImageContainer(image.getImage());
@@ -186,8 +180,10 @@ public class ImgurResolver {
 
         String newUrl = URL_IMGUR_IMAGE_API + hash + JSON;
         if (ImgurApiCache.getInstance().containsImgurImage(hash)) {
+            Log.i(TAG, "cache - resolveImgurImageFromHash - " + hash + " found in cache");
             image = ImgurApiCache.getInstance().getImgurImage(hash);
         } else {
+            Log.i(TAG, "cache - resolveImgurImageFromHash - " + hash + " NOT found in cache");
             try {
                 json = downloadUrl(newUrl);
 
@@ -209,8 +205,6 @@ public class ImgurResolver {
     public static ImageContainer resolveImgurAlbum(String url) {
         ImageContainer container = null;
         ImgurAlbumApi album = null;
-
-        Log.i(TAG, "resolveImgurAlbum url = " + url);
         String hash = getHash(url, ImageType.IMGUR_ALBUM);
         if (hash != null)
             album = resolveImgurAlbumFromHash(hash);
@@ -232,8 +226,10 @@ public class ImgurResolver {
         String newUrl = URL_IMGUR_ALBUM_API + hash + JSON;
 
         if (ImgurApiCache.getInstance().containsImgurAlbum(hash)) {
+            Log.i(TAG, "cache - resolveImgurAlbumFromHash - " + hash + " found in cache");
             album = ImgurApiCache.getInstance().getImgurAlbum(hash);
         } else {
+            Log.i(TAG, "cache - resolveImgurAlbumFromHash - " + hash + " NOT found in cache");
             try {
                 json = downloadUrl(newUrl);
 
@@ -255,16 +251,10 @@ public class ImgurResolver {
     private static ImageContainer resolveImgurGallery(String url) {
         ImgurGallery gallery = null;
         ImageContainer container = null;
-
-        if (ImgurApiCache.getInstance().containsImgurGallery(url)) {
-            gallery = ImgurApiCache.getInstance().getImgurGallery(url);
-        } else {
-
-            String hash = getHash(url, ImageType.IMGUR_GALLERY);
-
-            if (hash != null)
-                gallery = getImgurGalleryFromHash(hash);
-        }
+        
+        String hash = getHash(url, ImageType.IMGUR_GALLERY);
+        if (hash != null)
+            gallery = getImgurGalleryFromHash(hash);
 
         if (gallery != null && gallery.getImageContainer() != null)
             container = gallery.getImageContainer();
@@ -277,12 +267,14 @@ public class ImgurResolver {
         ImgurGallery gallery = null;
         ImgurAlbumApi album = null;
         ImgurImageApi image = null;
-
+        ImgurApiCache cache = ImgurApiCache.getInstance();
         String newUrl = URL_IMGUR_GALLERY_API + hash + JSON;
 
-        if (ImgurApiCache.getInstance().containsImgurGallery(hash)) {
-            gallery = ImgurApiCache.getInstance().getImgurGallery(hash);
+        if (cache.containsImgurGallery(hash)) {
+            Log.i(TAG, "cache - getImgurGalleryFromHash - " + hash + " found in cache");
+            gallery = cache.getImgurGallery(hash);
         } else {
+            Log.i(TAG, "cache - getImgurGalleryFromHash - " + hash + " NOT found in cache");
 
             try {
                 Gson gson = new Gson();
@@ -306,10 +298,9 @@ public class ImgurResolver {
                         image = resolveImgurImageFromHash(imageHash);
                         if (image != null && image.getImage() != null)
                             gallery.setImageContainer(new ImageContainer(image.getImage()));
-
                     }
 
-                    ImgurApiCache.getInstance().addImgurGallery(hash, gallery);
+                    cache.addImgurGallery(hash, gallery);
                 } else {
                     Log.e(TAG, "resolveImgurGallery, error resolving image");
                 }
