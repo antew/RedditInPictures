@@ -88,6 +88,7 @@
 		<maven-jarsigner.version>1.2</maven-jarsigner.version>
 		<build-helper-maven-plugin.version>1.5</build-helper-maven-plugin.version>
         <findbugs.version>2.5.2</findbugs.version>
+		<disklrucache.version>1.2.1</disklrucache.version>
 	</properties>
 
 
@@ -140,13 +141,11 @@
 			<type>jar</type>
 		</dependency>
 		
-		<!--
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-		</dependency>
-		-->
+	<dependency>
+		<groupId>com.jakewharton</groupId>
+		<artifactId>disklrucache</artifactId>
+		<version>1.2.1</version>
+	</dependency>
 		
 		<dependency>
 			<groupId>com.google.android</groupId>
