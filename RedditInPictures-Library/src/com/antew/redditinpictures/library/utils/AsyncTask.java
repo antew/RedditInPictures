@@ -227,15 +227,15 @@ public abstract class AsyncTask<Params, Progress, Result> {
     public static final Executor SERIAL_EXECUTOR = Util.hasHoneycomb() ? new SerialExecutor() :
             Executors.newSingleThreadExecutor(sThreadFactory);
 
-    public static final Executor DUAL_THREAD_EXECUTOR =
-            Executors.newFixedThreadPool(2, sThreadFactory);
+    public static final Executor QUINTUPLE_THREAD_EXECUTOR =
+            Executors.newFixedThreadPool(5, sThreadFactory);
 
     private static final int MESSAGE_POST_RESULT = 0x1;
     private static final int MESSAGE_POST_PROGRESS = 0x2;
 
     private static final InternalHandler sHandler = new InternalHandler();
 
-    private static volatile Executor sDefaultExecutor = SERIAL_EXECUTOR;
+    private static volatile Executor sDefaultExecutor = THREAD_POOL_EXECUTOR;
     private final WorkerRunnable<Params, Result> mWorker;
     private final FutureTask<Result> mFuture;
 
