@@ -32,7 +32,6 @@ public class Util {
         } catch (Exception e) {
             // Do nothing
         }
-        Log.i("isUserAMonkey", "" + isUserAMonkey);
         return isUserAMonkey;
     }
     
