@@ -1,10 +1,14 @@
 package com.antew.redditinpictures.library.utils;
 
+import java.util.HashMap;
+import java.util.Locale;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.widget.EditText;
 
 import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.logging.Log;
 
 public class ImageUtil {
     /**
@@ -49,7 +53,7 @@ public class ImageUtil {
      * @return True if the input URL is an unresolved Imgur image, otherwise false
      */
     private static boolean isUnresolvedImgurImage(String url) {
-        return url.contains("imgur.com/") && !isImgurAlbum(url) && !isSupportedImage(url) && !isImgurGallery(url);
+        return url.contains("imgur.com/") && !isImgurAlbum(url) && !isImgurGallery(url);
     }
 
     /**
@@ -59,7 +63,7 @@ public class ImageUtil {
      * @return True if the input URL is supported, otherwise false
      */
     public static boolean isSupportedUrl(String url) {
-        url = url.toLowerCase();
+        url = url.toLowerCase(Locale.US);
         return isSupportedImage(url) || isUnresolvedImgurImage(url) || isImgurAlbum(url) || isImgurGallery(url);
     }
     
@@ -69,7 +73,7 @@ public class ImageUtil {
      * @return True if the image is a gif, otherwise false
      */
     public static boolean isGif(String url) {
-        url = url.toLowerCase();
+        url = url.toLowerCase(Locale.US);
         return url.endsWith(".gif");
     }
 
@@ -79,18 +83,26 @@ public class ImageUtil {
      * @return The {@link ImageType} of the input URL
      */
     public static ImageType getImageType(String url) {
-        url = url.toLowerCase();
-        if (isUnresolvedImgurImage(url)) {
-            return ImageType.IMGUR_IMAGE;
-        } else if (isImgurAlbum(url)) {
-            return ImageType.IMGUR_ALBUM;
-        } else if (isImgurGallery(url))  {
-           return ImageType.IMGUR_GALLERY;
-        } else if (isSupportedImage(url)) {
-            return ImageType.OTHER_SUPPORTED_IMAGE;
+        url = url.toLowerCase(Locale.US);
+        ImageType type = ImageCache.getType(url);
+
+        if (type == null) {
+            if (isUnresolvedImgurImage(url)) {
+                type = ImageType.IMGUR_IMAGE;
+            } else if (isImgurAlbum(url)) {
+                type = ImageType.IMGUR_ALBUM;
+            } else if (isImgurGallery(url))  {
+                type = ImageType.IMGUR_GALLERY;
+            } else if (isSupportedImage(url)) {
+                type = ImageType.OTHER_SUPPORTED_IMAGE;
+            } else {
+                type = ImageType.UNSUPPORTED_IMAGE;
+            }
+            
+            ImageCache.addImage(url, type);
         }
 
-        return ImageType.UNSUPPORTED_IMAGE;
+        return type;
     }
     
     /**
@@ -105,4 +117,32 @@ public class ImageUtil {
         return dr;
     }
 
+    private static class ImageCache {
+        private static HashMap<String, ImageType> mImageTypeCache;
+        
+        private ImageCache() {};
+        
+        private static class ImageCacheHolder {
+            public static final HashMap<String, ImageUtil.ImageType> INSTANCE = new HashMap<String, ImageUtil.ImageType>();
+        }
+        
+        public static HashMap<String, ImageType> getInstance() {
+            return ImageCacheHolder.INSTANCE;
+        }
+        
+        public static boolean containsKey(String url) {
+            return getInstance().containsKey(url);
+        }
+        
+        public static ImageType getType(String url) {
+            if (getInstance().containsKey(url))
+                return getInstance().get(url);
+            
+            return null;
+        }
+        
+        public static void addImage(String url, ImageType imageType) {
+            getInstance().put(url, imageType);
+        }
+    }
 }
