@@ -68,18 +68,15 @@ public class ImageDetailFragment extends ImageViewerFragment {
         super.onCreate(savedInstanceState);
         loadExtras();
     }
-
+    
     public void loadExtras() {
         mImage = getArguments() != null ? (PostData) getArguments().getParcelable(IMAGE_DATA_EXTRA) : null;
     }
 
     @Override
     protected void resolveImage() {
-        if (Util.hasHoneycomb()) {
-            new ResolveImageTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mImage.getUrl());
-        } else {
-            new ResolveImageTask().execute(mImage.getUrl());
-        }
+        mResolveImageTask = new ResolveImageTask();
+        mResolveImageTask.execute(mImage.getUrl());
     }
 
     public void populatePostData(View v) {
