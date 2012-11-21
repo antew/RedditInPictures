@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
+import com.jakewharton.DiskLruCache;
 
 /**
  * A simple subclass of {@link ImageResizer} that fetches and resizes images fetched from a URL.

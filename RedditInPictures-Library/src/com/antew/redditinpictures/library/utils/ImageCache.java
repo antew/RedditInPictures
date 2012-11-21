@@ -37,6 +37,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.util.LruCache;
 
 import com.antew.redditinpictures.library.logging.Log;
+import com.jakewharton.DiskLruCache;
 
 
 /**
