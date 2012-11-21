@@ -79,7 +79,7 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
             mWebView.setOnTouchListener(getWebViewOnTouchListener());
             new AQuery(getActivity()).id(mWebView).progress(mProgress).webImage(imageUrl);
         } else {
-            mImageFetcher.loadImage(imageUrl, mImageView, mProgress);
+            mImageFetcher.loadImage(imageUrl, mImageView, mProgress, mErrorMessage);
         }
     }
 

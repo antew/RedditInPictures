@@ -70,31 +70,32 @@ import com.antew.redditinpictures.library.utils.ImageWorker;
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
 public abstract class ImageViewerFragment extends SherlockFragment {
-    public static final String      TAG               = "ImageViewerFragment";
-    protected static final String   IMAGE_DATA_EXTRA  = "extra_image_data";
-    protected static final String   IMAGE_ALBUM_EXTRA = "extra_image_album";
-    protected PostData              mImage;
-    protected ImageView             mImageView;
-    protected ImageFetcher          mImageFetcher;
-    protected ProgressBar           mProgress;
-    protected RelativeLayout        mPostInformationWrapper;
-    protected Button                mBtnViewGallery;
-    protected ViewStub              mViewStub;
-    protected WebView               mWebView;
-    protected boolean               mPauseWork        = false;
-    protected TextView              mVotes;
-    protected TextView              mErrorMessage;
-    private final Object            mPauseWorkLock    = new Object();
-    private boolean                 mExitTasksEarly   = false;
-    protected String                mResolvedImageUrl = null;
-    protected int                   mActionBarHeight;
-    protected Album                 mAlbum;
+    public static final String                        TAG               = "ImageViewerFragment";
+    protected static final String                     IMAGE_DATA_EXTRA  = "extra_image_data";
+    protected static final String                     IMAGE_ALBUM_EXTRA = "extra_image_album";
+    protected PostData                                mImage;
+    protected ImageView                               mImageView;
+    protected ImageFetcher                            mImageFetcher;
+    protected ProgressBar                             mProgress;
+    protected RelativeLayout                          mPostInformationWrapper;
+    protected Button                                  mBtnViewGallery;
+    protected ViewStub                                mViewStub;
+    protected WebView                                 mWebView;
+    protected boolean                                 mPauseWork        = false;
+    protected TextView                                mVotes;
+    protected TextView                                mErrorMessage;
+    private final Object                              mPauseWorkLock    = new Object();
+    private boolean                                   mExitTasksEarly   = false;
+    protected String                                  mResolvedImageUrl = null;
+    protected int                                     mActionBarHeight;
+    protected Album                                   mAlbum;
+    protected AsyncTask<String, Void, ImageContainer> mResolveImageTask = null;
 
-    private boolean                 mCancelClick      = false;
-    private float                   mDownXPos         = 0;
-    private float                   mDownYPos         = 0;
-    private static float            MOVE_THRESHOLD;
-    protected SystemUiStateProvider mSystemUiStateProvider;
+    private boolean                                   mCancelClick      = false;
+    private float                                     mDownXPos         = 0;
+    private float                                     mDownYPos         = 0;
+    private static float                              MOVE_THRESHOLD;
+    protected SystemUiStateProvider                   mSystemUiStateProvider;
 
     /**
      * Empty constructor as per the Fragment documentation
@@ -106,7 +107,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     protected abstract void populatePostData(View v);
 
     protected abstract void downloadImage(Intent intent);
-    
+
     protected abstract boolean shouldShowPostInformation();
 
     /**
@@ -115,7 +116,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate"); 
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         loadExtras();
@@ -123,13 +124,14 @@ public abstract class ImageViewerFragment extends SherlockFragment {
 
     @Override
     public void onResume() {
-        Log.i(TAG, "onResume"); 
+        Log.i(TAG, "onResume");
         super.onResume();
         if (mSystemUiStateProvider.isSystemUiVisible())
             showPostDetails();
         else
             hidePostDetails();
     }
+
     public void loadExtras() {
         mImage = getArguments() != null ? (PostData) getArguments().getParcelable(IMAGE_DATA_EXTRA) : null;
     }
@@ -159,7 +161,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         super.onActivityCreated(savedInstanceState);
 
         populatePostData(mPostInformationWrapper);
-        
+
         if (savedInstanceState != null)
             loadSavedInstanceState(savedInstanceState);
 
@@ -186,7 +188,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         } catch (ClassCastException e) {
             Log.e(TAG, "The activity must implement the SystemUiStateProvider interface", e);
         }
-        
+
         // Use the parent activity to load the image asynchronously into the ImageView (so a single
         // cache can be used over all pages in the ViewPager
         if (ImageViewerActivity.class.isInstance(getActivity())) {
@@ -242,7 +244,17 @@ public abstract class ImageViewerFragment extends SherlockFragment {
 
         if (mWebView != null)
             mWebView.destroy();
-        
+
+        if (mResolveImageTask != null) {
+            Log.i(TAG, "onDestroy - resolveImageTask not null");
+            if (mResolveImageTask.getStatus() != AsyncTask.Status.FINISHED) {
+                Log.i(TAG, "onDestroy - Cancelling resolveImageTask");
+                mResolveImageTask.cancel(true);
+
+            }
+        } else
+            Log.i(TAG, "onDestroy - Not cancelling resolveImageTask");
+
         super.onDestroy();
     }
 
@@ -258,7 +270,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             animate(mPostInformationWrapper).setDuration(500).y(mActionBarHeight);
         }
     }
-    
+
     public OnTouchListener getWebViewOnTouchListener() {
         return new OnTouchListener() {
 
@@ -272,7 +284,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
                         break;
                     case MotionEvent.ACTION_UP:
                         if (!mCancelClick) {
-                            
+
                             Intent intent = new Intent(Consts.BROADCAST_TOGGLE_FULLSCREEN);
                             intent.putExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
                             LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
@@ -297,7 +309,8 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             mErrorMessage.setVisibility(View.VISIBLE);
             return;
         }
-            
+
+        Log.i(TAG, "loadImage done for url = " + image.getUrl());
         mResolvedImageUrl = ImgurResolver.getSize(image, ImageSize.ORIGINAL);
 
         if (ImageUtil.isGif(mResolvedImageUrl)) {
@@ -310,10 +323,12 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             mWebView.setOnTouchListener(getWebViewOnTouchListener());
             new AQuery(getActivity()).id(mWebView).progress(mProgress).webImage(mResolvedImageUrl);
         } else {
-            mImageFetcher.loadImage(mResolvedImageUrl, mImageView, mProgress);
+            mImageFetcher.loadImage(mResolvedImageUrl, mImageView, mProgress, mErrorMessage);
         }
 
     }
+
+
 
 
 
@@ -465,9 +480,8 @@ public abstract class ImageViewerFragment extends SherlockFragment {
                 if (result) {
                     returnVal.append("File downloaded to: " + destination.getAbsolutePath());
                     if (act != null)
-                        MediaScannerConnection.scanFile(act, new String[] { destination.getAbsolutePath() }, new String[] {"image/*"}, null);
-                }
-                else
+                        MediaScannerConnection.scanFile(act, new String[] { destination.getAbsolutePath() }, new String[] { "image/*" }, null);
+                } else
                     returnVal.append("Download failed :(");
 
             } catch (FileNotFoundException e) {
