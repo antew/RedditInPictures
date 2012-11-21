@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.antew.redditinpictures.library.imgur.ImgurResolver.ImageSize;
 import com.antew.redditinpictures.library.utils.ImageContainer;
@@ -64,8 +65,8 @@ public class ImgurOriginalFetcher extends ImageFetcher {
     }
 
     @Override
-    public void loadImage(Object data, ImageView imageView, ProgressBar progressBar) {
-        super.loadImage(ORIGINAL + data, imageView, progressBar);
+    public void loadImage(Object data, ImageView imageView, ProgressBar progressBar, TextView errorMessage) {
+        super.loadImage(ORIGINAL + data, imageView, progressBar, errorMessage);
     }
 
     private String removeImageSizeFromUrl(String url) {

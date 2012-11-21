@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import android.content.Context;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.antew.redditinpictures.library.imgur.ImgurResolver.ImageSize;
 import com.antew.redditinpictures.library.utils.ImageContainer;
@@ -64,10 +65,10 @@ public class ImgurThumbnailFetcher extends ImageFetcher {
     }
     
     @Override
-    public void loadImage(Object data, ImageView imageView, ProgressBar progressBar) {
+    public void loadImage(Object data, ImageView imageView, ProgressBar progressBar, TextView errorMessage) {
         String url = String.valueOf(data);
         String imageSize = ImageUtil.getImageType(url) == ImageType.OTHER_SUPPORTED_IMAGE ? ORIGINAL : THUMBNAIL;
-        super.loadImage(imageSize + data, imageView, progressBar);
+        super.loadImage(imageSize + data, imageView, progressBar, errorMessage);
     }
     
     private String removeImageSizeFromUrl(String url) {
