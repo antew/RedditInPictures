@@ -44,7 +44,7 @@ public class ImageGridFragmentFree extends com.antew.redditinpictures.library.ui
             
             // Remove the margin from the GridView
             if (mGridView != null) {
-                RelativeLayout.LayoutParams gridViewParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams gridViewParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
                 gridViewParams.setMargins(0, 0, 0, 0);
                 mGridView.setLayoutParams(gridViewParams);
             }
