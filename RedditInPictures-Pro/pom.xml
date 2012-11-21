@@ -98,6 +98,10 @@
 					<name>performRelease</name>
 					<value>true</value>
 				</property>
+				<property>
+				    <name>android.release</name>
+				    <value>true</value>
+				</property>
 			</activation>
 			<build>
 				<plugins>
@@ -150,7 +154,8 @@
 								<versionCode>1</versionCode>
 							</manifest>
 							<proguard>
-								<skip>true</skip>
+								<skip>false</skip>
+								<config>${basedir}/../proguard.cfg</config>
 							</proguard>
 						</configuration>
 						<executions>
