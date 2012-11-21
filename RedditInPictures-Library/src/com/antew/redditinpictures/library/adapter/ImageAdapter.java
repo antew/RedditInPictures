@@ -11,11 +11,12 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 
 public class ImageAdapter extends BaseAdapter {
-
+    public static final String    TAG         = "ImageAdapter";
     private final Context         mContext;
     private int                   mItemHeight = 0;
     private int                   mNumColumns = 0;
@@ -96,28 +97,36 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup container) {
-
-        ImageView imageView;
-        if (convertView != null && convertView instanceof ImageView) {
-            // Otherwise re-use the converted view
-            imageView = (ImageView) convertView;
-        } else {
+        Log.i(TAG, "getView position = " + position);
+        ViewHolder viewHolder = null;
+        if (convertView == null) {
             // if it's not recycled, instantiate and initialize
-            imageView = new ImageView(mContext);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setLayoutParams(mImageViewLayoutParams);
-            
+            convertView = new ImageView(mContext);
+            Log.i("getView", "NOT Recycling imageView");
+            viewHolder = new ViewHolder();
+            viewHolder.imageView = (ImageView) convertView;
+            viewHolder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            viewHolder.imageView.setLayoutParams(mImageViewLayoutParams);
+            convertView.setTag(viewHolder);
+        } else {
+        }
+        if (convertView != null && convertView instanceof ImageView) {
+            Log.i("getView", "Recycling imageView");
+            // Otherwise re-use the converted view
+            viewHolder = (ViewHolder) convertView.getTag();
+        } else {
+
         }
 
         // Check the height matches our calculated column width
-        if (imageView.getLayoutParams().height != mItemHeight) {
-            imageView.setLayoutParams(mImageViewLayoutParams);
+        if (viewHolder.imageView.getLayoutParams().height != mItemHeight) {
+            viewHolder.imageView.setLayoutParams(mImageViewLayoutParams);
         }
 
         // Finally load the image asynchronously into the ImageView, this also takes care of
         // setting a placeholder image while the background thread runs
-        mImageFetcher.loadImage(mImages.get(position).getUrl(), imageView, null);
-        return imageView;
+        mImageFetcher.loadImage(mImages.get(position).getUrl(), viewHolder.imageView, null, null);
+        return convertView;
     }
 
     /**
@@ -142,5 +151,9 @@ public class ImageAdapter extends BaseAdapter {
 
     public int getNumColumns() {
         return mNumColumns;
+    }
+    
+    static class ViewHolder {
+        ImageView imageView;
     }
 }
