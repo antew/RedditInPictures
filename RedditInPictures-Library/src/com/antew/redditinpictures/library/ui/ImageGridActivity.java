@@ -26,6 +26,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.androidquery.callback.AjaxStatus;
+import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.adapter.SubredditMenuAdapter;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
@@ -82,7 +83,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (Util.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Util.enableStrictMode();
         }
         super.onCreate(savedInstanceState);

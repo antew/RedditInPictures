@@ -26,12 +26,12 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.anim.FadeInThenOut;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
 import com.antew.redditinpictures.library.imgur.ImgurOriginalFetcher;
-import com.antew.redditinpictures.library.imgur.ImgurThumbnailFetcher;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.Consts;
@@ -86,7 +86,7 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
-        if (Util.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Util.enableStrictMode();
         }
         super.onCreate(savedInstanceState);
