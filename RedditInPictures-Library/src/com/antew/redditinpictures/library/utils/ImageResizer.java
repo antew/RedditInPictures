@@ -134,6 +134,7 @@ public class ImageResizer extends ImageWorker {
                 count++;
                 Log.e(TAG, "Out of memory decoding bitmap from Resource", e);
             }
+            count++;
         }
         return b;
     }
@@ -172,6 +173,7 @@ public class ImageResizer extends ImageWorker {
                 options.inSampleSize *= 2;
                 Log.e(TAG, "Out of memory decoding bitmap from File", e);
             }
+            count++;
         }
         return b;
     }
@@ -210,6 +212,7 @@ public class ImageResizer extends ImageWorker {
                 b = null;
                 Log.e(TAG, "Out of memory decoding bitmap from Descriptor", e);
             }
+            count++;
         }
 
         return b;
