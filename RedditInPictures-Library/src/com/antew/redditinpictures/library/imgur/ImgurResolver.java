@@ -1,5 +1,6 @@
 package com.antew.redditinpictures.library.imgur;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -9,7 +10,6 @@ import java.util.regex.Pattern;
 
 import android.os.Build;
 
-import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.ImageContainer;
@@ -325,11 +325,7 @@ public class ImgurResolver {
         try {
             URL url = new URL(urlString);
             conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(READ_TIMEOUT);
-            conn.setConnectTimeout(CONNECTION_TIMEOUT);
-            conn.setDoInput(true);
-            conn.connect();
-            stream = conn.getInputStream();
+            stream = new BufferedInputStream(conn.getInputStream());
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK)
                 json = StringUtil.convertStreamToString(stream);
         } catch (IOException e) {
