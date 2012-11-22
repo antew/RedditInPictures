@@ -314,7 +314,9 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         mResolvedImageUrl = ImgurResolver.getSize(image, ImageSize.ORIGINAL);
 
         if (ImageUtil.isGif(mResolvedImageUrl)) {
-            mWebView = (WebView) mViewStub.inflate();
+            if (mViewStub.getParent() != null)
+                mWebView = (WebView) mViewStub.inflate();
+            
             mWebView.getSettings().setRenderPriority(RenderPriority.HIGH);
             mWebView.getSettings().setLoadWithOverviewMode(true);
             mWebView.getSettings().setUseWideViewPort(true);
