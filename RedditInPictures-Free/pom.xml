@@ -99,10 +99,7 @@
 					<name>performRelease</name>
 					<value>true</value>
 				</property>
-				<property>
-				    <name>android.release</name>
-				    <value>true</value>
-				</property>
+
 			</activation>
 			<build>
 				<plugins>
