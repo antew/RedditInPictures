@@ -6,7 +6,7 @@
 	<artifactId>RedditInPictures-Free</artifactId>
 	<packaging>apk</packaging>
 	<name>Reddit in Pictures Free</name>
-	<version>2.1</version>
+	<version>2.2</version>
 
 	<parent>
 		<groupId>com.antew.redditinpictures</groupId>
@@ -92,15 +92,15 @@
 
 		<profile>
 			<id>release</id>
-			<!-- via this activation the profile is automatically used when the release 
-				is done with the maven release plugin -->
 			<activation>
 				<property>
 					<name>performRelease</name>
 					<value>true</value>
 				</property>
-
 			</activation>
+			<properties>
+			    <android.release>true</android.release>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -149,7 +149,7 @@
 							</zipalign>
 							<manifest>
 								<debuggable>false</debuggable>
-								<versionCode>3</versionCode>
+								<versionCode>4</versionCode>
 							</manifest>
 							<proguard>
 								<skip>false</skip>
