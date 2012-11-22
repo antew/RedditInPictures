@@ -26,7 +26,6 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.androidquery.callback.AjaxStatus;
-import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.adapter.SubredditMenuAdapter;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
@@ -118,6 +117,15 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             RedditApiManager.parseRedditLoginResponse(username, modHash, cookie, loginJson);
             RedditApiManager.setIsLoggedIn(true);
         }
+    }
+
+    /**
+     * Fix for bug where orientation change on 2.x would cause the indeterminate progress bar to show
+     */
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        setSupportProgressBarIndeterminateVisibility(false);
     }
 
     @Override
