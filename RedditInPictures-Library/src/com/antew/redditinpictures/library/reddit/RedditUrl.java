@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.Util;
 
-
 public class RedditUrl implements Parcelable {
     private static final String REDDIT_URL       = "http://www.reddit.com";
     private static final String BASE_URL         = REDDIT_URL + "/r/";
@@ -21,13 +20,13 @@ public class RedditUrl implements Parcelable {
     private static final String PARAM_SEPARATOR  = "&";
     public static final String  REDDIT_FRONTPAGE = "REDDIT_FRONTPAGE";
 
-    private final String        subreddit;
-    private final Age           age;
-    private final Category      category;
-    private final int           count;
-    private final String        after;
-    private final String        before;
-    private final boolean       isLoggedIn;
+    public final String         subreddit;
+    public final Age            age;
+    public final Category       category;
+    public final int            count;
+    public final String         after;
+    public final String         before;
+    public final boolean        isLoggedIn;
 
     public String getUrl() {
 
@@ -40,13 +39,13 @@ public class RedditUrl implements Parcelable {
             url.append(subreddit);
             url.append(URL_SEPARATOR);
         }
-        
+
         // The "Rising" category uses www.reddit.com/new/?sort=rising
         if (category.equals(Category.RISING))
             url.append(Category.NEW.getName());
         else
             url.append(category.getName());
-       
+
         url.append(URL_SEPARATOR);
 
         url.append(JSON);
@@ -111,7 +110,7 @@ public class RedditUrl implements Parcelable {
 
         //@formatter:on
     }
-    
+
     public enum Age {
         //@formatter:off
         TODAY("today", "Today"),
@@ -253,8 +252,8 @@ public class RedditUrl implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(subreddit);
-        dest.writeString(age.getAge());
-        dest.writeString(category.getName());
+        dest.writeString(age.name());
+        dest.writeString(category.name());
         dest.writeInt(count);
         dest.writeString(after);
         dest.writeString(before);
