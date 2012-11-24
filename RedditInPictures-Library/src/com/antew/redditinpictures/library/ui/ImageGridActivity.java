@@ -94,7 +94,9 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         mErrorMessage = (TextView) findViewById(R.id.error_message);
         mLayoutWrapper = (RelativeLayout) findViewById(R.id.image_grid_wrapper);
         mShowNsfwImages = SharedPreferencesHelper.getShowNsfwImages(this);
-
+        mAge = SharedPreferencesHelper.getAge(ImageGridActivity.this);
+        mCategory = SharedPreferencesHelper.getCategory(ImageGridActivity.this);
+        
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
@@ -118,6 +120,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             RedditApiManager.parseRedditLoginResponse(username, modHash, cookie, loginJson);
             RedditApiManager.setIsLoggedIn(true);
         }
+        
     }
 
     /**
@@ -394,6 +397,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         else if (itemId == R.id.category_controversial_all_time) { mCategory = Category.CONTROVERSIAL;  mAge = Age.ALL_TIME  ; loadFromUrl = true; } 
         // @formatter:on
         if (loadFromUrl) {
+            SharedPreferencesHelper.saveCategorySelectionLoginInformation(mAge, mCategory, ImageGridActivity.this);
             Log.i(TAG, "onOptionsItemSelected, loadFromUrl = true, calling populateViewPagerFromSpinner()");
             populateViewPagerFromSpinner(getSupportActionBar().getSelectedNavigationIndex());
         }
