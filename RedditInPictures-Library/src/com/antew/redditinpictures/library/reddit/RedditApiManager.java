@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +27,10 @@ import com.androidquery.callback.AjaxStatus;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
+import com.antew.redditinpictures.library.reddit.RedditApi.Children;
+import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
+import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -426,4 +430,40 @@ public class RedditApiManager {
         mJson = json;
     }
 
+    /**
+     * This method removes unusable posts from the Reddit API data.
+     * 
+     * @param ra
+     *            The API data returned from reddit (e.g. from http://www.reddit.com/.json).
+     * @return The filtered list of posts after removing non-images, unsupported images, and NSFW
+     *         entries. Whether NSFW images are retained can be controlled via settings.
+     */
+    public static List<PostData> filterPosts(RedditApi ra, boolean includeNsfwImages) {
+        List<PostData> entries = new ArrayList<PostData>();
+
+        for (Children c : ra.getData().getChildren()) {
+            PostData pd = c.getData();
+            if (ImageUtil.isSupportedUrl(pd.getUrl())) {
+                if (!pd.isOver_18() || includeNsfwImages)
+                    entries.add(pd);
+
+            }
+        }
+
+        return entries;
+    }
+
+    public static List<Children> filterChildren(RedditApi ra, boolean includeNsfwImages) {
+        List<Children> entries = new ArrayList<Children>();
+
+        for (Children c : ra.getData().getChildren()) {
+            PostData pd = c.getData();
+            if (ImageUtil.isSupportedUrl(pd.getUrl())) {
+                if (!pd.isOver_18() || includeNsfwImages)
+                    entries.add(c);
+            }
+        }
+
+        return entries;
+    }
 }
