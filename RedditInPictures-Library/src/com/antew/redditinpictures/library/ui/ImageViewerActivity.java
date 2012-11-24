@@ -20,6 +20,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.WindowManager.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -34,6 +35,7 @@ import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveIma
 import com.antew.redditinpictures.library.imgur.ImgurOriginalFetcher;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageCache;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
@@ -83,6 +85,11 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
      */
     protected int                        mActionBarHeight;
 
+    /**
+     * The wrapper view
+     */
+    protected RelativeLayout             mWrapper;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
@@ -92,9 +99,9 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_detail_pager);
         mCrouton = (TextView) findViewById(R.id.crouton);
+        mWrapper = (RelativeLayout) findViewById(R.id.wrapper);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mToggleFullscreenReceiver,
-                new IntentFilter(Consts.BROADCAST_TOGGLE_FULLSCREEN));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mToggleFullscreenReceiver, new IntentFilter(Consts.BROADCAST_TOGGLE_FULLSCREEN));
 
         getExtras();
 
@@ -148,6 +155,10 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
         TypedValue tv = new TypedValue();
         if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
             mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+        }
+
+        if (SharedPreferencesHelper.getUseHoloBackground(this)) {
+            mWrapper.setBackgroundResource(R.drawable.background_holo_dark);
         }
 
         invalidateOptionsMenu();
@@ -224,17 +235,27 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
 
             @Override
             public void onPageSelected(int position) {
-                //@formatter:off
                 updateDisplay(position);
+
+                if (position == (mAdapter.getCount() - 1)) {
+                    reachedLastPage();
+                }
             }
 
-
+            //@formatter:off
             @Override public void onPageScrolled(int arg0, float arg1, int arg2) {}
             @Override public void onPageScrollStateChanged(int arg0) {}
             //@formatter:on
         };
 
         return viewPagerOnPageChangeListener;
+    }
+
+    /**
+     * Called upon reaching the last page present in the ViewPager
+     */
+    public void reachedLastPage() {
+        // Do nothing
     }
 
     @Override
@@ -419,6 +440,6 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
                 }
             }
         };
-
     }
+
 }
