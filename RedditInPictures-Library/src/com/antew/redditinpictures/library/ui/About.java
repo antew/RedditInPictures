@@ -13,6 +13,7 @@ import com.antew.redditinpictures.library.utils.Util;
 
 public class About extends SherlockActivity {
     private ImageView mImageView;
+    private static final int MAX_TRIES = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,18 @@ public class About extends SherlockActivity {
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeResource(res, resId, options);
+        Bitmap b = null;
+        int i = 0;
+        while (b == null && i < MAX_TRIES) {
+            try {
+                b = BitmapFactory.decodeResource(res, resId, options); 
+            } catch (OutOfMemoryError e) {
+                options.inSampleSize *= 2;
+            }
+            i++;
+        }
+        
+        return b;
     }
 
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
