@@ -14,10 +14,7 @@
     </style>
 
     <style name="TranslucentDarkActionBar" parent="Widget.Sherlock.ActionBar">
-        <item name="android:background">#99000000</item>
-        <item name="background">#99000000</item>
-        <item name="android:backgroundSplit">#99000000</item>
-        <item name="backgroundSplit">#99000000</item>
+        <item name="android:background">@drawable/actionbar_background</item>
     </style>
     <style name="PhotoGridLayout">
         <item name="android:drawSelectorOnTop">true</item>
