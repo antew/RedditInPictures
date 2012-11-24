@@ -39,6 +39,12 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
         return mImages.get(position);
     }
     
+    public void addPosts(List<PostData> posts) {
+        if (mImages != null) {
+            mImages.addAll(posts);
+            notifyDataSetChanged();
+        }
+    }
     @Override
     public Fragment getItem(int position) {
         return getImageDetailFragment(mImages.get(position));
