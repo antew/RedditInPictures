@@ -40,7 +40,6 @@ import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.MySubreddits;
 import com.antew.redditinpictures.library.reddit.MySubreddits.SubredditData;
 import com.antew.redditinpictures.library.reddit.RedditApi;
-import com.antew.redditinpictures.library.reddit.RedditApi.Children;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.reddit.RedditApiManager;
 import com.antew.redditinpictures.library.reddit.RedditLoginResponse;
@@ -50,15 +49,15 @@ import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManagerApi11Plus;
 import com.antew.redditinpictures.library.ui.ImageGridFragment.LoadMoreImages;
+import com.antew.redditinpictures.library.ui.ImageGridFragment.RedditDataProvider;
 import com.antew.redditinpictures.library.utils.Consts;
-import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.library.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoadMoreImages,
-        LoginDialogListener, LogoutDialogListener {
+        LoginDialogListener, LogoutDialogListener, RedditDataProvider {
     private static final String TAG                     = "ImageGridActivity";
     public static final int     POSTS_TO_FETCH          = 50;
     protected boolean           mShowNsfwImages;
@@ -80,6 +79,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     private TextView            mErrorMessage;
     private List<PostData>      mEntries;
     protected RelativeLayout    mLayoutWrapper;
+    private RedditUrl mRedditUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,17 +152,13 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     }
 
     private SpinnerAdapter getListNavigationSpinner() {
-        List<String> subReddits = SharedPreferencesHelper.loadArray(SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME,
-                ImageGridActivity.this);
-        
-        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
-        
-        subReddits = addHeaderSubreddits(subReddits);
-
+        List<String> subReddits = SharedPreferencesHelper.loadArray(SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, ImageGridActivity.this);
         if (!(subReddits.size() > 2)) {
             subReddits = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.default_reddits)));
-            subReddits = addHeaderSubreddits(subReddits);
         }
+
+        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
+        subReddits = addHeaderSubreddits(subReddits);
         
         mSpinnerAdapter = new SubredditMenuAdapter(ImageGridActivity.this, subReddits, mAge, mCategory);
 
@@ -182,14 +178,14 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         mReplaceAdapter = true;
         mSubreddit = mSpinnerAdapter.getItem(position).toString();
         //@formatter:off
-        RedditUrl url = new RedditUrl.Builder(position == 0 ? RedditUrl.REDDIT_FRONTPAGE : mSubreddit)
-                                     .age(mAge)
-                                     .category(mCategory)
-                                     .count(POSTS_TO_FETCH)
-                                     .isLoggedIn(mRedditLoginResponse != null)
-                                     .build();
+        mRedditUrl = new RedditUrl.Builder(position == 0 ? RedditUrl.REDDIT_FRONTPAGE : mSubreddit)
+                                  .age(mAge)
+                                  .category(mCategory)
+                                  .count(POSTS_TO_FETCH)
+                                  .isLoggedIn(mRedditLoginResponse != null)
+                                  .build();
         //@formatter:on
-        populateViewPagerFromUrl(url.getUrl());
+        populateViewPagerFromUrl(mRedditUrl.getUrl());
     }
 
     public void populateViewPagerFromUrl(String url) {
@@ -220,13 +216,12 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
     public void subredditDataCallback(String url, String json, AjaxStatus status) {
         requestComplete();
-
         if (status.getCode() == HttpURLConnection.HTTP_OK) {
             RedditApi redditApi = null;
 
             try {
                 redditApi = RedditApi.getGson().fromJson(json, RedditApi.class);
-                mEntries = filterPosts(redditApi);
+                mEntries = RedditApiManager.filterPosts(redditApi, mShowNsfwImages);
             } catch (JsonSyntaxException e) {
                 Log.e(TAG, "subredditDataCallback - JsonSyntaxException while parsing json!", e);
                 Toast.makeText(ImageGridActivity.this, getString(R.string.error_parsing_reddit_data), Toast.LENGTH_SHORT).show();
@@ -243,7 +238,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
                 ft.replace(android.R.id.content, getImageGridFragment(mEntries), ImageGridFragment.TAG);
                 ft.commit();
             } else {
-                mRedditApi.getData().addChildren(filterChildren(redditApi));
+                mRedditApi.getData().addChildren(RedditApiManager.filterChildren(redditApi, mShowNsfwImages));
                 mRedditApi.getData().setAfter(redditApi.getData().getAfter());
                 mRedditApi.getData().setBefore(redditApi.getData().getBefore());
 
@@ -257,52 +252,6 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             mErrorMessage.setVisibility(View.VISIBLE);
             Log.e(TAG, "populateViewPagerFromUrl - Error connecting to Reddit, response code was " + status.getCode());
         }
-    }
-
-    /**
-     * This method removes unusable posts from the Reddit API data.
-     * 
-     * @param ra
-     *            The API data returned from reddit (e.g. from http://www.reddit.com/.json).
-     * @return The filtered list of posts after removing non-images, unsupported images, and NSFW
-     *         entries. Whether NSFW images are retained can be controlled via settings.
-     */
-    public List<PostData> filterPosts(RedditApi ra) {
-        List<PostData> entries = new ArrayList<PostData>();
-        mNsfwBlockedCount = 0;
-
-        boolean showNsfwImages = SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this);
-        for (Children c : ra.getData().getChildren()) {
-            PostData pd = c.getData();
-            if (ImageUtil.isSupportedUrl(pd.getUrl())) {
-                if (!pd.isOver_18() || showNsfwImages)
-                    entries.add(pd);
-                else
-                    mNsfwBlockedCount++;
-
-            }
-        }
-
-        return entries;
-    }
-
-    public List<Children> filterChildren(RedditApi ra) {
-        List<Children> entries = new ArrayList<Children>();
-        mNsfwBlockedCount = 0;
-
-        boolean showNsfwImages = SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this);
-        for (Children c : ra.getData().getChildren()) {
-            PostData pd = c.getData();
-            if (ImageUtil.isSupportedUrl(pd.getUrl())) {
-                if (!pd.isOver_18() || showNsfwImages)
-                    entries.add(c);
-                else
-                    mNsfwBlockedCount++;
-
-            }
-        }
-
-        return entries;
     }
 
     @Override
@@ -627,6 +576,18 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         invalidateOptionsMenu();
         getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
         populateViewPagerFromSpinner(0);
+    }
+
+    @Override
+    public RedditApi getRedditApi() {
+        return mRedditApi;
+        
+    }
+
+    @Override
+    public RedditUrl getRedditUrl() {
+        return mRedditUrl;
+        
     }
 
 }

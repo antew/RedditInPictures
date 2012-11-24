@@ -28,7 +28,6 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,12 +37,13 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.R;
-import com.antew.redditinpictures.library.R.id;
 import com.antew.redditinpictures.library.adapter.ImageAdapter;
 import com.antew.redditinpictures.library.imgur.ImgurThumbnailFetcher;
+import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.reddit.RedditApi;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
+import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageCache.ImageCacheParams;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
@@ -65,9 +65,17 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     protected ImageAdapter      mAdapter;
     private ImageFetcher        mImageFetcher;
     private LoadMoreImages      mLoadMoreImages;
+    private RedditUrl           mRedditUrl;
+    private RedditDataProvider  mRedditData;
 
     public interface LoadMoreImages {
         public void loadMoreImages();
+    }
+
+    public interface RedditDataProvider {
+        public RedditApi getRedditApi();
+
+        public RedditUrl getRedditUrl();
     }
 
     /**
@@ -107,18 +115,23 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         if (mImageFetcher != null)
             mImageFetcher.clearCache();
     }
-    
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mRemoveNsfwImages,
-                new IntentFilter(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mRemoveNsfwImages, new IntentFilter(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
 
         try {
             mLoadMoreImages = (LoadMoreImages) getActivity();
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement LoadMoreImages interface");
+        }
+
+        try {
+            mRedditData = (RedditDataProvider) getActivity();
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Activity must implement RedditDataProvider interface");
         }
 
     }
@@ -217,6 +230,8 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
         i.putExtra(ImageDetailActivity.EXTRA_IMAGE, (int) id);
         Bundle b = new Bundle();
+        b.putParcelable(ImageDetailActivity.EXTRA_REDDIT_URL, mRedditData.getRedditUrl());
+        b.putParcelable(ImageDetailActivity.EXTRA_REDDIT_API, mRedditData.getRedditApi());
         b.putParcelableArrayList(ImageDetailActivity.EXTRA_ENTRIES, (ArrayList<PostData>) mAdapter.getPostData());
         i.putExtras(b);
 
@@ -246,11 +261,12 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
      * This BroadcastReceiver handles updating the score when a vote is cast or changed
      */
     private BroadcastReceiver mRemoveNsfwImages = new BroadcastReceiver() {
-
+    //@formatter:off
         @Override
         public void onReceive(Context context, Intent intent) {
             mAdapter.removeNsfwImages();
             mAdapter.notifyDataSetChanged();
         }
     };
+    //@formatter:off
 }

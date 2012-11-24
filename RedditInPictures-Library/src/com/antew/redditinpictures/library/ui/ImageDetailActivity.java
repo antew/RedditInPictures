@@ -16,6 +16,7 @@
 
 package com.antew.redditinpictures.library.ui;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 
 import android.content.Intent;
@@ -27,25 +28,39 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
+import com.androidquery.callback.AjaxStatus;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.adapter.ImagePagerAdapter;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
+import com.antew.redditinpictures.library.reddit.RedditApi;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.reddit.RedditApiManager;
 import com.antew.redditinpictures.library.reddit.RedditApiManager.Vote;
+import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.utils.Consts;
+import com.google.gson.JsonSyntaxException;
 
 public class ImageDetailActivity extends ImageViewerActivity {
 
-    public static final String TAG = "ImageDetailActivity";
+    public static final String TAG              = "ImageDetailActivity";
+    public static final String EXTRA_REDDIT_URL = "redditUrl";
+    public static final String EXTRA_REDDIT_API = "redditApi";
     protected MenuItem         mUpvoteMenuItem;
     protected MenuItem         mDownvoteMenuItem;
+    private RedditUrl          mRedditUrl;
+    private RedditApi          mRedditApi;
+    private boolean            mRequestInProgress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         displayVote();
+
+        // Put the current page / total pages text in the ActionBar
+        updateDisplay(mPager.getCurrentItem());
     }
 
     @SuppressWarnings("unchecked")
@@ -62,9 +77,15 @@ public class ImageDetailActivity extends ImageViewerActivity {
     }
 
     public void getExtras() {
-        if (getIntent().hasExtra(EXTRA_ENTRIES)) {
+        Intent i = getIntent();
+        if (i.hasExtra(EXTRA_ENTRIES))
             mImages = getIntent().getParcelableArrayListExtra(EXTRA_ENTRIES);
-        }
+
+        if (i.hasExtra(EXTRA_REDDIT_URL))
+            mRedditUrl = getIntent().getParcelableExtra(EXTRA_REDDIT_URL);
+
+        if (i.hasExtra(EXTRA_REDDIT_API))
+            mRedditApi = getIntent().getParcelableExtra(EXTRA_REDDIT_API);
     }
 
     /**
@@ -73,6 +94,8 @@ public class ImageDetailActivity extends ImageViewerActivity {
     protected void updateDisplay(int position) {
         PostData p = getAdapter().getPost(position);
         displayVote(p.getVote());
+
+        getSupportActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
     }
 
     @Override
@@ -111,7 +134,7 @@ public class ImageDetailActivity extends ImageViewerActivity {
     protected Uri getPostUri() {
         //@formatter:off
         return Uri.parse(getAdapter().getPost(mPager.getCurrentItem())
-                                 .getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(this)));
+                .getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(this)));
         //@formatter:on
     }
 
@@ -275,6 +298,68 @@ public class ImageDetailActivity extends ImageViewerActivity {
         intent.putExtra(Consts.EXTRA_FILENAME, filename);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
+    }
+
+    @Override
+    public void reachedLastPage() {
+        super.reachedLastPage();
+
+        //@formatter:off
+        String after = mRedditApi != null 
+                && mRedditApi.getData() != null 
+                && mRedditApi.getData().getAfter() != null ? mRedditApi.getData().getAfter() : null;
+        //@formatter:on
+
+        if (!mRequestInProgress && after != null) {
+            //@formatter:off
+            RedditUrl.Builder builder = new RedditUrl.Builder(mRedditUrl.subreddit)
+                                                     .age(mRedditUrl.age)
+                                                     .category(mRedditUrl.category)
+                                                     .count(50)
+                                                     .isLoggedIn(mRedditUrl.isLoggedIn)
+                                                     .after(after);
+
+            setSupportProgressBarIndeterminateVisibility(true);
+            RedditApiManager.makeRequest(builder.build().getUrl(), "subredditDataCallback", this);
+            //@formatter:on
+        } else {
+            Log.i(TAG, "reachedLastPage() - Request already in progress, ignoring");
+        }
+    }
+
+    public void subredditDataCallback(String url, String json, AjaxStatus status) {
+        Log.i(TAG, "subredditDataCallback");
+        mRequestInProgress = false;
+        setSupportProgressBarIndeterminateVisibility(false);
+
+        if (status.getCode() == HttpURLConnection.HTTP_OK) {
+            RedditApi redditApi = null;
+            boolean showNsfwImages = SharedPreferencesHelper.getShowNsfwImages(this);
+
+            try {
+                redditApi = RedditApi.getGson().fromJson(json, RedditApi.class);
+                List<PostData> images = RedditApiManager.filterPosts(redditApi, showNsfwImages);
+
+                // We want to keep the previous posts in mRedditApi and add new ones
+                mRedditApi.getData().addChildren(RedditApiManager.filterChildren(redditApi, showNsfwImages));
+                mRedditApi.getData().setAfter(redditApi.getData().getAfter());
+                mRedditApi.getData().setBefore(redditApi.getData().getBefore());
+
+                getImages().addAll(images);
+                updateDisplay(mPager.getCurrentItem());
+            } catch (JsonSyntaxException e) {
+                Log.e(TAG, "subredditDataCallback - JsonSyntaxException while parsing json!", e);
+                Toast.makeText(ImageDetailActivity.this, getString(R.string.error_parsing_reddit_data), Toast.LENGTH_SHORT).show();
+                return;
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "subredditDataCallback - IllegalStateException while parsing json!", e);
+                Toast.makeText(ImageDetailActivity.this, getString(R.string.error_parsing_reddit_data), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+        } else {
+            Log.e(TAG, "subredditDataCallback - Error connecting to Reddit, response code was " + status.getCode());
+        }
     }
 
 }
