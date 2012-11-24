@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.antew.redditinpictures.library.logging.Log;
-
 public class SharedPreferencesHelper {
     private static final String LOGIN_JSON           = "loginJson";
     private static final String COOKIE               = "cookie";
@@ -19,6 +17,7 @@ public class SharedPreferencesHelper {
     public static final String  USE_MOBILE_INTERFACE = "launchMobile";
     public static final String  SHOW_NSFW_IMAGES     = "showNsfwImages";
     public static final String  ABOUT                = "about";
+    public static final String USE_HOLO_BACKGROUND   = "useHoloBackground";
 
     public static boolean saveArray(List<String> array, String prefsName, String arrayName, Context context) {
         SharedPreferences prefs = context.getSharedPreferences(prefsName, 0);
@@ -108,5 +107,9 @@ public class SharedPreferencesHelper {
 
     public static boolean getShowNsfwImages(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SHOW_NSFW_IMAGES, false);
+    }
+    
+    public static boolean getUseHoloBackground(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(USE_HOLO_BACKGROUND, false);
     }
 }

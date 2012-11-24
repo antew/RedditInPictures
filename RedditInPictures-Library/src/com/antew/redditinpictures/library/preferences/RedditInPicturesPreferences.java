@@ -21,6 +21,7 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
     SharedPreferences  sharedPreferences;
     private boolean showNsfwImagesOldValue;
     private boolean showNsfwImagesNewValue;
+    private Preference useHoloBackground;
 
     /**
      * This uses the deprecated addPreferencesFromResource because fragment
@@ -41,6 +42,7 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
 
         useMobileInterface = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelper.USE_MOBILE_INTERFACE);
         showNsfwImages = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelper.SHOW_NSFW_IMAGES);
+        useHoloBackground = getPreferenceScreen().findPreference(SharedPreferencesHelper.USE_HOLO_BACKGROUND);
         
         getPreferenceScreen().findPreference(SharedPreferencesHelper.ABOUT).setOnPreferenceClickListener(new OnPreferenceClickListener() {
             
