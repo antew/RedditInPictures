@@ -15,6 +15,7 @@
 
     <style name="TranslucentDarkActionBar" parent="Widget.Sherlock.ActionBar">
         <item name="android:background">@drawable/actionbar_background</item>
+        <item name="background">@drawable/actionbar_background</item>
     </style>
     <style name="PhotoGridLayout">
         <item name="android:drawSelectorOnTop">true</item>
