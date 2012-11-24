@@ -46,8 +46,6 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
 
     public static final String           TAG             = "ImageViewerActivity";
     private static final String          IMAGE_CACHE_DIR = "images";
-    public static final String           EXTRA_IMAGE     = "extra_image";
-    public static final String           EXTRA_ENTRIES   = "Entries";
 
     /**
      * The Adapter for the ViewPager
@@ -146,7 +144,7 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
         }
 
         // Set the current item based on the extra passed in to this activity
-        final int extraCurrentItem = getIntent().getIntExtra(EXTRA_IMAGE, -1);
+        final int extraCurrentItem = getIntent().getIntExtra(Consts.EXTRA_IMAGE, -1);
         if (extraCurrentItem != -1) {
             mPager.setCurrentItem(extraCurrentItem);
         }
@@ -284,7 +282,7 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.i(TAG, "onSaveInstanceState");
-        outState.putParcelableArrayList(EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
+        outState.putParcelableArrayList(Consts.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
         super.onSaveInstanceState(outState);
     }
 
@@ -292,8 +290,8 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         Log.i(TAG, "onRestoreInstanceState");
         super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState.containsKey(EXTRA_ENTRIES))
-            mImages = savedInstanceState.getParcelableArrayList(EXTRA_ENTRIES);
+        if (savedInstanceState.containsKey(Consts.EXTRA_ENTRIES))
+            mImages = savedInstanceState.getParcelableArrayList(Consts.EXTRA_ENTRIES);
     }
 
     /**

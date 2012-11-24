@@ -44,9 +44,7 @@ import com.google.gson.JsonSyntaxException;
 
 public class ImageDetailActivity extends ImageViewerActivity {
 
-    public static final String TAG              = "ImageDetailActivity";
-    public static final String EXTRA_REDDIT_URL = "redditUrl";
-    public static final String EXTRA_REDDIT_API = "redditApi";
+    public static final String TAG = "ImageDetailActivity";
     protected MenuItem         mUpvoteMenuItem;
     protected MenuItem         mDownvoteMenuItem;
     private RedditUrl          mRedditUrl;
@@ -78,14 +76,14 @@ public class ImageDetailActivity extends ImageViewerActivity {
 
     public void getExtras() {
         Intent i = getIntent();
-        if (i.hasExtra(EXTRA_ENTRIES))
-            mImages = getIntent().getParcelableArrayListExtra(EXTRA_ENTRIES);
+        if (i.hasExtra(Consts.EXTRA_ENTRIES))
+            mImages = getIntent().getParcelableArrayListExtra(Consts.EXTRA_ENTRIES);
 
-        if (i.hasExtra(EXTRA_REDDIT_URL))
-            mRedditUrl = getIntent().getParcelableExtra(EXTRA_REDDIT_URL);
+        if (i.hasExtra(Consts.EXTRA_REDDIT_URL))
+            mRedditUrl = getIntent().getParcelableExtra(Consts.EXTRA_REDDIT_URL);
 
-        if (i.hasExtra(EXTRA_REDDIT_API))
-            mRedditApi = getIntent().getParcelableExtra(EXTRA_REDDIT_API);
+        if (i.hasExtra(Consts.EXTRA_REDDIT_API))
+            mRedditApi = getIntent().getParcelableExtra(Consts.EXTRA_REDDIT_API);
     }
 
     /**
@@ -146,6 +144,24 @@ public class ImageDetailActivity extends ImageViewerActivity {
     public String getUrlForSharing() {
         PostData pd = getAdapter().getPost(mPager.getCurrentItem());
         return pd.getUrl();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(Consts.EXTRA_REDDIT_API, mRedditApi);
+        outState.putParcelable(Consts.EXTRA_REDDIT_URL, mRedditUrl);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState.containsKey(Consts.EXTRA_REDDIT_API))
+            mRedditApi = savedInstanceState.getParcelable(Consts.EXTRA_REDDIT_API);
+
+        if (savedInstanceState.containsKey(Consts.EXTRA_REDDIT_URL))
+            mRedditUrl = savedInstanceState.getParcelable(Consts.EXTRA_REDDIT_URL);
     }
 
     /**
@@ -310,7 +326,7 @@ public class ImageDetailActivity extends ImageViewerActivity {
                 && mRedditApi.getData().getAfter() != null ? mRedditApi.getData().getAfter() : null;
         //@formatter:on
 
-        if (!mRequestInProgress && after != null) {
+        if (!mRequestInProgress && after != null && mRedditUrl != null) {
             //@formatter:off
             RedditUrl.Builder builder = new RedditUrl.Builder(mRedditUrl.subreddit)
                                                      .age(mRedditUrl.age)
@@ -323,7 +339,14 @@ public class ImageDetailActivity extends ImageViewerActivity {
             RedditApiManager.makeRequest(builder.build().getUrl(), "subredditDataCallback", this);
             //@formatter:on
         } else {
-            Log.i(TAG, "reachedLastPage() - Request already in progress, ignoring");
+            if (after == null)
+                Log.i(TAG, "reachedLastPage, after was null");
+
+            if (mRedditUrl == null)
+                Log.i(TAG, "reachedLastPage, mRedditUrl was null");
+
+            if (mRequestInProgress)
+                Log.i(TAG, "reachedLastPage() - Request already in progress, ignoring");
         }
     }
 

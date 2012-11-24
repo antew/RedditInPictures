@@ -228,11 +228,11 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
         final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
-        i.putExtra(ImageDetailActivity.EXTRA_IMAGE, (int) id);
+        i.putExtra(Consts.EXTRA_IMAGE, (int) id);
         Bundle b = new Bundle();
-        b.putParcelable(ImageDetailActivity.EXTRA_REDDIT_URL, mRedditData.getRedditUrl());
-        b.putParcelable(ImageDetailActivity.EXTRA_REDDIT_API, mRedditData.getRedditApi());
-        b.putParcelableArrayList(ImageDetailActivity.EXTRA_ENTRIES, (ArrayList<PostData>) mAdapter.getPostData());
+        b.putParcelable(Consts.EXTRA_REDDIT_URL, mRedditData.getRedditUrl());
+        b.putParcelable(Consts.EXTRA_REDDIT_API, mRedditData.getRedditApi());
+        b.putParcelableArrayList(Consts.EXTRA_ENTRIES, (ArrayList<PostData>) mAdapter.getPostData());
         i.putExtras(b);
 
         if (Util.hasJellyBean()) {

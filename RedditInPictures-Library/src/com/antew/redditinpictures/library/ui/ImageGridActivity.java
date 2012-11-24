@@ -266,6 +266,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         outState.putString(Consts.EXTRA_SELECTED_SUBREDDIT,
                 (String) mSpinnerAdapter.getItem(getSupportActionBar().getSelectedNavigationIndex()));
         outState.putParcelable(Consts.EXTRA_REDDIT_API, mRedditApi);
+        outState.putParcelable(Consts.EXTRA_REDDIT_URL, mRedditUrl);
         super.onSaveInstanceState(outState);
     }
 
@@ -281,6 +282,9 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
         if (savedInstanceState.containsKey(Consts.EXTRA_REDDIT_API))
             mRedditApi = savedInstanceState.getParcelable(Consts.EXTRA_REDDIT_API);
+        
+        if (savedInstanceState.containsKey(Consts.EXTRA_REDDIT_URL))
+            mRedditUrl = savedInstanceState.getParcelable(Consts.EXTRA_REDDIT_URL);
     }
 
     @Override
@@ -479,16 +483,17 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         
         // If a request isn't currently in progress and reddit indicated there were more images to load make the request
         if (!mRequestInProgress && after != null) {
-            RedditUrl.Builder builder = new RedditUrl.Builder(getSupportActionBar().getSelectedNavigationIndex() == 0 ? RedditUrl.REDDIT_FRONTPAGE : mSubreddit)
-                                                     .age(mAge)
-                                                     .category(mCategory)
-                                                     .count(POSTS_TO_FETCH)
-                                                     .isLoggedIn(mRedditLoginResponse != null)
-                                                     .after(after);
+            mRedditUrl = new RedditUrl.Builder(getSupportActionBar().getSelectedNavigationIndex() == 0 ? RedditUrl.REDDIT_FRONTPAGE : mSubreddit)
+                                      .age(mAge)
+                                      .category(mCategory)
+                                      .count(POSTS_TO_FETCH)
+                                      .isLoggedIn(mRedditLoginResponse != null)
+                                      .after(after)
+                                      .build();
 
             mReplaceAdapter = false;
             Log.i(TAG, "loadMoreImages() calling populateViewPagerFromUrl()");
-            populateViewPagerFromUrl(builder.build().getUrl());
+            populateViewPagerFromUrl(mRedditUrl.getUrl());
                     //@formatter:on
         } else {
             Log.i(TAG, "loadMoreImages() - Request already in progress, ignoring");
