@@ -3,12 +3,12 @@ package com.antew.redditinpictures.library.imgur;
 import java.io.OutputStream;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.antew.redditinpictures.library.imgur.ImgurResolver.ImageSize;
+import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.ImageContainer;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 
