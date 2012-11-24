@@ -25,11 +25,9 @@ import android.widget.TextView;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
-import com.antew.redditinpictures.library.utils.AsyncTask;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageContainer;
 import com.antew.redditinpictures.library.utils.ImageUtil.ImageType;
-import com.antew.redditinpictures.library.utils.Util;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
