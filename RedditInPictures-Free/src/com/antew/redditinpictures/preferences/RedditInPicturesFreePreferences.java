@@ -43,13 +43,8 @@ public class RedditInPicturesFreePreferences extends RedditInPicturesPreferences
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        super.onSharedPreferenceChanged(sharedPreferences, key);
         if (key.equals(SharedPreferencesHelperFree.DISABLE_ADS)) {
             //@formatter:off
             if (sharedPreferences.getBoolean(key, false) == true && !isFinishing())
