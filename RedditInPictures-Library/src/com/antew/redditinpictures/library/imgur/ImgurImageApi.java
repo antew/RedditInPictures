@@ -48,7 +48,7 @@ public class ImgurImageApi {
         
         //@formatter:off
         public static final Parcelable.Creator<ImgurImage> CREATOR
-            = new Parcelable.Creator<ImgurImageApi.ImgurImage>() {
+            = new Parcelable.Creator<ImgurImage>() {
             
             @Override
             public ImgurImage createFromParcel(Parcel source) {
