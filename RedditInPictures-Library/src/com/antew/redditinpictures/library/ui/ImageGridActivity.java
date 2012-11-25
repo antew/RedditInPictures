@@ -9,6 +9,7 @@ import java.util.List;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
@@ -56,8 +57,8 @@ import com.antew.redditinpictures.library.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-public class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoadMoreImages,
-        LoginDialogListener, LogoutDialogListener, RedditDataProvider {
+public class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoadMoreImages, LoginDialogListener, LogoutDialogListener,
+        RedditDataProvider {
     private static final String TAG                     = "ImageGridActivity";
     public static final int     POSTS_TO_FETCH          = 50;
     protected boolean           mShowNsfwImages;
@@ -79,7 +80,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     private TextView            mErrorMessage;
     private List<PostData>      mEntries;
     protected RelativeLayout    mLayoutWrapper;
-    private RedditUrl mRedditUrl;
+    private RedditUrl           mRedditUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +94,10 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
         mErrorMessage = (TextView) findViewById(R.id.error_message);
         mLayoutWrapper = (RelativeLayout) findViewById(R.id.image_grid_wrapper);
-        mShowNsfwImages = SharedPreferencesHelper.getShowNsfwImages(this);
+        mShowNsfwImages = SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this);
         mAge = SharedPreferencesHelper.getAge(ImageGridActivity.this);
         mCategory = SharedPreferencesHelper.getCategory(ImageGridActivity.this);
-        
+
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
@@ -120,11 +121,12 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             RedditApiManager.parseRedditLoginResponse(username, modHash, cookie, loginJson);
             RedditApiManager.setIsLoggedIn(true);
         }
-        
+
     }
 
     /**
-     * Fix for bug where orientation change on 2.x would cause the indeterminate progress bar to show
+     * Fix for bug where orientation change on 2.x would cause the indeterminate progress bar to
+     * show
      */
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -162,7 +164,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
         Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
         subReddits = addHeaderSubreddits(subReddits);
-        
+
         mSpinnerAdapter = new SubredditMenuAdapter(ImageGridActivity.this, subReddits, mAge, mCategory);
 
         return mSpinnerAdapter;
@@ -266,8 +268,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(Consts.EXTRA_NAV_POSITION, getSupportActionBar().getSelectedNavigationIndex());
-        outState.putString(Consts.EXTRA_SELECTED_SUBREDDIT,
-                (String) mSpinnerAdapter.getItem(getSupportActionBar().getSelectedNavigationIndex()));
+        outState.putString(Consts.EXTRA_SELECTED_SUBREDDIT, (String) mSpinnerAdapter.getItem(getSupportActionBar().getSelectedNavigationIndex()));
         outState.putParcelable(Consts.EXTRA_REDDIT_API, mRedditApi);
         outState.putParcelable(Consts.EXTRA_REDDIT_URL, mRedditUrl);
         super.onSaveInstanceState(outState);
@@ -285,7 +286,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
         if (savedInstanceState.containsKey(Consts.EXTRA_REDDIT_API))
             mRedditApi = savedInstanceState.getParcelable(Consts.EXTRA_REDDIT_API);
-        
+
         if (savedInstanceState.containsKey(Consts.EXTRA_REDDIT_URL))
             mRedditUrl = savedInstanceState.getParcelable(Consts.EXTRA_REDDIT_URL);
     }
@@ -353,16 +354,18 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     }
 
     public void startPreferences() {
-        if (Util.hasHoneycomb()) {
-            Intent intent = new Intent(ImageGridActivity.this, RedditInPicturesPreferencesFragment.class);
-            intent.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES, mShowNsfwImages);
-            startActivityForResult(intent, SETTINGS_REQUEST);
-        } else {
-            Intent intent = new Intent(ImageGridActivity.this, RedditInPicturesPreferences.class);
-            intent.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES, mShowNsfwImages);
-            startActivityForResult(intent, SETTINGS_REQUEST);
-        }
+        Intent intent = new Intent(ImageGridActivity.this, getPreferencesClass());
+        intent.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES, mShowNsfwImages);
+        startActivityForResult(intent, SETTINGS_REQUEST);
     }
+    
+    public Class<? extends PreferenceActivity> getPreferencesClass() {
+        if (Util.hasHoneycomb())
+            return RedditInPicturesPreferencesFragment.class;
+        else
+            return RedditInPicturesPreferences.class;
+    }
+    
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -404,7 +407,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
         return true;
     }
-    
+
     public void handleLoginAndLogout() {
         if (!RedditApiManager.isLoggedIn()) {
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
@@ -506,8 +509,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     }
 
     private void showLoginProgressDialog() {
-        mProgressDialog = ProgressDialog.show(ImageGridActivity.this, getString(R.string.log_on), getString(R.string.logging_on), true,
-                false);
+        mProgressDialog = ProgressDialog.show(ImageGridActivity.this, getString(R.string.log_on), getString(R.string.logging_on), true, false);
     }
 
     public void loginCallback(String url, String json, AjaxStatus status) {
@@ -560,8 +562,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), ImageGridActivity.this);
         } else {
             Toast.makeText(ImageGridActivity.this, "Error retrieving subscribed subreddits.", Toast.LENGTH_SHORT).show();
-            Log.e("MySubreddits",
-                    "Something went wrong on mySubreddits! status = " + status.getCode() + " | json = " + json == null ? "null" : json);
+            Log.e("MySubreddits", "Something went wrong on mySubreddits! status = " + status.getCode() + " | json = " + json == null ? "null" : json);
 
         }
 
@@ -590,13 +591,13 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     @Override
     public RedditApi getRedditApi() {
         return mRedditApi;
-        
+
     }
 
     @Override
     public RedditUrl getRedditUrl() {
         return mRedditUrl;
-        
+
     }
 
 }

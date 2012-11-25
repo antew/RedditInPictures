@@ -2,6 +2,7 @@ package com.antew.redditinpictures.ui;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.preference.PreferenceActivity;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -23,18 +24,11 @@ public class ImageGridActivityFree extends ImageGridActivity implements UpdateTo
         return new ImageGridFragmentFree();
     }
 
-    @Override
-    public void startPreferences() {
-        if (Util.hasHoneycomb()) {
-            Intent intent = new Intent(ImageGridActivityFree.this, RedditInPicturesFreePreferencesFragment.class);
-            intent.putExtra(ConstsFree.EXTRA_SHOW_NSFW_IMAGES, mShowNsfwImages);
-            startActivityForResult(intent, SETTINGS_REQUEST);
-        } else {
-            Intent intent = new Intent(ImageGridActivityFree.this, RedditInPicturesFreePreferences.class);
-            intent.putExtra(ConstsFree.EXTRA_SHOW_NSFW_IMAGES, mShowNsfwImages);
-            startActivityForResult(intent, SETTINGS_REQUEST);
-        }
-
+    public Class<? extends PreferenceActivity> getPreferencesClass() {
+        if (Util.hasHoneycomb())
+            return RedditInPicturesFreePreferencesFragment.class;
+        else
+            return RedditInPicturesFreePreferences.class;
     }
 
     @Override
