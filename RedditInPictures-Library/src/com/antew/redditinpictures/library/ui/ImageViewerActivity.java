@@ -161,6 +161,16 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
 
         invalidateOptionsMenu();
     }
+    
+    /**
+     * Fix for bug where orientation change on 2.x would cause the indeterminate progress bar to
+     * show
+     */
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        setSupportProgressBarIndeterminateVisibility(false);
+    }
 
     /**
      * Initialize the Adapter and ViewPager for the ViewPager
