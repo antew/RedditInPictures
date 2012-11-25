@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceManager;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.antew.redditinpictures.library.R;
@@ -16,9 +15,9 @@ import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.library.utils.Consts;
 
 public class RedditInPicturesPreferences extends SherlockPreferenceActivity implements OnSharedPreferenceChangeListener {
+    public static final String TAG = RedditInPicturesPreferences.class.getSimpleName();
     CheckBoxPreference useMobileInterface;
     CheckBoxPreference showNsfwImages;
-    SharedPreferences  sharedPreferences;
     private boolean showNsfwImagesOldValue;
     private boolean showNsfwImagesNewValue;
     private Preference useHoloBackground;
@@ -33,13 +32,12 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
         super.onCreate(savedInstanceState);
         
         if (getIntent().hasExtra(Consts.EXTRA_SHOW_NSFW_IMAGES)) {
+            Log.i(TAG, "Had EXTRA_SHOW_NSFW_IMAGES in intent, value was " + getIntent().getBooleanExtra(Consts.EXTRA_SHOW_NSFW_IMAGES, false));
             showNsfwImagesOldValue = getIntent().getBooleanExtra(Consts.EXTRA_SHOW_NSFW_IMAGES, false);
             showNsfwImagesNewValue = showNsfwImagesOldValue;
         }
         
         addPreferencesFromResource(R.xml.preferences);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(RedditInPicturesPreferences.this);
-
         useMobileInterface = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelper.USE_MOBILE_INTERFACE);
         showNsfwImages = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelper.SHOW_NSFW_IMAGES);
         useHoloBackground = getPreferenceScreen().findPreference(SharedPreferencesHelper.USE_HOLO_BACKGROUND);
@@ -57,20 +55,27 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
 
     @Override
     protected void onResume() {
-        super.onResume();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+    
+    @Override
+    protected void onPause() {
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.i(TAG, "onSharedPreferencesChanged key = " + key);
         if (key.equals(SharedPreferencesHelper.USE_MOBILE_INTERFACE))
         {
-            Log.d("Mobile Interface Changed to", "" + sharedPreferences.getBoolean(SharedPreferencesHelper.USE_MOBILE_INTERFACE, true));
+            Log.i("Mobile Interface Changed to", "" + sharedPreferences.getBoolean(SharedPreferencesHelper.USE_MOBILE_INTERFACE, true));
         }
         else if (key.equals(SharedPreferencesHelper.SHOW_NSFW_IMAGES))
         {
-            showNsfwImagesNewValue = sharedPreferences.getBoolean(SharedPreferencesHelper.SHOW_NSFW_IMAGES, true);
-            Log.d("Show Nsfw Images Changed To", "" + sharedPreferences.getBoolean(SharedPreferencesHelper.SHOW_NSFW_IMAGES, true));
+            showNsfwImagesNewValue = sharedPreferences.getBoolean(SharedPreferencesHelper.SHOW_NSFW_IMAGES, false);
+            Log.i("Show Nsfw Images Changed To", "" + sharedPreferences.getBoolean(SharedPreferencesHelper.SHOW_NSFW_IMAGES, false));
         }
         
     }
@@ -78,6 +83,8 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
     @Override
     public void onBackPressed() {
         Intent i = new Intent();
+        boolean result = showNsfwImagesNewValue != showNsfwImagesOldValue;
+        Log.i(TAG, "onBackPressed Passing back " + Boolean.toString(result) + " to activity");
         i.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
         setResult(RESULT_OK, i);
         super.onBackPressed();
