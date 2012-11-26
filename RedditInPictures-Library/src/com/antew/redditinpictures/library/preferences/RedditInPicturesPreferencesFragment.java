@@ -20,7 +20,6 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
     private boolean showNsfwImagesNewValue;
     private boolean showNsfwImagesOldValue;
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +37,7 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
 
     @Override
     public void onBackPressed() {
-        showNsfwImagesNewValue = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SharedPreferencesHelper.USE_HOLO_BACKGROUND, false);
+        showNsfwImagesNewValue = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SharedPreferencesHelper.SHOW_NSFW_IMAGES, false);
         Intent i = new Intent();
         i.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
         setResult(RESULT_OK, i);
@@ -57,7 +56,7 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
 
             PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences, false);
             addPreferencesFromResource(R.xml.preferences);
-
+            
             getPreferenceManager().findPreference(SharedPreferencesHelper.ABOUT).setOnPreferenceClickListener(new OnPreferenceClickListener() {
                 
                 @Override
@@ -67,7 +66,5 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
                 }
             });
         }
-
     }
-
 }
