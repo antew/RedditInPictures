@@ -319,6 +319,9 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             case NEW:
                 menu.findItem(R.id.category_new).setChecked(true); 
                 break;
+            case RISING:
+                menu.findItem(R.id.category_rising).setChecked(true);
+                break;
             case TOP:
                 switch (mAge)
                 {
