@@ -406,8 +406,8 @@ public class ImageDetailActivity extends ImageViewerActivity {
         }
         
         @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
             String url = getArguments().getString(URL);
             makeRequest(url);
         }
