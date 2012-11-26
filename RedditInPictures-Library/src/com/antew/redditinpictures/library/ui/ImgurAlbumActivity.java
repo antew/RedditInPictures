@@ -13,6 +13,7 @@ import com.antew.redditinpictures.library.adapter.ImgurAlbumPagerAdapter;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.StringUtil;
 
 public class ImgurAlbumActivity extends ImageViewerActivity {
     public static final String TAG         = "ImgurAlbumActivity";
@@ -74,6 +75,22 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
         intent.putExtra(Consts.EXTRA_FILENAME, filename);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
+    }
+    
+    @Override
+    public String getFilenameForSave() {
+        String name = super.getFilenameForSave();
+        if (getAdapter() != null && mPager != null) {
+            ImgurImage p = getAdapter().getImage(mPager.getCurrentItem());
+            name = p.getImage().getHash();
+            if (!p.getImage().getTitle().equals("")) {
+                name = StringUtil.sanitizeFileName(p.getImage().getTitle());
+            } else if (!p.getImage().getCaption().equals("")) {
+                name = StringUtil.sanitizeFileName(p.getImage().getCaption());
+            }
+        }
+            
+        return name;
     }
 
 }

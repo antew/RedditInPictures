@@ -41,6 +41,7 @@ import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RESTResponderFragment;
 import com.antew.redditinpictures.library.service.RESTService;
 import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.StringUtil;
 import com.google.gson.JsonSyntaxException;
 
 public class ImageDetailActivity extends ImageViewerActivity {
@@ -307,6 +308,16 @@ public class ImageDetailActivity extends ImageViewerActivity {
         }
     }
 
+    @Override
+    public String getFilenameForSave() {
+        if (getAdapter() != null && mPager != null) {
+            PostData p = getAdapter().getPost(mPager.getCurrentItem());
+            return StringUtil.sanitizeFileName(p.getTitle());
+        }
+        
+        return super.getFilenameForSave();
+    }
+    
     @Override
     public void onFinishSaveImageDialog(String filename) {
         PostData p = getAdapter().getPost(mPager.getCurrentItem());

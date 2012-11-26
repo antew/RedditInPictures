@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -22,8 +23,8 @@ import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 
 public class SaveImageDialogFragment extends DialogFragment implements OnEditorActionListener, TextWatcher {
-
-    private TextView filename;
+    public static final String FILENAME = "";
+    private EditText filename;
 
     public interface SaveImageDialogListener {
         void onFinishSaveImageDialog(String filename);
@@ -32,16 +33,27 @@ public class SaveImageDialogFragment extends DialogFragment implements OnEditorA
     // Empty constructor required for DialogFragment
     public SaveImageDialogFragment() {};
 
-    public static SaveImageDialogFragment newInstance() {
-        return new SaveImageDialogFragment();
+    public static SaveImageDialogFragment newInstance(String defaultFilename) {
+        SaveImageDialogFragment frag = new SaveImageDialogFragment();
+        Bundle b = new Bundle();
+        b.putString(FILENAME, defaultFilename);
+        frag.setArguments(b);
+        
+        return frag;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        String initialFilename = "";
+        if (getArguments() != null && getArguments().containsKey(FILENAME)) {
+            initialFilename = getArguments().getString(FILENAME);
+        }
         LayoutInflater lf = LayoutInflater.from(getActivity());
         View dialogView = lf.inflate(R.layout.save_image_dialog, null);
 
-        filename = (TextView) dialogView.findViewById(R.id.save_image_name);
+        filename = (EditText) dialogView.findViewById(R.id.save_image_name);
+        filename.setText(initialFilename);
+        filename.selectAll();
         filename.setOnEditorActionListener(this);
         filename.requestFocus();
         //@formatter:off

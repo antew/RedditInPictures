@@ -341,9 +341,25 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
         return true;
     }
 
+    /**
+     * Subclasses can choose how to handle the click of the 'Save' icon in the Action Bar.
+     * The default action is to pop up a dialog prompting for a filename to save the image as
+     * 
+     * @see ImageViewerActivity#getFilenameForSave()
+     * @see SaveImageDialogFragment#onFinishSaveImageDialog
+     * 
+     */
     public void handleSaveImage() {
-        SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance();
+        SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(getFilenameForSave());
         saveImageDialog.show(getSupportFragmentManager(), Consts.DIALOG_GET_FILENAME);
+    }
+    
+    /**
+     * Get the initial value for the filename prompt, by default it is an empty string
+     * @return The initial filename
+     */
+    public String getFilenameForSave() {
+        return "";
     }
 
     @Override
