@@ -11,7 +11,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 /**
- * see http://stackoverflow.com/questions/3130654/memory-leak-in-webview and
+ * @see <a href="http://stackoverflow.com/questions/3130654/memory-leak-in-webview">Stackoverflow post</a>
  * http://code.google.com/p/android/issues/detail?id=9375 Note that the bug does NOT appear to be
  * fixed in android 2.2 as romain claims
  * 

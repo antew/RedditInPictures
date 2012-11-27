@@ -29,6 +29,11 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+/**
+ * This is from an article by Neil Goodman
+ * @author Neil Goodman
+ * @see <a href="http://neilgoodman.net/2012/01/01/modern-techniques-for-implementing-rest-clients-on-android-4-0-and-below-part-2/">The article</a>
+ */
 public class RESTService extends IntentService {
     private static final String TAG = RESTService.class.getName();
     

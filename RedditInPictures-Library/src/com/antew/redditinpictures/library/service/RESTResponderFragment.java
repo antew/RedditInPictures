@@ -6,6 +6,11 @@ import android.os.ResultReceiver;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
+/**
+ * This is from an article by Neil Goodman
+ * @author Neil Goodman
+ * @see <a href="http://neilgoodman.net/2012/01/01/modern-techniques-for-implementing-rest-clients-on-android-4-0-and-below-part-2/">The article</a>
+ */
 public abstract class RESTResponderFragment extends SherlockFragment {
     
     private ResultReceiver mReceiver;
