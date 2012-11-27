@@ -20,6 +20,7 @@ import java.util.List;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.widget.BaseAdapter;
 
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
@@ -45,6 +46,11 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
         return mImages.size();
     }
 
+    /**
+     * The PostData at the input position
+     * @param position The position
+     * @return PostData at the input position
+     */
     public PostData getPost(int position) {
         if (mImages == null)
             return null;
@@ -54,6 +60,10 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
         return mImages.get(position);
     }
     
+    /**
+     * Adds PostData objects to the Adapter, also calls {@link BaseAdapter#notifyDataSetChanged()}
+     * @param posts The posts to add
+     */
     public void addPosts(List<PostData> posts) {
         if (mImages != null) {
             mImages.addAll(posts);
@@ -65,9 +75,13 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
         return getImageDetailFragment(mImages.get(position));
     }
     
+    /**
+     * Returns an {@link ImageDetailFragment} for the input {@link PostData} object
+     * @param p The {@link PostData} object to pass to the new {@link ImageDetailFragment}
+     * @return A new {@link ImageDetailFragment} for the input {@link PostData}
+     */
     public Fragment getImageDetailFragment(PostData p) {
         return ImageDetailFragment.newInstance(p);
-        
     }
     
 }
