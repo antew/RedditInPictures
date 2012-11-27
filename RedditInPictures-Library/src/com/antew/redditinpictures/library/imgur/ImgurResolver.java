@@ -11,6 +11,9 @@ import java.util.regex.Pattern;
 import android.os.Build;
 
 import com.antew.redditinpictures.library.BuildConfig;
+import com.antew.redditinpictures.library.gson.BooleanDeserializer;
+import com.antew.redditinpictures.library.imageapi.Flickr;
+import com.antew.redditinpictures.library.imageapi.Flickr.FlickrSize;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.ImageContainer;
@@ -18,16 +21,18 @@ import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.ImageUtil.ImageType;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 public class ImgurResolver {
-    private static final int    CONNECTION_TIMEOUT    = 15000;
-    private static final int    READ_TIMEOUT          = 10000;
     public static final String  TAG                   = "ImgurResolver";
     private static final String JSON                  = ".json";
     private static final String URL_IMGUR_ALBUM_API   = "http://api.imgur.com/2/album/";
     private static final String URL_IMGUR_IMAGE_API   = "http://api.imgur.com/2/image/";
     private static final String URL_IMGUR_GALLERY_API = "http://imgur.com/gallery/";
+    private static final String FLICKR_URL            = "http://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=d71a06b84331ac6428ba90d1b72a9b6f&photo_id=%s&format=json&nojsoncallback=1";
+    private static final String EHOST_URL             = "http://i.eho.st/%s.jpg";
+    private static final String PICSARUS_URL          = "http://www.picsarus.com/%s.jpg";
 
     public enum ImageSize {
         ORIGINAL, SMALL_SQUARE, LARGE_THUMBNAIL;
@@ -60,7 +65,57 @@ public class ImgurResolver {
             case IMGUR_GALLERY:
                 container = resolveImgurGallery(url);
                 break;
+
             case UNSUPPORTED_IMAGE:
+                break;
+
+            case DEVIANTART_IMAGE:
+                break;
+
+            case EHOST_IMAGE:
+                String hash = getHash(url, ImageType.EHOST_IMAGE);
+                if (hash != null) {
+                    container = new ImageContainer(String.format(EHOST_URL, hash));
+                    Log.i("HASH = ", hash + "url = " + url);
+                }
+                break;
+
+            case FLICKR_IMAGE:
+                container = resolveFlickrImage(url);
+                break;
+
+            case LIVEMEME_IMAGE:
+                break;
+
+            case MEMECRUNCH_IMAGE:
+                break;
+
+            case MEMEFIVE_IMAGE:
+                break;
+
+            case MINUS_IMAGE:
+                break;
+
+            case PICASARUS_IMAGE:
+                
+                break;
+
+            case PICSHD_IMAGE:
+                break;
+
+            case QUICKMEME_IMAGE:
+                break;
+
+            case SNAGGY_IMAGE:
+                break;
+
+            case STEAM_IMAGE:
+                break;
+
+            case TUMBLR_IMAGE:
+                break;
+
+            default:
                 break;
         }
 
@@ -82,7 +137,7 @@ public class ImgurResolver {
             if (BuildConfig.DEBUG)
                 throw new NullPointerException();
             else
-                return null;
+            return null;
         }
 
         ImgurImage decoded = null;
@@ -94,6 +149,13 @@ public class ImgurResolver {
             case IMGUR_IMAGE:
                 decoded = image.getImgurImage();
                 break;
+
+            case FLICKR_IMAGE:
+                FlickrSize flickrSize = FlickrSize.ORIGINAL;
+                if (ImageSize.SMALL_SQUARE.equals(size))
+                    flickrSize = FlickrSize.THUMBNAIL;
+
+                return image.getFlickr().getSize(flickrSize).getSource();
 
             case OTHER_SUPPORTED_IMAGE:
             default:
@@ -151,6 +213,10 @@ public class ImgurResolver {
                 pattern = Pattern.compile("imgur.com/gallery/([A-Za-z0-9]+)", Pattern.CASE_INSENSITIVE);
                 break;
 
+            case EHOST_IMAGE:
+                pattern = Pattern.compile("^http://(?:i\\.)?(?:\\d+.)?eho.st/(\\w+)/?");
+                break;
+
             case OTHER_SUPPORTED_IMAGE:
                 if (BuildConfig.DEBUG)
                     throw new UnsupportedOperationException("Unable to get a hash from a non-imgur image URL!");
@@ -160,6 +226,47 @@ public class ImgurResolver {
             case UNSUPPORTED_IMAGE:
                 if (BuildConfig.DEBUG)
                     throw new UnsupportedOperationException("Unable to get a hash from an unsupported image URL!");
+                break;
+
+            case DEVIANTART_IMAGE:
+                break;
+
+            case FLICKR_IMAGE:
+                pattern = Pattern.compile("^http://(?:\\w+).?flickr.com/(?:.*)/([\\d]{10})/?(?:.*)?$");
+                break;
+
+            case LIVEMEME_IMAGE:
+                break;
+
+            case MEMECRUNCH_IMAGE:
+                break;
+
+            case MEMEFIVE_IMAGE:
+                break;
+
+            case MINUS_IMAGE:
+                break;
+
+            case PICASARUS_IMAGE:
+                pattern = Pattern.compile("^https?://(?:[i.]|[edge.]|[www.])*picsarus.com/(?:r/[\\w]+/)?([\\w]{6,})(\\..+)?$");
+                break;
+
+            case PICSHD_IMAGE:
+                break;
+
+            case QUICKMEME_IMAGE:
+                break;
+
+            case SNAGGY_IMAGE:
+                break;
+
+            case STEAM_IMAGE:
+                break;
+
+            case TUMBLR_IMAGE:
+                break;
+
+            default:
                 break;
         }
 
@@ -251,7 +358,7 @@ public class ImgurResolver {
     private static ImageContainer resolveImgurGallery(String url) {
         ImgurGallery gallery = null;
         ImageContainer container = null;
-        
+
         String hash = getHash(url, ImageType.IMGUR_GALLERY);
         if (hash != null)
             gallery = getImgurGalleryFromHash(hash);
@@ -313,6 +420,28 @@ public class ImgurResolver {
         }
 
         return gallery;
+    }
+
+    public static ImageContainer resolveFlickrImage(String url) {
+        ImageContainer container = null;
+        Flickr flickr = null;
+
+        String hash = getHash(url, ImageType.FLICKR_IMAGE);
+        if (hash != null) {
+            Gson gson = new GsonBuilder().registerTypeAdapter(Boolean.class, new BooleanDeserializer()).create();
+            try {
+                String json = downloadUrl(String.format(FLICKR_URL, hash));
+                flickr = gson.fromJson(json, Flickr.class);
+            } catch (IOException e) {
+                Log.e(TAG, "Error parsing JSON in resolveFlickrImage", e);
+            }
+
+        }
+
+        if (flickr != null)
+            container = new ImageContainer(flickr);
+
+        return container;
     }
 
     // Given a string representation of a URL, sets up a connection and gets

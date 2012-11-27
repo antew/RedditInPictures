@@ -3,6 +3,7 @@ package com.antew.redditinpictures.library.utils;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.antew.redditinpictures.library.imageapi.Flickr;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.utils.ImageUtil.ImageType;
@@ -11,6 +12,7 @@ public class ImageContainer implements Parcelable {
     private ImageType  imageType;
     private ImgurImage imgurImage;
     private Album      imgurAlbum;
+    private Flickr     flickr;
     private String     url;
     
     public ImageContainer(Album album) {
@@ -26,6 +28,11 @@ public class ImageContainer implements Parcelable {
     public ImageContainer(String url) { 
         this.url = url;
         this.imageType = ImageType.OTHER_SUPPORTED_IMAGE;
+    }
+    
+    public ImageContainer(Flickr flickr) { 
+        this.flickr = flickr;
+        this.imageType = ImageType.FLICKR_IMAGE;
     }
 
     public ImageContainer(Parcel source) {
@@ -47,6 +54,10 @@ public class ImageContainer implements Parcelable {
         return imgurImage;
     }
 
+    public Flickr getFlickr() {
+        return flickr;
+    }
+    
     public void setImgurImage(ImgurImage imgurImage) {
         this.imgurImage = imgurImage;
     }
@@ -58,6 +69,7 @@ public class ImageContainer implements Parcelable {
     public void setImgurAlbum(Album imgurAlbum) {
         this.imgurAlbum = imgurAlbum;
     }
+    
 
     public String getUrl() {
         return url;
