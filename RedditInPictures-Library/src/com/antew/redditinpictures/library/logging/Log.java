@@ -17,6 +17,11 @@ package com.antew.redditinpictures.library.logging;
 
 import com.antew.redditinpictures.library.BuildConfig;
 
+/**
+ * Utility class for Logging, wrapps the standard android {@link android.util.Log} class
+ * @author Antew
+ *
+ */
 @SuppressWarnings("unused")
 public class Log {
     public static final int LEVEL = android.util.Log.VERBOSE;

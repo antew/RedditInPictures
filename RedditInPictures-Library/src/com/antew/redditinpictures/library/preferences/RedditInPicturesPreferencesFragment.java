@@ -30,6 +30,13 @@ import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.library.utils.Consts;
 
+/**
+ * Preferences for Honeycomb and later, this can be subclassed to add additional Preferences. For an
+ * example see RedditInPicturesPreferencesFreeFragment in the RedditInPictures-Free project
+ * 
+ * @author Antew
+ * 
+ */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
     private boolean showNsfwImagesNewValue;
@@ -46,10 +53,18 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
         getFragmentManager().beginTransaction().replace(android.R.id.content, getPrefsFragment()).commit();
     }
 
+    /**
+     * This is overridden by subclasses to instantiate the correct Fragment
+     * 
+     * @return
+     */
     public Fragment getPrefsFragment() {
         return new PrefsFragment();
     }
 
+    /**
+     * Pass back whether the NSFW images preference changed
+     */
     @Override
     public void onBackPressed() {
         showNsfwImagesNewValue = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SharedPreferencesHelper.SHOW_NSFW_IMAGES, false);
@@ -59,9 +74,6 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
         super.onBackPressed();
     }
 
-    /**
-     * This fragment shows the preferences for the first header.
-     */
     public static class PrefsFragment extends PreferenceFragment {
         protected static final String TAG = "PrefsFragment";
 
@@ -71,9 +83,9 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
 
             PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences, false);
             addPreferencesFromResource(R.xml.preferences);
-            
+
             getPreferenceManager().findPreference(SharedPreferencesHelper.ABOUT).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-                
+
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     startActivity(new Intent(getActivity(), About.class));

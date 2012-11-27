@@ -25,8 +25,10 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
+import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.utils.Util;
 
 @SuppressLint("CommitPrefEdits")
@@ -44,6 +46,18 @@ public class SharedPreferencesHelper {
     public static final String  CATEGORY             = "category";
     public static final String  USE_HOLO_BACKGROUND  = "useHoloBackground";
 
+    /**
+     * Save an array to {@link SharedPreferences}
+     * 
+     * @param array
+     *            The array of strings to save
+     * @param prefsName
+     *            The name of the preferences file
+     * @param arrayName
+     *            The name to save the array as
+     * @param context
+     *            The context
+     */
     public static void saveArray(List<String> array, String prefsName, String arrayName, Context context) {
         SharedPreferences prefs = context.getSharedPreferences(prefsName, 0);
         SharedPreferences.Editor editor = prefs.edit();
@@ -55,10 +69,22 @@ public class SharedPreferencesHelper {
             String s = array.get(i);
             editor.putString(arrayName + "_" + i, s);
         }
-        
+
         save(editor);
     }
 
+    /**
+     * Load an array of Strings from {@link SharedPreferences}
+     * 
+     * @param prefsName
+     *            The name of the preferences file
+     * @param arrayName
+     *            The name of the array
+     * @param context
+     *            The context
+     * @return An {@link ArrayList} of strings containing the data loaded from
+     *         {@link SharedPreferences}
+     */
     public static List<String> loadArray(String prefsName, String arrayName, Context context) {
         List<String> returnList = new ArrayList<String>();
         SharedPreferences prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE);
@@ -71,6 +97,18 @@ public class SharedPreferencesHelper {
         return returnList;
     }
 
+    /**
+     * Add a single item to the array saved in {@link SharedPreferences}
+     * 
+     * @param valueToAdd
+     *            The String to add
+     * @param prefsName
+     *            The preferences file name
+     * @param arrayName
+     *            The name of the array
+     * @param context
+     *            The context
+     */
     public static void addToArray(String valueToAdd, String prefsName, String arrayName, Context context) {
         List<String> array = loadArray(prefsName, arrayName, context);
         array.add(valueToAdd);
@@ -85,10 +123,24 @@ public class SharedPreferencesHelper {
             String s = array.get(i);
             editor.putString(arrayName + "_" + i, s);
         }
-        
+
         save(editor);
     }
 
+    /**
+     * Save the Reddit login information to preferences
+     * 
+     * @param username
+     *            The username
+     * @param modHash
+     *            The mod hash
+     * @param cookie
+     *            The cookie
+     * @param json
+     *            The login json
+     * @param context
+     *            The context
+     */
     public static void saveLoginInformation(String username, String modHash, String cookie, String json, Context context) {
         SharedPreferences prefs = context.getSharedPreferences(GLOBAL_PREFS_NAME, 0);
         SharedPreferences.Editor editor = prefs.edit();
@@ -101,21 +153,38 @@ public class SharedPreferencesHelper {
         save(editor);
     }
 
+    /**
+     * Save the selected Age and Category to preferences. Used to save/restore the selected
+     * Category/Age combination from {@link ImageGridActivity}
+     * 
+     * @param age
+     *            The age
+     * @param category
+     *            The category
+     * @param context
+     *            The context
+     */
     public static void saveCategorySelectionLoginInformation(Age age, Category category, Context context) {
         SharedPreferences prefs = context.getSharedPreferences(GLOBAL_PREFS_NAME, 0);
         SharedPreferences.Editor editor = prefs.edit();
 
         editor.putString(AGE, age.name());
         editor.putString(CATEGORY, category.name());
-        
+
         save(editor);
     }
-    
+
+    /**
+     * Commit the preferences asynchronously in Gingerbread and later, otherwise we have to do it
+     * synchronously
+     * 
+     * @param editor
+     */
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public static void save(SharedPreferences.Editor editor) {
         if (Util.hasGingerbread())
             editor.apply();
-        else 
+        else
             editor.commit();
     }
 
@@ -135,30 +204,76 @@ public class SharedPreferencesHelper {
         return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(COOKIE, "");
     }
 
+    /**
+     * Remove the saved login information
+     * 
+     * @param context
+     *            The context
+     * @return True if the removal is successful
+     */
     public static boolean clearLoginInformation(Context context) {
         return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).edit().remove(LOGIN_JSON).remove(USERNAME).remove(MOD_HASH).remove(COOKIE).commit();
     }
 
+    /**
+     * This is currently unused, I envisioned that it would be used to allow the user to toggle HW
+     * acceleration on/off
+     * 
+     * @param context
+     *            The context
+     * @return True if the hardware acceleration should be enabled
+     */
     public static boolean getEnableHwAccel(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ENABLE_HW_ACCEL, false);
     }
 
+    /**
+     * Whether the Reddit mobile interface should be used when launching links.
+     * 
+     * @param context
+     *            The context
+     * @return Returns true if Reddit links should be launched to the mobile site
+     */
     public static boolean getUseMobileInterface(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(USE_MOBILE_INTERFACE, true);
     }
 
+    /**
+     * Whether NSFW images should be shown
+     * 
+     * @param context
+     *            The context
+     * @return True if NSFW images should be shown
+     */
     public static boolean getShowNsfwImages(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SHOW_NSFW_IMAGES, false);
     }
 
+    /**
+     * Whether the holo background should be used. Some users reported performance problems and I
+     * think it may have been due to issues with scaling the Holo background image
+     * 
+     * @param context The context
+     * @return Whether the Holo background should be used
+     */
     public static boolean getUseHoloBackground(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(USE_HOLO_BACKGROUND, false);
     }
-    
+
+    /**
+     * The saved {@link RedditUrl#Age}
+     * @param context The context
+     * @return The saved {@link RedditUrl#Age}
+     */
     public static Age getAge(Context context) {
         return Age.valueOf(context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(AGE, Age.TODAY.name()));
     }
-    
+
+    /**
+     * The saved {@link RedditUrl#Category}
+     * @param context The context
+     * @return The saved {@link RedditUrl#Category}
+     */
     public static Category getCategory(Context context) {
         return Category.valueOf(context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(CATEGORY, Category.HOT.name()));
     }
