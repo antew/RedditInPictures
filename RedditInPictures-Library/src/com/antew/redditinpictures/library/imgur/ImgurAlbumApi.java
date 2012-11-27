@@ -23,6 +23,12 @@ import android.os.Parcelable;
 
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 
+/**
+ * This class is used by Gson to parse the Imgur Album API into POJOs
+ * @see <a href="http://api.imgur.com/2/album/T2GDa.json">Example</a>
+ * @author Antew
+ *
+ */
 public class ImgurAlbumApi {
     public Album getAlbum() {
         return album;

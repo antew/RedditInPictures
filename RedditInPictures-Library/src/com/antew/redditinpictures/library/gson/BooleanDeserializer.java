@@ -22,6 +22,11 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
+/**
+ * This is used to deserialize booleans from Flickr because they come across and either 1 or 0
+ * @author Antew
+ *
+ */
 public class BooleanDeserializer implements JsonDeserializer<Boolean>  {
 
     @Override

@@ -17,6 +17,11 @@ package com.antew.redditinpictures.library.imgur;
 
 import java.util.HashMap;
 
+/**
+ * Cache used to avoid repeated API calls to Imgur
+ * @author Antew
+ *
+ */
 public class ImgurApiCache {
     private static HashMap<String, ImgurImageApi> imgurImages    = null;
     private static HashMap<String, ImgurAlbumApi> imgurAlbums    = null;

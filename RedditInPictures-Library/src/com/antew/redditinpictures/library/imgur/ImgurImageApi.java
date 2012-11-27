@@ -20,6 +20,12 @@ import android.os.Parcelable;
 
 import com.antew.redditinpictures.library.utils.Util;
 
+/**
+ * Class used to parse the Imgur image JSON into POJOs
+ * @see <a href="http://api.imgur.com/2/image/u9PWV.json">Example</a>
+ * @author Antew
+ *
+ */
 public class ImgurImageApi {
     public ImgurImage getImage() {
         return image;

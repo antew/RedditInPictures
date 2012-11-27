@@ -26,7 +26,14 @@ import android.widget.TextView;
 
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
+import com.antew.redditinpictures.library.ui.ImageGridActivity;
 
+/**
+ * This is the Adapter for the drop down in the Action Bar of {@link ImageGridActivity}
+ * It displays the current Subreddit along with the selected Category and Age
+ * @author Antew
+ *
+ */
 public class SubredditMenuAdapter extends BaseAdapter {
 
     private LayoutInflater inflater;
@@ -34,6 +41,13 @@ public class SubredditMenuAdapter extends BaseAdapter {
     private RedditUrl.Age age;
     private RedditUrl.Category category;
 
+    /**
+     * Create a new Adapter for the Subreddit/Category/Age combo
+     * @param context The context
+     * @param listdata The list of subreddits
+     * @param age The {@link RedditUrl#Age}
+     * @param category The {@link RedditUrl#category}
+     */
     public SubredditMenuAdapter(Context context, List<String> listdata, RedditUrl.Age age, RedditUrl.Category category) {
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.age = age;
@@ -41,6 +55,9 @@ public class SubredditMenuAdapter extends BaseAdapter {
         data = listdata;
     }
 
+    /**
+     * The main View contains the Subreddit name and the Category/Age combination below
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
@@ -61,6 +78,9 @@ public class SubredditMenuAdapter extends BaseAdapter {
         return v;
     }
 
+    /**
+     * The dropdown view simply contains the Subreddit name
+     */
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
@@ -94,6 +114,11 @@ public class SubredditMenuAdapter extends BaseAdapter {
         return position;
     }
     
+    /**
+     * Refreshes the Category/Age in the Adapter
+     * @param category The {@link RedditUrl#category}
+     * @param age The {@link RedditUrl#age}
+     */
     public void notifyDataSetChanged(RedditUrl.Category category, RedditUrl.Age age) {
         this.category = category;
         this.age = age;

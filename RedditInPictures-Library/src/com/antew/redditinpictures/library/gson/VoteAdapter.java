@@ -23,6 +23,12 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
+/**
+ * This is used to serialize/deserialize Votes on Reddit posts
+ * Reddit uses true for an upvote, false for downvotes, and null for neutral votes
+ * @author a
+ *
+ */
 public class VoteAdapter extends TypeAdapter<Vote>  {
 
     @Override

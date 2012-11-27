@@ -23,6 +23,12 @@ import android.os.Parcelable;
 import com.antew.redditinpictures.library.utils.ImageContainer;
 import com.antew.redditinpictures.library.utils.Util;
 
+/**
+ * Class used by Gson to parse Imgur gallery JSON
+ * @see <a href="http://imgur.com/gallery/T2GDa.json">example</a>
+ * @author Antew
+ *
+ */
 public class ImgurGallery implements Parcelable {
     private Data data;
     private boolean success;

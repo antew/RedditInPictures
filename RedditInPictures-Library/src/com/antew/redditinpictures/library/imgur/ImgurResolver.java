@@ -39,6 +39,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
+/**
+ * Used to resolve images when necessary (e.g. Imgur images, flickr images, anything without an image extension!)
+ * @author Antew
+ *
+ */
 public class ImgurResolver {
     public static final String  TAG                   = "ImgurResolver";
     private static final String JSON                  = ".json";
@@ -189,6 +194,11 @@ public class ImgurResolver {
         return null;
     }
 
+    /**
+     * Resolve the imgur image for the input URL
+     * @param url The URL to resolve an image from
+     * @return An {@link ImageContainer} containing the ImgurImage
+     */
     public static ImageContainer resolveImgurImage(String url) {
         ImageContainer container = null;
         ImgurImageApi image = null;
@@ -295,6 +305,11 @@ public class ImgurResolver {
         return hash;
     }
 
+    /**
+     * Resolve an {@link ImgurImageApi} from an Imgur hash
+     * @param hash The hash to resolve an image from (e.g. u9PWV)
+     * @return An {@link ImgurImageApi} representing the image
+     */
     public static ImgurImageApi resolveImgurImageFromHash(String hash) {
         Gson gson = new Gson();
         String json = null;
@@ -324,6 +339,11 @@ public class ImgurResolver {
         return image;
     }
 
+    /**
+     * Resolve an Imgur album
+     * @param url The input url to use in resolving
+     * @return An {@link ImageContainer} containing the album
+     */
     public static ImageContainer resolveImgurAlbum(String url) {
         ImageContainer container = null;
         ImgurAlbumApi album = null;
@@ -337,6 +357,11 @@ public class ImgurResolver {
         return container;
     }
 
+    /**
+     * Resolve an {@link ImgurAlbumApi} from an imgur hash
+     * @param hash The hash to resolve an Album from
+     * @return An {@link ImgurAlbumApi} representing the image
+     */
     public static ImgurAlbumApi resolveImgurAlbumFromHash(String hash) {
         if (hash == null)
             Log.e(TAG, "resolveImgurAlbumFromHash - hash was null");
@@ -370,6 +395,11 @@ public class ImgurResolver {
         return album;
     }
 
+    /**
+     * Resolve a {@link ImageContainer} from the input URL
+     * @param url The URL to resolve the Gallery from
+     * @return An {@link ImageContainer} containing the {@link ImgurAlbumApi.Album} or {@link ImgurImageApi.ImgurImage}
+     */
     private static ImageContainer resolveImgurGallery(String url) {
         ImgurGallery gallery = null;
         ImageContainer container = null;
@@ -385,6 +415,11 @@ public class ImgurResolver {
 
     }
 
+    /**
+     * Returns the {@link ImgurAlbumApi.Album} or {@link ImgurImageApi.ImgurImage} this gallery resolves to
+     * @param hash The hash to resolve an {@link ImgurGallery} from
+     * @return An {@link ImgurGallery} representing the image
+     */
     private static ImgurGallery getImgurGalleryFromHash(String hash) {
         ImgurGallery gallery = null;
         ImgurAlbumApi album = null;
@@ -437,6 +472,11 @@ public class ImgurResolver {
         return gallery;
     }
 
+    /**
+     * Resolve an image from Flickr
+     * @param url The URL to resolve
+     * @return An {@link ImageContainer} containing a {@link Flickr} instance
+     */
     public static ImageContainer resolveFlickrImage(String url) {
         ImageContainer container = null;
         Flickr flickr = null;
@@ -459,8 +499,12 @@ public class ImgurResolver {
         return container;
     }
 
-    // Given a string representation of a URL, sets up a connection and gets
-    // an input stream.
+    /**
+     * Download the input URL and return the output as a String
+     * @param urlString The URL to download
+     * @return A String with the downloaded contents
+     * @throws IOException
+     */
     private static String downloadUrl(String urlString) throws IOException {
         disableConnectionReuseIfNecessary();
         InputStream stream = null;

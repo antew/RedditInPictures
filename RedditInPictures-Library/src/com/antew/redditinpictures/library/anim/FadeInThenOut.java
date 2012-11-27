@@ -22,6 +22,11 @@ import com.nineoldandroids.animation.Animator.AnimatorListener;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
+/**
+ * Utility class to simplify fading views in and out with NineOldAndroids
+ * @author Antew
+ *
+ */
 public class FadeInThenOut {
 
     private static void fade(final View view, final int visibility, int duration) {

@@ -17,10 +17,20 @@ package com.antew.redditinpictures.library.imageapi;
 
 import java.util.List;
 
+/**
+ * This class is used by Gson to parse JSON from Flickr into POJOs
+ * @author Antew
+ *
+ */
 public class Flickr {
     private String      stat;
     private FlickrSizes sizes;
 
+    /**
+     * Image sizes Flickr returns
+     * @author a
+     *
+     */
     public enum FlickrSize { 
         //@formatter:off
         SQUARE("Square"), 
@@ -45,14 +55,27 @@ public class Flickr {
         //@formatter:off
     }
     
+    /**
+     * The status
+     * @return The status
+     */
     public String getStat() {
         return stat;
     }
 
+    /**
+     * The {@link FlickrSizes} class contains a list of sizes the image is available in
+     * @return The sizes object
+     */
     public FlickrSizes getSizes() {
         return sizes;
     }
     
+    /**
+     * Get the {@link FlickrImage} for the requested image size
+     * @param imageSize The image size
+     * @return The {@link FlickrImage} for the input size, or null if it is not found
+     */
     public FlickrImage getSize(FlickrSize imageSize) {
         String searchKey = imageSize.getKey();
         
@@ -93,6 +116,10 @@ public class Flickr {
         private String url;
         private String media;
         
+        /**
+         * The label contains the {@link FlickrSize}
+         * @return
+         */
         public String getLabel() {
             return label;
         }

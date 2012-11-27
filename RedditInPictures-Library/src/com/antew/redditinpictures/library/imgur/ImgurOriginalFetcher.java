@@ -24,9 +24,15 @@ import android.widget.TextView;
 
 import com.antew.redditinpictures.library.imgur.ImgurResolver.ImageSize;
 import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.ui.ImageViewerFragment;
 import com.antew.redditinpictures.library.utils.ImageContainer;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 
+/**
+ * Used to load original versions of images in {@link ImageViewerFragment} and subclasses
+ * @author Antew
+ *
+ */
 public class ImgurOriginalFetcher extends ImageFetcher {
     public static final String  TAG       = "ImgurOriginalFetcher";
     private static final String ORIGINAL  = "ORIGINAL_";

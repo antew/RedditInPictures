@@ -45,6 +45,11 @@ public class ImgurAlbumPagerAdapter extends FragmentStatePagerAdapter {
         return mImages.size();
     }
 
+    /**
+     * The {@link ImgurImage} for the input position
+     * @param position The position
+     * @return The {@link ImgurImage} at the input position
+     */
     public ImgurImage getImage(int position) {
         if (mImages == null)
             return null;
@@ -59,6 +64,11 @@ public class ImgurAlbumPagerAdapter extends FragmentStatePagerAdapter {
         return getImgurAlbumFragment(mImages.get(position));
     }
     
+    /**
+     * A new {@link ImgurAlbumFragment} for the input {@link ImgurImage}
+     * @param i The {@link ImgurImage}
+     * @return A new {@link ImgurAlbumFragment} for the input {@link ImgurImage}
+     */
     public Fragment getImgurAlbumFragment(ImgurImage i) {
         return ImgurAlbumFragment.newInstance(i);
     }
