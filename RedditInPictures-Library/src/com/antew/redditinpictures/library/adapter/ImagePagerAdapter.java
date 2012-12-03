@@ -17,9 +17,9 @@ package com.antew.redditinpictures.library.adapter;
 
 import java.util.List;
 
+import android.support.v4.app.FixedFragmentStatePagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.widget.BaseAdapter;
 
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
@@ -30,7 +30,7 @@ import com.antew.redditinpictures.library.ui.ImageDetailFragment;
  * could be a large number of items in the ViewPager and we don't want to retain them all in
  * memory at once but create/destroy them on the fly.
  */
-public class ImagePagerAdapter extends FragmentStatePagerAdapter {
+public class ImagePagerAdapter extends FixedFragmentStatePagerAdapter {
     protected List<PostData> mImages;
     
     public ImagePagerAdapter(FragmentManager fm, List<PostData> images) {
