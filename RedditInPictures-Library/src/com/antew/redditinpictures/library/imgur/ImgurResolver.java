@@ -16,8 +16,10 @@
 package com.antew.redditinpictures.library.imgur;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.regex.Matcher;
@@ -34,15 +36,16 @@ import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.ImageContainer;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.ImageUtil.ImageType;
-import com.antew.redditinpictures.library.utils.StringUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Used to resolve images when necessary (e.g. Imgur images, flickr images, anything without an image extension!)
+ * Used to resolve images when necessary (e.g. Imgur images, flickr images, anything without an
+ * image extension!)
+ * 
  * @author Antew
- *
+ * 
  */
 public class ImgurResolver {
     public static final String  TAG                   = "ImgurResolver";
@@ -53,6 +56,8 @@ public class ImgurResolver {
     private static final String FLICKR_URL            = "http://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=d71a06b84331ac6428ba90d1b72a9b6f&photo_id=%s&format=json&nojsoncallback=1";
     private static final String EHOST_URL             = "http://i.eho.st/%s.jpg";
     private static final String PICSARUS_URL          = "http://www.picsarus.com/%s.jpg";
+    private static final String MINUS_URL             = "http://min.us/api/GetItems/%s";
+    private static final int    IO_BUFFER_SIZE        = 8 * 1024;
 
     public enum ImageSize {
         ORIGINAL, SMALL_SQUARE, LARGE_THUMBNAIL;
@@ -117,7 +122,7 @@ public class ImgurResolver {
                 break;
 
             case PICASARUS_IMAGE:
-                
+
                 break;
 
             case PICSHD_IMAGE:
@@ -157,7 +162,7 @@ public class ImgurResolver {
             if (BuildConfig.DEBUG)
                 throw new NullPointerException();
             else
-            return null;
+                return null;
         }
 
         ImgurImage decoded = null;
@@ -196,7 +201,9 @@ public class ImgurResolver {
 
     /**
      * Resolve the imgur image for the input URL
-     * @param url The URL to resolve an image from
+     * 
+     * @param url
+     *            The URL to resolve an image from
      * @return An {@link ImageContainer} containing the ImgurImage
      */
     public static ImageContainer resolveImgurImage(String url) {
@@ -307,7 +314,9 @@ public class ImgurResolver {
 
     /**
      * Resolve an {@link ImgurImageApi} from an Imgur hash
-     * @param hash The hash to resolve an image from (e.g. u9PWV)
+     * 
+     * @param hash
+     *            The hash to resolve an image from (e.g. u9PWV)
      * @return An {@link ImgurImageApi} representing the image
      */
     public static ImgurImageApi resolveImgurImageFromHash(String hash) {
@@ -331,8 +340,6 @@ public class ImgurResolver {
                 ImgurApiCache.getInstance().addImgurImage(hash, image);
             } catch (JsonSyntaxException e) {
                 Log.e(TAG, "resolveImgurImageFromHash", e);
-            } catch (IOException e) {
-                Log.e(TAG, "resolveImgurImageFromHash", e);
             }
         }
 
@@ -341,7 +348,9 @@ public class ImgurResolver {
 
     /**
      * Resolve an Imgur album
-     * @param url The input url to use in resolving
+     * 
+     * @param url
+     *            The input url to use in resolving
      * @return An {@link ImageContainer} containing the album
      */
     public static ImageContainer resolveImgurAlbum(String url) {
@@ -359,7 +368,9 @@ public class ImgurResolver {
 
     /**
      * Resolve an {@link ImgurAlbumApi} from an imgur hash
-     * @param hash The hash to resolve an Album from
+     * 
+     * @param hash
+     *            The hash to resolve an Album from
      * @return An {@link ImgurAlbumApi} representing the image
      */
     public static ImgurAlbumApi resolveImgurAlbumFromHash(String hash) {
@@ -387,8 +398,6 @@ public class ImgurResolver {
                 ImgurApiCache.getInstance().addImgurAlbum(hash, album);
             } catch (JsonSyntaxException e) {
                 Log.e(TAG, "resolveImgurAlbumFromHash", e);
-            } catch (IOException e) {
-                Log.e(TAG, "resolveImgurAlbumFromHash", e);
             }
         }
 
@@ -397,8 +406,11 @@ public class ImgurResolver {
 
     /**
      * Resolve a {@link ImageContainer} from the input URL
-     * @param url The URL to resolve the Gallery from
-     * @return An {@link ImageContainer} containing the {@link ImgurAlbumApi.Album} or {@link ImgurImageApi.ImgurImage}
+     * 
+     * @param url
+     *            The URL to resolve the Gallery from
+     * @return An {@link ImageContainer} containing the {@link ImgurAlbumApi.Album} or
+     *         {@link ImgurImageApi.ImgurImage}
      */
     private static ImageContainer resolveImgurGallery(String url) {
         ImgurGallery gallery = null;
@@ -416,8 +428,11 @@ public class ImgurResolver {
     }
 
     /**
-     * Returns the {@link ImgurAlbumApi.Album} or {@link ImgurImageApi.ImgurImage} this gallery resolves to
-     * @param hash The hash to resolve an {@link ImgurGallery} from
+     * Returns the {@link ImgurAlbumApi.Album} or {@link ImgurImageApi.ImgurImage} this gallery
+     * resolves to
+     * 
+     * @param hash
+     *            The hash to resolve an {@link ImgurGallery} from
      * @return An {@link ImgurGallery} representing the image
      */
     private static ImgurGallery getImgurGalleryFromHash(String hash) {
@@ -464,8 +479,6 @@ public class ImgurResolver {
 
             } catch (JsonSyntaxException e) {
                 Log.e(TAG, "resolveImgurGallery", e);
-            } catch (IOException e) {
-                Log.e(TAG, "resolveImgurGallery", e);
             }
         }
 
@@ -474,7 +487,9 @@ public class ImgurResolver {
 
     /**
      * Resolve an image from Flickr
-     * @param url The URL to resolve
+     * 
+     * @param url
+     *            The URL to resolve
      * @return An {@link ImageContainer} containing a {@link Flickr} instance
      */
     public static ImageContainer resolveFlickrImage(String url) {
@@ -487,7 +502,7 @@ public class ImgurResolver {
             try {
                 String json = downloadUrl(String.format(FLICKR_URL, hash));
                 flickr = gson.fromJson(json, Flickr.class);
-            } catch (IOException e) {
+            } catch (JsonSyntaxException e) {
                 Log.e(TAG, "Error parsing JSON in resolveFlickrImage", e);
             }
 
@@ -501,35 +516,55 @@ public class ImgurResolver {
 
     /**
      * Download the input URL and return the output as a String
-     * @param urlString The URL to download
+     * 
+     * @param urlString
+     *            The URL to download
      * @return A String with the downloaded contents
      * @throws IOException
      */
-    private static String downloadUrl(String urlString) throws IOException {
+    private static String downloadUrl(String urlString) {
         disableConnectionReuseIfNecessary();
-        InputStream stream = null;
-        String json = null;
-        HttpURLConnection conn = null;
+        HttpURLConnection urlConnection = null;
+        BufferedOutputStream out = null;
+        BufferedInputStream in = null;
+
         try {
-            URL url = new URL(urlString);
-            conn = (HttpURLConnection) url.openConnection();
-            stream = new BufferedInputStream(conn.getInputStream());
-            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK)
-                json = StringUtil.convertStreamToString(stream);
-        } catch (IOException e) {
-            String status = "null";
-            if (conn != null)
-                status = Integer.toString(conn.getResponseCode());
-            Log.e(TAG, "Error in downloadUrl, connection returned status code = " + status, e);
+            final URL url = new URL(urlString);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setReadTimeout(10000);
+            urlConnection.setConnectTimeout(15000);
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+            if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+
+                in = new BufferedInputStream(urlConnection.getInputStream(), IO_BUFFER_SIZE);
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+                StringBuilder builder = new StringBuilder(in.available());
+                String line;
+                while ((line = reader.readLine()) != null)
+                    builder.append(line);
+
+                Log.i("Url = " + urlString, " result = " + builder.toString());
+                return builder.toString();
+            }
+        } catch (final IOException e) {
+            Log.e(TAG, "Error in downloadUrl - " + e);
         } finally {
-            if (conn != null)
-                conn.disconnect();
-
-            if (stream != null)
-                stream.close();
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
+            } catch (final IOException e) {
+            }
         }
-
-        return json;
+        return null;
     }
 
     /**
