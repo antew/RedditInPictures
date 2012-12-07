@@ -88,6 +88,9 @@ public abstract class ImageWorker {
             Log.i(TAG, "found bitmap in memcache for " + String.valueOf(data));
             // Bitmap found in memory cache
             imageView.setImageBitmap(bitmap);
+            if (progressBar != null)
+                progressBar.setVisibility(View.GONE);
+            
         } else if (cancelPotentialWork(data, imageView)) {
             Log.i(TAG, "Did not find URL in cache, url = " + String.valueOf(data));
             final BitmapWorkerTask task = new BitmapWorkerTask(imageView, progressBar, errorMessage);
@@ -304,14 +307,14 @@ public abstract class ImageWorker {
             final ImageView imageView = getAttachedImageView();
             final ProgressBar progressBar = progressBarReference.get();
             final TextView errorMessage = errorMessageReference.get();
+            
+            if (progressBar != null)
+                progressBar.setVisibility(View.GONE);
+            
             if (bitmap != null && imageView != null) {
                 Log.d(TAG, "onPostExecute - setting bitmap");
                 setImageBitmap(imageView, bitmap);
-            } else {
-                if (progressBar != null)
-                    progressBar.setVisibility(View.GONE);
-                
-                if (errorMessage != null)
+            } else if (errorMessage != null) {
                     errorMessage.setText(R.string.error_loading_image);
                 
             }
