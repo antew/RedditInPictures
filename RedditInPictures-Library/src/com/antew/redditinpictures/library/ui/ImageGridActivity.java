@@ -113,6 +113,10 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             Log.i(TAG, "onCreate, fragment already existed, doing nothing");
         }
 
+        if (SharedPreferencesHelper.getUseHoloBackground(this)) {
+            getWindow().setBackgroundDrawableResource(R.drawable.background_holo_dark);
+        }
+        
         String loginJson = SharedPreferencesHelper.getLoginJson(ImageGridActivity.this);
         if (!loginJson.equals("")) {
             String username = SharedPreferencesHelper.getUsername(ImageGridActivity.this);
