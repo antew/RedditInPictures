@@ -160,9 +160,9 @@ public class ImgurResolver {
     public static String getSize(ImageContainer image, ImageSize size) {
         if (image == null) {
             if (BuildConfig.DEBUG)
-                throw new NullPointerException();
-            else
-                return null;
+                Log.e(TAG, "getSize returning null");
+            
+            return null;
         }
 
         ImgurImage decoded = null;
