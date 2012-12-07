@@ -117,7 +117,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     /**
-     * Removes all NSFW images fom the Adapter and then calls {@link BaseAdapter#notifyDataSetChanged()}
+     * Removes all NSFW images from the Adapter and then calls {@link BaseAdapter#notifyDataSetChanged()}
      */
     public void removeNsfwImages() {
         Iterator<PostData> it = mImages.iterator();
@@ -131,27 +131,20 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup container) {
-        ViewHolder viewHolder = null;
+        ImageView imageView = null;
         if (convertView == null) {
             // if it's not recycled, instantiate and initialize
-            convertView = new ImageView(mContext);
-            viewHolder = new ViewHolder();
-            viewHolder.imageView = (ImageView) convertView;
-            viewHolder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            viewHolder.imageView.setLayoutParams(mImageViewLayoutParams);
-            convertView.setTag(viewHolder);
+            imageView = new ImageView(mContext);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setLayoutParams(mImageViewLayoutParams);
         } else {
-        }
-        if (convertView != null && convertView instanceof ImageView) {
             // Otherwise re-use the converted view
-            viewHolder = (ViewHolder) convertView.getTag();
-        } else {
-
+            imageView = (ImageView) convertView;
         }
 
         // Check the height matches our calculated column width
-        if (viewHolder.imageView.getLayoutParams().height != mItemHeight) {
-            viewHolder.imageView.setLayoutParams(mImageViewLayoutParams);
+        if (imageView.getLayoutParams().height != mItemHeight) {
+            imageView.setLayoutParams(mImageViewLayoutParams);
         }
 
         // If we have a thumbnail from Reddit use that, otherwise use the full URL
@@ -160,8 +153,8 @@ public class ImageAdapter extends BaseAdapter {
 //            url = mImages.get(position).getThumbnail();
 //            Log.i(TAG, "loading pos = " + position + " from the reddit thumbnail! " + url);
         }
-        mImageFetcher.loadImage(url, viewHolder.imageView, null, null);
-        return convertView;
+        mImageFetcher.loadImage(url, imageView, null, null);
+        return imageView;
     }
 
     /**
@@ -192,7 +185,4 @@ public class ImageAdapter extends BaseAdapter {
         return mNumColumns;
     }
     
-    static class ViewHolder {
-        ImageView imageView;
-    }
 }
