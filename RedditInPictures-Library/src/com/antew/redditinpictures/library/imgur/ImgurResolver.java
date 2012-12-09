@@ -30,6 +30,7 @@ import android.os.Build;
 import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.gson.BooleanDeserializer;
 import com.antew.redditinpictures.library.imageapi.Flickr;
+import com.antew.redditinpictures.library.imageapi.Flickr.FlickrImage;
 import com.antew.redditinpictures.library.imageapi.Flickr.FlickrSize;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.logging.Log;
@@ -179,9 +180,13 @@ public class ImgurResolver {
                 FlickrSize flickrSize = FlickrSize.ORIGINAL;
                 if (ImageSize.SMALL_SQUARE.equals(size))
                     flickrSize = FlickrSize.THUMBNAIL;
-
-                return image.getFlickr().getSize(flickrSize).getSource();
-
+                
+                FlickrImage fi = image.getFlickr().getSize(flickrSize);
+                if (fi != null)
+                    return fi.getSource();
+                else
+                    return null;
+                
             case OTHER_SUPPORTED_IMAGE:
             default:
                 return image.getUrl();

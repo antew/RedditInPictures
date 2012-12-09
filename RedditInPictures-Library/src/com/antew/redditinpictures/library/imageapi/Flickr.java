@@ -17,12 +17,15 @@ package com.antew.redditinpictures.library.imageapi;
 
 import java.util.List;
 
+import com.antew.redditinpictures.library.logging.Log;
+
 /**
  * This class is used by Gson to parse JSON from Flickr into POJOs
  * @author Antew
  *
  */
 public class Flickr {
+    public static final String TAG = Flickr.class.getSimpleName();
     private String      stat;
     private FlickrSizes sizes;
 
@@ -77,12 +80,39 @@ public class Flickr {
      * @return The {@link FlickrImage} for the input size, or null if it is not found
      */
     public FlickrImage getSize(FlickrSize imageSize) {
-        String searchKey = imageSize.getKey();
+        FlickrImage result = null;
+        boolean searchedAll = false;
+        FlickrSize[] flickrSizes = FlickrSize.values();
+        // Sometimes certain image sizes aren't returned from the API (e.g. 'Original')
+        // So we try to walk forward/backward through the list until we find a suitable size
+        boolean walkForward = imageSize.ordinal() < (flickrSizes.length / 2);
         
-        for (FlickrImage f : sizes.getSize()) {
-            if (f.getLabel().equalsIgnoreCase(searchKey))
-                return f;
+        
+        while (result == null && !searchedAll) {
+            String searchKey = imageSize.getKey();
+            for (FlickrImage f : sizes.getSize()) {
+                Log.i(TAG, "Requested Size - " + searchKey + ", Current Size - " + f.getLabel());
+                if (f.getLabel().equalsIgnoreCase(searchKey))
+                    return f;
+            }
+            
+            
+            if (walkForward) {
+                if ((imageSize.ordinal() + 1) >= flickrSizes.length)
+                    searchedAll = true;
+                else
+                    imageSize = flickrSizes[imageSize.ordinal() + 1];
+            } else {
+                if ((imageSize.ordinal() - 1) <= 0)
+                    searchedAll = true;
+                else
+                    imageSize = flickrSizes[imageSize.ordinal() - 1];
+            }
+                
+            
+            
         }
+        
         
         return null;
     }
