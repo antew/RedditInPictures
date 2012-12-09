@@ -22,7 +22,6 @@ import android.text.Html;
 import android.view.View;
 import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
@@ -91,13 +90,13 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         TextView postCaption = (TextView) v.findViewById(R.id.post_title);
 
         // Normally has the details of the reddit post (e.g.
-        // "Android • 120 Comments • monkeyonatypewriter")
+        // "Android * 120 Comments * monkeyonatypewriter")
         TextView postInformation = (TextView) v.findViewById(R.id.post_information);
         postInformation.setTextSize(14);
 
-        // Wrapper for the votes section of the post details
-        RelativeLayout votesWrapper = (RelativeLayout) v.findViewById(R.id.votes_wrapper);
-        votesWrapper.setVisibility(View.GONE);
+        // Hide the number of votes
+        TextView votes = (TextView) v.findViewById(R.id.post_votes);
+        votes.setVisibility(View.GONE);
 
         Image image = mImage.getImage();
         boolean hasTitle = hasTitle();
