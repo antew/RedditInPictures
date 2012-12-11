@@ -13,14 +13,21 @@
         android:targetSdkVersion="16" />
 
     <application
+        android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:allowBackup="true" >
+        android:theme="@style/AppTheme" >
         
-        <service android:name="com.antew.redditinpictures.library.service.RESTService" />
-        
+        <service android:name="com.antew.redditinpictures.library.service.RedditService" />
+
+        <provider
+            android:name="com.antew.redditinpictures.library.provider.RedditProvider"
+            android:authorities="com.antew.redditinpictures"
+            android:label="@string/app_name"
+            android:exported="false"
+            android:syncable="false" />
+
         <activity
             android:name="com.antew.redditinpictures.library.ui.ImageGridActivity"
             android:label="@string/app_name"
@@ -28,7 +35,8 @@
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
