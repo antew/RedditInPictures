@@ -16,14 +16,9 @@
 package com.antew.redditinpictures.library.reddit;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,35 +63,6 @@ public class RedditApiManager {
     private static String              mUsername;
     private static String              mJson;
     private static About               about;
-
-    public enum SubscribeAction {
-        SUBSCRIBE("sub"), UNSUBSCRIBE("unsub");
-
-        String action;
-
-        SubscribeAction(String action) {
-            this.action = action;
-        }
-
-        String getAction() {
-            return action;
-        }
-
-    }
-
-    public enum Vote {
-        UP(1), DOWN(-1), NEUTRAL(0);
-
-        private int vote;
-
-        Vote(int vote) {
-            this.vote = vote;
-        }
-
-        public int getVote() {
-            return vote;
-        }
-    }
 
     public static String getModHash() {
         return mModHash;
@@ -315,60 +281,6 @@ public class RedditApiManager {
             picturesDirectory.mkdirs();
 
         return picturesDirectory;
-    }
-
-    public static void downloadImage(String url, String fileName, final Context context) {
-
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
-            Toast.makeText(context, "SD card not detected! Unable to save image", Toast.LENGTH_SHORT).show();
-
-        final AQuery aQuery = new AQuery(context);
-        final File cachedFile = aQuery.getCachedFile(url);
-        final File picturesDirectory = getPicturesDirectory();
-        Log.i("Path", picturesDirectory.getAbsolutePath());
-
-        final File destination = new File(picturesDirectory, fileName);
-
-        if (picturesDirectory.canWrite()) {
-            if (cachedFile == null) {
-                Log.d("Not in cache", url);
-                aQuery.ajax(url, File.class, new AjaxCallback<File>() {
-
-                    public void callback(final String url, final File file, final AjaxStatus status) {
-
-                        if (file != null) {
-                            Toast.makeText(context, "Saved image to " + destination.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(context, "Failed saving image to " + destination.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                });
-
-            } else {
-                Log.d("Copying Image", "Cached file exist!");
-                if (cachedFile.exists()) {
-                    FileChannel src;
-                    FileChannel dest;
-                    try {
-                        src = new FileInputStream(cachedFile).getChannel();
-                        dest = new FileOutputStream(destination).getChannel();
-                        dest.transferFrom(src, 0, src.size());
-                        Toast.makeText(context, "Saved image to " + destination.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                    } catch (final FileNotFoundException e) {
-                        Toast.makeText(context, "Failed saving image to " + destination.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                    } catch (final IOException e) {
-                        Toast.makeText(context, "Failed saving image to " + destination.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-
-                    }
-                    Toast.makeText(context, "Saved image to " + destination.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.d("Saving Image", "Couldn't save file, cached file !");
-                }
-
-            }
-
-        }
     }
 
     public static AjaxCallback<String> getSubredditAbout(String subreddit, final SubscribeAction action, final Context context) {

@@ -17,7 +17,7 @@ package com.antew.redditinpictures.library.gson;
 
 import java.io.IOException;
 
-import com.antew.redditinpictures.library.reddit.RedditApiManager.Vote;
+import com.antew.redditinpictures.library.reddit.Vote;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
