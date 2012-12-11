@@ -80,6 +80,9 @@ public class RedditApiManager {
         return mIsLoggedIn;
     }
 
+    public static void setRedditLoginResponse(RedditLoginResponse response) {
+        mRedditLoginResponse = response;
+    }
     public static void logout(Context context) {
         mModHash = null;
         mCookie = null;
@@ -88,6 +91,13 @@ public class RedditApiManager {
         mJson = null;
         RedditApiManager.resetToDefaultSubreddits(context);
         SharedPreferencesHelper.clearLoginInformation(context);
+    }
+    
+    public static String getLoginCookie() {
+        if (mRedditLoginResponse != null)
+            return mRedditLoginResponse.getLoginResponse().getData().getCookie();
+        
+        return null;
     }
 
     public static void parseRedditLoginResponse(String username, String modHash, String cookie, String response) {
