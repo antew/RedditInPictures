@@ -36,10 +36,11 @@ import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditApi;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.reddit.RedditApiManager;
-import com.antew.redditinpictures.library.reddit.RedditApiManager.Vote;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
+import com.antew.redditinpictures.library.reddit.Vote;
 import com.antew.redditinpictures.library.service.RESTResponderFragment;
 import com.antew.redditinpictures.library.service.RESTService;
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.google.gson.JsonSyntaxException;
@@ -348,10 +349,15 @@ public class ImageDetailActivity extends ImageViewerActivity {
                                                      .after(after);
 
 
-            RedditDataFragment redditFragment = RedditDataFragment.newInstance(builder.build().getUrl());
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(redditFragment, "RedditDataFragment");
-            ft.commit();
+            RedditDataFragment redditFragment = (RedditDataFragment) getSupportFragmentManager().findFragmentByTag(RedditDataFragment.TAG);
+            if (redditFragment == null) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                redditFragment = RedditDataFragment.newInstance(RedditService.RequestTypes.POSTS, builder.build().getUrl());
+                ft.add(redditFragment, RedditDataFragment.TAG);
+                ft.commit();
+            } else {
+                redditFragment.makeRequest(RedditService.RequestTypes.POSTS, builder.build().getUrl());
+            }
             //@formatter:on
         } else {
             if (after == null)
@@ -395,10 +401,12 @@ public class ImageDetailActivity extends ImageViewerActivity {
     public static final class RedditDataFragment extends RESTResponderFragment {
         public static final String TAG = RedditDataFragment.class.getSimpleName();
         public static final String URL = "url";
+        public static final String REQUEST_CODE = "requestCode";
         
-        public static RedditDataFragment newInstance(String url) {
+        public static RedditDataFragment newInstance(int requestCode, String url) {
             RedditDataFragment frag = new RedditDataFragment();
             Bundle args = new Bundle();
+            args.putInt(REQUEST_CODE, requestCode);
             args.putString(URL, url);
             frag.setArguments(args);
             
@@ -407,15 +415,19 @@ public class ImageDetailActivity extends ImageViewerActivity {
         
         @Override
         public void onCreate(Bundle savedInstanceState) {
+            Log.i(TAG, "onCreate");
             super.onCreate(savedInstanceState);
             String url = getArguments().getString(URL);
-            makeRequest(url);
+            int requestCode = getArguments().getInt(REQUEST_CODE);
+            makeRequest(requestCode, url);
         }
         
-        public void makeRequest(String url) {
+        public void makeRequest(int requestCode, String url) {
+            Log.i(TAG, "makeRequest");
             Intent intent = new Intent(getActivity(), RESTService.class);
             intent.setData(Uri.parse(url));
             intent.putExtra(RESTService.EXTRA_RESULT_RECEIVER, getResultReceiver());
+            intent.putExtra(RESTService.EXTRA_REQUEST_CODE, requestCode);
             
             ImageDetailActivity activity = (ImageDetailActivity) getActivity();
             if (activity != null) {
@@ -425,31 +437,37 @@ public class ImageDetailActivity extends ImageViewerActivity {
         }
         
         @Override
-        public void onRESTResult(int code, String result) {
+        public void onRESTResult(int code, int requestCode, String result) {
             ImageDetailActivity activity = (ImageDetailActivity) getActivity();
             if (activity != null) {
                 activity.setRequestInProgress(false);
-
-                // If the request was successful
-                if (code == 200 && result != null) {
-
-                    try {
-                        RedditApi redditApi = RedditApi.getGson().fromJson(result, RedditApi.class);
-                        activity.addImages(redditApi);
-
-                    } catch (JsonSyntaxException e) {
-                        Log.e(TAG, "onReceiveResult - JsonSyntaxException while parsing json!", e);
-                        Toast.makeText(activity, getString(R.string.error_parsing_reddit_data), Toast.LENGTH_SHORT).show();
-                        return;
-                    } catch (IllegalStateException e) {
-                        Log.e(TAG, "onReceiveResult - IllegalStateException while parsing json!", e);
-                        Toast.makeText(activity, getString(R.string.error_parsing_reddit_data), Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                } else {
-                    Toast.makeText(activity, "Failed to get data from Reddit", Toast.LENGTH_SHORT).show();
+                
+                switch (requestCode) {
+                    case RedditService.RequestTypes.POSTS:
+                        // If the request was successful
+                        if (code == 200 && result != null) {
+                            
+                            try {
+                                RedditApi redditApi = RedditApi.getGson().fromJson(result, RedditApi.class);
+                                activity.addImages(redditApi);
+                                
+                            } catch (JsonSyntaxException e) {
+                                Log.e(TAG, "onReceiveResult - JsonSyntaxException while parsing json!", e);
+                                Toast.makeText(activity, getString(R.string.error_parsing_reddit_data), Toast.LENGTH_SHORT).show();
+                                return;
+                            } catch (IllegalStateException e) {
+                                Log.e(TAG, "onReceiveResult - IllegalStateException while parsing json!", e);
+                                Toast.makeText(activity, getString(R.string.error_parsing_reddit_data), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            
+                        } else {
+                            Toast.makeText(activity, "Failed to get data from Reddit", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                        
                 }
+
             } else {
                 Log.i(TAG, "Activity was null, unable to add posts!");
             }

@@ -30,7 +30,8 @@ import android.os.ResultReceiver;
 import android.util.Log;
 
 /**
- * This is from an article by Neil Goodman
+ * This is based an article by Neil Goodman
+ * I've added the EXTRA_REQUEST_CODE so that callers can have multiple request types
  * @author Neil Goodman
  * @see <a href="http://neilgoodman.net/2012/01/01/modern-techniques-for-implementing-rest-clients-on-android-4-0-and-below-part-2/">The article</a>
  */
@@ -42,9 +43,10 @@ public class RESTService extends IntentService {
     public static final int PUT    = 0x3;
     public static final int DELETE = 0x4;
     
-    public static final String EXTRA_HTTP_VERB       = "net.neilgoodman.android.restservicetutorial.EXTRA_HTTP_VERB";
-    public static final String EXTRA_PARAMS          = "net.neilgoodman.android.restservicetutorial.EXTRA_PARAMS";
-    public static final String EXTRA_RESULT_RECEIVER = "net.neilgoodman.android.restservicetutorial.EXTRA_RESULT_RECEIVER";
+    public static final String EXTRA_HTTP_VERB       = "EXTRA_HTTP_VERB";
+    public static final String EXTRA_PARAMS          = "EXTRA_PARAMS";
+    public static final String EXTRA_RESULT_RECEIVER = "EXTRA_RESULT_RECEIVER";
+    public static final String EXTRA_REQUEST_CODE    = "com.antew.redditinpictures.EXTRA_REQUEST_CODE";
     
     public static final String REST_RESULT = "net.neilgoodman.android.restservicetutorial.REST_RESULT";
 
@@ -69,9 +71,10 @@ public class RESTService extends IntentService {
         }
         
         // We default to GET if no verb was specified.
-        int            verb     = extras.getInt(EXTRA_HTTP_VERB, GET);
-        Bundle         params   = extras.getParcelable(EXTRA_PARAMS);
-        ResultReceiver receiver = extras.getParcelable(EXTRA_RESULT_RECEIVER);
+        int            verb        = extras.getInt(EXTRA_HTTP_VERB, GET);
+        int            requestCode = extras.getInt(EXTRA_REQUEST_CODE, 0);
+        Bundle         params      = extras.getParcelable(EXTRA_PARAMS);
+        ResultReceiver receiver    = extras.getParcelable(EXTRA_RESULT_RECEIVER);
         
         try {            
             // Here we define our base request object which we will
@@ -148,6 +151,7 @@ public class RESTService extends IntentService {
                 if (responseEntity != null) {
                     Bundle resultData = new Bundle();
                     resultData.putString(REST_RESULT, EntityUtils.toString(responseEntity));
+                    resultData.putInt(EXTRA_REQUEST_CODE, requestCode);
                     receiver.send(statusCode, resultData);
                 }
                 else {
