@@ -152,6 +152,31 @@ public class SharedPreferencesHelper {
 
         save(editor);
     }
+    
+    /**
+     * Save the Reddit login information to preferences
+     * 
+     * @param username
+     *            The username
+     * @param modHash
+     *            The mod hash
+     * @param cookie
+     *            The cookie
+     * @param json
+     *            The login json
+     * @param context
+     *            The context
+     */
+    public static void saveLoginInformation(String username, String modHash, String cookie, Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(GLOBAL_PREFS_NAME, 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        
+        editor.putString(USERNAME, username);
+        editor.putString(MOD_HASH, modHash);
+        editor.putString(COOKIE, cookie);
+        
+        save(editor);
+    }
 
     /**
      * Save the selected Age and Category to preferences. Used to save/restore the selected
