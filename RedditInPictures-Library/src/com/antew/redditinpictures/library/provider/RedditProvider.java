@@ -43,7 +43,6 @@ public class RedditProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         final SQLiteDatabase db = mDatabase.getReadableDatabase();
-//        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         final int match = sUriMatcher.match(uri);
         Cursor cursor = null;
         switch (match) {
