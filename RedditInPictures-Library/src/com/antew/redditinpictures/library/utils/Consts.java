@@ -19,6 +19,8 @@ public class Consts {
     public static final int    POSITION_FRONTPAGE             = 0;
 
     // Constants for extras
+    public static final String EXTRA_AGE                      = "age";
+    public static final String EXTRA_CATEGORY                 = "category";
     public static final String EXTRA_ENTRIES                  = "Entries";
     public static final String EXTRA_FILENAME                 = "filenameExtra";
     public static final String EXTRA_IMAGE                    = "image";
@@ -41,7 +43,14 @@ public class Consts {
 
     // Constants for broadcast messages
     public static final String BROADCAST_DOWNLOAD_IMAGE       = "downloadImage";
+    public static final String BROADCAST_HTTP_FINISHED        = "http-finished";
+    public static final String BROADCAST_SUBREDDIT_SELECTED   = "subreddit-selected";
     public static final String BROADCAST_REMOVE_NSFW_IMAGES   = "removeNsfwImages";
     public static final String BROADCAST_TOGGLE_FULLSCREEN    = "fullscreenToggle";
     public static final String BROADCAST_UPDATE_SCORE         = "update-score";
+
+    public static final int    LOADER_REDDIT                  = 1;
+    public static final int    LOADER_POSTS                   = 2;
+
+    public static final int    POSTS_TO_FETCH                 = 50;
 }
