@@ -24,7 +24,7 @@ import android.os.Parcelable;
 import com.antew.redditinpictures.library.gson.VoteAdapter;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.reddit.RedditApiManager.Vote;
+import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -190,6 +190,7 @@ public class RedditApi implements Parcelable  {
     }
 
     public static class PostData implements Parcelable {
+
         String     domain;
         String     banned_by;
         MediaEmbed media_embed;
@@ -222,7 +223,7 @@ public class RedditApi implements Parcelable  {
         String     decoded_url;
         ImgurImage image;
         Album      album;
-
+        
         /**
          * Leaving media commented out for now. On some subreddits it seems to
          * return an object, but on others it returns a string. Here is an
@@ -264,7 +265,7 @@ public class RedditApi implements Parcelable  {
         public String getTitle()                  { return title; }
         public int getNum_comments()              { return num_comments; }
         public int getScore()                     { return score; }
-        public void setScore(int score)            { this.score = score; } 
+        public void setScore(int score)           { this.score = score; } 
         public String getApproved_by()            { return approved_by; }
         public boolean isOver_18()                { return over_18; }
         public boolean isHidden()                 { return hidden; }
@@ -293,9 +294,9 @@ public class RedditApi implements Parcelable  {
         //@formatter:on
         
         public String getFullPermalink(boolean useMobileInterface ) {
-            String url = RedditApiManager.REDDIT_BASE_URL + permalink;
+            String url = Consts.REDDIT_BASE_URL + permalink;
             if (useMobileInterface)
-                url += RedditApiManager.COMPACT_URL;
+                url += Consts.COMPACT_URL;
             
             return url;
         }
@@ -348,6 +349,10 @@ public class RedditApi implements Parcelable  {
             album = source.readParcelable(Album.class.getClassLoader());
         }
 
+        public PostData() {
+            super();
+        }
+        
         public int describeContents() {
             return 0;
         }
@@ -404,6 +409,39 @@ public class RedditApi implements Parcelable  {
                 
             
         };
+
+        public void setDomain(String domain)                                 { this.domain = domain; }
+        public void setBanned_by(String banned_by)                           { this.banned_by = banned_by; }
+        public void setMedia_embed(MediaEmbed media_embed)                   { this.media_embed = media_embed; }
+        public void setSubreddit(String subreddit)                           { this.subreddit = subreddit; }
+        public void setSelftext_html(String selftext_html)                   { this.selftext_html = selftext_html; }
+        public void setSelftext(String selftext)                             { this.selftext = selftext; }
+        public void setLikes(Vote likes)                                     { this.likes = likes; }
+        public void setSaved(boolean saved)                                  { this.saved = saved; }
+        public void setId(String id)                                         { this.id = id; }
+        public void setClicked(boolean clicked)                              { this.clicked = clicked; }
+        public void setTitle(String title)                                   { this.title = title; }
+        public void setNum_comments(int num_comments)                        { this.num_comments = num_comments; }
+        public void setApproved_by(String approved_by)                       { this.approved_by = approved_by; }
+        public void setOver_18(boolean over_18)                              { this.over_18 = over_18; }
+        public void setHidden(boolean hidden)                                { this.hidden = hidden; }
+        public void setThumbnail(String thumbnail)                           { this.thumbnail = thumbnail; }
+        public void setSubreddit_id(String subreddit_id)                     { this.subreddit_id = subreddit_id; }
+        public void setAuthor_flair_css_class(String author_flair_css_class) { this.author_flair_css_class = author_flair_css_class; }
+        public void setDowns(int downs)                                      { this.downs = downs; }
+        public void setIs_self(boolean is_self)                              { this.is_self = is_self; }
+        public void setPermalink(String permalink)                           { this.permalink = permalink; }
+        public void setName(String name)                                     { this.name = name; }
+        public void setCreated(long created)                                 { this.created = created; }
+        public void setUrl(String url)                                       { this.url = url; }
+        public void setAuthor_flair_text(String author_flair_text)           { this.author_flair_text = author_flair_text; }
+        public void setAuthor(String author)                                 { this.author = author; }
+        public void setCreated_utc(long created_utc)                         { this.created_utc = created_utc; }
+        public void setLink_flair_text(String link_flair_text)               { this.link_flair_text = link_flair_text; }
+        public void setDecoded_url(String decoded_url)                       { this.decoded_url = decoded_url; }
+        public void setImage(ImgurImage image)                               { this.image = image; }
+        public void setNum_reports(int num_reports)                          { this.num_reports = num_reports; }
+        public void setUps(int ups)                                          { this.ups = ups; }
         //@formatter:on
     }
 
