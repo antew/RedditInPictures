@@ -16,14 +16,14 @@
 
 package com.antew.redditinpictures.library.ui;
 
-import java.util.List;
-
-import android.app.IntentService;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
@@ -31,31 +31,36 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.antew.redditinpictures.library.R;
-import com.antew.redditinpictures.library.adapter.ImagePagerAdapter;
-import com.antew.redditinpictures.library.interfaces.RedditUpdateProvider;
+import com.antew.redditinpictures.library.adapter.CursorPagerAdapter;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
-import com.antew.redditinpictures.library.reddit.MySubreddits;
 import com.antew.redditinpictures.library.reddit.RedditApi;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.reddit.RedditApiManager;
-import com.antew.redditinpictures.library.reddit.RedditLoginResponse;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
+import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
+import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
 import com.antew.redditinpictures.library.reddit.Vote;
-import com.antew.redditinpictures.library.service.RESTResponderFragment;
-import com.antew.redditinpictures.library.service.RedditDataFragment;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.StringUtil;
+import com.antew.redditinpictures.sqlite.RedditContract;
 
-public class ImageDetailActivity extends ImageViewerActivity implements RedditUpdateProvider {
+public class ImageDetailActivity extends ImageViewerActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    public static final String TAG = "ImageDetailActivity";
+    public static final String TAG        = "ImageDetailActivity";
     protected MenuItem         mUpvoteMenuItem;
     protected MenuItem         mDownvoteMenuItem;
     protected RedditUrl        mRedditUrl;
     protected RedditApi        mRedditApi;
     protected boolean          mRequestInProgress;
+    private String             mAfter;
+    private String             mBefore;
+    private Category           mCategory;
+    private Age                mAge;
+    private String             mSubreddit;
+    private int                mRequestedPage;
+    private boolean            mFirstLoad = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,33 +68,36 @@ public class ImageDetailActivity extends ImageViewerActivity implements RedditUp
         super.onCreate(savedInstanceState);
         displayVote();
 
+        getSupportLoaderManager().initLoader(Consts.LOADER_REDDIT, null, this);
+        getSupportLoaderManager().initLoader(Consts.LOADER_POSTS, null, this);
         // Put the current page / total pages text in the ActionBar
         updateDisplay(mPager.getCurrentItem());
+
     }
 
-    @SuppressWarnings("unchecked")
-    protected List<PostData> getImages() {
-        return (List<PostData>) mImages;
-    }
-
-    private ImagePagerAdapter getAdapter() {
-        return (ImagePagerAdapter) mAdapter;
+    private CursorPagerAdapter getAdapter() {
+        return (CursorPagerAdapter) mAdapter;
     }
 
     public FragmentStatePagerAdapter getPagerAdapter() {
-        return new ImagePagerAdapter(getSupportFragmentManager(), getImages());
+        return new CursorPagerAdapter(getSupportFragmentManager(), null);
     }
 
     public void getExtras() {
         Intent i = getIntent();
-        if (i.hasExtra(Consts.EXTRA_ENTRIES))
-            mImages = getIntent().getParcelableArrayListExtra(Consts.EXTRA_ENTRIES);
 
-        if (i.hasExtra(Consts.EXTRA_REDDIT_URL))
-            mRedditUrl = getIntent().getParcelableExtra(Consts.EXTRA_REDDIT_URL);
+        if (i.hasExtra(Consts.EXTRA_AGE))
+            mAge = Age.valueOf(i.getStringExtra(Consts.EXTRA_AGE));
 
-        if (i.hasExtra(Consts.EXTRA_REDDIT_API))
-            mRedditApi = getIntent().getParcelableExtra(Consts.EXTRA_REDDIT_API);
+        if (i.hasExtra(Consts.EXTRA_CATEGORY))
+            mCategory = Category.valueOf(i.getStringExtra(Consts.EXTRA_CATEGORY));
+
+        if (i.hasExtra(Consts.EXTRA_SELECTED_SUBREDDIT))
+            mSubreddit = i.getStringExtra(Consts.EXTRA_SELECTED_SUBREDDIT);
+
+        mRequestedPage = getIntent().getIntExtra(Consts.EXTRA_IMAGE, -1);
+
+        Log.i(TAG, "getExtras() - Age = " + mAge.name() + ", Category = " + mCategory.name() + ", Subreddit = " + mSubreddit);
     }
 
     /**
@@ -97,9 +105,15 @@ public class ImageDetailActivity extends ImageViewerActivity implements RedditUp
      */
     protected void updateDisplay(int position) {
         PostData p = getAdapter().getPost(position);
-        displayVote(p.getVote());
+        if (p != null)
+            displayVote(p.getVote());
 
-        getSupportActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
+        int count = getAdapter().getCount();
+        if (count > 0)
+            getSupportActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
+        else
+            getSupportActionBar().setTitle(getString(R.string.reddit_in_pictures));
+            
     }
 
     @Override
@@ -205,7 +219,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements RedditUp
             case DOWN:
                 switch (p.getVote()) {
                     case DOWN:
-                        RedditApiManager.vote(p.getName(), p.getSubreddit(), Vote.NEUTRAL, getApplicationContext());
+                        startService(RedditService.getVoteIntent(this, p.getName(), p.getSubreddit(), Vote.NEUTRAL));
                         item.setIcon(R.drawable.ic_action_downvote);
                         p.setVote(Vote.NEUTRAL);
                         p.setScore(p.getScore() + 1);
@@ -213,7 +227,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements RedditUp
 
                     case NEUTRAL:
                     case UP:
-                        RedditApiManager.vote(p.getName(), p.getSubreddit(), Vote.DOWN, getApplicationContext());
+                        startService(RedditService.getVoteIntent(this, p.getName(), p.getSubreddit(), Vote.DOWN));
                         item.setIcon(R.drawable.ic_action_downvote_highlighted);
                         p.setVote(Vote.DOWN);
                         mUpvoteMenuItem.setIcon(R.drawable.ic_action_upvote);
@@ -226,7 +240,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements RedditUp
                 switch (p.getVote()) {
                     case NEUTRAL:
                     case DOWN:
-                        RedditApiManager.vote(p.getName(), p.getSubreddit(), Vote.UP, getApplicationContext());
+                        startService(RedditService.getVoteIntent(this, p.getName(), p.getSubreddit(), Vote.UP));
                         item.setIcon(R.drawable.ic_action_upvote_highlighted);
                         p.setVote(Vote.UP);
                         p.setScore(p.getScore() + 1);
@@ -234,7 +248,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements RedditUp
                         break;
 
                     case UP:
-                        RedditApiManager.vote(p.getName(), p.getSubreddit(), Vote.NEUTRAL, getApplicationContext());
+                        startService(RedditService.getVoteIntent(this, p.getName(), p.getSubreddit(), Vote.NEUTRAL));
                         item.setIcon(R.drawable.ic_action_upvote);
                         p.setVote(Vote.NEUTRAL);
                         p.setScore(p.getScore() - 1);
@@ -318,10 +332,10 @@ public class ImageDetailActivity extends ImageViewerActivity implements RedditUp
             PostData p = getAdapter().getPost(mPager.getCurrentItem());
             return StringUtil.sanitizeFileName(p.getTitle());
         }
-        
+
         return super.getFilenameForSave();
     }
-    
+
     @Override
     public void onFinishSaveImageDialog(String filename) {
         PostData p = getAdapter().getPost(mPager.getCurrentItem());
@@ -336,98 +350,74 @@ public class ImageDetailActivity extends ImageViewerActivity implements RedditUp
     public void reachedLastPage() {
         super.reachedLastPage();
 
-        //@formatter:off
-        String after = mRedditApi != null 
-                && mRedditApi.getData() != null 
-                && mRedditApi.getData().getAfter() != null ? mRedditApi.getData().getAfter() : null;
-        //@formatter:on
-
-        if (!isRequestInProgress() && after != null && mRedditUrl != null) {
-            //@formatter:off
-            RedditUrl.Builder builder = new RedditUrl.Builder(mRedditUrl.subreddit)
-                                                     .age(mRedditUrl.age)
-                                                     .category(mRedditUrl.category)
-                                                     .count(50)
-                                                     .isLoggedIn(mRedditUrl.isLoggedIn)
-                                                     .after(after);
-
-            makeRequest(RedditService.getPostIntent(this, builder.build().getUrl()));
-            //@formatter:on
-        } else {
-            if (after == null)
-                Log.i(TAG, "reachedLastPage, after was null");
-
-            if (mRedditUrl == null)
-                Log.i(TAG, "reachedLastPage, mRedditUrl was null");
-
-            if (mRequestInProgress)
-                Log.i(TAG, "reachedLastPage() - Request already in progress, ignoring");
+        Log.i(TAG, "reachedLastPage()");
+        if (!isRequestInProgress() && mAdapter.getCount() > 0) {
+            Log.i(TAG, "reachedLastPage() - Loading more images");
+            setRequestInProgress(true);
+            startService(RedditService.getPostIntent(this, mSubreddit, mAge, mCategory, mAfter, false));
         }
-    }
-    
-    /**
-     * Make a request using our {@link IntentService}, if a {@link RedditDataFragment} already
-     * exists we reuse that as the {@link RESTResponderFragment}, otherwise a new
-     * {@link RedditDataFragment} is created and used to make the request
-     * 
-     */
-    public void makeRequest(Intent intent) {
-        setRequestInProgress(true);
-        RedditDataFragment redditFragment = (RedditDataFragment) getSupportFragmentManager().findFragmentByTag(RedditDataFragment.TAG);
-        if (redditFragment == null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            redditFragment = RedditDataFragment.newInstance(intent);
-            ft.add(redditFragment, RedditDataFragment.TAG);
-            ft.commit();
-        } else {
-            redditFragment.makeRequest(intent);
-        }
-    }
-    
-    @Override
-    public void addNewPosts(RedditApi api) {
-        boolean showNsfwImages = SharedPreferencesHelper.getShowNsfwImages(this);
-        List<PostData> images = RedditApiManager.filterPosts(api, showNsfwImages);
-        
-        // We want to keep the previous posts in mRedditApi and add new ones
-        mRedditApi.getData().addChildren(RedditApiManager.filterChildren(api, showNsfwImages));
-        mRedditApi.getData().setAfter(api.getData().getAfter());
-        mRedditApi.getData().setBefore(api.getData().getBefore());
-        
-        getImages().addAll(images);
-        updateDisplay(mPager.getCurrentItem());
-        
     }
 
     public void setRequestInProgress(boolean requestInProgress) {
         mRequestInProgress = requestInProgress;
         setSupportProgressBarIndeterminateVisibility(requestInProgress);
     }
-    
+
     public boolean isRequestInProgress() {
         return mRequestInProgress;
     }
 
     @Override
-    public void onError(int errorCode) {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    @Override
-    public void createService(Intent intent) {
-        startService(intent);
+    public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
+        Log.i(TAG, "onCreateLoader");
+        switch (id) {
+            case Consts.LOADER_REDDIT:
+                return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, null, null, null, RedditContract.Posts.DEFAULT_SORT);
+
+            case Consts.LOADER_POSTS:
+                return new CursorLoader(this, RedditContract.Posts.CONTENT_URI, null, null, null, RedditContract.RedditData.DEFAULT_SORT);
+        }
+
+        return null;
     }
 
     @Override
-    public void loginComplete(RedditLoginResponse response) {
-        // TODO Auto-generated method stub
-        
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        Log.i(TAG, "onLoadFinished");
+        switch (loader.getId()) {
+            case Consts.LOADER_REDDIT:
+                Log.i(TAG, "onLoadFinished REDDIT_LOADER, cursor has " + cursor.getCount() + " rows");
+                Log.i(TAG, "After column = " + cursor.getColumnIndex(RedditContract.RedditData.AFTER));
+                Log.i(TAG, "Before column = " + cursor.getColumnIndex(RedditContract.RedditData.BEFORE));
+
+                if (cursor != null && cursor.moveToFirst()) {
+                    mAfter = cursor.getString(cursor.getColumnIndex(RedditContract.RedditData.AFTER));
+                    mBefore = cursor.getString(cursor.getColumnIndex(RedditContract.RedditData.BEFORE));
+                }
+                break;
+
+            case Consts.LOADER_POSTS:
+                Log.i(TAG, "onLoadFinished POST_LOADER, cursor has " + cursor.getCount() + " rows");
+                setRequestInProgress(false);
+                getAdapter().swapCursor(cursor);
+                
+                // Set the ViewPager to the index the user selected in ImageGridFragment, we only need to do this
+                // the first time the data is loaded
+                if (mFirstLoad) {
+                    mPager.setCurrentItem(mRequestedPage);
+                    mFirstLoad = false;
+                }
+                
+                updateDisplay(mPager.getCurrentItem());
+                break;
+        }
+        Toast.makeText(this, "Load finished", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void mySubreddits(MySubreddits mySubreddits) {
-        // TODO Auto-generated method stub
-        
+    public void onLoaderReset(Loader<Cursor> cursor) {
+        Log.i(TAG, "onLoaderReset");
+        getAdapter().swapCursor(null);
     }
+
 }
