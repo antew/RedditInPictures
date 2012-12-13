@@ -18,22 +18,15 @@ package com.antew.redditinpictures.library.reddit;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Environment;
-import android.widget.Toast;
 
-import com.androidquery.AQuery;
-import com.androidquery.callback.AjaxCallback;
-import com.androidquery.callback.AjaxStatus;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
@@ -46,30 +39,28 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class RedditApiManager {
-    private static final String        USER_AGENT               = "Reddit In Pictures Android by /u/antew";
-    private static final String        TAG                      = "RedditApiManager";
-    private static final String        REDDIT_LOGIN_URL         = "https://ssl.reddit.com/api/login/";
-    private static final String        REDDIT_SUBSCRIBE_URL     = "http://www.reddit.com/api/subscribe";
-    private static final String        REDDIT_VOTE_URL          = "http://www.reddit.com/api/vote";
-    private static final String        REDDIT_ABOUT_URL         = "http://www.reddit.com/r/%s/about.json";
-    private static final String        REDDIT_SESSION           = "reddit_session";
-    private static final String        REDDIT_MY_SUBREDDITS_URL = "http://www.reddit.com/reddits/mine/subscriber.json";
-    public static final String         COMPACT_URL              = "/.compact";
-    public static final String         REDDIT_BASE_URL          = "http://www.reddit.com";
+    private static final String        TAG                      = RedditApiManager.class.getSimpleName();
     private static String              mModHash;
     private static String              mCookie;
     private static RedditLoginResponse mRedditLoginResponse;
     private static boolean             mIsLoggedIn              = false;
     private static String              mUsername;
     private static String              mJson;
-    private static About               about;
 
     public static String getModHash() {
         return mModHash;
     }
 
+    public static void setModHash(String modhash) {
+        mModHash = modhash;
+    }
+    
     public static String getCookie() {
         return mCookie;
+    }
+    
+    public static void setCookie(String cookie) {
+        mCookie = cookie;
     }
 
     public static RedditLoginResponse getRedditLoginResponse() {
@@ -94,12 +85,17 @@ public class RedditApiManager {
     }
     
     public static String getLoginCookie() {
-        if (mRedditLoginResponse != null)
-            return mRedditLoginResponse.getLoginResponse().getData().getCookie();
-        
-        return null;
+        return mCookie;
     }
 
+    public static void saveRedditLoginInformation(Context context, String username, String modHash, String cookie) {
+        mUsername = username;
+        mModHash = modHash;
+        mCookie = cookie;
+        mIsLoggedIn = true;
+        SharedPreferencesHelper.saveLoginInformation(username, modHash, cookie, context);
+    }
+    
     public static void parseRedditLoginResponse(String username, String modHash, String cookie, String response) {
         try {
             mRedditLoginResponse = new Gson().fromJson(response, RedditLoginResponse.class);
@@ -112,71 +108,10 @@ public class RedditApiManager {
         }
     }
 
-    public static void vote(String id, String subreddit, Vote vote, Context context) {
-        if (!mIsLoggedIn) {
-            Toast.makeText(context, "Must be logged in to vote!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        AQuery aQuery = new AQuery(context);
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("id", id);
-        params.put("dir", vote.getVote());
-        params.put("r", subreddit);
-        params.put("uh", mRedditLoginResponse.getLoginResponse().getData().getModhash());
-
-        AjaxCallback<String> cb = new AjaxCallback<String>() {
-            @Override
-            public void callback(String url, String object, AjaxStatus status) {
-                Log.i("Got back from vote!", object);
-                if (status.getCode() == HttpURLConnection.HTTP_OK) {
-
-                }
-
-            }
-
-        };
-
-        cb.header("User-Agent", USER_AGENT);
-        cb.url(REDDIT_VOTE_URL);
-        cb.type(String.class);
-        cb.params(params);
-        cb.cookie(REDDIT_SESSION, mRedditLoginResponse.getLoginResponse().getData().getCookie());
-        aQuery.ajax(cb);
-    }
-
     public static void resetToDefaultSubreddits(Context context) {
         List<String> subreddits = Arrays.asList(context.getResources().getStringArray(R.array.default_reddits));
         Collections.sort(subreddits, StringUtil.getCaseInsensitiveComparator());
         SharedPreferencesHelper.saveArray(subreddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, context);
-    }
-
-    public static void makeRequest(String url, String callbackFunc, Context context) {
-        AjaxCallback<String> cb = new AjaxCallback<String>();
-        AQuery aQuery = new AQuery(context);
-        cb.url(url).type(String.class).weakHandler(context, callbackFunc).header("User-Agent", USER_AGENT);
-        if (mRedditLoginResponse == null) {
-            Log.i("mRedditLoginResponse", "null");
-
-        } else {
-            Log.i("mRedditLoginResponse", "not null");
-            cb.cookie(REDDIT_SESSION, mRedditLoginResponse.getLoginResponse().getData().getCookie());
-        }
-
-        aQuery.ajax(cb);
-    }
-
-    public static void subscribe(String subreddit, SubscribeAction action, final Context context) {
-        if (!mIsLoggedIn) {
-            Toast.makeText(context, "Must be logged in to subscribe!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        AQuery aQuery = new AQuery(context);
-        AjaxCallback<String> aboutCallback = getSubredditAbout(subreddit, action, context);
-
-        aQuery.ajax(aboutCallback);
-
     }
 
     /*
@@ -205,64 +140,6 @@ public class RedditApiManager {
             picturesDirectory.mkdirs();
 
         return picturesDirectory;
-    }
-
-    public static AjaxCallback<String> getSubredditAbout(String subreddit, final SubscribeAction action, final Context context) {
-        final AQuery aQuery = new AQuery(context);
-
-        AjaxCallback<String> cb = new AjaxCallback<String>() {
-
-            @Override
-            public void callback(String url, String object, AjaxStatus status) {
-
-                Log.i("Got back from about!", object);
-                if (status.getCode() == HttpURLConnection.HTTP_OK) {
-                    Gson gson = new Gson();
-                    try {
-                        about = gson.fromJson(object, About.class);
-                    } catch (JsonSyntaxException e) {
-                        Log.e(TAG, "getSubredditAbout", e);
-                    }
-
-                    if (about == null) {
-                        Log.e(TAG, "getSubredditAbout null after parsing response");
-                        return;
-                    }
-
-                    Map<String, Object> params = new HashMap<String, Object>();
-                    params.put("action", action.getAction());
-                    params.put("sr", about.getData().getName());
-                    params.put("uh", mRedditLoginResponse.getLoginResponse().getData().getModhash());
-
-                    AjaxCallback<String> cb = new AjaxCallback<String>() {
-                        @Override
-                        public void callback(String url, String object, AjaxStatus status) {
-                            Log.i("Got back from subscribe!", object);
-                            if (status.getCode() == HttpURLConnection.HTTP_OK) {
-
-                            }
-
-                        }
-
-                    };
-
-                    cb.header("User-Agent", USER_AGENT);
-                    cb.url(REDDIT_SUBSCRIBE_URL);
-                    cb.type(String.class);
-                    cb.params(params);
-                    cb.cookie(REDDIT_SESSION, mRedditLoginResponse.getLoginResponse().getData().getCookie());
-                    aQuery.ajax(cb);
-                }
-
-            }
-
-        };
-
-        cb.header("User-Agent", USER_AGENT);
-        cb.url(String.format(REDDIT_ABOUT_URL, subreddit));
-        cb.type(String.class);
-
-        return cb;
     }
 
     public static void setIsLoggedIn(boolean b) {
