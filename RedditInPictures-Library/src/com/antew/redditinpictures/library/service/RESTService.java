@@ -35,11 +35,13 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.ResultReceiver;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.antew.redditinpictures.library.utils.Consts;
+
 /**
- * This is based an article by Neil Goodman I've added the EXTRA_REQUEST_CODE so that callers can
+ * This is based an article by Neil Goodman, I've added the EXTRA_REQUEST_CODE so that callers can
  * have multiple request types
  * 
  * @author Neil Goodman
@@ -48,21 +50,25 @@ import android.util.Log;
  *      article</a>
  */
 public class RESTService extends IntentService {
-    private static final String TAG                   = RESTService.class.getName();
+    private static final String TAG                = RESTService.class.getName();
 
-    public static final int     GET                   = 0x1;
-    public static final int     POST                  = 0x2;
-    public static final int     PUT                   = 0x3;
-    public static final int     DELETE                = 0x4;
+    public static final int     GET                = 0x1;
+    public static final int     POST               = 0x2;
+    public static final int     PUT                = 0x3;
+    public static final int     DELETE             = 0x4;
 
-    public static final String  EXTRA_HTTP_VERB       = "EXTRA_HTTP_VERB";
-    public static final String  EXTRA_PARAMS          = "EXTRA_PARAMS";
-    public static final String  EXTRA_COOKIE          = "EXTRA_COOKIE";
-    public static final String  EXTRA_RESULT_RECEIVER = "EXTRA_RESULT_RECEIVER";
-    public static final String  EXTRA_REQUEST_CODE    = "EXTRA_REQUEST_CODE";
-    public static final String  EXTRA_USER_AGENT      = "EXTRA_USER_AGENT";
+    public static final String  EXTRA_BUNDLE       = "EXTRA_BUNDLE";
+    public static final String  EXTRA_HTTP_VERB    = "EXTRA_HTTP_VERB";
+    public static final String  EXTRA_PARAMS       = "EXTRA_PARAMS";
+    public static final String  EXTRA_COOKIE       = "EXTRA_COOKIE";
+    public static final String  EXTRA_REPLACE_ALL  = "EXTRA_REPLACE_ALL";
+    public static final String  EXTRA_REQUEST_CODE = "EXTRA_REQUEST_CODE";
+    public static final String  EXTRA_RESULT       = "EXTRA_RESULT";
+    public static final String  EXTRA_STATUS_CODE  = "EXTRA_STATUS_CODE";
+    public static final String  EXTRA_USER_AGENT   = "EXTRA_USER_AGENT";
+    public static final String  EXTRA_PASS_THROUGH = "EXTRA_PASS_THROUGH";
 
-    public static final String  REST_RESULT           = "REST_RESULT";
+    public static final String  REST_RESULT        = "REST_RESULT";
 
     public RESTService() {
         super(TAG);
@@ -78,9 +84,7 @@ public class RESTService extends IntentService {
         Uri action = intent.getData();
         Bundle extras = intent.getExtras();
 
-        if (extras == null || action == null || !extras.containsKey(EXTRA_RESULT_RECEIVER)) {
-            // Extras contain our ResultReceiver and data is our REST action.
-            // So, without these components we can't do anything useful.
+        if (extras == null || action == null) {
             Log.e(TAG, "You did not pass extras or data with the Intent.");
 
             return;
@@ -92,8 +96,16 @@ public class RESTService extends IntentService {
         Bundle params = extras.getParcelable(EXTRA_PARAMS);
         String cookie = extras.getString(EXTRA_COOKIE);
         String userAgent = extras.getString(EXTRA_USER_AGENT);
-        ResultReceiver receiver = extras.getParcelable(EXTRA_RESULT_RECEIVER);
+        boolean replaceAll = extras.getBoolean(EXTRA_REPLACE_ALL, false);
+        
+        // Items in this bundle are simply passed on in onRequestComplete
+        Bundle passThrough = extras.getBundle(EXTRA_PASS_THROUGH);
 
+        HttpEntity responseEntity = null;
+        Intent result = new Intent(Consts.BROADCAST_HTTP_FINISHED);
+        result.putExtra(EXTRA_PASS_THROUGH, passThrough);
+        Bundle resultData = new Bundle();
+        
         try {
             // Here we define our base request object which we will
             // send to our REST service via HttpClient.
@@ -168,36 +180,56 @@ public class RESTService extends IntentService {
                 // long operation that we need to run on this thread.
                 HttpResponse response = client.execute(request);
 
-                HttpEntity responseEntity = response.getEntity();
+                responseEntity = response.getEntity();
                 StatusLine responseStatus = response.getStatusLine();
                 int statusCode = responseStatus != null ? responseStatus.getStatusCode() : 0;
 
-                // Our ResultReceiver allows us to communicate back the results to the caller. This
-                // class has a method named send() that can send back a code and a Bundle
-                // of data. ResultReceiver and IntentService abstract away all the IPC code
-                // we would need to write to normally make this work.
                 if (responseEntity != null) {
-                    Bundle resultData = new Bundle();
                     resultData.putString(REST_RESULT, EntityUtils.toString(responseEntity));
                     resultData.putInt(EXTRA_REQUEST_CODE, requestCode);
-                    receiver.send(statusCode, resultData);
+                    resultData.putInt(EXTRA_STATUS_CODE, statusCode);
+                    resultData.putBoolean(EXTRA_REPLACE_ALL, replaceAll);
+
+                    result.putExtra(EXTRA_BUNDLE, resultData);
+
+                    onRequestComplete(result);
+
+                    
                 } else {
-                    receiver.send(statusCode, null);
+                    onRequestFailed(result, statusCode);
                 }
             }
         } catch (URISyntaxException e) {
             Log.e(TAG, "URI syntax was incorrect. " + verbToString(verb) + ": " + action.toString(), e);
-            receiver.send(0, null);
+            onRequestFailed(result, 0);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "A UrlEncodedFormEntity was created with an unsupported encoding.", e);
-            receiver.send(0, null);
+            onRequestFailed(result, 0);
         } catch (ClientProtocolException e) {
             Log.e(TAG, "There was a problem when sending the request.", e);
-            receiver.send(0, null);
+            onRequestFailed(result, 0);
         } catch (IOException e) {
             Log.e(TAG, "There was a problem when sending the request.", e);
-            receiver.send(0, null);
+            onRequestFailed(result, 0);
+        } finally {
+            if (responseEntity != null)
+                try {
+                    responseEntity.consumeContent();
+                } catch (IOException ignored) {
+                }
         }
+    }
+    
+    public void onRequestFailed(Intent result, int statusCode) {
+        Bundle args = new Bundle();
+        args.putInt(EXTRA_STATUS_CODE, statusCode);
+        result.putExtra(EXTRA_BUNDLE, args);
+        
+        onRequestComplete(result);
+    }
+
+    public void onRequestComplete(Intent result) {
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(result);
     }
 
     private static void attachUriWithQuery(HttpRequestBase request, Uri uri, Bundle params) {
