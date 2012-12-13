@@ -9,7 +9,7 @@ public enum SubscribeAction {
         this.action = action;
     }
 
-    String getAction() {
+    public String getAction() {
         return action;
     }
 
