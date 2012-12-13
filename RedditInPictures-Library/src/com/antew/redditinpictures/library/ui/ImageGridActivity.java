@@ -1,6 +1,5 @@
 package com.antew.redditinpictures.library.ui;
 
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,7 +12,6 @@ import android.preference.PreferenceActivity;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -26,7 +24,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
-import com.androidquery.callback.AjaxStatus;
 import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.adapter.SubredditMenuAdapter;
@@ -38,27 +35,20 @@ import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
-import com.antew.redditinpictures.library.reddit.MySubreddits;
-import com.antew.redditinpictures.library.reddit.MySubreddits.SubredditData;
 import com.antew.redditinpictures.library.reddit.RedditApi;
-import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.reddit.RedditApiManager;
 import com.antew.redditinpictures.library.reddit.RedditLoginResponse;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManagerApi11Plus;
-import com.antew.redditinpictures.library.ui.ImageGridFragment.LoadMoreImages;
-import com.antew.redditinpictures.library.ui.ImageGridFragment.RedditDataProvider;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.library.utils.Util;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
-public class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoadMoreImages, LoginDialogListener, LogoutDialogListener,
-        RedditDataProvider {
+public class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoginDialogListener, LogoutDialogListener {
     private static final String TAG                     = "ImageGridActivity";
     public static final int     POSTS_TO_FETCH          = 50;
     protected boolean           mShowNsfwImages;
@@ -66,21 +56,22 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     protected Category          mCategory               = Category.HOT;
     public static final int     EDIT_SUBREDDITS_REQUEST = 10;
     public static final int     SETTINGS_REQUEST        = 20;
+    public static final int     REDDIT_LOADER           = 1;
+    public static final int     POST_LOADER             = 2;
     private String              mSubreddit;
     private SpinnerAdapter      mSpinnerAdapter;
     private RedditLoginResponse mRedditLoginResponse;
     private boolean             mReplaceAdapter;
     private boolean             mRequestInProgress;
     private RedditApi           mRedditApi;
-    private int                 mNsfwBlockedCount;
     private boolean             mFirstCall              = true;
     private int                 mNavPosition;
     private ProgressDialog      mProgressDialog;
     private MenuItem            mLoginMenuItem;
     private TextView            mErrorMessage;
-    private List<PostData>      mEntries;
     protected RelativeLayout    mLayoutWrapper;
     private RedditUrl           mRedditUrl;
+    private String              mUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,17 +97,10 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             getSupportActionBar().setSelectedNavigationItem(savedInstanceState.getInt(Consts.EXTRA_NAV_POSITION));
         }
 
-        if (getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG) == null) {
-            Log.i(TAG, "onCreate, fragment was null, populating from spinner");
-            populateViewPagerFromSpinner(0);
-        } else {
-            Log.i(TAG, "onCreate, fragment already existed, doing nothing");
-        }
-
         if (SharedPreferencesHelper.getUseHoloBackground(this)) {
             getWindow().setBackgroundDrawableResource(R.drawable.background_holo_dark);
         }
-        
+
         String loginJson = SharedPreferencesHelper.getLoginJson(ImageGridActivity.this);
         if (!loginJson.equals("")) {
             String username = SharedPreferencesHelper.getUsername(ImageGridActivity.this);
@@ -126,6 +110,15 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             RedditApiManager.setIsLoggedIn(true);
         }
 
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ImageGridFragment fragment = (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG);
+        if (fragment == null) {
+            fragment = getImageGridFragment();
+        }
+        
+        ft.replace(android.R.id.content, fragment, ImageGridFragment.TAG);
+        ft.commit();
+        
     }
 
     /**
@@ -174,98 +167,21 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         return mSpinnerAdapter;
     }
 
-    private void populateViewPagerFromSpinner(int position) {
-        Log.i(TAG, "In populateViewPagerFromSpinner mFirstCall = " + mFirstCall);
-        if (mFirstCall) {
-            mFirstCall = false;
-            return;
-        }
-
-        ((SubredditMenuAdapter) mSpinnerAdapter).notifyDataSetChanged(mCategory, mAge);
-        getSupportActionBar().setSelectedNavigationItem(position);
-
-        mReplaceAdapter = true;
-        mSubreddit = mSpinnerAdapter.getItem(position).toString();
-        //@formatter:off
-        mRedditUrl = new RedditUrl.Builder(position == 0 ? RedditUrl.REDDIT_FRONTPAGE : mSubreddit)
-                                  .age(mAge)
-                                  .category(mCategory)
-                                  .count(POSTS_TO_FETCH)
-                                  .isLoggedIn(mRedditLoginResponse != null)
-                                  .build();
-        //@formatter:on
-        populateViewPagerFromUrl(mRedditUrl.getUrl());
-    }
-
-    public void populateViewPagerFromUrl(String url) {
-        Log.i(TAG, "In populateViewPagerFromUrl - URL = " + url);
-        setSupportProgressBarIndeterminateVisibility(true);
-        mErrorMessage.setVisibility(View.GONE);
-        mRequestInProgress = true;
-        RedditApiManager.makeRequest(url, "subredditDataCallback", this);
-    }
-
-    public ImageGridFragment getImageGridFragment(List<PostData> entries) {
-        ImageGridFragment frag = getImageGridFragment();
-        Bundle args = new Bundle();
-        args.putParcelableArrayList(ImageGridFragment.ENTRIES, (ArrayList<PostData>) entries);
-        frag.setArguments(args);
-
-        return frag;
-    }
-
     public ImageGridFragment getImageGridFragment() {
         return new ImageGridFragment();
     }
-
-    private void requestComplete() {
-        mRequestInProgress = false;
-        setSupportProgressBarIndeterminateVisibility(false);
-    }
-
-    public void subredditDataCallback(String url, String json, AjaxStatus status) {
-        requestComplete();
-        if (status.getCode() == HttpURLConnection.HTTP_OK) {
-            RedditApi redditApi = null;
-
-            try {
-                redditApi = RedditApi.getGson().fromJson(json, RedditApi.class);
-                mEntries = RedditApiManager.filterPosts(redditApi, mShowNsfwImages);
-            } catch (JsonSyntaxException e) {
-                Log.e(TAG, "subredditDataCallback - JsonSyntaxException while parsing json!", e);
-                Toast.makeText(ImageGridActivity.this, getString(R.string.error_parsing_reddit_data), Toast.LENGTH_SHORT).show();
-                return;
-            } catch (IllegalStateException e) {
-                Log.e(TAG, "subredditDataCallback - IllegalStateException while parsing json!", e);
-                Toast.makeText(ImageGridActivity.this, getString(R.string.error_parsing_reddit_data), Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (mReplaceAdapter || getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG) == null) {
-                mRedditApi = redditApi;
-                final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(android.R.id.content, getImageGridFragment(mEntries), ImageGridFragment.TAG);
-                ft.commit();
-            } else {
-                mRedditApi.getData().addChildren(RedditApiManager.filterChildren(redditApi, mShowNsfwImages));
-                mRedditApi.getData().setAfter(redditApi.getData().getAfter());
-                mRedditApi.getData().setBefore(redditApi.getData().getBefore());
-
-                ImageGridFragment frag = (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG);
-                frag.addImages(mEntries);
-            }
-            // refreshText(mNsfwBlockedCount);
-
-        } else {
-            mErrorMessage.setText(R.string.make_sure_you_have_an_internet_connection);
-            mErrorMessage.setVisibility(View.VISIBLE);
-            Log.e(TAG, "populateViewPagerFromUrl - Error connecting to Reddit, response code was " + status.getCode());
-        }
+    
+    public String getSubredditName(int position) {
+        return position == Consts.POSITION_FRONTPAGE ? RedditUrl.REDDIT_FRONTPAGE : mSpinnerAdapter.getItem(position).toString();
     }
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        populateViewPagerFromSpinner(itemPosition);
+        Intent intent = new Intent(Consts.BROADCAST_SUBREDDIT_SELECTED);
+        intent.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, getSubredditName(itemPosition));
+        intent.putExtra(Consts.EXTRA_AGE, mAge.name());
+        intent.putExtra(Consts.EXTRA_CATEGORY, mCategory.name());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         return true;
     }
 
@@ -365,14 +281,13 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         intent.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES, mShowNsfwImages);
         startActivityForResult(intent, SETTINGS_REQUEST);
     }
-    
+
     public Class<? extends PreferenceActivity> getPreferencesClass() {
         if (Util.hasHoneycomb())
             return RedditInPicturesPreferencesFragment.class;
         else
             return RedditInPicturesPreferences.class;
     }
-    
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -385,11 +300,11 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         } else if (itemId == R.id.settings) {
             startPreferences();
         } else if (itemId == R.id.refresh_all) {
-            populateViewPagerFromSpinner(getSupportActionBar().getSelectedNavigationIndex());
+            onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
         } else if (itemId == R.id.login) {
             handleLoginAndLogout();
         }
-//@formatter:off
+        //@formatter:off
         else if (itemId == R.id.category_hot)                    { mCategory = Category.HOT;                                   loadFromUrl = true; }
         else if (itemId == R.id.category_new)                    { mCategory = Category.NEW;                                   loadFromUrl = true; }
         else if (itemId == R.id.category_rising)                 { mCategory = Category.RISING;                                loadFromUrl = true; } 
@@ -408,8 +323,9 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         // @formatter:on
         if (loadFromUrl) {
             SharedPreferencesHelper.saveCategorySelectionLoginInformation(mAge, mCategory, ImageGridActivity.this);
+            ((SubredditMenuAdapter) mSpinnerAdapter).notifyDataSetChanged(mCategory, mAge);
             Log.i(TAG, "onOptionsItemSelected, loadFromUrl = true, calling populateViewPagerFromSpinner()");
-            populateViewPagerFromSpinner(getSupportActionBar().getSelectedNavigationIndex());
+            onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
         }
 
         return true;
@@ -438,7 +354,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             if (data.hasExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT)) {
                 mFirstCall = false;
                 int pos = getSubredditPosition(data.getStringExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT));
-                populateViewPagerFromSpinner(pos);
+                onNavigationItemSelected(pos, 0);
                 return;
             }
             // If the user didn't choose a subreddit (meaning we are returned the subreddit they
@@ -448,7 +364,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             if (selectedSubredditPos >= 0)
                 getSupportActionBar().setSelectedNavigationItem(selectedSubredditPos);
             else
-                populateViewPagerFromSpinner(Consts.POSITION_FRONTPAGE);
+                onNavigationItemSelected(Consts.POSITION_FRONTPAGE, 0);
 
         } else if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK) {
             if (data.getBooleanExtra(Consts.EXTRA_SHOW_NSFW_IMAGES_CHANGED, false)) {
@@ -457,7 +373,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
                 // If we're removing NSFW images we can modify the adapter in place, otherwise we
                 // need to refresh
                 if (mShowNsfwImages) {
-                    populateViewPagerFromSpinner(getSupportActionBar().getSelectedNavigationIndex());
+                    onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
                 } else {
                     LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
                 }
@@ -486,59 +402,8 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         return -1;
     }
 
-    @Override
-    public void loadMoreImages() {
-
-        //@formatter:off
-        String after = mRedditApi != null 
-                    && mRedditApi.getData() != null 
-                    && mRedditApi.getData().getAfter() != null ? mRedditApi.getData().getAfter() 
-                                                               : null;
-        
-        // If a request isn't currently in progress and reddit indicated there were more images to load make the request
-        if (!mRequestInProgress && after != null) {
-            mRedditUrl = new RedditUrl.Builder(getSupportActionBar().getSelectedNavigationIndex() == 0 ? RedditUrl.REDDIT_FRONTPAGE : mSubreddit)
-                                      .age(mAge)
-                                      .category(mCategory)
-                                      .count(POSTS_TO_FETCH)
-                                      .isLoggedIn(mRedditLoginResponse != null)
-                                      .after(after)
-                                      .build();
-
-            mReplaceAdapter = false;
-            Log.i(TAG, "loadMoreImages() calling populateViewPagerFromUrl()");
-            populateViewPagerFromUrl(mRedditUrl.getUrl());
-                    //@formatter:on
-        } else {
-            Log.i(TAG, "loadMoreImages() - Request already in progress, ignoring");
-        }
-
-    }
-
-    private void showLoginProgressDialog() {
-        mProgressDialog = ProgressDialog.show(ImageGridActivity.this, getString(R.string.log_on), getString(R.string.logging_on), true, false);
-    }
-
-    public void loginCallback(String url, String json, AjaxStatus status) {
-        if (status.getCode() == HttpURLConnection.HTTP_OK && status.getCookies().size() > 0) {
-            Log.i("JSON", json);
-            Gson gson = new Gson();
-
-            mRedditLoginResponse = gson.fromJson(json, RedditLoginResponse.class);
-
-            if (mRedditLoginResponse.getLoginResponse().getErrors().size() > 0) {
-                hideProgressDialog();
-                RedditApiManager.setIsLoggedIn(false);
-                showLoginError(mRedditLoginResponse);
-            } else {
-                RedditApiManager.setIsLoggedIn(true);
-                RedditApiManager.getMySubreddits("mySubredditsCallback", ImageGridActivity.this);
-                invalidateOptionsMenu();
-            }
-
-        } else {
-            Log.e("Login", "Something went wrong on login! status = " + status.getCode() + " | json = " + json == null ? "null" : json);
-        }
+    private void showProgressDialog(String title, String message) {
+        mProgressDialog = ProgressDialog.show(ImageGridActivity.this, title, message, true, false);
     }
 
     private void showLoginError(RedditLoginResponse rlp) {
@@ -549,33 +414,6 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         Toast.makeText(ImageGridActivity.this, getString(R.string.error) + errorText, Toast.LENGTH_SHORT).show();
     }
 
-    public void mySubredditsCallback(String url, String json, AjaxStatus status) {
-        if (status.getCode() == HttpURLConnection.HTTP_OK) {
-            Gson gson = new Gson();
-            MySubreddits mySubreddits = gson.fromJson(json, MySubreddits.class);
-            Log.i("MyRedditsJson", json);
-
-            List<String> subReddits = new ArrayList<String>();
-
-            for (MySubreddits.Children c : mySubreddits.getData().getChildren()) {
-                SubredditData data = c.getData();
-                subReddits.add(data.getDisplay_name());
-                Log.i("Subscribed Subreddits", data.getDisplay_name());
-            }
-
-            Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
-            SharedPreferencesHelper.saveArray(subReddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, ImageGridActivity.this);
-
-            getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), ImageGridActivity.this);
-        } else {
-            Toast.makeText(ImageGridActivity.this, "Error retrieving subscribed subreddits.", Toast.LENGTH_SHORT).show();
-            Log.e("MySubreddits", "Something went wrong on mySubreddits! status = " + status.getCode() + " | json = " + json == null ? "null" : json);
-
-        }
-
-        hideProgressDialog();
-    }
-
     private void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing())
             mProgressDialog.dismiss();
@@ -583,8 +421,10 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
     @Override
     public void onFinishLoginDialog(String username, String password) {
-        showLoginProgressDialog();
-        RedditApiManager.login(username, password, ImageGridActivity.this, "loginCallback");
+        mUsername = username;
+        showProgressDialog(getString(R.string.log_on), getString(R.string.logging_on));
+        startService(RedditService.getLoginIntent(this, username, password));
+        
     }
 
     @Override
@@ -592,19 +432,29 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         RedditApiManager.logout(ImageGridActivity.this);
         invalidateOptionsMenu();
         getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
-        populateViewPagerFromSpinner(0);
+        onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
     }
 
+    public void setRequestInProgress(boolean inProgress) {
+        mRequestInProgress = inProgress;
+        setSupportProgressBarIndeterminateVisibility(inProgress);
+    }
+
+    /*
     @Override
-    public RedditApi getRedditApi() {
-        return mRedditApi;
-
+    public void loginComplete(RedditLoginResponse response) {
+        hideProgressDialog();
+        mRedditLoginResponse = response;
+        if (response.getLoginResponse().getErrors().size() > 0) {
+            RedditApiManager.setIsLoggedIn(false);
+            showLoginError(response);
+        } else {
+            showProgressDialog("Subreddits", "Retrieving subscribed subreddits");
+            LoginData data = response.getLoginResponse().getData();
+            RedditApiManager.saveRedditLoginInformation(this, mUsername, data.getModhash(), data.getCookie());
+            startService(RedditService.getMySubredditsIntent(this));
+            invalidateOptionsMenu();
+        }
     }
-
-    @Override
-    public RedditUrl getRedditUrl() {
-        return mRedditUrl;
-
-    }
-
+    */
 }
