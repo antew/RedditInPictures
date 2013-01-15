@@ -18,7 +18,12 @@ package com.antew.redditinpictures.library.reddit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MySubreddits {
+import android.content.ContentValues;
+
+import com.antew.redditinpictures.library.interfaces.ContentValuesArrayOperation;
+import com.antew.redditinpictures.sqlite.RedditContract;
+
+public class MySubreddits implements ContentValuesArrayOperation {
     String kind;
     Data   data;
 
@@ -93,6 +98,7 @@ public class MySubreddits {
         long    created_utc;
         String  public_description;
         int[]   header_size;
+        int     accounts_active;
         boolean over18;
         int     subscribers;
         String  header_title;
@@ -154,6 +160,47 @@ public class MySubreddits {
         public String getHeader_img() {
             return header_img;
         }
+        
+        public int getAccountsActive() {
+            return accounts_active;
+        }
 
     }
+
+    public ContentValues getContentValues(SubredditData data) {
+        ContentValues values = new ContentValues();
+        
+        values.put(RedditContract.Subreddits.DISPLAY_NAME      , data.getDisplay_name() );
+        values.put(RedditContract.Subreddits.HEADER_IMAGE      , data.getHeader_img());
+        values.put(RedditContract.Subreddits.TITLE             , data.getTitle());
+        values.put(RedditContract.Subreddits.URL               , data.getUrl());
+        values.put(RedditContract.Subreddits.DESCRIPTION       , data.getDescription());
+        values.put(RedditContract.Subreddits.CREATED           , data.getCreated());
+        values.put(RedditContract.Subreddits.CREATED_UTC       , data.getCreated_utc());
+        
+        if (data.getHeader_size() != null)
+            values.put(RedditContract.Subreddits.HEADER_SIZE       , data.getHeader_size()[0] + ", " + data.getHeader_size()[1]);
+        
+        values.put(RedditContract.Subreddits.OVER_18           , data.isOver18());
+        values.put(RedditContract.Subreddits.SUBSCRIBERS       , data.getSubscribers());
+        values.put(RedditContract.Subreddits.ACCOUNTS_ACTIVE   , data.getAccountsActive());
+        values.put(RedditContract.Subreddits.PUBLIC_DESCRIPTION, data.getPublic_description());
+        values.put(RedditContract.Subreddits.HEADER_TITLE      , data.getHeader_title());
+        values.put(RedditContract.Subreddits.SUBREDDIT_ID      , data.getSubscribers());
+        values.put(RedditContract.Subreddits.NAME              , data.getName());
+        return values;
+    }
+
+    @Override
+    public ContentValues[] getContentValuesArray() {
+        ContentValues[] operations = new ContentValues[getData().getChildren().size()];
+        
+        List<Children> c = getData().getChildren();
+        for (int i = 0; i < getData().getChildren().size(); i++) {
+            operations[i] = getContentValues(c.get(i).getData());
+        }
+        
+        return operations;
+    }
+
 }
