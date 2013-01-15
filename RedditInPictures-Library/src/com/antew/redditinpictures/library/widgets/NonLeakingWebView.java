@@ -12,8 +12,7 @@ import android.webkit.WebViewClient;
 
 /**
  * @see <a href="http://stackoverflow.com/questions/3130654/memory-leak-in-webview">Stackoverflow post</a>
- * http://code.google.com/p/android/issues/detail?id=9375 Note that the bug does NOT appear to be
- * fixed in android 2.2 as romain claims
+ * http://code.google.com/p/android/issues/detail?id=9375
  * 
  * Also, you must call {@link #destroy()} from your activity's onDestroy method.
  */
