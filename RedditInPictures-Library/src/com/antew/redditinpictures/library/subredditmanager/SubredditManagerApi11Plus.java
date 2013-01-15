@@ -43,6 +43,7 @@ import com.antew.redditinpictures.library.reddit.MySubreddits.SubredditData;
 import com.antew.redditinpictures.library.reddit.RedditApiManager;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.SubscribeAction;
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.google.gson.Gson;
@@ -50,10 +51,12 @@ import com.google.gson.Gson;
 @TargetApi(11)
 public class SubredditManagerApi11Plus extends SubredditManager {
 
+    public static final String   TAG                = SubredditManagerApi11Plus.class.getSimpleName();
     private ArrayAdapter<String> mAdapter;
-    private String               mSelectedSubreddit       = RedditUrl.REDDIT_FRONTPAGE;
+    private String               mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
     private MenuItem             mResetToDefaultSubreddits;
     private MenuItem             mResyncWithReddit;
+    private SubscribeAction      mAction;
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +83,6 @@ public class SubredditManagerApi11Plus extends SubredditManager {
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new ModeCallback());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
     };
 
     @Override
@@ -123,41 +125,40 @@ public class SubredditManagerApi11Plus extends SubredditManager {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        getSupportActionBar().setSubtitle("Long press to start selection");
+        getSupportActionBar().setSubtitle(R.string.long_press_to_start_selection);
     }
 
     @Override
-    public void resyncSubredditsWithReddit()
-    {
-        RedditApiManager.getMySubreddits("mySubredditsCallback", SubredditManagerApi11Plus.this);
+    public void resyncSubredditsWithReddit() {
+        RedditService.getMySubreddits(this);
     }
-   
+
     @Override
     public void mySubredditsCallback(String url, String json, AjaxStatus status) {
         if (status.getCode() == HttpURLConnection.HTTP_OK) {
             Gson gson = new Gson();
             MySubreddits mMySubreddits = gson.fromJson(json, MySubreddits.class);
             Log.i("MyRedditsJson", json);
-            
+
             List<String> subReddits = new ArrayList<String>();
-            
+
             for (MySubreddits.Children c : mMySubreddits.getData().getChildren()) {
                 SubredditData data = c.getData();
                 subReddits.add(data.getDisplay_name());
                 Log.i("Subscribed Subreddits", data.getDisplay_name());
             }
-            
+
             SharedPreferencesHelper.saveArray(subReddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, SubredditManagerApi11Plus.this);
             Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
-            
+
             mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, subReddits);
             setListAdapter(mAdapter);
         } else {
             Log.e("MySubreddits", "Something went wrong on mySubreddits! status = " + status.getCode() + " | json = " + json == null ? "null" : json);
-            
+
         }
-    }   
-    
+    }
+
     @Override
     public void resetToDefaultSubreddits() {
         List<String> subReddits = new ArrayList<String>();
@@ -194,29 +195,25 @@ public class SubredditManagerApi11Plus extends SubredditManager {
         final EditText input = new EditText(SubredditManagerApi11Plus.this);
         
         new AlertDialog.Builder(SubredditManagerApi11Plus.this)
-                       .setTitle("Add Subreddit")
-                       .setMessage("Enter the subreddit")
+                       .setTitle(R.string.add_subreddit)
+                       .setMessage(R.string.enter_the_subreddit)
                        .setView(input)
-                       .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton)
-                            {
+                       .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
                                 String value = input.getText().toString();
                                 
-                                if (value.length() > 0)
-                                {
+                                if (value.length() > 0) {
                                     mAdapter.add(value);
                                     mAdapter.sort(StringUtil.getCaseInsensitiveComparator());
                                     mAdapter.notifyDataSetChanged();
                                     
-                                    if (RedditApiManager.isLoggedIn())
-                                    {
-                                        RedditApiManager.subscribe(value, SubscribeAction.SUBSCRIBE, getApplicationContext());
+                                    if (RedditApiManager.isLoggedIn()) {
+                                        RedditService.subscribe(getApplicationContext(), value);
                                     }
                                 }
                             }
-                       }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton)
-                            {
+                       }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
                                 // Do nothing.
                             }
                        }).show();
@@ -226,16 +223,17 @@ public class SubredditManagerApi11Plus extends SubredditManager {
     private class ModeCallback implements ListView.MultiChoiceModeListener
     {
 
+        private Object mDelete;
+
         @Override
         public boolean onCreateActionMode(android.view.ActionMode mode, android.view.Menu menu)
         {
-            //@formatter:off
-            menu.add("Delete")
-                .setIcon(R.drawable.ic_menu_delete)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            mode.setTitle(R.string.select_items);
             
-            //@formatter:on
-            mode.setTitle("Select Items");
+            android.view.MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.action_menu, menu);
+            mDelete = menu.findItem(R.id.menu_delete);
+            
             return true;
         }
 
@@ -246,7 +244,7 @@ public class SubredditManagerApi11Plus extends SubredditManager {
 
         @Override
         public boolean onActionItemClicked(android.view.ActionMode mode, android.view.MenuItem item) {
-            if (item.getTitle().equals("Delete")) {
+            if (item.getItemId() == R.id.menu_delete) {
                 final ListView listView = getListView();
                 final SparseBooleanArray checkedItems = listView.getCheckedItemPositions();
 
@@ -265,10 +263,11 @@ public class SubredditManagerApi11Plus extends SubredditManager {
                     }
                 }
 
-                for (String s : itemsToRemove) {
-                    mAdapter.remove(s);
+                for (String subreddit : itemsToRemove) {
+                    mAdapter.remove(subreddit);
                     if (RedditApiManager.isLoggedIn()) {
-                        RedditApiManager.subscribe(s, SubscribeAction.UNSUBSCRIBE, getApplicationContext());
+                        RedditService.subscribe(SubredditManagerApi11Plus.this, subreddit);
+                        
                     }
                 }
 
@@ -309,5 +308,4 @@ public class SubredditManagerApi11Plus extends SubredditManager {
         setResult(RESULT_OK, i);
         super.onBackPressed();
     }
-
 }
