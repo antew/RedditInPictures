@@ -18,18 +18,20 @@ package com.antew.redditinpictures.library.reddit;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.antew.redditinpictures.library.gson.VoteAdapter;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
+import com.antew.redditinpictures.library.interfaces.ClassFromCursor;
+import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.Util;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.antew.redditinpictures.sqlite.RedditContract;
 
-public class RedditApi implements Parcelable  {
+public class RedditApi implements Parcelable, ContentValuesOperation {
     String kind;
     Data   data;
 
@@ -67,13 +69,6 @@ public class RedditApi implements Parcelable  {
     };
     //@formatter:on
     
-    public static Gson getGson () {
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(Vote.class, new VoteAdapter());
-        builder.serializeNulls();
-        return builder.create();
-    }
-
     public String getKind() {
         return kind;
     }
@@ -107,6 +102,14 @@ public class RedditApi implements Parcelable  {
         public void setBefore(String before) { this.before = before; }
         public String getAfter()             { return after; }
         public String getBefore()            { return before;}
+        public List<PostData> getPosts() {
+            List<PostData> posts = new ArrayList<RedditApi.PostData>(children.size());
+            for (Children child : children) {
+                posts.add(child.getData());
+            }
+            
+            return posts;
+        }
         //@formatter:on
 
         @Override
@@ -189,7 +192,7 @@ public class RedditApi implements Parcelable  {
         //@formatter:on
     }
 
-    public static class PostData implements Parcelable {
+    public static class PostData implements Parcelable, ContentValuesOperation {
 
         String     domain;
         String     banned_by;
@@ -443,6 +446,77 @@ public class RedditApi implements Parcelable  {
         public void setNum_reports(int num_reports)                          { this.num_reports = num_reports; }
         public void setUps(int ups)                                          { this.ups = ups; }
         //@formatter:on
+        
+        @Override
+        public ContentValues getContentValues() {
+            ContentValues values = new ContentValues();
+            values.put(RedditContract.PostColumns.DOMAIN                , domain);
+            values.put(RedditContract.PostColumns.BANNED_BY             , banned_by);
+            values.put(RedditContract.PostColumns.SUBREDDIT             , subreddit);
+            values.put(RedditContract.PostColumns.SELFTEXT_HTML         , selftext_html);
+            values.put(RedditContract.PostColumns.SELFTEXT              , selftext);
+            values.put(RedditContract.PostColumns.VOTE                  , likes.name());
+            values.put(RedditContract.PostColumns.SAVED                 , saved);
+            values.put(RedditContract.PostColumns.POST_ID               , id);
+            values.put(RedditContract.PostColumns.CLICKED               , clicked);
+            values.put(RedditContract.PostColumns.TITLE                 , title);
+            values.put(RedditContract.PostColumns.COMMENTS              , num_comments);
+            values.put(RedditContract.PostColumns.SCORE                 , score);
+            values.put(RedditContract.PostColumns.APPROVED_BY           , approved_by);
+            values.put(RedditContract.PostColumns.OVER_18               , over_18);
+            values.put(RedditContract.PostColumns.HIDDEN                , hidden);
+            values.put(RedditContract.PostColumns.THUMBNAIL             , thumbnail);
+            values.put(RedditContract.PostColumns.SUBREDDIT_ID          , subreddit_id);
+            values.put(RedditContract.PostColumns.AUTHOR_FLAIR_CSS_CLASS, author_flair_css_class);
+            values.put(RedditContract.PostColumns.DOWNS                 , downs);
+            values.put(RedditContract.PostColumns.IS_SELF               , is_self);
+            values.put(RedditContract.PostColumns.PERMALINK             , permalink);
+            values.put(RedditContract.PostColumns.NAME                  , name);
+            values.put(RedditContract.PostColumns.CREATED               , created);
+            values.put(RedditContract.PostColumns.URL                   , url);
+            values.put(RedditContract.PostColumns.AUTHOR_FLAIR_TEXT     , author_flair_text);
+            values.put(RedditContract.PostColumns.AUTHOR                , author);
+            values.put(RedditContract.PostColumns.CREATED_UTC           , created_utc);
+            values.put(RedditContract.PostColumns.LINK_FLAIR_TEXT       , link_flair_text);
+            
+            return values;
+        }
+        
+        public PostData(Cursor cursor) {
+            PostData p = new PostData();
+            
+            //@formatter:off
+            p.setDomain                (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN)));
+            p.setBanned_by             (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.BANNED_BY)));
+            p.setSubreddit             (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT)));
+            p.setSelftext_html         (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT_HTML)));
+            p.setSelftext              (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT)));
+            p.setVote     (Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE))));
+            p.setSaved                 (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.SAVED)) == 1);
+            p.setId                    (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.POST_ID)));
+            p.setClicked               (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.CLICKED)) == 1);
+            p.setTitle                 (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE)));
+            p.setNum_comments          (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.COMMENTS)));
+            p.setScore                 (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.SCORE)));
+            p.setApproved_by           (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.APPROVED_BY)));
+            p.setOver_18               (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1);
+            p.setHidden                (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.HIDDEN)) == 1);
+            p.setThumbnail             (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL)));
+            p.setSubreddit_id          (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT_ID)));
+            p.setAuthor_flair_css_class(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR_FLAIR_CSS_CLASS)));
+            p.setDowns                 (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.DOWNS)));
+            p.setIs_self               (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.IS_SELF)) == 1);
+            p.setPermalink             (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.PERMALINK)));
+            p.setName                  (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME)));
+            p.setCreated               (cursor.getLong  (cursor.getColumnIndex(RedditContract.Posts.CREATED)));
+            p.setUrl                   (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL)));
+            p.setAuthor_flair_text     (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR_FLAIR_TEXT)));
+            p.setAuthor                (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR)));
+            p.setCreated_utc           (cursor.getLong  (cursor.getColumnIndex(RedditContract.Posts.CREATED_UTC)));
+            p.setLink_flair_text       (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.LINK_FLAIR_TEXT)));
+            p.setDecodedUrl            (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DECODED_URL)));
+            //@formatter:off
+        }
     }
 
     public static class Media implements Parcelable {
@@ -601,4 +675,15 @@ public class RedditApi implements Parcelable  {
                  };
         //@formatter:on
     }
+
+    @Override
+    public ContentValues getContentValues() {
+        ContentValues values = new ContentValues();
+        values.put(RedditContract.RedditData.AFTER, data.getAfter());
+        values.put(RedditContract.RedditData.BEFORE, data.getBefore());
+        values.put(RedditContract.RedditData.MODHASH, data.getModhash());
+
+        return values;
+    }
+
 }
