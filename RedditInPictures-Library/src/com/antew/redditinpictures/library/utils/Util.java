@@ -27,6 +27,8 @@ import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 
 public class Util {
+    public static final String TAG = Util.class.getSimpleName();
+    
     private Util() {};
 
     public static boolean isUserAMonkey() {
