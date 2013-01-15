@@ -8,6 +8,7 @@ import android.provider.BaseColumns;
 import com.antew.redditinpictures.sqlite.RedditContract.LoginColumns;
 import com.antew.redditinpictures.sqlite.RedditContract.PostColumns;
 import com.antew.redditinpictures.sqlite.RedditContract.RedditDataColumns;
+import com.antew.redditinpictures.sqlite.RedditContract.SubredditColumns;
 
 public class RedditDatabase extends SQLiteOpenHelper {
 
@@ -18,17 +19,40 @@ public class RedditDatabase extends SQLiteOpenHelper {
         String POSTDATA    = "post_data";
         String REDDIT_DATA = "reddit_data";
         String LOGIN       = "login";
+        String SUBREDDITS  = "subreddits";
 
         interface CreateTableSql {
             //@formatter:off
             String LOGIN = "CREATE TABLE " + Tables.LOGIN +
                     " ("
-                    + BaseColumns._ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + LoginColumns.USERNAME + " TEXT NOT NULL, "
-                    + LoginColumns.COOKIE   + " TEXT NOT NULL, "
-                    + LoginColumns.MODHASH  + " TEXT NOT NULL"
+                    + BaseColumns._ID            + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + LoginColumns.USERNAME      + " TEXT NOT NULL, "
+                    + LoginColumns.COOKIE        + " TEXT, "
+                    + LoginColumns.MODHASH       + " TEXT, "
+                    + LoginColumns.SUCCESS       + " INTEGER, "
+                    + LoginColumns.ERROR_MESSAGE + " TEXT"
                     + " );";
-                    
+            
+            String SUBREDDITS = "CREATE TABLE " + Tables.SUBREDDITS +
+                    " ("
+                    + BaseColumns._ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + SubredditColumns.DISPLAY_NAME       + " TEXT, "
+                    + SubredditColumns.HEADER_IMAGE       + " TEXT, "
+                    + SubredditColumns.TITLE              + " TEXT, "
+                    + SubredditColumns.URL                + " TEXT, "
+                    + SubredditColumns.DESCRIPTION        + " TEXT, "
+                    + SubredditColumns.CREATED            + " INTEGER, "
+                    + SubredditColumns.CREATED_UTC        + " INTEGER, "
+                    + SubredditColumns.HEADER_SIZE        + " TEXT, "
+                    + SubredditColumns.OVER_18            + " TEXT, "
+                    + SubredditColumns.SUBSCRIBERS        + " INTEGER, "
+                    + SubredditColumns.ACCOUNTS_ACTIVE    + " TEXT, "
+                    + SubredditColumns.PUBLIC_DESCRIPTION + " TEXT, "
+                    + SubredditColumns.HEADER_TITLE       + " TEXT, "
+                    + SubredditColumns.SUBREDDIT_ID       + " TEXT, "
+                    + SubredditColumns.NAME               + " TEXT"
+                    + " );"; 
+            
             String POSTDATA = "CREATE TABLE " + Tables.POSTDATA + 
                     " (" 
                     + BaseColumns._ID                    + " INTEGER PRIMARY KEY AUTOINCREMENT, " 
@@ -84,12 +108,16 @@ public class RedditDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(Tables.CreateTableSql.POSTDATA);
         db.execSQL(Tables.CreateTableSql.REDDIT_DATA);
+        db.execSQL(Tables.CreateTableSql.LOGIN);
+        db.execSQL(Tables.CreateTableSql.SUBREDDITS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + Tables.POSTDATA);
         db.execSQL("DROP TABLE IF EXISTS " + Tables.REDDIT_DATA);
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.LOGIN);
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.SUBREDDITS);
         onCreate(db);
     }
 

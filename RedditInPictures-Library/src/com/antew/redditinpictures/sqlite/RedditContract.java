@@ -2,6 +2,9 @@ package com.antew.redditinpictures.sqlite;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.v4.util.SparseArrayCompat;
+
+import com.antew.redditinpictures.sqlite.RedditDatabase.Tables;
 
 public class RedditContract {
 
@@ -18,12 +21,38 @@ public class RedditContract {
     public static final int    LOGIN             = 300;
     public static final int    LOGIN_ID          = 301;
 
+    public static final int    SUBREDDIT         = 400;
+    public static final int    SUBREDDIT_ID      = 401;
+
     public static final Uri    BASE_CONTENT_URI  = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     public static final String PATH_POSTS        = "posts";
     public static final String PATH_REDDIT_DATA  = "reddit_data";
+    public static final String PATH_SUBREDDITS   = "subreddits";
     public static final String PATH_LOGIN        = "login";
-
+    
+    
+    /**
+     * Used to allow retrieving the table name from an id
+     */
+    public static SparseArrayCompat<String> TABLES;
+    static {
+        SparseArrayCompat<String> tempTables = new SparseArrayCompat<String>();
+        tempTables.put(RedditContract.POSTS, Tables.POSTDATA);
+        tempTables.put(RedditContract.POSTS_ID, Tables.POSTDATA);
+        
+        tempTables.put(RedditContract.REDDIT, Tables.REDDIT_DATA);
+        tempTables.put(RedditContract.REDDIT_ID, Tables.REDDIT_DATA);
+        
+        tempTables.put(RedditContract.LOGIN, Tables.LOGIN);
+        tempTables.put(RedditContract.LOGIN_ID, Tables.LOGIN);
+        
+        tempTables.put(RedditContract.SUBREDDIT, Tables.SUBREDDITS);
+        tempTables.put(RedditContract.SUBREDDIT_ID, Tables.SUBREDDITS);
+        
+        TABLES = tempTables;
+    }
+    
     public interface RedditDataColumns {
         String MODHASH = "modhash";
         String AFTER   = "after";
@@ -31,9 +60,32 @@ public class RedditContract {
     }
 
     public interface LoginColumns {
-        String USERNAME = "username";
-        String MODHASH  = "modhash";
-        String COOKIE   = "cookie";
+        String USERNAME      = "username";
+        String MODHASH       = "modhash";
+        String COOKIE        = "cookie";
+        String ERROR_MESSAGE = "errorMessage";
+        String SUCCESS       = "success";
+    }
+
+    /**
+     * Container for Subreddit data
+     */
+    public interface SubredditColumns {
+        String DISPLAY_NAME       = "displayName";
+        String HEADER_IMAGE       = "headerImage";
+        String TITLE              = "title";
+        String URL                = "url";
+        String DESCRIPTION        = "description";
+        String CREATED            = "created";
+        String CREATED_UTC        = "createdUtc";
+        String HEADER_SIZE        = "headerSize";
+        String OVER_18            = "over18";
+        String SUBSCRIBERS        = "subscribers";
+        String ACCOUNTS_ACTIVE    = "accountsActive";
+        String PUBLIC_DESCRIPTION = "publicDescription";
+        String HEADER_TITLE       = "headerTitle";
+        String SUBREDDIT_ID       = "subredditId";
+        String NAME               = "name";
     }
 
     public interface PostColumns {
@@ -84,13 +136,13 @@ public class RedditContract {
     }
 
     public static class Login implements LoginColumns, BaseColumns {
-        public static final Uri    CONTENT_URI       = BASE_CONTENT_URI.buildUpon().appendPath(PATH_REDDIT_DATA).build();
+        public static final Uri    CONTENT_URI       = BASE_CONTENT_URI.buildUpon().appendPath(PATH_LOGIN).build();
         public static final String CONTENT_TYPE      = "vnd.android.cursor.dir/vnd.redditinpictures.login";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.redditinpictures.login";
 
         public static final String DEFAULT_SORT      = BaseColumns._ID + " ASC";
 
-        public static Uri buildPostDataUri(String username) {
+        public static Uri buildLoginUri(String username) {
             return CONTENT_URI.buildUpon().appendPath(username).build();
         }
     }
@@ -104,6 +156,19 @@ public class RedditContract {
 
         public static Uri buildPostDataUri(String modhash) {
             return CONTENT_URI.buildUpon().appendPath(modhash).build();
+        }
+
+    }
+
+    public static class Subreddits implements SubredditColumns, BaseColumns {
+        public static final Uri    CONTENT_URI       = BASE_CONTENT_URI.buildUpon().appendPath(PATH_SUBREDDITS).build();
+        public static final String CONTENT_TYPE      = "vnd.android.cursor.dir/vnd.redditinpictures.subreddits";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.redditinpictures.subreddits";
+
+        public static final String DEFAULT_SORT      = BaseColumns._ID + " ASC";
+
+        public static Uri buildSubredditUri(String displayName) {
+            return CONTENT_URI.buildUpon().appendPath(displayName).build();
         }
 
     }
