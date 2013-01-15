@@ -92,12 +92,12 @@ public class RESTService extends IntentService {
 
         // We default to GET if no verb was specified.
         int verb = extras.getInt(EXTRA_HTTP_VERB, GET);
-        int requestCode = extras.getInt(EXTRA_REQUEST_CODE, 0);
+        RequestCode requestCode = (RequestCode) extras.getSerializable(EXTRA_REQUEST_CODE);
         Bundle params = extras.getParcelable(EXTRA_PARAMS);
         String cookie = extras.getString(EXTRA_COOKIE);
         String userAgent = extras.getString(EXTRA_USER_AGENT);
         boolean replaceAll = extras.getBoolean(EXTRA_REPLACE_ALL, false);
-        
+
         // Items in this bundle are simply passed on in onRequestComplete
         Bundle passThrough = extras.getBundle(EXTRA_PASS_THROUGH);
 
@@ -105,7 +105,7 @@ public class RESTService extends IntentService {
         Intent result = new Intent(Consts.BROADCAST_HTTP_FINISHED);
         result.putExtra(EXTRA_PASS_THROUGH, passThrough);
         Bundle resultData = new Bundle();
-        
+
         try {
             // Here we define our base request object which we will
             // send to our REST service via HttpClient.
@@ -186,7 +186,7 @@ public class RESTService extends IntentService {
 
                 if (responseEntity != null) {
                     resultData.putString(REST_RESULT, EntityUtils.toString(responseEntity));
-                    resultData.putInt(EXTRA_REQUEST_CODE, requestCode);
+                    resultData.putSerializable(EXTRA_REQUEST_CODE, requestCode);
                     resultData.putInt(EXTRA_STATUS_CODE, statusCode);
                     resultData.putBoolean(EXTRA_REPLACE_ALL, replaceAll);
 
@@ -194,7 +194,6 @@ public class RESTService extends IntentService {
 
                     onRequestComplete(result);
 
-                    
                 } else {
                     onRequestFailed(result, statusCode);
                 }
@@ -212,6 +211,7 @@ public class RESTService extends IntentService {
             Log.e(TAG, "There was a problem when sending the request.", e);
             onRequestFailed(result, 0);
         } finally {
+
             if (responseEntity != null)
                 try {
                     responseEntity.consumeContent();
@@ -219,12 +219,12 @@ public class RESTService extends IntentService {
                 }
         }
     }
-    
+
     public void onRequestFailed(Intent result, int statusCode) {
         Bundle args = new Bundle();
         args.putInt(EXTRA_STATUS_CODE, statusCode);
         result.putExtra(EXTRA_BUNDLE, args);
-        
+
         onRequestComplete(result);
     }
 
