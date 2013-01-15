@@ -219,7 +219,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
             case DOWN:
                 switch (p.getVote()) {
                     case DOWN:
-                        startService(RedditService.getVoteIntent(this, p.getName(), p.getSubreddit(), Vote.NEUTRAL));
+                        RedditService.vote(this, p.getName(), p.getSubreddit(), Vote.NEUTRAL);
                         item.setIcon(R.drawable.ic_action_downvote);
                         p.setVote(Vote.NEUTRAL);
                         p.setScore(p.getScore() + 1);
@@ -227,7 +227,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
                     case NEUTRAL:
                     case UP:
-                        startService(RedditService.getVoteIntent(this, p.getName(), p.getSubreddit(), Vote.DOWN));
+                        RedditService.vote(this, p.getName(), p.getSubreddit(), Vote.DOWN);
                         item.setIcon(R.drawable.ic_action_downvote_highlighted);
                         p.setVote(Vote.DOWN);
                         mUpvoteMenuItem.setIcon(R.drawable.ic_action_upvote);
@@ -240,7 +240,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                 switch (p.getVote()) {
                     case NEUTRAL:
                     case DOWN:
-                        startService(RedditService.getVoteIntent(this, p.getName(), p.getSubreddit(), Vote.UP));
+                        RedditService.vote(this, p.getName(), p.getSubreddit(), Vote.UP);
                         item.setIcon(R.drawable.ic_action_upvote_highlighted);
                         p.setVote(Vote.UP);
                         p.setScore(p.getScore() + 1);
@@ -248,7 +248,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                         break;
 
                     case UP:
-                        startService(RedditService.getVoteIntent(this, p.getName(), p.getSubreddit(), Vote.NEUTRAL));
+                        RedditService.vote(this, p.getName(), p.getSubreddit(), Vote.NEUTRAL);
                         item.setIcon(R.drawable.ic_action_upvote);
                         p.setVote(Vote.NEUTRAL);
                         p.setScore(p.getScore() - 1);
@@ -354,7 +354,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         if (!isRequestInProgress() && mAdapter.getCount() > 0) {
             Log.i(TAG, "reachedLastPage() - Loading more images");
             setRequestInProgress(true);
-            startService(RedditService.getPostIntent(this, mSubreddit, mAge, mCategory, mAfter, false));
+            RedditService.getPosts(this, mSubreddit, mAge, mCategory, mAfter, false);
         }
     }
 

@@ -6,16 +6,21 @@ import java.util.Collections;
 import java.util.List;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.RelativeLayout;
 import android.widget.SpinnerAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
@@ -31,13 +36,14 @@ import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment.LoginDialogListener;
 import com.antew.redditinpictures.library.dialog.LogoutDialogFragment;
 import com.antew.redditinpictures.library.dialog.LogoutDialogFragment.LogoutDialogListener;
+import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
-import com.antew.redditinpictures.library.reddit.RedditApi;
 import com.antew.redditinpictures.library.reddit.RedditApiManager;
 import com.antew.redditinpictures.library.reddit.RedditLoginResponse;
+import com.antew.redditinpictures.library.reddit.RedditLoginResponse.LoginData;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
@@ -47,31 +53,40 @@ import com.antew.redditinpictures.library.subredditmanager.SubredditManagerApi11
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.sqlite.RedditContract;
 
-public class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoginDialogListener, LogoutDialogListener {
+public class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoginDialogListener, LogoutDialogListener, RedditDataProvider,
+        LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG                     = "ImageGridActivity";
-    public static final int     POSTS_TO_FETCH          = 50;
     protected boolean           mShowNsfwImages;
     protected Age               mAge                    = Age.TODAY;
     protected Category          mCategory               = Category.HOT;
     public static final int     EDIT_SUBREDDITS_REQUEST = 10;
     public static final int     SETTINGS_REQUEST        = 20;
-    public static final int     REDDIT_LOADER           = 1;
-    public static final int     POST_LOADER             = 2;
     private String              mSubreddit;
     private SpinnerAdapter      mSpinnerAdapter;
     private RedditLoginResponse mRedditLoginResponse;
     private boolean             mReplaceAdapter;
     private boolean             mRequestInProgress;
-    private RedditApi           mRedditApi;
     private boolean             mFirstCall              = true;
     private int                 mNavPosition;
     private ProgressDialog      mProgressDialog;
     private MenuItem            mLoginMenuItem;
-    private TextView            mErrorMessage;
     protected RelativeLayout    mLayoutWrapper;
     private RedditUrl           mRedditUrl;
     private String              mUsername;
+    
+    //@formatter:off
+    private BroadcastReceiver   mMySubreddits = new BroadcastReceiver() {
+        
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "Received mySubreddits callback");
+            getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), ImageGridActivity.this);
+            hideProgressDialog();
+        }
+    };
+    //@formatter:on
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +98,6 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.image_grid_activity);
 
-        mErrorMessage = (TextView) findViewById(R.id.error_message);
         mLayoutWrapper = (RelativeLayout) findViewById(R.id.image_grid_wrapper);
         mShowNsfwImages = SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this);
         mAge = SharedPreferencesHelper.getAge(ImageGridActivity.this);
@@ -115,10 +129,19 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         if (fragment == null) {
             fragment = getImageGridFragment();
         }
-        
+
         ft.replace(android.R.id.content, fragment, ImageGridFragment.TAG);
         ft.commit();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
+        getSupportLoaderManager().initLoader(Consts.LOADER_LOGIN, null, this);
+    }
+    
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMySubreddits);
         
+        super.onPause();
     }
 
     /**
@@ -170,14 +193,19 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     public ImageGridFragment getImageGridFragment() {
         return new ImageGridFragment();
     }
-    
+
     public String getSubredditName(int position) {
         return position == Consts.POSITION_FRONTPAGE ? RedditUrl.REDDIT_FRONTPAGE : mSpinnerAdapter.getItem(position).toString();
     }
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        Intent intent = new Intent(Consts.BROADCAST_SUBREDDIT_SELECTED);
+        if (mFirstCall) {
+            mFirstCall = false;
+            return true;
+        }
+
+        Intent intent = new Intent(Consts.BROADCAST_SUBSCRIBE);
         intent.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, getSubredditName(itemPosition));
         intent.putExtra(Consts.EXTRA_AGE, mAge.name());
         intent.putExtra(Consts.EXTRA_CATEGORY, mCategory.name());
@@ -187,10 +215,9 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(Consts.EXTRA_NAV_POSITION, getSupportActionBar().getSelectedNavigationIndex());
-        outState.putString(Consts.EXTRA_SELECTED_SUBREDDIT, (String) mSpinnerAdapter.getItem(getSupportActionBar().getSelectedNavigationIndex()));
-        outState.putParcelable(Consts.EXTRA_REDDIT_API, mRedditApi);
-        outState.putParcelable(Consts.EXTRA_REDDIT_URL, mRedditUrl);
+        int navIndex = getSupportActionBar().getSelectedNavigationIndex();
+        outState.putInt(Consts.EXTRA_NAV_POSITION, navIndex);
+        outState.putString(Consts.EXTRA_SELECTED_SUBREDDIT, (String) mSpinnerAdapter.getItem(navIndex));
         super.onSaveInstanceState(outState);
     }
 
@@ -203,12 +230,6 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         if (savedInstanceState.containsKey(Consts.EXTRA_NAV_POSITION)) {
             mNavPosition = savedInstanceState.getInt(Consts.EXTRA_NAV_POSITION);
         }
-
-        if (savedInstanceState.containsKey(Consts.EXTRA_REDDIT_API))
-            mRedditApi = savedInstanceState.getParcelable(Consts.EXTRA_REDDIT_API);
-
-        if (savedInstanceState.containsKey(Consts.EXTRA_REDDIT_URL))
-            mRedditUrl = savedInstanceState.getParcelable(Consts.EXTRA_REDDIT_URL);
     }
 
     @Override
@@ -304,7 +325,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         } else if (itemId == R.id.login) {
             handleLoginAndLogout();
         }
-        //@formatter:off
+//@formatter:off
         else if (itemId == R.id.category_hot)                    { mCategory = Category.HOT;                                   loadFromUrl = true; }
         else if (itemId == R.id.category_new)                    { mCategory = Category.NEW;                                   loadFromUrl = true; }
         else if (itemId == R.id.category_rising)                 { mCategory = Category.RISING;                                loadFromUrl = true; } 
@@ -406,14 +427,6 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         mProgressDialog = ProgressDialog.show(ImageGridActivity.this, title, message, true, false);
     }
 
-    private void showLoginError(RedditLoginResponse rlp) {
-        String errorText = "";
-        for (String[] error : rlp.getLoginResponse().getErrors())
-            errorText += error[1] + " ";
-
-        Toast.makeText(ImageGridActivity.this, getString(R.string.error) + errorText, Toast.LENGTH_SHORT).show();
-    }
-
     private void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing())
             mProgressDialog.dismiss();
@@ -423,8 +436,8 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     public void onFinishLoginDialog(String username, String password) {
         mUsername = username;
         showProgressDialog(getString(R.string.log_on), getString(R.string.logging_on));
-        startService(RedditService.getLoginIntent(this, username, password));
-        
+        RedditService.login(this, username, password);
+
     }
 
     @Override
@@ -440,21 +453,73 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         setSupportProgressBarIndeterminateVisibility(inProgress);
     }
 
-    /*
     @Override
+    public Age getAge() {
+        return mAge;
+    }
+
+    @Override
+    public Category getCategory() {
+        return mCategory;
+    }
+
+    @Override
+    public String getSubreddit() {
+        return getSubredditName(getSupportActionBar().getSelectedNavigationIndex());
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle paramBundle) {
+        Log.i(TAG, "onCreateLoader");
+        switch (id) {
+            case Consts.LOADER_LOGIN:
+                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
+        }
+
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        switch (loader.getId()) {
+            case Consts.LOADER_LOGIN:
+                Log.i(TAG, "onLoadFinished LOADER_LOGIN, " + cursor.getCount() + " rows");
+                if (cursor != null && cursor.moveToFirst()) {
+                    mUsername = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
+                    Log.i(TAG, "Username = " + mUsername);
+                    String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
+                    String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
+                    Log.i(TAG, "Cookie = " + cookie);
+                    Log.i(TAG, "Modhash = " + modhash);
+
+                    RedditApiManager.saveRedditLoginInformation(this, mUsername, modhash, cookie);
+                    hideProgressDialog();
+                    invalidateOptionsMenu();
+                    showProgressDialog(getString(R.string.loading), getString(R.string.retrieving_subscribed_subreddits));
+                    RedditService.getMySubreddits(this);
+                }
+                break;
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> paramLoader) {
+
+    }
+
     public void loginComplete(RedditLoginResponse response) {
         hideProgressDialog();
         mRedditLoginResponse = response;
         if (response.getLoginResponse().getErrors().size() > 0) {
             RedditApiManager.setIsLoggedIn(false);
-            showLoginError(response);
         } else {
             showProgressDialog("Subreddits", "Retrieving subscribed subreddits");
             LoginData data = response.getLoginResponse().getData();
             RedditApiManager.saveRedditLoginInformation(this, mUsername, data.getModhash(), data.getCookie());
-            startService(RedditService.getMySubredditsIntent(this));
+
             invalidateOptionsMenu();
         }
     }
-    */
+
 }
