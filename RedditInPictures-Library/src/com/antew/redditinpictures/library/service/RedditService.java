@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.antew.redditinpictures.library.json.RedditResult;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditApiManager;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
@@ -13,6 +12,7 @@ import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
 import com.antew.redditinpictures.library.reddit.SubscribeAction;
 import com.antew.redditinpictures.library.reddit.Vote;
+import com.antew.redditinpictures.library.reddit.json.RedditResult;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
