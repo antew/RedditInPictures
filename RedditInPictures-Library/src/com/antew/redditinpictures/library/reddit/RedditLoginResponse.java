@@ -15,21 +15,15 @@
  */
 package com.antew.redditinpictures.library.reddit;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
-import com.antew.redditinpictures.library.json.GsonType;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.sqlite.RedditContract;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
-public class RedditLoginResponse extends GsonType implements ContentValuesOperation {
+public class RedditLoginResponse implements ContentValuesOperation {
     public static final String TAG = RedditLoginResponse.class.getSimpleName();
     
     @SerializedName("json") private LoginResponse loginResponse;
@@ -71,25 +65,6 @@ public class RedditLoginResponse extends GsonType implements ContentValuesOperat
         public String getCookie() {
             return cookie;
         }
-    }
-
-    @Override
-    public ArrayList<ContentProviderOperation> parse(String json) {
-        final ArrayList<ContentProviderOperation> list = new ArrayList<ContentProviderOperation>();
-        
-        try {
-            RedditLoginResponse loginResponse = new Gson().fromJson(json, RedditLoginResponse.class);
-            ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(RedditContract.Login.CONTENT_URI);
-            builder.withValue(RedditContract.Login.COOKIE, loginResponse.getLoginResponse().getData().getCookie());
-            builder.withValue(RedditContract.Login.MODHASH, loginResponse.getLoginResponse().getData().getModhash());
-            
-            list.add(builder.build());
-        } catch (JsonSyntaxException e) {
-            String result = json == null ? "null" : "json";
-            Log.e(TAG, "Error parsing login response, json = " + result);
-        }
-        
-        return list;
     }
 
     @Override
