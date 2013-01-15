@@ -20,7 +20,6 @@ import android.support.v4.app.FixedFragmentStatePagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import com.antew.redditinpictures.library.provider.RedditProvider;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 
@@ -55,7 +54,7 @@ public class CursorPagerAdapter extends FixedFragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (mCursor != null && mCursor.moveToPosition(position)) {
-            return getImageDetailFragment(RedditProvider.cursorToPostData(mCursor));
+            return getImageDetailFragment(new PostData(mCursor));
         }
         
         return null;
@@ -69,7 +68,7 @@ public class CursorPagerAdapter extends FixedFragmentStatePagerAdapter {
      */
     public PostData getPost(int position) {
         if (mCursor != null && mCursor.moveToPosition(position)) {
-            return RedditProvider.cursorToPostData(mCursor);
+            return new PostData(mCursor);
         }
         
         return null;
