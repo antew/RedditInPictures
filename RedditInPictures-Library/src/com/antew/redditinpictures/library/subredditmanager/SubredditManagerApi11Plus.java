@@ -15,7 +15,6 @@
  */
 package com.antew.redditinpictures.library.subredditmanager;
 
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,19 +33,14 @@ import android.widget.ListView;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.androidquery.callback.AjaxStatus;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
-import com.antew.redditinpictures.library.reddit.MySubreddits;
-import com.antew.redditinpictures.library.reddit.MySubreddits.SubredditData;
 import com.antew.redditinpictures.library.reddit.RedditApiManager;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
-import com.antew.redditinpictures.library.reddit.SubscribeAction;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.StringUtil;
-import com.google.gson.Gson;
 
 @TargetApi(11)
 public class SubredditManagerApi11Plus extends SubredditManager {
@@ -56,7 +50,6 @@ public class SubredditManagerApi11Plus extends SubredditManager {
     private String               mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
     private MenuItem             mResetToDefaultSubreddits;
     private MenuItem             mResyncWithReddit;
-    private SubscribeAction      mAction;
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,20 +57,18 @@ public class SubredditManagerApi11Plus extends SubredditManager {
         if (getIntent().hasExtra(Consts.EXTRA_SELECTED_SUBREDDIT))
             mSelectedSubreddit = getIntent().getStringExtra(Consts.EXTRA_SELECTED_SUBREDDIT);
 
-        List<String> subReddits = SharedPreferencesHelper.loadArray(PREFS_NAME, ARRAY_NAME, SubredditManagerApi11Plus.this);
+        List<String> subreddits = SharedPreferencesHelper.loadArray(PREFS_NAME, ARRAY_NAME, SubredditManagerApi11Plus.this);
 
-        if (subReddits.size() == 0) {
+        if (subreddits.size() == 0) {
             String[] reddits = getResources().getStringArray(R.array.default_reddits);
             for (int i = 0; i < reddits.length; i++) {
-                subReddits.add(reddits[i]);
+                subreddits.add(reddits[i]);
             }
         }
 
-        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
+        Collections.sort(subreddits, StringUtil.getCaseInsensitiveComparator());
 
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, subReddits);
-
-        setListAdapter(mAdapter);
+        setListAdapter(subreddits);
 
         final ListView listView = getListView();
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -129,49 +120,22 @@ public class SubredditManagerApi11Plus extends SubredditManager {
     }
 
     @Override
-    public void resyncSubredditsWithReddit() {
-        RedditService.getMySubreddits(this);
-    }
-
-    @Override
-    public void mySubredditsCallback(String url, String json, AjaxStatus status) {
-        if (status.getCode() == HttpURLConnection.HTTP_OK) {
-            Gson gson = new Gson();
-            MySubreddits mMySubreddits = gson.fromJson(json, MySubreddits.class);
-            Log.i("MyRedditsJson", json);
-
-            List<String> subReddits = new ArrayList<String>();
-
-            for (MySubreddits.Children c : mMySubreddits.getData().getChildren()) {
-                SubredditData data = c.getData();
-                subReddits.add(data.getDisplay_name());
-                Log.i("Subscribed Subreddits", data.getDisplay_name());
-            }
-
-            SharedPreferencesHelper.saveArray(subReddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, SubredditManagerApi11Plus.this);
-            Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
-
-            mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, subReddits);
-            setListAdapter(mAdapter);
-        } else {
-            Log.e("MySubreddits", "Something went wrong on mySubreddits! status = " + status.getCode() + " | json = " + json == null ? "null" : json);
-
-        }
+    public int getListLayoutId() {
+        return android.R.layout.simple_list_item_activated_1;
     }
 
     @Override
     public void resetToDefaultSubreddits() {
-        List<String> subReddits = new ArrayList<String>();
+        List<String> subreddits = new ArrayList<String>();
 
         String[] reddits = getResources().getStringArray(R.array.default_reddits);
         for (int i = 0; i < reddits.length; i++) {
-            subReddits.add(reddits[i]);
+            subreddits.add(reddits[i]);
         }
 
-        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
+        Collections.sort(subreddits, StringUtil.getCaseInsensitiveComparator());
 
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1, subReddits);
-        setListAdapter(mAdapter);
+        setListAdapter(subreddits);
         SharedPreferencesHelper.saveArray(getReddits(), PREFS_NAME, ARRAY_NAME, SubredditManagerApi11Plus.this);
     }
 
@@ -290,10 +254,10 @@ public class SubredditManagerApi11Plus extends SubredditManager {
                     mode.setSubtitle(null);
                     break;
                 case 1:
-                    mode.setSubtitle("One item selected");
+                    mode.setSubtitle(R.string.one_item_selected);
                     break;
                 default:
-                    mode.setSubtitle("" + checkedCount + " items selected");
+                    mode.setSubtitle(checkedCount + getString(R.string.items_selected));
                     break;
             }
 
