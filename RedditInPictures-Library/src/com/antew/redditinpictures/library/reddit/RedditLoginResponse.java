@@ -15,13 +15,27 @@
  */
 package com.antew.redditinpictures.library.reddit;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class RedditLoginResponse {
-    private LoginResponse json;
+import android.content.ContentProviderOperation;
+import android.content.ContentValues;
 
+import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
+import com.antew.redditinpictures.library.json.GsonType;
+import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.sqlite.RedditContract;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.SerializedName;
+
+public class RedditLoginResponse extends GsonType implements ContentValuesOperation {
+    public static final String TAG = RedditLoginResponse.class.getSimpleName();
+    
+    @SerializedName("json") private LoginResponse loginResponse;
+    
     public LoginResponse getLoginResponse() {
-        return json;
+        return loginResponse;
     }
 
     public static class LoginResponse {
@@ -38,9 +52,18 @@ public class RedditLoginResponse {
     }
 
     public static class LoginData {
+        private String username;
         private String modhash;
         private String cookie;
 
+        public String getUsername() {
+            return username;
+        }
+        
+        public void setUsername(String username) {
+            this.username = username;
+        }
+        
         public String getModhash() {
             return modhash;
         }
@@ -48,6 +71,46 @@ public class RedditLoginResponse {
         public String getCookie() {
             return cookie;
         }
+    }
+
+    @Override
+    public ArrayList<ContentProviderOperation> parse(String json) {
+        final ArrayList<ContentProviderOperation> list = new ArrayList<ContentProviderOperation>();
+        
+        try {
+            RedditLoginResponse loginResponse = new Gson().fromJson(json, RedditLoginResponse.class);
+            ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(RedditContract.Login.CONTENT_URI);
+            builder.withValue(RedditContract.Login.COOKIE, loginResponse.getLoginResponse().getData().getCookie());
+            builder.withValue(RedditContract.Login.MODHASH, loginResponse.getLoginResponse().getData().getModhash());
+            
+            list.add(builder.build());
+        } catch (JsonSyntaxException e) {
+            String result = json == null ? "null" : "json";
+            Log.e(TAG, "Error parsing login response, json = " + result);
+        }
+        
+        return list;
+    }
+
+    @Override
+    public ContentValues getContentValues() {
+        ContentValues values = new ContentValues();
+        if (loginResponse.getErrors().size() > 0) {
+            StringBuilder errorMessage = new StringBuilder();
+            for (String[] error : loginResponse.getErrors())
+                errorMessage.append(error[1] + " ");
+            
+            values.put(RedditContract.Login.SUCCESS, 0);
+            values.put(RedditContract.Login.ERROR_MESSAGE, errorMessage.toString());
+        } else {
+            LoginData data = loginResponse.getData();
+            values.put(RedditContract.Login.USERNAME, data.getUsername());
+            values.put(RedditContract.Login.COOKIE, data.getCookie());
+            values.put(RedditContract.Login.MODHASH, data.getModhash());
+            values.put(RedditContract.Login.SUCCESS, 1);
+        }
+        
+        return values;
     }
 
 }
