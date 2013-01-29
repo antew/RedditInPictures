@@ -48,7 +48,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Antew
  * 
  */
-public class ImgurResolver {
+public class ImageResolver {
     public static final String  TAG                   = "ImgurResolver";
     private static final String JSON                  = ".json";
     private static final String URL_IMGUR_ALBUM_API   = "http://api.imgur.com/2/album/";
