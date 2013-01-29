@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2012 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.antew.redditinpictures.library.ui;
 
 import android.annotation.TargetApi;
@@ -44,16 +28,14 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.adapter.ImageCursorAdapter;
+import com.antew.redditinpictures.library.image.ThumbnailInfo;
 import com.antew.redditinpictures.library.imgur.ImgurThumbnailFetcher;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.logging.Log;
-import com.antew.redditinpictures.library.reddit.RedditApiManager;
-import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
-import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
+import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.service.RequestCode;
 import com.antew.redditinpictures.library.utils.Consts;
@@ -62,31 +44,19 @@ import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
-/**
- * The main fragment that powers the ImageGridActivity screen. Fairly straight forward GridView
- * implementation with the key addition being the ImageWorker class w/ImageCache to load children
- * asynchronously, keeping the UI nice and smooth and caching thumbnails for quick retrieval. The
- * cache is retained over configuration changes like orientation change so the images are populated
- * quickly if, for example, the user rotates the device.
- */
 public class ImageGridFragment extends SherlockFragment implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     public static final String   TAG                = "ImageGridFragment";
     private static final String  IMAGE_CACHE_DIR    = "thumbs";
-    private int                  mImageThumbSize;
-    private int                  mImageThumbSpacing;
+    private ThumbnailInfo        mThumbnailInfo;
     protected ImageCursorAdapter mAdapter;
-    // protected ImageAdapter mAdapter;
     private ImageFetcher         mImageFetcher;
-    private Age                  mAge = Age.TODAY;
-    private Category             mCategory = Category.HOT;
-    private String               mBefore;
     private String               mAfter;
     private boolean              mRequestInProgress = false;
     private boolean              mFirstRequest      = true;
     private ProgressBar          mProgress;
     private TextView             mNoImages;
     private RedditDataProvider   mRedditDataProvider;
-    private MenuItem mLoginMenuItem;
+    private MenuItem             mLoginMenuItem;
 
     /**
      * Empty constructor as per the Fragment documentation
@@ -98,17 +68,15 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
-        
-        mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
-        mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
+        mThumbnailInfo = ThumbnailInfo.getThumbnailInfo(getResources());
         ImageCacheParams cacheParams = new ImageCacheParams(getActivity(), IMAGE_CACHE_DIR);
 
         // Set memory cache to 25% of mem class
         cacheParams.setMemCacheSizePercent(getActivity(), 0.25f);
 
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
-        mImageFetcher = new ImgurThumbnailFetcher(getActivity(), mImageThumbSize);
+        mImageFetcher = new ImgurThumbnailFetcher(getActivity(), mThumbnailInfo.getSize());
         mImageFetcher.setLoadingImage(R.drawable.empty_photo);
         mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
 
@@ -133,79 +101,29 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         LocalBroadcastManager.getInstance(activity).registerReceiver(mHttpRequestComplete, new IntentFilter(Consts.BROADCAST_HTTP_FINISHED));
         LocalBroadcastManager.getInstance(activity).registerReceiver(mSubredditSelected, new IntentFilter(Consts.BROADCAST_SUBSCRIBE));
         LocalBroadcastManager.getInstance(activity).registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
-        
+
         activity.getSupportLoaderManager().initLoader(Consts.LOADER_REDDIT, null, ImageGridFragment.this);
         activity.getSupportLoaderManager().initLoader(Consts.LOADER_POSTS, null, ImageGridFragment.this);
-        
+
         if (activity instanceof RedditDataProvider)
             mRedditDataProvider = (RedditDataProvider) activity;
         else
             throw new RuntimeException("Activity " + activity.toString() + " must implement the RedditDataProvider interface");
     }
-    
+
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         mLoginMenuItem = menu.findItem(R.id.login);
 
         // If the user is logged in, update the Logout menu item to "Log out <username>"
-        if (RedditApiManager.isLoggedIn()) {
-            mLoginMenuItem.setTitle(getString(R.string.log_out_) + RedditApiManager.getUsername());
+        if (RedditLoginInformation.isLoggedIn()) {
+            mLoginMenuItem.setTitle(getString(R.string.log_out_) + RedditLoginInformation.getUsername());
             mLoginMenuItem.setIcon(R.drawable.ic_action_logout);
         } else {
             mLoginMenuItem.setTitle(R.string.log_on);
             mLoginMenuItem.setIcon(R.drawable.ic_action_login);
         }
-    }
-    
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-/*        inflater.inflate(R.menu.main, menu);
-
-        MenuItem item = null;
-        //@formatter:off
-        // Put a checkmark by the currently selected Category + Age combination
-        switch (mCategory) {
-            case CONTROVERSIAL:
-                switch (mAge)
-                {
-                    case ALL_TIME:  item = menu.findItem(R.id.category_controversial_all_time); item.setChecked(true); break;
-                    case THIS_HOUR: item = menu.findItem(R.id.category_controversial_hour)    ; item.setChecked(true); break;
-                    case THIS_MONTH:item = menu.findItem(R.id.category_controversial_month)   ; item.setChecked(true); break;
-                    case THIS_WEEK: item = menu.findItem(R.id.category_controversial_week)    ; item.setChecked(true); break;
-                    case THIS_YEAR: item = menu.findItem(R.id.category_controversial_year)    ; item.setChecked(true); break;
-                    case TODAY:     item = menu.findItem(R.id.category_controversial_today)   ; item.setChecked(true); break;
-                }
-                break;
-            case HOT: 
-                menu.findItem(R.id.category_hot).setChecked(true); 
-                break;
-            case NEW:
-                menu.findItem(R.id.category_new).setChecked(true); 
-                break;
-            case RISING:
-                menu.findItem(R.id.category_rising).setChecked(true);
-                break;
-            case TOP:
-                switch (mAge)
-                {
-                    case ALL_TIME:  item = menu.findItem(R.id.category_top_all_time); item.setChecked(true); break;
-                    case THIS_HOUR: item = menu.findItem(R.id.category_top_hour)    ; item.setChecked(true); break;
-                    case THIS_MONTH:item = menu.findItem(R.id.category_top_month)   ; item.setChecked(true); break;
-                    case THIS_WEEK: item = menu.findItem(R.id.category_top_week)    ; item.setChecked(true); break;
-                    case THIS_YEAR: item = menu.findItem(R.id.category_top_year)    ; item.setChecked(true); break;
-                    case TODAY:     item = menu.findItem(R.id.category_top_today)   ; item.setChecked(true); break;
-                }
-                break;
-            default:
-                mCategory = Category.HOT;
-                mAge = Age.TODAY;
-                menu.findItem(R.id.category_hot).setChecked(true);
-                break;
-        } 
-        //@formatter:on
-*/
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -240,7 +158,8 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 // if we're at the bottom of the listview, load more data
-                if (!mRequestInProgress && totalItemCount > 0 && ((firstVisibleItem + visibleItemCount) >= totalItemCount))
+                boolean lastItemIsVisible = (firstVisibleItem + visibleItemCount) >= totalItemCount;
+                if (!mRequestInProgress && totalItemCount > 0 && lastItemIsVisible)
                     fetchImagesFromReddit(false);
             }
         };
@@ -260,12 +179,11 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             @Override
             public void onGlobalLayout() {
                 if (mAdapter.getNumColumns() == 0) {
-                    final int numColumns = (int) Math.floor(gridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+                    final int numColumns = (int) Math.floor(gridView.getWidth() / (mThumbnailInfo.getSize() + mThumbnailInfo.getSpacing()));
                     if (numColumns > 0) {
-                        final int columnWidth = (gridView.getWidth() / numColumns) - mImageThumbSpacing;
+                        final int columnWidth = (gridView.getWidth() / numColumns) - mThumbnailInfo.getSpacing();
                         mAdapter.setNumColumns(numColumns);
                         mAdapter.setItemHeight(columnWidth);
-                        Log.d(TAG, "onCreateView - numColumns set to " + numColumns);
                     }
                 }
             }
@@ -319,10 +237,12 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     public Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
         return ImageDetailActivity.class;
     }
-    
+
     private void showLoginError(String errorMessage) {
         Toast.makeText(getActivity(), getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT).show();
     }
+
+
 
     /**
      * This BroadcastReceiver handles updating the score when a vote is cast or changed
@@ -381,10 +301,12 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     
     private void setRequestInProgress(boolean inProgress) {
         mRequestInProgress = inProgress;
-        SherlockFragmentActivity activity = getSherlockActivity();
         
-        if (activity != null)
-            activity.setSupportProgressBarIndeterminate(inProgress);
+        final SherlockFragmentActivity activity = getSherlockActivity();
+        if (activity != null) {
+            activity.setSupportProgressBarIndeterminateVisibility(inProgress);
+        }
+        
         
         if (inProgress) {
             mProgress.setVisibility(View.VISIBLE);
@@ -395,9 +317,9 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     }
 
     private void fetchImagesFromReddit(boolean replaceAll) {
-        setRequestInProgress(true);
         SherlockFragmentActivity activity = getSherlockActivity();
         if (activity != null)
+            setRequestInProgress(true);
             //@formatter:off
             RedditService.getPosts(activity, 
                                    mRedditDataProvider.getSubreddit(),
@@ -407,7 +329,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                                    replaceAll);
             //@formatter:on
     }
-    
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
         Log.i(TAG, "onCreateLoader");
@@ -416,7 +338,8 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                 return new CursorLoader(getActivity(), RedditContract.RedditData.CONTENT_URI, null, null, null, RedditContract.Posts.DEFAULT_SORT);
 
             case Consts.LOADER_POSTS:
-                return new CursorLoader(getActivity(), RedditContract.Posts.CONTENT_URI, RedditContract.Posts.GRIDVIEW_PROJECTION, null, null, RedditContract.RedditData.DEFAULT_SORT);
+                return new CursorLoader(getActivity(), RedditContract.Posts.CONTENT_URI, RedditContract.Posts.GRIDVIEW_PROJECTION, null, null,
+                        RedditContract.RedditData.DEFAULT_SORT);
         }
 
         return null;
@@ -430,7 +353,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                 Log.i(TAG, "onLoadFinished REDDIT_LOADER, " + cursor.getCount() + " rows");
                 if (cursor != null && cursor.moveToFirst()) {
                     mAfter = cursor.getString(cursor.getColumnIndex(RedditContract.RedditData.AFTER));
-                    mBefore = cursor.getString(cursor.getColumnIndex(RedditContract.RedditData.BEFORE));
                 }
                 break;
 
@@ -443,7 +365,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                     mNoImages.setVisibility(View.VISIBLE);
                 else if (mNoImages.getVisibility() == View.VISIBLE)
                     mNoImages.setVisibility(View.GONE);
-                    
+
                 break;
         }
     }
@@ -453,4 +375,5 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         Log.i(TAG, "onLoaderReset");
         mAdapter.swapCursor(null);
     }
+
 }
