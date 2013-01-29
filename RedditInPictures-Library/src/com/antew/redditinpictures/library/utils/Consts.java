@@ -65,4 +65,6 @@ public class Consts {
     public static final String REDDIT_BASE_URL                = "http://www.reddit.com";
 
     public static final int    POSTS_TO_FETCH                 = 50;
+
+    public static final float  IMAGE_CACHE_SIZE_PERCENTAGE    = 0.25f;
 }

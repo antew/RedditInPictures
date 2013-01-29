@@ -38,6 +38,7 @@ import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageCache;
+import com.antew.redditinpictures.library.utils.ImageCache.ImageCacheParams;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.library.widgets.CustomViewPager;
@@ -96,15 +97,89 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_detail_pager);
+        
+        // Set up activity to go full screen
+        getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN);
+        
         mCrouton = (TextView) findViewById(R.id.crouton);
         mWrapper = (RelativeLayout) findViewById(R.id.wrapper);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mToggleFullscreenReceiver, new IntentFilter(Consts.BROADCAST_TOGGLE_FULLSCREEN));
-
+        registerLocalBroadcastReceivers();
         getExtras();
+        initializeImageFetcher();
+        initializeAdapter();
+        initializeActionBar();
+        initializeViewPager();
 
-        // Fetch screen height and width, to use as our max size when loading images as this
-        // activity runs full screen
+        if (SharedPreferencesHelper.getUseHoloBackground(this)) {
+            mWrapper.setBackgroundResource(R.drawable.background_holo_dark);
+        }
+
+        invalidateOptionsMenu();
+    }
+    
+    private void initializeViewPager() {
+        moveViewPagerToSelectedIndex();
+        // Hide and show the ActionBar as the visibility changes
+        if (Util.hasHoneycomb()) {
+            mPager.setOnSystemUiVisibilityChangeListener(getOnSystemUiVisibilityChangeListener());
+        }
+    }
+    /**
+     * Set the current item based on the extra passed in to this activity
+     */
+    private void moveViewPagerToSelectedIndex() {
+        
+        final int extraCurrentItem = getIntent().getIntExtra(Consts.EXTRA_IMAGE, -1);
+        if (extraCurrentItem != -1) {
+            mPager.setCurrentItem(extraCurrentItem);
+        }
+    }
+    
+    private void registerLocalBroadcastReceivers() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(mToggleFullscreenReceiver, new IntentFilter(Consts.BROADCAST_TOGGLE_FULLSCREEN));
+    }
+    
+    /**
+     * Enable some additional newer visibility and ActionBar features to create a more
+     * immersive photo viewing experience.
+     * 
+     * Initialize the mActionBarHeight variable.
+     * 
+     */
+    private void initializeActionBar() {
+        final ActionBar actionBar = getSupportActionBar();
+
+        // Hide title text and set home as up
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(R.string.reddit_in_pictures);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        
+        // Calculate ActionBar height
+        TypedValue tv = new TypedValue();
+        if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+        }
+    }
+    
+    /**
+     * The ImageFetcher takes care of loading images into our ImageView children asynchronously
+     */
+    private void initializeImageFetcher() {
+        mImageFetcher = new ImgurOriginalFetcher(this, getImageWidthForResizing());
+        mImageFetcher.addImageCache(getSupportFragmentManager(), getImageCacheParams());
+        mImageFetcher.setImageFadeIn(false);
+    }
+    
+    private ImageCacheParams getImageCacheParams() {
+        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
+        cacheParams.setMemCacheSizePercent(this, Consts.IMAGE_CACHE_SIZE_PERCENTAGE); // Set memory cache to 25% of mem class
+        
+        return cacheParams;
+    }
+    
+    private int getImageWidthForResizing() {
+        // Fetch screen height and width, to use as our max size when loading images as this activity runs full screen
         final DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         final int height = displayMetrics.heightPixels;
@@ -116,52 +191,9 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
         // we shouldn't divide by 2, but this will use more memory and require a larger memory
         // cache.
         final int longest = (height > width ? height : width) / 2;
-
-        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
-        cacheParams.setMemCacheSizePercent(this, 0.25f); // Set memory cache to 25% of mem class
-
-        // The ImageFetcher takes care of loading images into our ImageView children asynchronously
-        mImageFetcher = new ImgurOriginalFetcher(this, longest);
-        mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
-        mImageFetcher.setImageFadeIn(false);
-
-        initializeAdapter();
-
-        // Set up activity to go full screen
-        getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN);
-
-        // Enable some additional newer visibility and ActionBar features to create a more
-        // immersive photo viewing experience
-        final ActionBar actionBar = getSupportActionBar();
-        // Hide title text and set home as up
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(R.string.reddit_in_pictures);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        // Hide and show the ActionBar as the visibility changes
-        if (Util.hasHoneycomb()) {
-            mPager.setOnSystemUiVisibilityChangeListener(getOnSystemUiVisibilityChangeListener());
-        }
-
-        // Set the current item based on the extra passed in to this activity
-        final int extraCurrentItem = getIntent().getIntExtra(Consts.EXTRA_IMAGE, -1);
-        if (extraCurrentItem != -1) {
-            mPager.setCurrentItem(extraCurrentItem);
-        }
-
-        // Calculate ActionBar height
-        TypedValue tv = new TypedValue();
-        if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
-            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-        }
-
-        if (SharedPreferencesHelper.getUseHoloBackground(this)) {
-            mWrapper.setBackgroundResource(R.drawable.background_holo_dark);
-        }
-
-        invalidateOptionsMenu();
+        
+        return longest;
     }
-    
     /**
      * Fix for bug where orientation change on 2.x would cause the indeterminate progress bar to
      * show
