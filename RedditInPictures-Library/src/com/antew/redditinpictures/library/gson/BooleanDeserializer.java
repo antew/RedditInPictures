@@ -30,8 +30,8 @@ import com.google.gson.JsonParseException;
 public class BooleanDeserializer implements JsonDeserializer<Boolean>  {
 
     @Override
-    public Boolean deserialize(JsonElement arg0, Type arg1, JsonDeserializationContext arg2) throws JsonParseException {
-        return arg0.getAsInt() == 1 ? true : false;
+    public Boolean deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+        return element.getAsInt() == 1 ? true : false;
     }
 
 
