@@ -41,7 +41,7 @@ import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
-import com.antew.redditinpictures.library.reddit.RedditApiManager;
+import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditLoginResponse;
 import com.antew.redditinpictures.library.reddit.RedditLoginResponse.LoginData;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
@@ -73,7 +73,6 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     private ProgressDialog      mProgressDialog;
     private MenuItem            mLoginMenuItem;
     protected RelativeLayout    mLayoutWrapper;
-    private RedditUrl           mRedditUrl;
     private String              mUsername;
     
     //@formatter:off
@@ -93,9 +92,9 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         if (BuildConfig.DEBUG) {
             Util.enableStrictMode();
         }
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.image_grid_activity);
 
         mLayoutWrapper = (RelativeLayout) findViewById(R.id.image_grid_wrapper);
@@ -115,15 +114,6 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             getWindow().setBackgroundDrawableResource(R.drawable.background_holo_dark);
         }
 
-        String loginJson = SharedPreferencesHelper.getLoginJson(ImageGridActivity.this);
-        if (!loginJson.equals("")) {
-            String username = SharedPreferencesHelper.getUsername(ImageGridActivity.this);
-            String modHash = SharedPreferencesHelper.getModHash(ImageGridActivity.this);
-            String cookie = SharedPreferencesHelper.getCookie(ImageGridActivity.this);
-            RedditApiManager.parseRedditLoginResponse(username, modHash, cookie, loginJson);
-            RedditApiManager.setIsLoggedIn(true);
-        }
-
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ImageGridFragment fragment = (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG);
         if (fragment == null) {
@@ -140,13 +130,11 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMySubreddits);
-        
         super.onPause();
     }
 
     /**
-     * Fix for bug where orientation change on 2.x would cause the indeterminate progress bar to
-     * show
+     * On some version of android the indeterminate progress bar will show when the feature is requested
      */
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -159,8 +147,8 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         mLoginMenuItem = menu.findItem(R.id.login);
 
         // If the user is logged in, update the Logout menu item to "Log out <username>"
-        if (RedditApiManager.isLoggedIn()) {
-            mLoginMenuItem.setTitle(getString(R.string.log_out_) + RedditApiManager.getUsername());
+        if (RedditLoginInformation.isLoggedIn()) {
+            mLoginMenuItem.setTitle(getString(R.string.log_out_) + RedditLoginInformation.getUsername());
             mLoginMenuItem.setIcon(R.drawable.ic_action_logout);
         } else {
             mLoginMenuItem.setTitle(R.string.log_on);
@@ -238,7 +226,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.main, menu);
-
+        
         MenuItem item = null;
         //@formatter:off
         // Put a checkmark by the currently selected Category + Age combination
@@ -353,7 +341,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     }
 
     public void handleLoginAndLogout() {
-        if (!RedditApiManager.isLoggedIn()) {
+        if (!RedditLoginInformation.isLoggedIn()) {
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
             loginFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGIN);
         } else {
@@ -442,15 +430,12 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
     @Override
     public void onFinishLogoutDialog() {
-        RedditApiManager.logout(ImageGridActivity.this);
+        int rowsDeleted = getContentResolver().delete(RedditContract.Login.CONTENT_URI, null, null);
+        Log.i(TAG, "rows deleted = " + rowsDeleted);
+        
         invalidateOptionsMenu();
         getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
         onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
-    }
-
-    public void setRequestInProgress(boolean inProgress) {
-        mRequestInProgress = inProgress;
-        setSupportProgressBarIndeterminateVisibility(inProgress);
     }
 
     @Override
@@ -475,7 +460,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             case Consts.LOADER_LOGIN:
                 return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
         }
-
+        
         return null;
     }
 
@@ -492,11 +477,13 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
                     Log.i(TAG, "Cookie = " + cookie);
                     Log.i(TAG, "Modhash = " + modhash);
 
-                    RedditApiManager.saveRedditLoginInformation(this, mUsername, modhash, cookie);
+                    LoginData data = new LoginData(mUsername, modhash, cookie);
+                    RedditLoginInformation.setLoginData(data);
+                    
                     hideProgressDialog();
                     invalidateOptionsMenu();
                     showProgressDialog(getString(R.string.loading), getString(R.string.retrieving_subscribed_subreddits));
-                    RedditService.getMySubreddits(this);
+//                    RedditService.getMySubreddits(this);
                 }
                 break;
         }
@@ -506,20 +493,6 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     @Override
     public void onLoaderReset(Loader<Cursor> paramLoader) {
 
-    }
-
-    public void loginComplete(RedditLoginResponse response) {
-        hideProgressDialog();
-        mRedditLoginResponse = response;
-        if (response.getLoginResponse().getErrors().size() > 0) {
-            RedditApiManager.setIsLoggedIn(false);
-        } else {
-            showProgressDialog("Subreddits", "Retrieving subscribed subreddits");
-            LoginData data = response.getLoginResponse().getData();
-            RedditApiManager.saveRedditLoginInformation(this, mUsername, data.getModhash(), data.getCookie());
-
-            invalidateOptionsMenu();
-        }
     }
 
 }
