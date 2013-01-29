@@ -173,7 +173,7 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
     
     private ImageCacheParams getImageCacheParams() {
         ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
-        cacheParams.setMemCacheSizePercent(this, Consts.IMAGE_CACHE_SIZE_PERCENTAGE); // Set memory cache to 25% of mem class
+        cacheParams.setMemCacheSizePercent(this, Consts.IMAGE_CACHE_SIZE); // Set memory cache to 25% of mem class
         
         return cacheParams;
     }

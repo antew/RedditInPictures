@@ -86,9 +86,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 
     private ImageCacheParams getImageCache() {
         ImageCacheParams cacheParams = new ImageCacheParams(getActivity(), IMAGE_CACHE_DIR);
-
-        // Set memory cache to 25% of mem class
-        cacheParams.setMemCacheSizePercent(getActivity(), 0.25f);
+        cacheParams.setMemCacheSizePercent(getActivity(), Consts.IMAGE_CACHE_SIZE);
         return cacheParams;
     }
 
