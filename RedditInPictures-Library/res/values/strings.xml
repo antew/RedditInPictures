@@ -67,5 +67,9 @@
     <string name="add_subreddit">Add Subreddit</string>
     <string name="enter_the_subreddit">Enter the subreddit</string>
     <string name="long_press_to_start_selection">Long press to start selection</string>
+    <string name="reset_to_default_subreddits_">Reset to default subreddits?</string>
+    <string name="reset">Reset</string>
+    <string name="one_item_selected">One item selected</string>
+    <string name="items_selected">" items selected"</string>
 
 </resources>
