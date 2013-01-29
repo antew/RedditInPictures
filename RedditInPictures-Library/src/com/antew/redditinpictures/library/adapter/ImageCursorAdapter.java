@@ -18,7 +18,6 @@ package com.antew.redditinpictures.library.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -40,12 +39,10 @@ import com.antew.redditinpictures.sqlite.RedditContract;
  */
 public class ImageCursorAdapter extends CursorAdapter {
     public static final String    TAG         = "ImageAdapter";
-    private final Context         mContext;
     private int                   mItemHeight = 0;
     private int                   mNumColumns = 0;
     private GridView.LayoutParams mImageViewLayoutParams;
     private ImageFetcher          mImageFetcher;
-    private LayoutInflater        mLayoutInflater;
     private Cursor                mCursor;
 
     /**
@@ -62,7 +59,6 @@ public class ImageCursorAdapter extends CursorAdapter {
         mContext = context;
         mImageFetcher = imageFetcher;
         mCursor = cursor;
-        mLayoutInflater = LayoutInflater.from(context);
         mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
     }
@@ -119,7 +115,8 @@ public class ImageCursorAdapter extends CursorAdapter {
         String url = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.URL));
         String thumbnail = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.THUMBNAIL));
         // If we have a thumbnail from Reddit use that, otherwise use the full URL
-        if (!thumbnail.trim().equals("")) {
+        // Reddit will send 'default' for one of the default alien icons, which we want to avoid using
+        if (!thumbnail.trim().equals("") && !thumbnail.equals("default")) {
             url = thumbnail;
             Log.i(TAG, "loading pos = " + cursor.getPosition() + " from the reddit thumbnail! " + url);
         }
