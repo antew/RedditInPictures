@@ -70,19 +70,26 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         setHasOptionsMenu(true);
 
         mThumbnailInfo = ThumbnailInfo.getThumbnailInfo(getResources());
-        ImageCacheParams cacheParams = new ImageCacheParams(getActivity(), IMAGE_CACHE_DIR);
-
-        // Set memory cache to 25% of mem class
-        cacheParams.setMemCacheSizePercent(getActivity(), 0.25f);
-
-        // The ImageFetcher takes care of loading images into our ImageView children asynchronously
-        mImageFetcher = new ImgurThumbnailFetcher(getActivity(), mThumbnailInfo.getSize());
-        mImageFetcher.setLoadingImage(R.drawable.empty_photo);
-        mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
+        initializeImageFetcher();
 
         // Initialize the adapter to null, the adapter will be populated in onLoadFinished
         mAdapter = new ImageCursorAdapter(getActivity(), mImageFetcher, null);
 
+    }
+
+    private void initializeImageFetcher() {
+        // The ImageFetcher takes care of loading images into our ImageView children asynchronously
+        mImageFetcher = new ImgurThumbnailFetcher(getActivity(), mThumbnailInfo.getSize());
+        mImageFetcher.setLoadingImage(R.drawable.empty_photo);
+        mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), getImageCache());
+    }
+
+    private ImageCacheParams getImageCache() {
+        ImageCacheParams cacheParams = new ImageCacheParams(getActivity(), IMAGE_CACHE_DIR);
+
+        // Set memory cache to 25% of mem class
+        cacheParams.setMemCacheSizePercent(getActivity(), 0.25f);
+        return cacheParams;
     }
 
     @Override
@@ -334,12 +341,23 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
         Log.i(TAG, "onCreateLoader");
         switch (id) {
+            //@formatter:off
             case Consts.LOADER_REDDIT:
-                return new CursorLoader(getActivity(), RedditContract.RedditData.CONTENT_URI, null, null, null, RedditContract.Posts.DEFAULT_SORT);
+                return new CursorLoader(getActivity(), 
+                                        RedditContract.RedditData.CONTENT_URI, // uri             
+                                        null,                                  // projection      
+                                        null,                                  // selection       
+                                        null,                                  // selectionArgs[] 
+                                        RedditContract.Posts.DEFAULT_SORT);    // sort            
 
             case Consts.LOADER_POSTS:
-                return new CursorLoader(getActivity(), RedditContract.Posts.CONTENT_URI, RedditContract.Posts.GRIDVIEW_PROJECTION, null, null,
-                        RedditContract.RedditData.DEFAULT_SORT);
+                return new CursorLoader(getActivity(), 
+                                        RedditContract.Posts.CONTENT_URI,         // uri
+                                        RedditContract.Posts.GRIDVIEW_PROJECTION, // projection
+                                        null,                                     // selection
+                                        null,                                     // selectionArgs[]
+                                        RedditContract.RedditData.DEFAULT_SORT);  // sort
+            //@formatter:on
         }
 
         return null;
