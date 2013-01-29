@@ -43,12 +43,26 @@ public class RedditLoginResponse implements ContentValuesOperation {
         public LoginData getData() {
             return data;
         }
+        
+        public void setData(LoginData data) {
+            this.data = data;
+        }
+        
+        public void setErrors(List<String[]> errors) {
+            this.errors = errors;
+        }
     }
 
     public static class LoginData {
         private String username;
         private String modhash;
         private String cookie;
+        
+        public LoginData(String username, String modhash, String cookie) {
+            this.username = username;
+            this.modhash = modhash;
+            this.cookie = cookie;
+        }
 
         public String getUsername() {
             return username;
@@ -64,6 +78,12 @@ public class RedditLoginResponse implements ContentValuesOperation {
 
         public String getCookie() {
             return cookie;
+        }
+        
+        public boolean isLoggedIn()  {
+            return username != null && !username.equals("") &&
+                   modhash  != null && !modhash.equals("") &&
+                   cookie   != null && !cookie.equals("");
         }
     }
 
