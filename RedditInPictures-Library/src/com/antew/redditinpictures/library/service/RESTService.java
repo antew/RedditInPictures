@@ -78,15 +78,12 @@ public class RESTService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.i(TAG, "onHandleIntent");
-        // When an intent is received by this Service, this method
-        // is called on a new thread.
 
         Uri action = intent.getData();
         Bundle extras = intent.getExtras();
 
         if (extras == null || action == null) {
             Log.e(TAG, "You did not pass extras or data with the Intent.");
-
             return;
         }
 
@@ -211,9 +208,9 @@ public class RESTService extends IntentService {
             Log.e(TAG, "There was a problem when sending the request.", e);
             onRequestFailed(result, 0);
         } finally {
-
             if (responseEntity != null)
                 try {
+                    
                     responseEntity.consumeContent();
                 } catch (IOException ignored) {
                 }
