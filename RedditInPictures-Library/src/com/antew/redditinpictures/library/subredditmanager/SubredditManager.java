@@ -29,7 +29,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.SparseBooleanArray;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListActivity;
@@ -40,7 +39,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
-import com.antew.redditinpictures.library.reddit.RedditApiManager;
+import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Consts;
@@ -121,11 +120,6 @@ public class SubredditManager extends SherlockListActivity {
         mAdapter = new ArrayAdapter<String>(this, getListLayoutId(), subreddits);
         setListAdapter(mAdapter);
     }
-    @Override
-    public void setListAdapter(ListAdapter adapter) {
-        
-        super.setListAdapter(adapter);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -140,7 +134,7 @@ public class SubredditManager extends SherlockListActivity {
         mResetToDefaultSubreddits = menu.findItem(R.id.reset_subreddits);
         mResyncWithReddit = menu.findItem(R.id.resync_subreddits);
 
-        if (RedditApiManager.isLoggedIn()) {
+        if (RedditLoginInformation.isLoggedIn()) {
             mResetToDefaultSubreddits.setEnabled(false);
             mResyncWithReddit.setEnabled(true);
             mResetToDefaultSubreddits.setVisible(false);
@@ -185,7 +179,7 @@ public class SubredditManager extends SherlockListActivity {
             }
             for (String subreddit : itemsToRemove) {
                 mAdapter.remove(subreddit);
-                if (RedditApiManager.isLoggedIn()) {
+                if (RedditLoginInformation.isLoggedIn()) {
                     RedditService.unsubscribe(SubredditManager.this, subreddit);
                 }
             }
@@ -228,7 +222,7 @@ public class SubredditManager extends SherlockListActivity {
                                     mAdapter.notifyDataSetChanged();
                                 }
                                 
-                                if (RedditApiManager.isLoggedIn()) {
+                                if (RedditLoginInformation.isLoggedIn()) {
                                     RedditService.subscribe(SubredditManager.this, subreddit);
                                 }
                             }
@@ -288,6 +282,10 @@ public class SubredditManager extends SherlockListActivity {
         SharedPreferencesHelper.saveArray(getReddits(), PREFS_NAME, ARRAY_NAME, SubredditManager.this);
         LocalBroadcastManager.getInstance(SubredditManager.this).unregisterReceiver(mMySubreddits);
         super.onPause();
+    }
+    
+    public ArrayAdapter<String> getAdapter() {
+        return (ArrayAdapter<String>) getListAdapter();
     }
 
 }

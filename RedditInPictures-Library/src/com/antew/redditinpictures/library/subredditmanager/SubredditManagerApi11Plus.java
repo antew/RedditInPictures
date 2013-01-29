@@ -16,6 +16,7 @@
 package com.antew.redditinpictures.library.subredditmanager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,7 +37,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
-import com.antew.redditinpictures.library.reddit.RedditApiManager;
+import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Consts;
@@ -46,35 +47,41 @@ import com.antew.redditinpictures.library.utils.StringUtil;
 public class SubredditManagerApi11Plus extends SubredditManager {
 
     public static final String   TAG                = SubredditManagerApi11Plus.class.getSimpleName();
-    private ArrayAdapter<String> mAdapter;
     private String               mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
     private MenuItem             mResetToDefaultSubreddits;
     private MenuItem             mResyncWithReddit;
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (getIntent().hasExtra(Consts.EXTRA_SELECTED_SUBREDDIT))
             mSelectedSubreddit = getIntent().getStringExtra(Consts.EXTRA_SELECTED_SUBREDDIT);
 
-        List<String> subreddits = SharedPreferencesHelper.loadArray(PREFS_NAME, ARRAY_NAME, SubredditManagerApi11Plus.this);
-
-        if (subreddits.size() == 0) {
-            String[] reddits = getResources().getStringArray(R.array.default_reddits);
-            for (int i = 0; i < reddits.length; i++) {
-                subreddits.add(reddits[i]);
-            }
-        }
-
-        Collections.sort(subreddits, StringUtil.getCaseInsensitiveComparator());
-
-        setListAdapter(subreddits);
+        setListAdapter(getSubredditsFromSharedPreferences());
 
         final ListView listView = getListView();
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new ModeCallback());
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     };
+    
+    /**
+     * Get a list of subreddits in alphabetical order
+     * 
+     * @return Returns a list of saved subreddits in alphabetical order, or the default list of subreddits if none have been saved
+     */
+    public List<String> getSubredditsFromSharedPreferences() {
+
+        List<String> subreddits = SharedPreferencesHelper.loadArray(PREFS_NAME, ARRAY_NAME, SubredditManagerApi11Plus.this);
+
+        if (subreddits.size() == 0) {
+            subreddits = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.default_reddits)));
+        }
+
+        Collections.sort(subreddits, StringUtil.getCaseInsensitiveComparator());
+        
+        return subreddits;
+    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -82,7 +89,7 @@ public class SubredditManagerApi11Plus extends SubredditManager {
         mResetToDefaultSubreddits = menu.findItem(R.id.reset_subreddits);
         mResyncWithReddit = menu.findItem(R.id.resync_subreddits);
 
-        if (RedditApiManager.isLoggedIn()) {
+        if (RedditLoginInformation.isLoggedIn()) {
             mResetToDefaultSubreddits.setEnabled(false);
             mResyncWithReddit.setEnabled(true);
             mResetToDefaultSubreddits.setVisible(false);
@@ -101,7 +108,7 @@ public class SubredditManagerApi11Plus extends SubredditManager {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Intent i = new Intent();
-        i.putExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT, mAdapter.getItem(position));
+        i.putExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT, getAdapter().getItem(position));
         setResult(RESULT_OK, i);
         finish();
     }
@@ -142,9 +149,10 @@ public class SubredditManagerApi11Plus extends SubredditManager {
     @Override
     public List<String> getReddits() {
         List<String> returnList = new ArrayList<String>();
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            returnList.add(mAdapter.getItem(i));
-            Log.i("getReddits", "" + mAdapter.getItem(i));
+        ArrayAdapter<String> adapter = getAdapter();
+        for (int i = 0; i < adapter.getCount(); i++) {
+            returnList.add(adapter.getItem(i));
+            Log.i("getReddits", "" + adapter.getItem(i));
         }
 
         Collections.sort(returnList, StringUtil.getCaseInsensitiveComparator());
@@ -152,26 +160,28 @@ public class SubredditManagerApi11Plus extends SubredditManager {
     }
 
     @Override
-    public void createAddSubredditAlertDialog() {//@formatter:off
+    public void createAddSubredditAlertDialog() {
         if (isFinishing())
             return;
         
         final EditText input = new EditText(SubredditManagerApi11Plus.this);
         
+        //@formatter:off
         new AlertDialog.Builder(SubredditManagerApi11Plus.this)
                        .setTitle(R.string.add_subreddit)
                        .setMessage(R.string.enter_the_subreddit)
                        .setView(input)
                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
+                                ArrayAdapter<String> adapter = getAdapter();
                                 String value = input.getText().toString();
                                 
                                 if (value.length() > 0) {
-                                    mAdapter.add(value);
-                                    mAdapter.sort(StringUtil.getCaseInsensitiveComparator());
-                                    mAdapter.notifyDataSetChanged();
+                                    adapter.add(value);
+                                    adapter.sort(StringUtil.getCaseInsensitiveComparator());
+                                    adapter.notifyDataSetChanged();
                                     
-                                    if (RedditApiManager.isLoggedIn()) {
+                                    if (RedditLoginInformation.isLoggedIn()) {
                                         RedditService.subscribe(getApplicationContext(), value);
                                     }
                                 }
@@ -187,7 +197,7 @@ public class SubredditManagerApi11Plus extends SubredditManager {
     private class ModeCallback implements ListView.MultiChoiceModeListener
     {
 
-        private Object mDelete;
+        private android.view.MenuItem mDelete;
 
         @Override
         public boolean onCreateActionMode(android.view.ActionMode mode, android.view.Menu menu)
@@ -228,14 +238,15 @@ public class SubredditManagerApi11Plus extends SubredditManager {
                 }
 
                 for (String subreddit : itemsToRemove) {
-                    mAdapter.remove(subreddit);
-                    if (RedditApiManager.isLoggedIn()) {
+                    ArrayAdapter<String> adapter = getAdapter();
+                    adapter.remove(subreddit);
+                    if (RedditLoginInformation.isLoggedIn()) {
                         RedditService.subscribe(SubredditManagerApi11Plus.this, subreddit);
                         
                     }
                 }
 
-                mAdapter.notifyDataSetChanged();
+                getAdapter().notifyDataSetChanged();
 
             }
             return true;
