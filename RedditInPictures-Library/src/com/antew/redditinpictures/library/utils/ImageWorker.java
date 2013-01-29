@@ -85,14 +85,14 @@ public abstract class ImageWorker {
             bitmap = mImageCache.getBitmapFromMemCache(String.valueOf(data));
 
         if (bitmap != null) {
-            Log.i(TAG, "found bitmap in memcache for " + String.valueOf(data));
+            Log.d(TAG, "found bitmap in memcache for " + String.valueOf(data));
             // Bitmap found in memory cache
             imageView.setImageBitmap(bitmap);
             if (progressBar != null)
                 progressBar.setVisibility(View.GONE);
             
         } else if (cancelPotentialWork(data, imageView)) {
-            Log.i(TAG, "Did not find URL in cache, url = " + String.valueOf(data));
+            Log.d(TAG, "Did not find URL in cache, url = " + String.valueOf(data));
             final BitmapWorkerTask task = new BitmapWorkerTask(imageView, progressBar, errorMessage);
             final AsyncDrawable asyncDrawable =
                     new AsyncDrawable(mResources, mLoadingBitmap, task);
@@ -264,8 +264,9 @@ public abstract class ImageWorker {
                     && !mExitTasksEarly) {
                 try {
                     bitmap = mImageCache.getBitmapFromDiskCache(dataString);
-                    if (bitmap != null)
-                        Log.i(TAG, "Got bitmap from disk cache for URL = " + dataString);
+                    if (bitmap != null) {
+                        Log.d(TAG, "Got bitmap from disk cache for URL = " + dataString);
+                    }
                 } catch (OutOfMemoryError e) {
                     Log.e(TAG, "Error pulling the bitmap from the disk cache", e);
                 }
