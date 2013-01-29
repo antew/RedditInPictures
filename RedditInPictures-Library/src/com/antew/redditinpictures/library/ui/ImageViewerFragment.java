@@ -53,14 +53,14 @@ import com.androidquery.AQuery;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurOriginalFetcher;
-import com.antew.redditinpictures.library.imgur.ImgurResolver;
-import com.antew.redditinpictures.library.imgur.ImgurResolver.ImageSize;
+import com.antew.redditinpictures.library.imgur.ImageResolver;
+import com.antew.redditinpictures.library.imgur.ImageResolver.ImageSize;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
-import com.antew.redditinpictures.library.reddit.RedditApiManager;
 import com.antew.redditinpictures.library.utils.AsyncTask;
 import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.DiskUtil;
 import com.antew.redditinpictures.library.utils.ImageContainer;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.ImageUtil;
@@ -311,7 +311,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         }
 
         Log.i(TAG, "loadImage done for url = " + image.getUrl());
-        mResolvedImageUrl = ImgurResolver.getSize(image, ImageSize.ORIGINAL);
+        mResolvedImageUrl = ImageResolver.getSize(image, ImageSize.ORIGINAL);
 
         if (ImageUtil.isGif(mResolvedImageUrl)) {
             if (mViewStub.getParent() != null)
@@ -471,7 +471,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             String fileExtension = url.substring(url.lastIndexOf("."));
             Log.i(TAG, "DownloadImageTask - fileExtension = " + fileExtension);
 
-            File file = RedditApiManager.getPicturesDirectory();
+            File file = DiskUtil.getPicturesDirectory();
             File destination = new File(file, filename + fileExtension);
             FileOutputStream fos = null;
             Activity act = getActivity();
