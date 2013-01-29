@@ -25,19 +25,43 @@ import android.os.Parcelable;
 
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.interfaces.ClassFromCursor;
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
+import com.antew.redditinpictures.library.interfaces.RedditPostFilter;
+import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
-public class RedditApi implements Parcelable, ContentValuesOperation {
+public class RedditApi implements Parcelable, ContentValuesOperation, RedditPostFilter<PostData> {
     String kind;
     Data   data;
 
     public RedditApi(Parcel source) {
         kind = source.readString();
         data = source.readParcelable(Data.class.getClassLoader());
+    }
+    
+    /**
+     * This method removes unusable posts from the Reddit API data.
+     * 
+     * @return The filtered list of posts after removing non-images, unsupported images, and NSFW
+     *         entries. Whether NSFW images are retained can be controlled via settings.
+     */
+    @Override
+    public List<PostData> filterPosts(boolean includeNsfwImages) {
+        List<PostData> entries = new ArrayList<PostData>();
+
+        for (Children c : data.getChildren()) {
+            PostData pd = c.getData();
+            if (ImageUtil.isSupportedUrl(pd.getUrl())) {
+                if (!pd.isOver_18() || includeNsfwImages)
+                    entries.add(pd);
+
+            }
+        }
+
+        return entries;
     }
 
     @Override
@@ -190,6 +214,7 @@ public class RedditApi implements Parcelable, ContentValuesOperation {
             
         };
         //@formatter:on
+
     }
 
     public static class PostData implements Parcelable, ContentValuesOperation {
