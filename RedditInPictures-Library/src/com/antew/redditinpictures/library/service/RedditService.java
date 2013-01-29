@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.antew.redditinpictures.library.logging.Log;
-import com.antew.redditinpictures.library.reddit.RedditApiManager;
+import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
@@ -46,8 +46,8 @@ public class RedditService extends RESTService {
     private static Intent getIntentBasics(Intent intent) {
         intent.putExtra(EXTRA_USER_AGENT, USER_AGENT);
 
-        if (RedditApiManager.isLoggedIn())
-            intent.putExtra(EXTRA_COOKIE, REDDIT_SESSION + "=" + RedditApiManager.getLoginCookie());
+        if (RedditLoginInformation.isLoggedIn())
+            intent.putExtra(EXTRA_COOKIE, REDDIT_SESSION + "=" + RedditLoginInformation.getCookie());
 
         return intent;
     }
@@ -96,7 +96,7 @@ public class RedditService extends RESTService {
         bundle.putString("id", id);
         bundle.putInt("dir", vote.getVote());
         bundle.putString("r", subreddit);
-        bundle.putString("uh", RedditApiManager.getModHash());
+        bundle.putString("uh", RedditLoginInformation.getModhash());
 
         intent.putExtra(EXTRA_PARAMS, bundle);
         
@@ -158,9 +158,10 @@ public class RedditService extends RESTService {
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.SUBSCRIBE);
         intent.setData(Uri.parse(REDDIT_SUBSCRIBE_URL));
+        intent.putExtra(EXTRA_HTTP_VERB, POST);
         intent.putExtra("action", action.getAction());
         intent.putExtra("sr_name", subreddit);
-        intent.putExtra("uh", RedditApiManager.getModHash());
+        intent.putExtra("uh", RedditLoginInformation.getModhash());
 
         context.startService(intent);
     }
