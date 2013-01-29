@@ -26,7 +26,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.antew.redditinpictures.library.imgur.ImgurThumbnailFetcher;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.ui.ImageGridFragment;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.sqlite.RedditContract;
@@ -38,7 +37,7 @@ import com.antew.redditinpictures.sqlite.RedditContract;
  * 
  */
 public class ImageCursorAdapter extends CursorAdapter {
-    public static final String    TAG         = "ImageAdapter";
+    public static final String    TAG         = ImageCursorAdapter.class.getSimpleName();
     private int                   mItemHeight = 0;
     private int                   mNumColumns = 0;
     private GridView.LayoutParams mImageViewLayoutParams;
@@ -118,7 +117,6 @@ public class ImageCursorAdapter extends CursorAdapter {
         // Reddit will send 'default' for one of the default alien icons, which we want to avoid using
         if (!thumbnail.trim().equals("") && !thumbnail.equals("default")) {
             url = thumbnail;
-            Log.i(TAG, "loading pos = " + cursor.getPosition() + " from the reddit thumbnail! " + url);
         }
         mImageFetcher.loadImage(url, imageView, null, null);
     }
