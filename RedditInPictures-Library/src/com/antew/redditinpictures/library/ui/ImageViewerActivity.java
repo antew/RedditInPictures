@@ -129,13 +129,15 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
      * Set the current item based on the extra passed in to this activity
      */
     private void moveViewPagerToSelectedIndex() {
-        
         final int extraCurrentItem = getIntent().getIntExtra(Consts.EXTRA_IMAGE, -1);
         if (extraCurrentItem != -1) {
             mPager.setCurrentItem(extraCurrentItem);
         }
     }
     
+    /**
+     * Register BroadcastReceivers with the LocalBroadcastManager
+     */
     private void registerLocalBroadcastReceivers() {
         LocalBroadcastManager.getInstance(this).registerReceiver(mToggleFullscreenReceiver, new IntentFilter(Consts.BROADCAST_TOGGLE_FULLSCREEN));
     }
@@ -171,6 +173,10 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
         mImageFetcher.setImageFadeIn(false);
     }
     
+    /**
+     * Get the directory and image cache size to use with the {@link ImageFetcher}
+     * @return ImageCacheParams to use with the {@link ImageFetcher}
+     */
     private ImageCacheParams getImageCacheParams() {
         ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
         cacheParams.setMemCacheSizePercent(this, Consts.IMAGE_CACHE_SIZE); // Set memory cache to 25% of mem class
@@ -178,6 +184,10 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
         return cacheParams;
     }
     
+    /**
+     * Get the image size to use for scaling.
+     * @return The requested image width/height
+     */
     private int getImageWidthForResizing() {
         // Fetch screen height and width, to use as our max size when loading images as this activity runs full screen
         final DisplayMetrics displayMetrics = new DisplayMetrics();
