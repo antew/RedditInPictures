@@ -36,7 +36,7 @@ import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditApi;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
-import com.antew.redditinpictures.library.reddit.RedditApiManager;
+import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
@@ -207,7 +207,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
      *            The post this vote is for
      */
     private void vote(Vote whichVoteButton, MenuItem item, PostData p) {
-        if (!RedditApiManager.isLoggedIn()) {
+        if (!RedditLoginInformation.isLoggedIn()) {
             Toast.makeText(this, R.string.you_must_be_logged_in_to_vote, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -280,7 +280,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         mUpvoteMenuItem = menu.findItem(R.id.upvote);
         mDownvoteMenuItem = menu.findItem(R.id.downvote);
 
-        if (!RedditApiManager.isLoggedIn()) {
+        if (!RedditLoginInformation.isLoggedIn()) {
             mUpvoteMenuItem.setVisible(false);
             mDownvoteMenuItem.setVisible(false);
         }
