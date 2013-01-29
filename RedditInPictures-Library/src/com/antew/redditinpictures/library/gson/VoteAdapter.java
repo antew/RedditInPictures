@@ -24,12 +24,13 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 /**
- * This is used to serialize/deserialize Votes on Reddit posts
- * Reddit uses true for an upvote, false for downvotes, and null for neutral votes
- * @author a
- *
+ * This is used to serialize/deserialize Votes on Reddit posts Reddit uses true for an upvote, false
+ * for downvotes, and null for neutral votes
+ * 
+ * @author Antew
+ * 
  */
-public class VoteAdapter extends TypeAdapter<Vote>  {
+public class VoteAdapter extends TypeAdapter<Vote> {
 
     @Override
     public Vote read(JsonReader reader) throws IOException {
@@ -37,20 +38,15 @@ public class VoteAdapter extends TypeAdapter<Vote>  {
             reader.nextNull();
             return Vote.NEUTRAL;
         }
-        
-        boolean b = reader.nextBoolean();
-        if (b)
-            return Vote.UP;
-        else
-            return Vote.DOWN;
+
+        return reader.nextBoolean() ? Vote.UP : Vote.DOWN;
     }
 
     @Override
     public void write(JsonWriter writer, Vote vote) throws IOException {
         if (vote == null || vote.equals(Vote.NEUTRAL)) {
             writer.nullValue();
-        }
-        else if (vote.equals(Vote.UP))
+        } else if (vote.equals(Vote.UP))
             writer.value(true);
         else
             writer.value(false);
