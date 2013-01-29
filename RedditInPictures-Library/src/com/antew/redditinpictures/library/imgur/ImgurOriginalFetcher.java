@@ -22,7 +22,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.antew.redditinpictures.library.imgur.ImgurResolver.ImageSize;
+import com.antew.redditinpictures.library.imgur.ImageResolver.ImageSize;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.ui.ImageViewerFragment;
 import com.antew.redditinpictures.library.utils.ImageContainer;
@@ -66,7 +66,7 @@ public class ImgurOriginalFetcher extends ImageFetcher {
      */
     public String decodeUrl(String urlString) {
         ImageContainer container = decode(urlString); 
-        return ImgurResolver.getSize(container, ImageSize.ORIGINAL);
+        return ImageResolver.getSize(container, ImageSize.ORIGINAL);
     }
     
     /**
@@ -76,7 +76,7 @@ public class ImgurOriginalFetcher extends ImageFetcher {
      */
     public ImageContainer decode(String urlString) {
         Log.i(TAG, "decode - URL = " + urlString);
-        ImageContainer container = ImgurResolver.resolve(removeImageSizeFromUrl(urlString));
+        ImageContainer container = ImageResolver.resolve(removeImageSizeFromUrl(urlString));
         return container;
     }
 
