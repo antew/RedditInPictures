@@ -34,7 +34,6 @@ import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.adapter.CursorPagerAdapter;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
-import com.antew.redditinpictures.library.reddit.RedditApi;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
@@ -52,7 +51,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     protected MenuItem         mUpvoteMenuItem;
     protected MenuItem         mDownvoteMenuItem;
     protected RedditUrl        mRedditUrl;
-    protected RedditApi        mRedditApi;
     protected boolean          mRequestInProgress;
     private String             mAfter;
     private String             mBefore;
@@ -168,7 +166,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(Consts.EXTRA_REDDIT_API, mRedditApi);
         outState.putParcelable(Consts.EXTRA_REDDIT_URL, mRedditUrl);
         super.onSaveInstanceState(outState);
     }
@@ -176,9 +173,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-
-        if (savedInstanceState.containsKey(Consts.EXTRA_REDDIT_API))
-            mRedditApi = savedInstanceState.getParcelable(Consts.EXTRA_REDDIT_API);
 
         if (savedInstanceState.containsKey(Consts.EXTRA_REDDIT_URL))
             mRedditUrl = savedInstanceState.getParcelable(Consts.EXTRA_REDDIT_URL);
