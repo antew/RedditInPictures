@@ -5,6 +5,7 @@
     
     <string name="_0_of_">"0 of "</string>
     <string name="_of_">" of "</string>
+    <string name="about_reddit_in_pictures">About Reddit In Pictures</string>
     <string name="add_subreddit">Add Subreddit</string>
     <string name="all">All</string>
     <string name="app_name">Reddit In Pictures</string>
@@ -41,8 +42,10 @@
     <string name="log_out">Log out</string>
     <string name="log_out_">"Log out "</string>
     <string name="logging_on">Logging on</string>
+    <string name="launch_links_to_the_reddit_mobile_interface">Launch links to the reddit mobile interface.</string>
     <string name="long_press_to_start_selection">Long press to start selection</string>
     <string name="make_sure_you_have_an_internet_connection">Error connecting to Reddit: Make sure you have an internet connection.</string>
+    <string name="may_impact_performance">May impact performance</string>
     <string name="name">Filename:</string>
     <string name="no">No</string>
     <string name="no_image_to_load">No image to load!</string>
@@ -62,6 +65,7 @@
     <string name="save_image">Save Image</string>
     <string name="select_items">Select Items</string>
     <string name="share_using_">Share using...</string>
+    <string name="show_nsfw_images_while_browsing">Show NSFW images while browsing.</string>
     <string name="some_nsfw_images_were_hidden">Some nsfw images were hidden, this can be disabled in settings.</string>
     <string name="swiping_disabled">Swiping disabled</string>
     <string name="swiping_enabled">Swiping enabled</string>
@@ -69,8 +73,17 @@
     <string name="upgrade">Upgrade</string>
     <string name="upgrade_to_full_version">Upgrade to pro version</string>
     <string name="username">Username:</string>
+    <string name="uses_more_bandwidth">Uses more bandwidth</string>
     <string name="vote">Vote</string>
     <string name="yes">Yes</string>
     <string name="you_must_be_logged_in_to_vote">You must be logged in to vote!</string>
 
+    <!-- Shared Preferences Keys -->
+    <string name="pref_show_nsfw_images">Show NSFW Images</string>
+    <string name="pref_use_holo_background">Use Holo background</string>
+    <string name="pref_load_high_quality_thumbnails">Load high quality thumbnails</string>
+    <string name="pref_use_mobile_interface">Use Mobile Interface</string>
+    <string name="pref_about">about</string>
+    <!-- End Shared Preferences keys -->
+    
 </resources>

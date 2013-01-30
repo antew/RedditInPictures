@@ -28,9 +28,9 @@ public class RedditInPicturesFreePreferences extends RedditInPicturesPreferences
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences_free);
-        adsPreference = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelperFree.DISABLE_ADS);
+        adsPreference = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_disable_ads));
         
-        getPreferenceScreen().findPreference(SharedPreferencesHelperFree.UPGRADE).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        getPreferenceScreen().findPreference(getString(R.string.pref_get_pro_version)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
             
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -45,7 +45,8 @@ public class RedditInPicturesFreePreferences extends RedditInPicturesPreferences
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         super.onSharedPreferenceChanged(sharedPreferences, key);
-        if (key.equals(SharedPreferencesHelperFree.DISABLE_ADS)) {
+        String disableAdsKey = getString(R.string.disable_ads);
+        if (key.equals(disableAdsKey)) {
             //@formatter:off
             if (sharedPreferences.getBoolean(key, false) == true && !isFinishing())
             {
@@ -67,7 +68,7 @@ public class RedditInPicturesFreePreferences extends RedditInPicturesPreferences
                                }).show();             
             }
             //@formatter:on
-            Log.d("Disable Ads Changed to", "" + sharedPreferences.getBoolean(SharedPreferencesHelperFree.DISABLE_ADS, false));
+            Log.d("Disable Ads Changed to", "" + sharedPreferences.getBoolean(disableAdsKey, false));
         }
     }
 

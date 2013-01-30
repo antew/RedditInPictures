@@ -37,11 +37,12 @@ import com.antew.redditinpictures.library.utils.Consts;
  */
 public class RedditInPicturesPreferences extends SherlockPreferenceActivity implements OnSharedPreferenceChangeListener {
     public static final String TAG = RedditInPicturesPreferences.class.getSimpleName();
-    CheckBoxPreference         useMobileInterface;
-    CheckBoxPreference         showNsfwImages;
+    private CheckBoxPreference useMobileInterface;
+    private CheckBoxPreference showNsfwImages;
+    private CheckBoxPreference loadHighQualityThumbs;
     private boolean            showNsfwImagesOldValue;
     private boolean            showNsfwImagesNewValue;
-    private Preference         useHoloBackground;
+    private CheckBoxPreference useHoloBackground;
 
     /**
      * This uses the deprecated addPreferencesFromResource because fragment preferences aren't part
@@ -58,11 +59,12 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
         }
 
         addPreferencesFromResource(R.xml.preferences);
-        useMobileInterface = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelper.USE_MOBILE_INTERFACE);
-        showNsfwImages = (CheckBoxPreference) getPreferenceScreen().findPreference(SharedPreferencesHelper.SHOW_NSFW_IMAGES);
-        useHoloBackground = getPreferenceScreen().findPreference(SharedPreferencesHelper.USE_HOLO_BACKGROUND);
+        useMobileInterface = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_use_mobile_interface));
+        showNsfwImages = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_show_nsfw_images));
+        useHoloBackground = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_use_holo_background));
+        loadHighQualityThumbs = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_load_high_quality_thumbnails));
 
-        getPreferenceScreen().findPreference(SharedPreferencesHelper.ABOUT).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        getPreferenceScreen().findPreference(getString(R.string.pref_about)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -87,8 +89,9 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(SharedPreferencesHelper.SHOW_NSFW_IMAGES)) {
-            showNsfwImagesNewValue = sharedPreferences.getBoolean(SharedPreferencesHelper.SHOW_NSFW_IMAGES, false);
+        String showNsfwImagesKey = getString(R.string.pref_show_nsfw_images);
+        if (key.equals(showNsfwImagesKey)) {
+            showNsfwImagesNewValue = sharedPreferences.getBoolean(showNsfwImagesKey, false);
         }
 
     }

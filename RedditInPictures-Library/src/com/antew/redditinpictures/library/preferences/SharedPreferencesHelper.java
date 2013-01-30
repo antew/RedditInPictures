@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
@@ -33,18 +34,13 @@ import com.antew.redditinpictures.library.utils.Util;
 
 @SuppressLint("CommitPrefEdits")
 public class SharedPreferencesHelper {
-    private static final String LOGIN_JSON           = "loginJson";
-    private static final String COOKIE               = "cookie";
-    private static final String MOD_HASH             = "modHash";
-    private static final String USERNAME             = "username";
-    public static final String  GLOBAL_PREFS_NAME    = "reddit_in_pictures_prefs";
-    public static final String  ENABLE_HW_ACCEL      = "enableHwAccel";
-    public static final String  USE_MOBILE_INTERFACE = "launchMobile";
-    public static final String  SHOW_NSFW_IMAGES     = "showNsfwImages";
-    public static final String  ABOUT                = "about";
-    public static final String  AGE                  = "age";
-    public static final String  CATEGORY             = "category";
-    public static final String  USE_HOLO_BACKGROUND  = "useHoloBackground";
+    private static final String COOKIE                   = "cookie";
+    private static final String MOD_HASH                 = "modHash";
+    private static final String USERNAME                 = "username";
+    public static final String  GLOBAL_PREFS_NAME        = "reddit_in_pictures_prefs";
+    public static final String  ENABLE_HW_ACCEL          = "enableHwAccel";
+    public static final String  AGE                      = "age";
+    public static final String  CATEGORY                 = "category";
 
     /**
      * Save an array to {@link SharedPreferences}
@@ -141,42 +137,17 @@ public class SharedPreferencesHelper {
      * @param context
      *            The context
      */
-    public static void saveLoginInformation(String username, String modHash, String cookie, String json, Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(GLOBAL_PREFS_NAME, 0);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        editor.putString(USERNAME, username);
-        editor.putString(MOD_HASH, modHash);
-        editor.putString(COOKIE, cookie);
-        editor.putString(LOGIN_JSON, json);
-
-        save(editor);
-    }
-    
-    /**
-     * Save the Reddit login information to preferences
-     * 
-     * @param username
-     *            The username
-     * @param modHash
-     *            The mod hash
-     * @param cookie
-     *            The cookie
-     * @param json
-     *            The login json
-     * @param context
-     *            The context
-     */
-    public static void saveLoginInformation(String username, String modHash, String cookie, Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(GLOBAL_PREFS_NAME, 0);
-        SharedPreferences.Editor editor = prefs.edit();
-        
-        editor.putString(USERNAME, username);
-        editor.putString(MOD_HASH, modHash);
-        editor.putString(COOKIE, cookie);
-        
-        save(editor);
-    }
+    // public static void saveLoginInformation(String username, String modHash, String cookie,
+    // Context context) {
+    // SharedPreferences prefs = context.getSharedPreferences(GLOBAL_PREFS_NAME, 0);
+    // SharedPreferences.Editor editor = prefs.edit();
+    //
+    // editor.putString(USERNAME, username);
+    // editor.putString(MOD_HASH, modHash);
+    // editor.putString(COOKIE, cookie);
+    //
+    // save(editor);
+    // }
 
     /**
      * Save the selected Age and Category to preferences. Used to save/restore the selected
@@ -213,21 +184,25 @@ public class SharedPreferencesHelper {
             editor.commit();
     }
 
-    public static String getLoginJson(Context context) {
-        return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(LOGIN_JSON, "");
-    }
-
-    public static String getUsername(Context context) {
-        return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(USERNAME, "");
-    }
-
-    public static String getModHash(Context context) {
-        return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(MOD_HASH, "");
-    }
-
-    public static String getCookie(Context context) {
-        return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(COOKIE, "");
-    }
+    // public static LoginData getLoginData(Context context) {
+    // SharedPreferences prefs = context.getSharedPreferences(GLOBAL_PREFS_NAME, 0);
+    //
+    // return new LoginData(prefs.getString(USERNAME, ""),
+    // prefs.getString(MOD_HASH, ""),
+    // prefs.getString(COOKIE, ""));
+    // }
+    //
+    // public static String getUsername(Context context) {
+    // return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(USERNAME, "");
+    // }
+    //
+    // public static String getModHash(Context context) {
+    // return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(MOD_HASH, "");
+    // }
+    //
+    // public static String getCookie(Context context) {
+    // return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(COOKIE, "");
+    // }
 
     /**
      * Remove the saved login information
@@ -236,9 +211,10 @@ public class SharedPreferencesHelper {
      *            The context
      * @return True if the removal is successful
      */
-    public static boolean clearLoginInformation(Context context) {
-        return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).edit().remove(LOGIN_JSON).remove(USERNAME).remove(MOD_HASH).remove(COOKIE).commit();
-    }
+    // public static boolean clearLoginInformation(Context context) {
+    // return context.getSharedPreferences(GLOBAL_PREFS_NAME,
+    // 0).edit().remove(USERNAME).remove(MOD_HASH).remove(COOKIE).commit();
+    // }
 
     /**
      * This is currently unused, I envisioned that it would be used to allow the user to toggle HW
@@ -260,7 +236,7 @@ public class SharedPreferencesHelper {
      * @return Returns true if Reddit links should be launched to the mobile site
      */
     public static boolean getUseMobileInterface(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(USE_MOBILE_INTERFACE, true);
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.pref_use_mobile_interface), true);
     }
 
     /**
@@ -271,23 +247,26 @@ public class SharedPreferencesHelper {
      * @return True if NSFW images should be shown
      */
     public static boolean getShowNsfwImages(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SHOW_NSFW_IMAGES, false);
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.pref_show_nsfw_images), false);
     }
 
     /**
      * Whether the holo background should be used. Some users reported performance problems and I
      * think it may have been due to issues with scaling the Holo background image
      * 
-     * @param context The context
+     * @param context
+     *            The context
      * @return Whether the Holo background should be used
      */
     public static boolean getUseHoloBackground(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(USE_HOLO_BACKGROUND, false);
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.pref_use_holo_background), false);
     }
 
     /**
      * The saved {@link RedditUrl#Age}
-     * @param context The context
+     * 
+     * @param context
+     *            The context
      * @return The saved {@link RedditUrl#Age}
      */
     public static Age getAge(Context context) {
@@ -296,7 +275,9 @@ public class SharedPreferencesHelper {
 
     /**
      * The saved {@link RedditUrl#Category}
-     * @param context The context
+     * 
+     * @param context
+     *            The context
      * @return The saved {@link RedditUrl#Category}
      */
     public static Category getCategory(Context context) {

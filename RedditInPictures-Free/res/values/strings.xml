@@ -8,6 +8,10 @@
 
     <string name="ive_rated_it">I\'ve Rated It</string>
 
-    <string name="go_to_market">Go to Market</string>
+    <!-- Shared Preferences Keys -->
+    <string name="pref_disable_ads">disableAds</string>
+    <string name="pref_get_pro_version">getProVersion</string>
+    <!-- End Shared Preferences Keys -->
+    
 
 </resources>

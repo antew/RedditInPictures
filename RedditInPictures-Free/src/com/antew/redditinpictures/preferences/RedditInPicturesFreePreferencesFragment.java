@@ -17,8 +17,6 @@ import android.preference.PreferenceManager;
 
 import com.antew.redditinpictures.R;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment;
-import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
-import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.util.ConstsFree;
 
 // This really only requires API 11, the Lint check for setOnPreferenceChangeListener seems to be incorrect and reports that it requires API level 14
@@ -36,10 +34,10 @@ public class RedditInPicturesFreePreferencesFragment extends RedditInPicturesPre
             PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences_free, false);
             addPreferencesFromResource(R.xml.preferences_free);
 
-            final CheckBoxPreference adsPreference = (CheckBoxPreference) getPreferenceManager().findPreference(SharedPreferencesHelperFree.DISABLE_ADS);
+            final CheckBoxPreference adsPreference = (CheckBoxPreference) getPreferenceManager().findPreference(getString(R.string.pref_disable_ads));
             adsPreference.setOnPreferenceChangeListener(getAdsPreferenceOnChangeListener());
             
-            getPreferenceManager().findPreference(SharedPreferencesHelperFree.UPGRADE).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            getPreferenceManager().findPreference(getString(R.string.pref_get_pro_version)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -77,7 +75,7 @@ public class RedditInPicturesFreePreferencesFragment extends RedditInPicturesPre
                     
                     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
                     Editor editor = sp.edit();
-                    editor.putBoolean(SharedPreferencesHelperFree.DISABLE_ADS, (Boolean) newValue);
+                    editor.putBoolean(getString(R.string.pref_disable_ads), (Boolean) newValue);
                     editor.commit();
                     return true;
                 }
