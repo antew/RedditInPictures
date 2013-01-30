@@ -508,38 +508,36 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
         }
         
         public PostData(Cursor cursor) {
-            PostData p = new PostData();
-            
             //@formatter:off
-            p.setDomain                (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN)));
-            p.setBanned_by             (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.BANNED_BY)));
-            p.setSubreddit             (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT)));
-            p.setSelftext_html         (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT_HTML)));
-            p.setSelftext              (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT)));
-            p.setVote     (Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE))));
-            p.setSaved                 (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.SAVED)) == 1);
-            p.setId                    (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.POST_ID)));
-            p.setClicked               (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.CLICKED)) == 1);
-            p.setTitle                 (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE)));
-            p.setNum_comments          (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.COMMENTS)));
-            p.setScore                 (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.SCORE)));
-            p.setApproved_by           (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.APPROVED_BY)));
-            p.setOver_18               (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1);
-            p.setHidden                (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.HIDDEN)) == 1);
-            p.setThumbnail             (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL)));
-            p.setSubreddit_id          (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT_ID)));
-            p.setAuthor_flair_css_class(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR_FLAIR_CSS_CLASS)));
-            p.setDowns                 (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.DOWNS)));
-            p.setIs_self               (cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.IS_SELF)) == 1);
-            p.setPermalink             (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.PERMALINK)));
-            p.setName                  (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME)));
-            p.setCreated               (cursor.getLong  (cursor.getColumnIndex(RedditContract.Posts.CREATED)));
-            p.setUrl                   (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL)));
-            p.setAuthor_flair_text     (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR_FLAIR_TEXT)));
-            p.setAuthor                (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR)));
-            p.setCreated_utc           (cursor.getLong  (cursor.getColumnIndex(RedditContract.Posts.CREATED_UTC)));
-            p.setLink_flair_text       (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.LINK_FLAIR_TEXT)));
-            p.setDecodedUrl            (cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DECODED_URL)));
+            domain                = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
+            banned_by             = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.BANNED_BY));
+            subreddit             = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));
+            selftext_html         = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT_HTML));
+            selftext              = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT));
+            likes    = Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE)));
+            saved                 = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.SAVED)) == 1;
+            id                    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.POST_ID));
+            clicked               = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.CLICKED)) == 1;
+            title                 = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
+            num_comments          = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.COMMENTS));
+            score                 = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.SCORE));
+            approved_by           = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.APPROVED_BY));
+            over_18               = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1;
+            hidden                = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.HIDDEN)) == 1;
+            thumbnail             = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL));
+            subreddit_id          = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT_ID));
+            author_flair_css_class= cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR_FLAIR_CSS_CLASS));
+            downs                 = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.DOWNS));
+            is_self               = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.IS_SELF)) == 1;
+            permalink             = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.PERMALINK));
+            name                  = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME));
+            created               = cursor.getLong  (cursor.getColumnIndex(RedditContract.Posts.CREATED));
+            url                   = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
+            author_flair_text     = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR_FLAIR_TEXT));
+            author                = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR));
+            created_utc           = cursor.getLong  (cursor.getColumnIndex(RedditContract.Posts.CREATED_UTC));
+            link_flair_text       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.LINK_FLAIR_TEXT));
+          //decodedUrl            = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DECODED_URL));
             //@formatter:off
         }
     }
