@@ -18,6 +18,7 @@ package com.antew.redditinpictures.library.imgur;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.antew.redditinpictures.library.imgur.ImageResolver.ImageSize;
 import com.antew.redditinpictures.library.utils.Util;
 
 /**
@@ -54,6 +55,23 @@ public class ImgurImageApi {
             StringBuffer buf = new StringBuffer();
             buf.append("Links: [ ImgurPage: " + r(links.getImgur_page()) + ", LargeThumbnail: " + r(links.getLarge_thumbnail()) + ", Original: " + r(links.getOriginal()) + ", SmallSquare: " + r(links.getSmall_square()) + "]");
             return buf.toString();
+        }
+        
+        public String getSize(ImageSize size) {
+            String decoded = null;
+            if (links == null)
+                return null;
+            
+            switch (size) {
+                case SMALL_SQUARE:
+                    decoded = links.getSmall_square();
+                case LARGE_THUMBNAIL:
+                    decoded = links.getLarge_thumbnail();
+                case ORIGINAL:
+                    decoded = links.getOriginal();
+            }
+            
+            return decoded;
         }
 
         @Override
