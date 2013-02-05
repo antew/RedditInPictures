@@ -22,36 +22,10 @@ import android.graphics.drawable.Drawable;
 import android.widget.EditText;
 
 import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.enums.ImageType;
 
 public class ImageUtil {
     public static final String TAG = ImageUtil.class.getSimpleName();
-    /**
-     * Types of images supported by the app
-     */
-    public enum ImageType {
-        //@formatter:off
-        IMGUR_ALBUM, 
-        IMGUR_IMAGE, 
-        IMGUR_GALLERY,
-        EHOST_IMAGE, 
-        PICASARUS_IMAGE, 
-        SNAGGY_IMAGE,
-        PICSHD_IMAGE,
-        MINUS_IMAGE,
-        FLICKR_IMAGE,
-        STEAM_IMAGE,
-        QUICKMEME_IMAGE,
-        DEVIANTART_IMAGE,
-        TUMBLR_IMAGE,
-        MEMECRUNCH_IMAGE,
-        LIVEMEME_IMAGE,
-        MEMEFIVE_IMAGE,
-        OTHER_SUPPORTED_IMAGE, 
-        UNSUPPORTED_IMAGE
-        //@formatter:on
-    }
-
-    
 
     /**
      * Returns true if the input URL links directly to an image
