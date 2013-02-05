@@ -16,6 +16,7 @@
 package com.antew.redditinpictures.library.imgur;
 
 import java.io.OutputStream;
+import java.security.InvalidParameterException;
 
 import android.content.Context;
 import android.widget.ImageView;
@@ -23,34 +24,34 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.antew.redditinpictures.library.enums.ImageSize;
-import com.antew.redditinpictures.library.enums.ImageType;
+import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
+import com.antew.redditinpictures.library.ui.ImageViewerFragment;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
-import com.antew.redditinpictures.library.utils.ImageUtil;
 
-public class ImgurThumbnailFetcher extends ImageFetcher {
-    private static final String ORIGINAL = "ORIGINAL_";
-    private static final String THUMBNAIL = "THUMBNAIL_";
-    
-    /**
-     * Initialize providing a target image width and height for the processing images.
-     * 
-     * @param context
-     * @param imageWidth
-     * @param imageHeight
-     */
-    public ImgurThumbnailFetcher(Context context, int imageWidth, int imageHeight) {
-        super(context, imageWidth, imageHeight);
-    }
+/**
+ * Used to load original versions of images in {@link ImageViewerFragment} and subclasses
+ * 
+ * @author Antew
+ * 
+ */
+public class SizeAwareImageFetcher extends ImageFetcher {
+    public static final String  TAG       = "ImgurOriginalFetcher";
+    private static ImageSize    mImageSize;
 
     /**
      * Initialize providing a single target image size (used for both width and height);
      * 
      * @param context
-     * @param imageSize
+     * @param sizeInPxToScaleImagesTo
      */
-    public ImgurThumbnailFetcher(Context context, int imageSize) {
-        super(context, imageSize);
+    public SizeAwareImageFetcher(Context context, int sizeInPxToScaleImagesTo, ImageSize size) {
+        super(context, sizeInPxToScaleImagesTo);
+        
+        if (size == null)
+            throw new InvalidParameterException("ImageSize must not be null.");
+        
+        mImageSize = size;
     }
 
     /**
@@ -59,30 +60,27 @@ public class ImgurThumbnailFetcher extends ImageFetcher {
      * @return The decoded URL for a preview image
      */
     public String decodeUrl(String urlString) {
-        return ImageResolver.resolve(removeImageSizeFromUrl(urlString), ImageSize.ORIGINAL);
-    }
-    
-    @Override
-    public boolean downloadUrlToStream(String urlString, OutputStream outputStream) {
-        String decodedUrl = decodeUrl(urlString);
-        return super.downloadUrlToStream(decodedUrl, outputStream);
-    }
-    
-    @Override
-    public void loadImage(Object data, ImageView imageView, ProgressBar progressBar, TextView errorMessage) {
-        String url = String.valueOf(data);
-        String imageSize = ImageUtil.getImageType(url) == ImageType.OTHER_SUPPORTED_IMAGE ? ORIGINAL : THUMBNAIL;
-        super.loadImage(imageSize + data, imageView, progressBar, errorMessage);
-    }
-    
-    private String removeImageSizeFromUrl(String url) {
-        
-        if (url.startsWith(THUMBNAIL))
-            url = url.replace(THUMBNAIL, "");
-        else if (url.startsWith(ORIGINAL))
-            url = url.replace(ORIGINAL, "");
-        
-        return url;
+        return ImageResolver.resolve(removeImageSizeFromUrl(urlString), mImageSize);
     }
 
+    public Image getImage(String url) {
+        return ImageResolver.resolve(url);
+    }
+
+    @Override
+    public boolean downloadUrlToStream(String urlString, OutputStream outputStream) {
+        return super.downloadUrlToStream(decodeUrl(urlString), outputStream);
+    }
+
+    @Override
+    public void loadImage(Object data, ImageView imageView, ProgressBar progressBar, TextView errorMessage) {
+        super.loadImage(mImageSize.name() + data, imageView, progressBar, errorMessage);
+    }
+
+    private String removeImageSizeFromUrl(String url) {
+        if (url.startsWith(mImageSize.name()))
+            url = url.replace(mImageSize.name(), "");
+
+        return url;
+    }
 }

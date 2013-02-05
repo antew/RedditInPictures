@@ -25,7 +25,6 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.antew.redditinpictures.library.imgur.ImgurThumbnailFetcher;
 import com.antew.redditinpictures.library.ui.ImageGridFragment;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.sqlite.RedditContract;

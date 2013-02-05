@@ -31,8 +31,9 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.adapter.ImageCursorAdapter;
+import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
-import com.antew.redditinpictures.library.imgur.ImgurThumbnailFetcher;
+import com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
@@ -79,7 +80,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 
     private void initializeImageFetcher() {
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
-        mImageFetcher = new ImgurThumbnailFetcher(getActivity(), mThumbnailInfo.getSize());
+        mImageFetcher = new SizeAwareImageFetcher(getActivity(), mThumbnailInfo.getSize(), ImageSize.SMALL_SQUARE);
         mImageFetcher.setLoadingImage(R.drawable.empty_photo);
         mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), getImageCache());
     }

@@ -55,7 +55,7 @@ import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
-import com.antew.redditinpictures.library.imgur.ImgurOriginalFetcher;
+import com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
@@ -462,7 +462,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
                 url = mResolvedImageUrl;
             } else {
                 Log.i(TAG, "DownloadImageTask - Using passed in URL = " + data);
-                url = ((ImgurOriginalFetcher) mImageFetcher).decodeUrl(data);
+                url = ((SizeAwareImageFetcher) mImageFetcher).decodeUrl(data);
                 Log.i(TAG, "DownloadImageTask - Passed in URL Resolved To = " + mResolvedImageUrl);
             }
 
@@ -475,7 +475,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             Activity act = getActivity();
             try {
                 fos = new FileOutputStream(destination);
-                boolean result = ((ImgurOriginalFetcher) mImageFetcher).downloadUrlToStream(url, fos);
+                boolean result = ((SizeAwareImageFetcher) mImageFetcher).downloadUrlToStream(url, fos);
 
                 if (result) {
                     returnVal.append("File downloaded to: " + destination.getAbsolutePath());

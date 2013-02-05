@@ -32,7 +32,8 @@ import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.anim.FadeInThenOut;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
-import com.antew.redditinpictures.library.imgur.ImgurOriginalFetcher;
+import com.antew.redditinpictures.library.enums.ImageSize;
+import com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
@@ -168,7 +169,7 @@ public abstract class ImageViewerActivity extends SherlockFragmentActivity imple
      * The ImageFetcher takes care of loading images into our ImageView children asynchronously
      */
     private void initializeImageFetcher() {
-        mImageFetcher = new ImgurOriginalFetcher(this, getImageWidthForResizing());
+        mImageFetcher = new SizeAwareImageFetcher(this, getImageWidthForResizing(), ImageSize.ORIGINAL);
         mImageFetcher.addImageCache(getSupportFragmentManager(), getImageCacheParams());
         mImageFetcher.setImageFadeIn(false);
     }
