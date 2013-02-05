@@ -33,7 +33,6 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.widget.Toast;
 
-import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
 import com.jakewharton.DiskLruCache;
@@ -269,7 +268,7 @@ public class ImageFetcher extends ImageResizer {
             }
             return true;
         } catch (final IOException e) {
-            Log.e(TAG, "Error in downloadBitmap - " + e);
+            Log.e(TAG, "Error in downloadUrlToStream - Url = " + urlString + ", Error = " + e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
