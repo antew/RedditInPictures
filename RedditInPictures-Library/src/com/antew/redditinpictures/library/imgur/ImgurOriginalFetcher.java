@@ -22,10 +22,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.antew.redditinpictures.library.imgur.ImageResolver.ImageSize;
-import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.enums.ImageSize;
+import com.antew.redditinpictures.library.image.Image;
+import com.antew.redditinpictures.library.image.ImageResolver;
 import com.antew.redditinpictures.library.ui.ImageViewerFragment;
-import com.antew.redditinpictures.library.utils.ImageContainer;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 
 /**
@@ -65,21 +65,13 @@ public class ImgurOriginalFetcher extends ImageFetcher {
      * @return The decoded URL for a preview image
      */
     public String decodeUrl(String urlString) {
-        ImageContainer container = decode(urlString); 
-        return ImageResolver.getSize(container, ImageSize.ORIGINAL);
+        return ImageResolver.resolve(removeImageSizeFromUrl(urlString), ImageSize.ORIGINAL);
     }
     
-    /**
-     * @param urlString
-     *            The URL to decode
-     * @return The decoded URL for a preview image
-     */
-    public ImageContainer decode(String urlString) {
-        Log.i(TAG, "decode - URL = " + urlString);
-        ImageContainer container = ImageResolver.resolve(removeImageSizeFromUrl(urlString));
-        return container;
+    public Image getImage(String url) {
+        return ImageResolver.resolve(url);
     }
-
+    
     @Override
     public boolean downloadUrlToStream(String urlString, OutputStream outputStream) {
         return super.downloadUrlToStream(decodeUrl(urlString), outputStream);
