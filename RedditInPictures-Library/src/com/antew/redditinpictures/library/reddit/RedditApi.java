@@ -503,6 +503,7 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
             values.put(RedditContract.PostColumns.AUTHOR                , author);
             values.put(RedditContract.PostColumns.CREATED_UTC           , created_utc);
             values.put(RedditContract.PostColumns.LINK_FLAIR_TEXT       , link_flair_text);
+            values.put(RedditContract.PostColumns.LOADED_AT             , System.currentTimeMillis());
             
             return values;
         }
