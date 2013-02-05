@@ -84,7 +84,8 @@ public class RedditDatabase extends SQLiteOpenHelper {
                     + PostColumns.AUTHOR                 + " TEXT NOT NULL, "
                     + PostColumns.CREATED_UTC            + " INTEGER, "
                     + PostColumns.LINK_FLAIR_TEXT        + " TEXT, "
-                    + PostColumns.DECODED_URL            + " TEXT "
+                    + PostColumns.DECODED_URL            + " TEXT, "
+                    + PostColumns.LOADED_AT              + " INTEGER"
 //                    + PostDataColumns.MODHASH                + " TEXT NOT NULL, "
 //                    + "FOREIGN KEY (" + PostDataColumns.MODHASH + ")" + " REFERENCES " + Tables.REDDIT_DATA + " (" + RedditDataColumns.MODHASH + ")"
                     + " );";
