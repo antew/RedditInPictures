@@ -66,5 +66,6 @@ public class Consts {
 
     public static final int    POSTS_TO_FETCH                 = 50;
 
-    public static final float  IMAGE_CACHE_SIZE    = 0.25f;
+    public static final float  IMAGE_CACHE_SIZE               = 0.25f;
+    public static final String JSON                           = ".json";
 }
