@@ -51,17 +51,17 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.androidquery.AQuery;
 import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.enums.ImageSize;
+import com.antew.redditinpictures.library.image.Image;
+import com.antew.redditinpictures.library.image.ImageResolver;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurOriginalFetcher;
-import com.antew.redditinpictures.library.imgur.ImageResolver;
-import com.antew.redditinpictures.library.imgur.ImageResolver.ImageSize;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.utils.AsyncTask;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.DiskUtil;
-import com.antew.redditinpictures.library.utils.ImageContainer;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.ImageWorker;
@@ -70,32 +70,33 @@ import com.antew.redditinpictures.library.utils.ImageWorker;
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
 public abstract class ImageViewerFragment extends SherlockFragment {
-    public static final String                        TAG               = "ImageViewerFragment";
-    protected static final String                     IMAGE_DATA_EXTRA  = "extra_image_data";
-    protected static final String                     IMAGE_ALBUM_EXTRA = "extra_image_album";
-    protected PostData                                mImage;
-    protected ImageView                               mImageView;
-    protected ImageFetcher                            mImageFetcher;
-    protected ProgressBar                             mProgress;
-    protected RelativeLayout                          mPostInformationWrapper;
-    protected Button                                  mBtnViewGallery;
-    protected ViewStub                                mViewStub;
-    protected WebView                                 mWebView;
-    protected boolean                                 mPauseWork        = false;
-    protected TextView                                mVotes;
-    protected TextView                                mErrorMessage;
-    private final Object                              mPauseWorkLock    = new Object();
-    private boolean                                   mExitTasksEarly   = false;
-    protected String                                  mResolvedImageUrl = null;
-    protected int                                     mActionBarHeight;
-    protected Album                                   mAlbum;
-    protected AsyncTask<String, Void, ImageContainer> mResolveImageTask = null;
+    public static final String                  TAG               = "ImageViewerFragment";
+    protected static final String               IMAGE_DATA_EXTRA  = "extra_image_data";
+    protected static final String               IMAGE_ALBUM_EXTRA = "extra_image_album";
+    protected PostData                          mImage;
+    protected ImageView                         mImageView;
+    protected ImageFetcher                      mImageFetcher;
+    protected ProgressBar                       mProgress;
+    protected RelativeLayout                    mPostInformationWrapper;
+    protected Button                            mBtnViewGallery;
+    protected ViewStub                          mViewStub;
+    protected WebView                           mWebView;
+    protected boolean                           mPauseWork        = false;
+    protected TextView                          mVotes;
+    protected TextView                          mErrorMessage;
+    private final Object                        mPauseWorkLock    = new Object();
+    private boolean                             mExitTasksEarly   = false;
+    protected String                            mResolvedImageUrl = null;
+    protected Image                             mResolvedImage    = null;
+    protected int                               mActionBarHeight;
+    protected Album                             mAlbum;
+    protected AsyncTask<String, Void, Image> mResolveImageTask = null;
 
-    private boolean                                   mCancelClick      = false;
-    private float                                     mDownXPos         = 0;
-    private float                                     mDownYPos         = 0;
-    private static float                              MOVE_THRESHOLD;
-    protected SystemUiStateProvider                   mSystemUiStateProvider;
+    private boolean                             mCancelClick      = false;
+    private float                               mDownXPos         = 0;
+    private float                               mDownYPos         = 0;
+    private static float                        MOVE_THRESHOLD;
+    protected SystemUiStateProvider             mSystemUiStateProvider;
 
     /**
      * Empty constructor as per the Fragment documentation
@@ -302,21 +303,21 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         };
     }
 
-    public void loadImage(ImageContainer image) {
+    public void loadImage(Image image) {
         if (image == null) {
-            Log.e(TAG, "Received null ImageContainer in loadImage(ImageContainer image)");
+            Log.e(TAG, "Received null url in loadImage(String imageUrl)");
             mProgress.setVisibility(View.GONE);
             mErrorMessage.setVisibility(View.VISIBLE);
             return;
         }
 
-        Log.i(TAG, "loadImage done for url = " + image.getUrl());
-        mResolvedImageUrl = ImageResolver.getSize(image, ImageSize.ORIGINAL);
+        mResolvedImage = image;
+        mResolvedImageUrl = image.getSize(ImageSize.ORIGINAL);
 
         if (ImageUtil.isGif(mResolvedImageUrl)) {
             if (mViewStub.getParent() != null)
                 mWebView = (WebView) mViewStub.inflate();
-            
+
             mWebView.getSettings().setRenderPriority(RenderPriority.HIGH);
             mWebView.getSettings().setLoadWithOverviewMode(true);
             mWebView.getSettings().setUseWideViewPort(true);
@@ -327,10 +328,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         } else {
             mImageFetcher.loadImage(mResolvedImageUrl, mImageView, mProgress, mErrorMessage);
         }
-
     }
-
-
 
 
 
@@ -380,7 +378,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     /**
      * The actual AsyncTask that will asynchronously resolve the URL we should display.
      */
-    class ResolveImageTask extends AsyncTask<String, Void, ImageContainer> {
+    class ResolveImageTask extends AsyncTask<String, Void, Image> {
         private String data;
 
         public ResolveImageTask() {}
@@ -389,11 +387,11 @@ public abstract class ImageViewerFragment extends SherlockFragment {
          * Background processing.
          */
         @Override
-        protected ImageContainer doInBackground(String... params) {
+        protected Image doInBackground(String... params) {
             Log.d(TAG, "doInBackground - starting work");
 
             data = params[0];
-            ImageContainer image = null;
+            Image resolvedImage = null;
             Log.i(TAG, "ResolveImageTask url = " + data);
             // Wait here if work is paused and the task is not cancelled
             synchronized (mPauseWorkLock) {
@@ -406,19 +404,19 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             }
 
             if (!isCancelled() && !mExitTasksEarly) {
-                image = ((ImgurOriginalFetcher) mImageFetcher).decode(data);
+                resolvedImage = ImageResolver.resolve(data);
             }
 
             Log.d(TAG, "doInBackground - finished work");
 
-            return image;
+            return resolvedImage;
         }
 
         /**
          * Once we're resolved the URL, pass it to our load function to download/display it
          */
         @Override
-        protected void onPostExecute(ImageContainer image) {
+        protected void onPostExecute(Image image) {
             // if cancel was called on this task or the "exit early" flag is set then we're done
             if (isCancelled() || mExitTasksEarly) {
                 image = null;
@@ -429,7 +427,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         }
 
         @Override
-        protected void onCancelled(ImageContainer image) {
+        protected void onCancelled(Image image) {
             super.onCancelled(image);
             synchronized (mPauseWorkLock) {
                 mPauseWorkLock.notifyAll();

@@ -20,7 +20,6 @@ import java.util.List;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.antew.redditinpictures.library.utils.ImageContainer;
 import com.antew.redditinpictures.library.utils.Util;
 
 /**
@@ -33,14 +32,11 @@ public class ImgurGallery implements Parcelable {
     private Data data;
     private boolean success;
     private int status;
-    private ImageContainer image;
     
     //@formatter:off
     public Data getData()      { return data; }
     public boolean isSuccess() { return success; }
     public int getStatus()     { return status; }
-    public ImageContainer getImageContainer() { return image; }
-    public void setImageContainer(ImageContainer image) { this.image = image; }
     //@formatter:on
 
     
@@ -48,7 +44,6 @@ public class ImgurGallery implements Parcelable {
         data = source.readParcelable(Data.class.getClassLoader());
         success = source.readByte() == 1;
         status = source.readInt();
-        image = source.readParcelable(ImageContainer.class.getClassLoader());
     }
 
     @Override
@@ -61,7 +56,6 @@ public class ImgurGallery implements Parcelable {
         dest.writeParcelable(data, 0);
         dest.writeByte(Util.parcelBoolean(success));
         dest.writeInt(status);
-        dest.writeParcelable(image, 0);
     }
     
     //@formatter:off
@@ -147,6 +141,7 @@ public class ImgurGallery implements Parcelable {
         private String timestamp;
         private String hot_datetime;
         private List<AlbumImages> images;
+        
         
         //@formatter:off
         public String getHash()              { return hash; }

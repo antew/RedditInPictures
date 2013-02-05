@@ -23,17 +23,18 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.enums.ImageType;
+import com.antew.redditinpictures.library.image.Image;
+import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.library.utils.Consts;
-import com.antew.redditinpictures.library.utils.ImageContainer;
-import com.antew.redditinpictures.library.utils.ImageUtil.ImageType;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
 public class ImageDetailFragment extends ImageViewerFragment {
-    public static final String    TAG               = "ImageDetailFragment";
+    public static final String    TAG               = ImageDetailFragment.class.getSimpleName();
 
     /**
      * Factory method to generate a new instance of the fragment given an image number.
@@ -90,7 +91,7 @@ public class ImageDetailFragment extends ImageViewerFragment {
     }
 
     @Override
-    public void loadImage(ImageContainer image) {
+    public void loadImage(Image image) {
         super.loadImage(image);
 
         if (image == null) {
@@ -98,11 +99,11 @@ public class ImageDetailFragment extends ImageViewerFragment {
             return;
         }
         
-        if (image.getImageType().equals(ImageType.IMGUR_ALBUM)) {
+        if (ImageType.IMGUR_ALBUM.equals(image.getImageType())) {
             mBtnViewGallery.setVisibility(View.VISIBLE);
             mBtnViewGallery.setOnClickListener(getViewGalleryOnClickListener());
 
-            mAlbum = image.getImgurAlbum();
+            mAlbum = ((ImgurAlbumType) image).getAlbum();
         }
     }
 
