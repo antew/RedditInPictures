@@ -2,13 +2,13 @@ package com.antew.redditinpictures.library.utils;
 
 import java.util.HashMap;
 
-import com.antew.redditinpictures.library.utils.ImageUtil.ImageType;
+import com.antew.redditinpictures.library.enums.ImageType;
 
 public class ImageTypeCache {
     private ImageTypeCache() {};
     
     private static class ImageCacheHolder {
-        public static final HashMap<String, ImageUtil.ImageType> INSTANCE = new HashMap<String, ImageUtil.ImageType>();
+        public static final HashMap<String, ImageType> INSTANCE = new HashMap<String, ImageType>();
     }
     
     public static HashMap<String, ImageType> getInstance() {
