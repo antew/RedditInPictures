@@ -31,6 +31,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.os.Build;
 import android.os.Bundle;
@@ -99,7 +100,14 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     private boolean                             mCancelClick      = false;
     private float                               mDownXPos         = 0;
     private float                               mDownYPos         = 0;
+    
+    /**
+     * Movement threshold used to decide whether to cancel the toggle 
+     * between windowed mode and fullscreen mode in the
+     * WebView in {@link #getWebViewOnTouchListener()}
+     */
     private static float                        MOVE_THRESHOLD;
+    
     protected SystemUiStateProvider             mSystemUiStateProvider;
 
     /**
@@ -276,6 +284,20 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         }
     }
 
+    /**
+     * This handles receiving the touch events in the WebView so that we can 
+     * toggle between fullscreen and windowed mode.
+     * 
+     * The first time the user touches the screen we save the X and Y coordinates.
+     * If we receive a {@link MotionEvent#ACTION_DOWN} event we compare the previous
+     * X and Y coordinates to the saved coordinates, if they are greater than {@link MOVE_THRESHOLD}
+     * we prevent the toggle from windowed mode to fullscreen mode or vice versa, the idea
+     * being that the user is either dragging the image or using pinch-to-zoom.
+     * 
+     * TODO: Implement handling for double tap to zoom.
+     * 
+     * @return The {@link OnTouchListener} for the {@link WebView} to use.
+     */
     public OnTouchListener getWebViewOnTouchListener() {
         return new OnTouchListener() {
 
@@ -353,6 +375,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         if (Util.hasHoneycomb())
             settings.setDisplayZoomControls(false);
         
+        webview.setBackgroundColor(Color.BLACK);
         webview.setVisibility(View.VISIBLE);
         webview.setOnTouchListener(getWebViewOnTouchListener());
     }
@@ -462,9 +485,6 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         }
     }
 
-    /**
-     * The actual AsyncTask that will asynchronously resolve the URL we should display.
-     */
     class DownloadImageTask extends AsyncTask<String, Void, String> {
         private String data;
         private String filename;
