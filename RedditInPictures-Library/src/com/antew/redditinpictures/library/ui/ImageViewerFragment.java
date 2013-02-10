@@ -24,12 +24,15 @@ import java.io.FileOutputStream;
 
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaScannerConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.TypedValue;
@@ -39,7 +42,8 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.webkit.WebSettings.RenderPriority;
+import android.webkit.WebSettings;
+import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -49,7 +53,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.androidquery.AQuery;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.image.Image;
@@ -65,6 +68,7 @@ import com.antew.redditinpictures.library.utils.DiskUtil;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.ImageWorker;
+import com.antew.redditinpictures.library.utils.Util;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
@@ -315,19 +319,42 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         mResolvedImageUrl = image.getSize(ImageSize.ORIGINAL);
 
         if (ImageUtil.isGif(mResolvedImageUrl)) {
-            if (mViewStub.getParent() != null)
-                mWebView = (WebView) mViewStub.inflate();
-
-            mWebView.getSettings().setRenderPriority(RenderPriority.HIGH);
-            mWebView.getSettings().setLoadWithOverviewMode(true);
-            mWebView.getSettings().setUseWideViewPort(true);
-            mWebView.setVisibility(View.VISIBLE);
-            mImageView.setVisibility(View.GONE);
-            mWebView.setOnTouchListener(getWebViewOnTouchListener());
-            new AQuery(getActivity()).id(mWebView).progress(mProgress).webImage(mResolvedImageUrl);
+            loadGifInWebView(mResolvedImageUrl);
         } else {
             mImageFetcher.loadImage(mResolvedImageUrl, mImageView, mProgress, mErrorMessage);
         }
+    }
+    
+    public void loadGifInWebView(String imageUrl) {
+        if (mViewStub.getParent() != null)
+            mWebView = (WebView) mViewStub.inflate();
+
+        initializeWebView(mWebView);
+        mImageView.setVisibility(View.GONE);
+        mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
+    }
+    
+    public String getHtmlForImageDisplay(String imageUrl) {
+        return String.format(Consts.WEBVIEW_IMAGE_HTML, imageUrl);
+    }
+    
+    @SuppressLint("SetJavaScriptEnabled")
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void initializeWebView(WebView webview) {
+        assert webview != null : "WebView should not be null!";
+        
+        WebSettings settings = webview.getSettings();
+        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(true);
+        settings.setJavaScriptEnabled(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
+        
+        if (Util.hasHoneycomb())
+            settings.setDisplayZoomControls(false);
+        
+        webview.setVisibility(View.VISIBLE);
+        webview.setOnTouchListener(getWebViewOnTouchListener());
     }
 
 

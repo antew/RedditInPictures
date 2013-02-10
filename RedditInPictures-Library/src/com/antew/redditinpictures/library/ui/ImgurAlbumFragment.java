@@ -20,11 +20,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
-import android.webkit.WebSettings.RenderPriority;
-import android.webkit.WebView;
 import android.widget.TextView;
 
-import com.androidquery.AQuery;
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.Image;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
@@ -69,14 +66,7 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
     protected void resolveImage() {
         String imageUrl = mImage.getLinks().getOriginal();
         if (ImageUtil.isGif(imageUrl)) {
-            mWebView = (WebView) mViewStub.inflate();
-            mWebView.getSettings().setRenderPriority(RenderPriority.HIGH);
-            mWebView.getSettings().setLoadWithOverviewMode(true);
-            mWebView.getSettings().setUseWideViewPort(true);
-            mWebView.setVisibility(View.VISIBLE);
-            mImageView.setVisibility(View.GONE);
-            mWebView.setOnTouchListener(getWebViewOnTouchListener());
-            new AQuery(getActivity()).id(mWebView).progress(mProgress).webImage(imageUrl);
+            super.loadGifInWebView(imageUrl);
         } else {
             mImageFetcher.loadImage(imageUrl, mImageView, mProgress, mErrorMessage);
         }
