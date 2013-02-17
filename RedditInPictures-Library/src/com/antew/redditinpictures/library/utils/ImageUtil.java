@@ -189,7 +189,7 @@ public class ImageUtil {
      * @return True if the input URL is supported, otherwise false
      */
     public static boolean isSupportedUrl(String url) {
-        return !ImageType.UNSUPPORTED_IMAGE.equals(getImageType(url.toLowerCase(Locale.US)));
+        return !ImageType.UNSUPPORTED_IMAGE.equals(getImageType(url));
     }
     
     /**
@@ -218,6 +218,7 @@ public class ImageUtil {
             else if (isSupportedImage(url))  { type = ImageType.OTHER_SUPPORTED_IMAGE; }
             else if (isFlickrImage(url))     { type = ImageType.FLICKR_IMAGE; }
             else if (isEHostImage(url))      { type = ImageType.EHOST_IMAGE; }
+            else if (isQuickMemeImage(url))  { type = ImageType.QUICKMEME_IMAGE; } 
             
             /*
             else if (isSnaggyImage(url))     { type = ImageType.SNAGGY_IMAGE; } 
@@ -225,7 +226,6 @@ public class ImageUtil {
             else if (isPicsarusImage(url))   { type = ImageType.PICASARUS_IMAGE; } 
             else if (isMinusImage(url))      { type = ImageType.MINUS_IMAGE; } 
             else if (isSteamImage(url))      { type = ImageType.STEAM_IMAGE; } 
-            else if (isQuickMemeImage(url))  { type = ImageType.QUICKMEME_IMAGE; } 
             else if (isDeviantArtImage(url)) { type = ImageType.DEVIANTART_IMAGE; } 
             else if (isTumblrImage(url))     { type = ImageType.TUMBLR_IMAGE; } 
             else if (isMemeCrunchImage(url)) { type = ImageType.MEMECRUNCH_IMAGE; } 

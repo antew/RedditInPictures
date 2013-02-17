@@ -42,6 +42,7 @@ public class ImageFactory {
             case PICSHD_IMAGE:
                 break;
             case QUICKMEME_IMAGE:
+                image = new QuickMemeImageType(url);
                 break;
             case SNAGGY_IMAGE:
                 break;
