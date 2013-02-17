@@ -1,8 +1,5 @@
 package com.antew.redditinpictures.library.image;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.enums.ImageType;
 import com.antew.redditinpictures.library.imgur.ImgurApiCache;
@@ -17,6 +14,7 @@ import com.google.gson.JsonSyntaxException;
 public class ImgurImageType extends Image {
     public static final String TAG = ImgurImage.class.getSimpleName();
     private static final String URL_IMGUR_IMAGE_API   = "http://api.imgur.com/2/image/";
+    private static final String URL_REGEX = "imgur.com/(?:gallery/)?([A-Za-z0-9]+)";
     private ImgurImage mImgurImage = null;
     
     public ImgurImageType(String url) {
@@ -82,20 +80,6 @@ public class ImgurImageType extends Image {
     }
 
     @Override
-    public String getHash() {
-        String hash = null;
-        Pattern pattern = Pattern.compile("imgur.com/(?:gallery/)?([A-Za-z0-9]+)", Pattern.CASE_INSENSITIVE);
-        
-        if (pattern != null) {
-            Matcher m = pattern.matcher(getUrl());
-            while (m.find())
-                hash = m.group(1);
-        }
-        
-        return hash;
-    }
-
-    @Override
     public String getSize(ImageSize size) {
         assert size != null : "ImageSize must not be null";
         
@@ -113,6 +97,11 @@ public class ImgurImageType extends Image {
     @Override
     public ImageType getImageType() {
         return ImageType.IMGUR_IMAGE;
+    }
+
+    @Override
+    public String getRegexForUrlMatching() {
+        return URL_REGEX;
     }
 
 }

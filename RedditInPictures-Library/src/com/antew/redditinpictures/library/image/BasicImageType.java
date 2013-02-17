@@ -24,4 +24,9 @@ public class BasicImageType extends Image {
         return ImageType.OTHER_SUPPORTED_IMAGE;
     }
 
+    @Override
+    public String getRegexForUrlMatching() {
+        throw new UnsupportedOperationException("Standard URLs like \"www.test.com/image.png\" do not require a RegEx for finding a hash");
+    }
+
 }

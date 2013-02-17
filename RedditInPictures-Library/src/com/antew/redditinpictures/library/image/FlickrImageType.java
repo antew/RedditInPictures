@@ -1,8 +1,5 @@
 package com.antew.redditinpictures.library.image;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.antew.redditinpictures.library.apikeys.FlickrApiKey;
 import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.enums.ImageType;
@@ -20,6 +17,7 @@ public class FlickrImageType extends Image {
     public static final String  TAG        = FlickrImageType.class.getSimpleName();
     private static final String FLICKR_URL = "http://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=" + FlickrApiKey.KEY
                                                    + "&photo_id=%s&format=json&nojsoncallback=1";
+    private static final String URL_REGEX = "^http://(?:\\w+).?flickr.com/(?:.*)/([\\d]{10})/?(?:.*)?$";
     private Flickr              mFlickr    = null;
 
     public FlickrImageType(String url) {
@@ -64,20 +62,6 @@ public class FlickrImageType extends Image {
     }
 
     @Override
-    public String getHash() {
-        String hash = null;
-        Pattern pattern = Pattern.compile("^http://(?:\\w+).?flickr.com/(?:.*)/([\\d]{10})/?(?:.*)?$", Pattern.CASE_INSENSITIVE);
-
-        if (pattern != null) {
-            Matcher m = pattern.matcher(getUrl());
-            while (m.find())
-                hash = m.group(1);
-        }
-
-        return hash;
-    }
-
-    @Override
     public String getSize(ImageSize size) {
         assert size != null : "ImageSize must not be null";
 
@@ -103,6 +87,11 @@ public class FlickrImageType extends Image {
     @Override
     public ImageType getImageType() {
         return ImageType.FLICKR_IMAGE;
+    }
+
+    @Override
+    public String getRegexForUrlMatching() {
+        return URL_REGEX;
     }
 
 }
