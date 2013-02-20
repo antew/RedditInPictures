@@ -274,11 +274,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     }
 
     private void editSubreddits() {
-        Intent intent = null;
-        if (Util.hasHoneycomb())
-            intent = new Intent(ImageGridActivity.this, SubredditManagerApi11Plus.class);
-        else
-            intent = new Intent(ImageGridActivity.this, SubredditManager.class);
+        Intent intent = new Intent(ImageGridActivity.this, getEditSubredditsClass());
 
         int index = getSupportActionBar().getSelectedNavigationIndex();
         intent.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, (String) mSpinnerAdapter.getItem(index));
@@ -291,6 +287,13 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         startActivityForResult(intent, SETTINGS_REQUEST);
     }
 
+    public Class<? extends SubredditManager> getEditSubredditsClass() {
+        if (Util.hasHoneycomb())
+            return SubredditManagerApi11Plus.class;
+        else
+            return SubredditManager.class;
+    }
+    
     public Class<? extends PreferenceActivity> getPreferencesClass() {
         if (Util.hasHoneycomb())
             return RedditInPicturesPreferencesFragment.class;
