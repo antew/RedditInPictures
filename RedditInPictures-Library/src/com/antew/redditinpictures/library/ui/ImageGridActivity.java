@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -42,7 +43,6 @@ import com.antew.redditinpictures.library.preferences.RedditInPicturesPreference
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
-import com.antew.redditinpictures.library.reddit.RedditLoginResponse;
 import com.antew.redditinpictures.library.reddit.RedditLoginResponse.LoginData;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
@@ -63,13 +63,8 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     protected Category          mCategory               = Category.HOT;
     public static final int     EDIT_SUBREDDITS_REQUEST = 10;
     public static final int     SETTINGS_REQUEST        = 20;
-    private String              mSubreddit;
     private SpinnerAdapter      mSpinnerAdapter;
-    private RedditLoginResponse mRedditLoginResponse;
-    private boolean             mReplaceAdapter;
-    private boolean             mRequestInProgress;
     private boolean             mFirstCall              = true;
-    private int                 mNavPosition;
     private ProgressDialog      mProgressDialog;
     private MenuItem            mLoginMenuItem;
     protected RelativeLayout    mLayoutWrapper;
@@ -94,37 +89,49 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         }
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.image_grid_activity);
-
-        mLayoutWrapper = (RelativeLayout) findViewById(R.id.image_grid_wrapper);
-        mShowNsfwImages = SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this);
-        mAge = SharedPreferencesHelper.getAge(ImageGridActivity.this);
-        mCategory = SharedPreferencesHelper.getCategory(ImageGridActivity.this);
-
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
+        initializeActionBar();
 
         if (savedInstanceState != null) {
             getSupportActionBar().setSelectedNavigationItem(savedInstanceState.getInt(Consts.EXTRA_NAV_POSITION));
         }
-
-        if (SharedPreferencesHelper.getUseHoloBackground(this)) {
-            getWindow().setBackgroundDrawableResource(R.drawable.background_holo_dark);
-        }
-
-        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ImageGridFragment fragment = (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG);
-        if (fragment == null) {
-            fragment = getImageGridFragment();
-        }
-
-        ft.replace(android.R.id.content, fragment, ImageGridFragment.TAG);
-        ft.commit();
+        
+        loadSharedPreferences();
+        initializeImageGridFragment();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
         getSupportLoaderManager().initLoader(Consts.LOADER_LOGIN, null, this);
+    }
+
+    private void initializeActionBar() {
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
+    }
+
+    private void loadSharedPreferences() {
+        mLayoutWrapper = (RelativeLayout) findViewById(R.id.image_grid_wrapper);
+        mShowNsfwImages = SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this);
+        mAge = SharedPreferencesHelper.getAge(ImageGridActivity.this);
+        mCategory = SharedPreferencesHelper.getCategory(ImageGridActivity.this);
+        
+        if (SharedPreferencesHelper.getUseHoloBackground(ImageGridActivity.this)) {
+            getWindow().setBackgroundDrawableResource(R.drawable.background_holo_dark);
+        }
+    }
+
+    private void initializeImageGridFragment() {
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(android.R.id.content, getImageGridFragment(), ImageGridFragment.TAG).commit();
+    }
+    
+    public Fragment getImageGridFragment() {
+        ImageGridFragment fragment = (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG);
+        if (fragment == null) {
+            fragment = getNewImageGridFragment();
+        }
+        
+        return fragment;
     }
     
     @Override
@@ -178,7 +185,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         return mSpinnerAdapter;
     }
 
-    public ImageGridFragment getImageGridFragment() {
+    public ImageGridFragment getNewImageGridFragment() {
         return new ImageGridFragment();
     }
 
@@ -203,21 +210,9 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        int navIndex = getSupportActionBar().getSelectedNavigationIndex();
-        outState.putInt(Consts.EXTRA_NAV_POSITION, navIndex);
-        outState.putString(Consts.EXTRA_SELECTED_SUBREDDIT, (String) mSpinnerAdapter.getItem(navIndex));
+        outState.putInt(Consts.EXTRA_NAV_POSITION, getSupportActionBar().getSelectedNavigationIndex());
+        outState.putString(Consts.EXTRA_SELECTED_SUBREDDIT, getSubreddit());
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState.containsKey(Consts.EXTRA_SELECTED_SUBREDDIT))
-            mSubreddit = savedInstanceState.getString(Consts.EXTRA_SELECTED_SUBREDDIT);
-
-        if (savedInstanceState.containsKey(Consts.EXTRA_NAV_POSITION)) {
-            mNavPosition = savedInstanceState.getInt(Consts.EXTRA_NAV_POSITION);
-        }
     }
 
     @Override
@@ -275,9 +270,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
     private void editSubreddits() {
         Intent intent = new Intent(ImageGridActivity.this, getEditSubredditsClass());
-
-        int index = getSupportActionBar().getSelectedNavigationIndex();
-        intent.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, (String) mSpinnerAdapter.getItem(index));
+        intent.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, getSubreddit());
         startActivityForResult(intent, EDIT_SUBREDDITS_REQUEST);
     }
 
@@ -372,11 +365,13 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             // If the user didn't choose a subreddit (meaning we are returned the subreddit they
             // were previously viewing), select it in the list, if it doesn't exist any longer we
             // default to the Front page.
-            int selectedSubredditPos = getSubredditPosition(data.getStringExtra(Consts.EXTRA_SELECTED_SUBREDDIT));
-            if (selectedSubredditPos >= 0)
-                getSupportActionBar().setSelectedNavigationItem(selectedSubredditPos);
-            else
+            String subredditName = data.getStringExtra(Consts.EXTRA_SELECTED_SUBREDDIT);
+            if (subredditExistsInNavigation(subredditName)) {
+                selectSubredditInNavigation(subredditName);
+            } else {
+                // Select the Reddit Front Page
                 onNavigationItemSelected(Consts.POSITION_FRONTPAGE, 0);
+            }
 
         } else if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK) {
             if (data.getBooleanExtra(Consts.EXTRA_SHOW_NSFW_IMAGES_CHANGED, false)) {
@@ -412,6 +407,23 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         }
 
         return -1;
+    }
+    
+    public void selectSubredditInNavigation(String subredditName) {
+        int position = getSubredditPosition(subredditName);
+        if (position == -1) {
+            if (BuildConfig.DEBUG) {
+                throw new ArrayIndexOutOfBoundsException("Subreddit \"" + subredditName + "\" does not exist in the navigation!");
+            } else {
+                Log.e(TAG, "Subreddit \"" + subredditName + "\" does not exist in the navigation!");
+            }
+        } else {
+            getSupportActionBar().setSelectedNavigationItem(position);
+        }
+    }
+    
+    public boolean subredditExistsInNavigation(String subredditName) {
+        return getSubredditPosition(subredditName) >= 0;
     }
 
     private void showProgressDialog(String title, String message) {
