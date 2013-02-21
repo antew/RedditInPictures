@@ -7,7 +7,6 @@ import android.net.Uri;
 
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.logging.Log;
-import com.antew.redditinpictures.library.provider.RedditProvider;
 import com.antew.redditinpictures.library.reddit.RedditApi;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
@@ -33,7 +32,7 @@ class PostResponse extends RedditResponseHandler {
             return;
         }
 
-        ContentValues[] operations = RedditProvider.contentValuesFromPostData(redditApi.filterPosts(true));
+        ContentValues[] operations = redditApi.getPostDataContentValues(true);
         ContentValues redditValues = redditApi.getContentValues();
 
         // Add the new Reddit data

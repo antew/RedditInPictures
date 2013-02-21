@@ -700,6 +700,27 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
         //@formatter:on
     }
 
+    /**
+     * Convenience method to return an Array of {@link ContentValues} based on the {@link PostData}
+     * from this {@link RedditApi} object.
+     * 
+     * @param includeNsfwImages
+     *            Whether to include Not-Safe-For-Work images in the list
+     * @return Array of {@link ContentValues} for use with
+     *         {@link ContentProvider#bulkInsert(Uri, ContentValues[])}
+     * 
+     */
+    public ContentValues[] getPostDataContentValues(boolean includeNsfwImages) {
+        List<PostData> postData = filterPosts(includeNsfwImages);
+        ContentValues[] operations = new ContentValues[postData.size()];
+
+        for (int i = 0; i < postData.size(); i++) {
+            operations[i] = postData.get(i).getContentValues();
+        }
+
+        return operations;
+    }
+
     @Override
     public ContentValues getContentValues() {
         ContentValues values = new ContentValues();

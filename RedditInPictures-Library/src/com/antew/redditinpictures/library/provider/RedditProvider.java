@@ -1,8 +1,5 @@
 package com.antew.redditinpictures.library.provider;
 
-import java.lang.reflect.Array;
-import java.util.List;
-
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -13,7 +10,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.antew.redditinpictures.library.logging.Log;
-import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.antew.redditinpictures.sqlite.RedditContract.Login;
 import com.antew.redditinpictures.sqlite.RedditContract.LoginColumns;
@@ -256,20 +252,4 @@ public class RedditProvider extends ContentProvider {
         return matcher;
     }
 
-    /**
-     * Convenience method to transform a {@link List} of {@link PostData} into an {@link Array} of {@link ContentValues}
-     * @param data List of {@link PostData} to consume
-     * @return Array of {@link ContentValues} for use with {@link ContentProvider#bulkInsert(Uri, ContentValues[])}
-     * 
-     */
-    public static ContentValues[] contentValuesFromPostData(List<PostData> data) {
-        ContentValues[] operations = new ContentValues[data.size()];
-
-        for (int i = 0; i < data.size(); i++) {
-            operations[i] = data.get(i).getContentValues();
-        }
-        
-        return operations;
-    }
-    
 }
