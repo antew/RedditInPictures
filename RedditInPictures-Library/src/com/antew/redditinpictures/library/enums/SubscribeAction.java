@@ -1,9 +1,9 @@
-package com.antew.redditinpictures.library.reddit;
+package com.antew.redditinpictures.library.enums;
 
 public enum SubscribeAction {
     SUBSCRIBE("sub"), UNSUBSCRIBE("unsub");
 
-    String action;
+    private String action;
 
     SubscribeAction(String action) {
         this.action = action;
