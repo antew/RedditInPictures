@@ -1,8 +1,8 @@
 package com.antew.redditinpictures.library.json;
 
+import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.gson.VoteAdapter;
 import com.antew.redditinpictures.library.logging.Log;
-import com.antew.redditinpictures.library.reddit.Vote;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;

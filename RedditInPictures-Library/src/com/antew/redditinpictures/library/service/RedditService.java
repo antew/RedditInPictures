@@ -7,11 +7,11 @@ import android.os.Bundle;
 
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
+import com.antew.redditinpictures.library.enums.SubscribeAction;
+import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
-import com.antew.redditinpictures.library.reddit.SubscribeAction;
-import com.antew.redditinpictures.library.reddit.Vote;
 import com.antew.redditinpictures.library.reddit.json.RedditResult;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.sqlite.RedditContract;
