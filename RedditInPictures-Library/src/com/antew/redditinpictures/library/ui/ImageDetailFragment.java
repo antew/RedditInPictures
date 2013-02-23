@@ -27,7 +27,7 @@ import com.antew.redditinpictures.library.enums.ImageType;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.logging.Log;
-import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
+import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.utils.Consts;
 
 /**

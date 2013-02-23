@@ -62,7 +62,7 @@ import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
-import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
+import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.utils.AsyncTask;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.DiskUtil;

@@ -3,6 +3,8 @@ package com.antew.redditinpictures.library.reddit.json;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
@@ -11,10 +13,12 @@ import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.MySubreddits;
-import com.antew.redditinpictures.library.reddit.MySubreddits.SubredditData;
+import com.antew.redditinpictures.library.reddit.SubredditChildren;
+import com.antew.redditinpictures.library.reddit.SubredditData;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.StringUtil;
+import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class MySubredditsResponse extends RedditResponseHandler {
 
@@ -27,6 +31,10 @@ public class MySubredditsResponse extends RedditResponseHandler {
 
     @Override
     public void processHttpResponse(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+        
+        int userRowsDeleted = resolver.delete(RedditContract.Subreddits.CONTENT_URI, null, null);
+        
         Log.i(TAG, "MySubreddits complete! = " + result.getJson());
         MySubreddits mySubreddits = JsonDeserializer.deserialize(result.getJson(), MySubreddits.class);
 
@@ -37,9 +45,15 @@ public class MySubredditsResponse extends RedditResponseHandler {
             return;
         }
 
+        
+        ContentValues[] operations = mySubreddits.getContentValuesArray();
+        
+        int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, operations);
+        Log.i(TAG, "Inserted " + rowsInserted + " rows");
+        
         ArrayList<String> subReddits = new ArrayList<String>();
 
-        for (MySubreddits.Children c : mySubreddits.getData().getChildren()) {
+        for (SubredditChildren c : mySubreddits.getData().getChildren()) {
             SubredditData data = c.getData();
             subReddits.add(data.getDisplay_name());
             Log.i("Subscribed Subreddits", data.getDisplay_name());

@@ -20,7 +20,7 @@ import android.support.v4.app.FixedFragmentStatePagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
+import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 
 /**

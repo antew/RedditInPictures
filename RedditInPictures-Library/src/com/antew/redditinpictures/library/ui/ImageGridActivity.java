@@ -37,16 +37,16 @@ import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment.LoginDialogListener;
 import com.antew.redditinpictures.library.dialog.LogoutDialogFragment;
 import com.antew.redditinpictures.library.dialog.LogoutDialogFragment.LogoutDialogListener;
+import com.antew.redditinpictures.library.enums.Age;
+import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
+import com.antew.redditinpictures.library.reddit.LoginData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
-import com.antew.redditinpictures.library.reddit.RedditLoginResponse.LoginData;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
-import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
-import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManagerApi11Plus;
@@ -498,7 +498,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
                     hideProgressDialog();
                     invalidateOptionsMenu();
                     showProgressDialog(getString(R.string.loading), getString(R.string.retrieving_subscribed_subreddits));
-//                    RedditService.getMySubreddits(this);
+                    RedditService.getMySubreddits(this);
                 }
                 break;
         }

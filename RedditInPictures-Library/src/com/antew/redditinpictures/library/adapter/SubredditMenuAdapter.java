@@ -25,6 +25,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.enums.Age;
+import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.ui.ImageGridActivity;
 
@@ -38,8 +40,8 @@ public class SubredditMenuAdapter extends BaseAdapter {
 
     private LayoutInflater inflater;
     private List<String>   data;
-    private RedditUrl.Age age;
-    private RedditUrl.Category category;
+    private Age age;
+    private Category category;
 
     /**
      * Create a new Adapter for the Subreddit/Category/Age combo
@@ -48,7 +50,7 @@ public class SubredditMenuAdapter extends BaseAdapter {
      * @param age The {@link RedditUrl#Age}
      * @param category The {@link RedditUrl#category}
      */
-    public SubredditMenuAdapter(Context context, List<String> listdata, RedditUrl.Age age, RedditUrl.Category category) {
+    public SubredditMenuAdapter(Context context, List<String> listdata, Age age, Category category) {
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.age = age;
         this.category = category;
@@ -119,11 +121,12 @@ public class SubredditMenuAdapter extends BaseAdapter {
      * @param category The {@link RedditUrl#category}
      * @param age The {@link RedditUrl#age}
      */
-    public void notifyDataSetChanged(RedditUrl.Category category, RedditUrl.Age age) {
+    public void notifyDataSetChanged(Category category, Age age) {
         this.category = category;
         this.age = age;
         notifyDataSetChanged();
     }
+    
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();

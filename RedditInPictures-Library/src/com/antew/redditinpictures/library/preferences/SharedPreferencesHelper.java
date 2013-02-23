@@ -26,9 +26,9 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.enums.Age;
+import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
-import com.antew.redditinpictures.library.reddit.RedditUrl.Age;
-import com.antew.redditinpictures.library.reddit.RedditUrl.Category;
 import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.utils.Util;
 
