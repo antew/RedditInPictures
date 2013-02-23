@@ -15,7 +15,6 @@
  */
 package com.antew.redditinpictures.library.reddit;
 
-import com.antew.redditinpictures.library.reddit.RedditLoginResponse.LoginData;
 
 /**
  * The expectation is that this class will only be used to store data for successful logins

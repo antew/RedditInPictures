@@ -15,8 +15,6 @@
  */
 package com.antew.redditinpictures.library.reddit;
 
-import java.util.List;
-
 import android.content.ContentValues;
 
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
@@ -30,61 +28,6 @@ public class RedditLoginResponse implements ContentValuesOperation {
     
     public LoginResponse getLoginResponse() {
         return loginResponse;
-    }
-
-    public static class LoginResponse {
-        private List<String[]> errors;
-        private LoginData      data;
-
-        public List<String[]> getErrors() {
-            return errors;
-        }
-
-        public LoginData getData() {
-            return data;
-        }
-        
-        public void setData(LoginData data) {
-            this.data = data;
-        }
-        
-        public void setErrors(List<String[]> errors) {
-            this.errors = errors;
-        }
-    }
-
-    public static class LoginData {
-        private String username;
-        private String modhash;
-        private String cookie;
-        
-        public LoginData(String username, String modhash, String cookie) {
-            this.username = username;
-            this.modhash = modhash;
-            this.cookie = cookie;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-        
-        public void setUsername(String username) {
-            this.username = username;
-        }
-        
-        public String getModhash() {
-            return modhash;
-        }
-
-        public String getCookie() {
-            return cookie;
-        }
-        
-        public boolean isLoggedIn()  {
-            return username != null && !username.equals("") &&
-                   modhash  != null && !modhash.equals("") &&
-                   cookie   != null && !cookie.equals("");
-        }
     }
 
     @Override

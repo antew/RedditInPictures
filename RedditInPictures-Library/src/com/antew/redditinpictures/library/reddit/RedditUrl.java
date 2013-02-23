@@ -18,6 +18,8 @@ package com.antew.redditinpictures.library.reddit;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.antew.redditinpictures.library.enums.Age;
+import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.Util;
 
@@ -42,6 +44,26 @@ public class RedditUrl implements Parcelable {
     public final String         after;
     public final String         before;
     public final boolean        isLoggedIn;
+
+    private RedditUrl(Builder builder) {
+        subreddit = builder.subreddit;
+        age = builder.age;
+        category = builder.category;
+        count = builder.count;
+        after = builder.after;
+        before = builder.before;
+        isLoggedIn = builder.isLoggedIn;
+    }
+
+    public RedditUrl(Parcel source) {
+        subreddit = source.readString();
+        age = Age.valueOf(source.readString());
+        category = Category.valueOf(source.readString());
+        count = source.readInt();
+        after = source.readString();
+        before = source.readString();
+        isLoggedIn = source.readByte() == 1;
+    }
 
     public String getUrl() {
 
@@ -90,120 +112,24 @@ public class RedditUrl implements Parcelable {
         return url.toString();
     }
 
-    public enum Category {
-        //@formatter:off
-        HOT("hot", "Hot"), NEW("new", "New"), RISING("rising", "Rising"), CONTROVERSIAL("controversial", "Controversial"), TOP("top", "Top");
-
-        private String name;
-        private String simpleName;
-
-        Category(String name, String simpleName) {
-            this.name = name;
-            this.simpleName = simpleName;
-        }
-
-        public String getName() {
-            return this.name;
-        
-        }
-        public String getSimpleName() {
-            return this.simpleName;
-        }
-
-        public static Category fromString(String name) {
-
-            if (name != null) {
-                for (Category c : Category.values()) {
-                    if (name.equalsIgnoreCase(c.name))
-                        return c;
-                }
-
-            }
-
-            return null;
-        }
-
-        //@formatter:on
-    }
-
-    public enum Age {
-        //@formatter:off
-        TODAY("today", "Today"),
-        THIS_HOUR("hour", "This Hour"),
-        THIS_WEEK("week", "This Week"),
-        THIS_MONTH("month", "This Month"),
-        THIS_YEAR("year", "This Year"),
-        ALL_TIME("all", "All Time");
-
-        private String age;
-        private String simpleName;
-
-        Age(String age, String simpleName) {
-            this.age = age;
-            this.simpleName = simpleName;
-        }
-
-        public String getAge() {
-            return this.age;
-        }
-        
-        public String getSimpleName() {
-            return this.simpleName;
-        }
-
-        public static Age fromString(String age) {
-            if (age != null) {
-                for (Age a : Age.values()) {
-                    if (age.equalsIgnoreCase(a.age))
-                        return a;
-                }
-            }
-
-            return null;
-        }
-        
-        //@formatter:off
-    }
-    
-
     public static String getCategorySimpleName(Category category, Age age) {
         String simpleName = null;
         switch (category) {
-                
+
             case HOT:
             case NEW:
             case RISING:
                 simpleName = category.getSimpleName();
                 break;
-                
+
             case CONTROVERSIAL:
             case TOP:
                 simpleName = (category.getSimpleName() + " - " + age.getSimpleName());
                 break;
-            
+
         }
-        
+
         return simpleName;
-    }
-
-    private RedditUrl(Builder builder) {
-        subreddit = builder.subreddit;
-        age = builder.age;
-        category = builder.category;
-        count = builder.count;
-        after = builder.after;
-        before = builder.before;
-        isLoggedIn = builder.isLoggedIn;
-    }
-
-    public RedditUrl(Parcel source) {
-        subreddit = source.readString();
-        age = Age.valueOf(source.readString());
-        category = Category.valueOf(source.readString());
-        count = source.readInt();
-        after = source.readString();
-        before = source.readString();
-        isLoggedIn = source.readByte() == 1;
     }
 
     public static class Builder {
@@ -274,7 +200,7 @@ public class RedditUrl implements Parcelable {
         dest.writeString(before);
         dest.writeByte(Util.parcelBoolean(isLoggedIn));
     }
-    
+
     //@formatter:off
     public static final Parcelable.Creator<RedditUrl> CREATOR
         = new Parcelable.Creator<RedditUrl>() {

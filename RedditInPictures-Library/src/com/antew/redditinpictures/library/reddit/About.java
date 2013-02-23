@@ -15,7 +15,6 @@
  */
 package com.antew.redditinpictures.library.reddit;
 
-import com.antew.redditinpictures.library.reddit.MySubreddits.SubredditData;
 
 public class About {
     private String        kind;
