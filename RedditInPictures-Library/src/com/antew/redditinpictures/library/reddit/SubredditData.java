@@ -1,21 +1,21 @@
 package com.antew.redditinpictures.library.reddit;
 
 public class SubredditData {
-    String  display_name;
-    String  description;
-    String  name;
-    long    created;
-    String  url;
-    String  title;
-    long    created_utc;
-    String  public_description;
-    int[]   header_size;
-    int     accounts_active;
-    boolean over18;
-    int     subscribers;
-    String  header_title;
-    String  id;
-    String  header_img;
+    private String  display_name;
+    private String  description;
+    private String  name;
+    private long    created;
+    private String  url;
+    private String  title;
+    private long    created_utc;
+    private String  public_description;
+    private int[]   header_size;
+    private int     accounts_active;
+    private boolean over18;
+    private int     subscribers;
+    private String  header_title;
+    private String  id;
+    private String  header_img;
 
     public String getDisplay_name() {
         return display_name;

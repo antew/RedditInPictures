@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MySubredditsData {
-    String                  modhash;
-    List<SubredditChildren> children;
-    String                  after;
-    String                  before;
+    private String                  modhash;
+    private List<SubredditChildren> children;
+    private String                  after;
+    private String                  before;
 
     public void addChildren(List<SubredditChildren> children) {
         if (this.children == null)

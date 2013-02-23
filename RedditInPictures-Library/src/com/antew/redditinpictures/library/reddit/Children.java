@@ -4,8 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Children implements Parcelable {
-    String   kind;
-    PostData data;
+    private String   kind;
+    private PostData data;
 
     public Children(Parcel source) {
         kind = source.readString();

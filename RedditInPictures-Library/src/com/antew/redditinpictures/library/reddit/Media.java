@@ -4,8 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Media implements Parcelable {
-    String type;
-    Oembed oembed;
+    private String type;
+    private Oembed oembed;
 
     public Media(Parcel source) {
         type = source.readString();

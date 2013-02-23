@@ -7,10 +7,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class RedditApiData implements Parcelable {
-    String         modhash;
-    List<Children> children;
-    String         after;
-    String         before;
+    private String         modhash;
+    private List<Children> children;
+    private String         after;
+    private String         before;
 
     public RedditApiData(Parcel source) {
         children = new ArrayList<Children>();

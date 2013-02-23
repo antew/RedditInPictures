@@ -23,8 +23,8 @@ import com.antew.redditinpictures.library.interfaces.ContentValuesArrayOperation
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class MySubreddits implements ContentValuesArrayOperation {
-    String           kind;
-    MySubredditsData data;
+    private String           kind;
+    private MySubredditsData data;
 
     public String getKind() {
         return kind;

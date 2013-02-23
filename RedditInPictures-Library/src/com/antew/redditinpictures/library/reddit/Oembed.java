@@ -4,21 +4,21 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Oembed implements Parcelable {
-    String provider_url;
-    String description;
-    String title;
-    String url;
-    String author_name;
-    int    height;
-    int    width;
-    String html;
-    int    thumbnail_width;
-    String version;
-    String provider_name;
-    String thumbnail_url;
-    String type;
-    int    thumbnail_height;
-    String author_url;
+    private String provider_url;
+    private String description;
+    private String title;
+    private String url;
+    private String author_name;
+    private int    height;
+    private int    width;
+    private String html;
+    private int    thumbnail_width;
+    private String version;
+    private String provider_name;
+    private String thumbnail_url;
+    private String type;
+    private int    thumbnail_height;
+    private String author_url;
     
     
     public Oembed(Parcel source) {

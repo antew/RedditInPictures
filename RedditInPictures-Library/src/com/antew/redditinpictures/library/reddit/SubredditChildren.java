@@ -1,8 +1,8 @@
 package com.antew.redditinpictures.library.reddit;
 
 public class SubredditChildren {
-    String        kind;
-    SubredditData data;
+    private String        kind;
+    private SubredditData data;
 
     public String getKind() {
         return kind;

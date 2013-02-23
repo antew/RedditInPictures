@@ -6,10 +6,10 @@ import android.os.Parcelable;
 import com.antew.redditinpictures.library.utils.Util;
 
 public class MediaEmbed implements Parcelable {
-    String  content;
-    int     width;
-    int     height;
-    boolean scrolling;
+    private String  content;
+    private int     width;
+    private int     height;
+    private boolean scrolling;
 
     public MediaEmbed(Parcel in) {
         content = in.readString();
