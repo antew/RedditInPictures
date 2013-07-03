@@ -66,6 +66,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
@@ -165,8 +166,10 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 // if we're at the bottom of the listview, load more data
                 boolean lastItemIsVisible = (firstVisibleItem + visibleItemCount) >= totalItemCount;
-                if (!mRequestInProgress && totalItemCount > 0 && lastItemIsVisible)
+                if (!mRequestInProgress && totalItemCount > 0 && lastItemIsVisible) {
+                    Log.i(TAG, "Reached last visible item in GridView, fetching more posts");
                     fetchImagesFromReddit(false);
+                }
             }
         };
     }
@@ -298,6 +301,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         //@formatter:off
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "New subreddit selected, fetching new posts");
             mAdapter.swapCursor(null);
             mAfter = null;
             fetchImagesFromReddit(true);
@@ -378,10 +382,12 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                 mAdapter.swapCursor(cursor);
                 setRequestInProgress(false);
 
-                if (cursor.getCount() == 0)
+                if (cursor.getCount() == 0) {
+                    fetchImagesFromReddit(true);
                     mNoImages.setVisibility(View.VISIBLE);
-                else if (mNoImages.getVisibility() == View.VISIBLE)
+                } else if (mNoImages.getVisibility() == View.VISIBLE) {
                     mNoImages.setVisibility(View.GONE);
+                }
 
                 break;
         }

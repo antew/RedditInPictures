@@ -1,5 +1,7 @@
 package com.antew.redditinpictures.library.reddit;
 
+import android.text.TextUtils;
+
 public class LoginData {
     private String username;
     private String modhash;
@@ -28,6 +30,7 @@ public class LoginData {
     }
 
     public boolean isLoggedIn() {
-        return username != null && !username.equals("") && modhash != null && !modhash.equals("") && cookie != null && !cookie.equals("");
+        return !TextUtils.isEmpty(username) && !TextUtils.isEmpty(modhash) && !TextUtils.isEmpty(cookie);
+        
     }
 }

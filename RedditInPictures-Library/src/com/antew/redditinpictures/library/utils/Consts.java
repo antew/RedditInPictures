@@ -60,6 +60,7 @@ public class Consts {
     public static final int    LOADER_REDDIT                  = 10;
     public static final int    LOADER_POSTS                   = 20;
     public static final int    LOADER_LOGIN                   = 30;
+    public static final int    LOADER_SUBREDDITS              = 40;
 
     public static final String COMPACT_URL                    = "/.compact";
     public static final String REDDIT_BASE_URL                = "http://www.reddit.com";

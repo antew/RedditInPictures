@@ -1,10 +1,5 @@
 package com.antew.redditinpictures.library.ui;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,7 +17,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.RelativeLayout;
 import android.widget.SpinnerAdapter;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -32,7 +26,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.antew.redditinpictures.library.BuildConfig;
 import com.antew.redditinpictures.library.R;
-import com.antew.redditinpictures.library.adapter.SubredditMenuAdapter;
+import com.antew.redditinpictures.library.adapter.SubredditMenuCursorAdapter;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment.LoginDialogListener;
 import com.antew.redditinpictures.library.dialog.LogoutDialogFragment;
@@ -51,9 +45,10 @@ import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManagerApi11Plus;
 import com.antew.redditinpictures.library.utils.Consts;
-import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.sqlite.RedditContract;
+
+import java.util.List;
 
 public class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoginDialogListener, LogoutDialogListener, RedditDataProvider,
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -69,7 +64,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     private MenuItem            mLoginMenuItem;
     protected RelativeLayout    mLayoutWrapper;
     private String              mUsername;
-    
+
     //@formatter:off
     private BroadcastReceiver   mMySubreddits = new BroadcastReceiver() {
         
@@ -95,18 +90,26 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         if (savedInstanceState != null) {
             getSupportActionBar().setSelectedNavigationItem(savedInstanceState.getInt(Consts.EXTRA_NAV_POSITION));
         }
-        
+
         loadSharedPreferences();
         initializeImageGridFragment();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
-        getSupportLoaderManager().initLoader(Consts.LOADER_LOGIN, null, this);
+        
+        initializeLoaders();
+    }
+
+    private void initializeLoaders() {
+        LoaderManager loaderManager = getSupportLoaderManager();
+        loaderManager.initLoader(Consts.LOADER_LOGIN, null, this);
+        loaderManager.initLoader(Consts.LOADER_SUBREDDITS, null, this);
     }
 
     private void initializeActionBar() {
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setListNavigationCallbacks(getListNavigationSpinner(), this);
     }
 
     private void loadSharedPreferences() {
@@ -114,7 +117,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         mShowNsfwImages = SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this);
         mAge = SharedPreferencesHelper.getAge(ImageGridActivity.this);
         mCategory = SharedPreferencesHelper.getCategory(ImageGridActivity.this);
-        
+
         if (SharedPreferencesHelper.getUseHoloBackground(ImageGridActivity.this)) {
             getWindow().setBackgroundDrawableResource(R.drawable.background_holo_dark);
         }
@@ -124,16 +127,16 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(android.R.id.content, getImageGridFragment(), ImageGridFragment.TAG).commit();
     }
-    
+
     public Fragment getImageGridFragment() {
         ImageGridFragment fragment = (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG);
         if (fragment == null) {
             fragment = getNewImageGridFragment();
         }
-        
+
         return fragment;
     }
-    
+
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMySubreddits);
@@ -141,7 +144,8 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     }
 
     /**
-     * On some version of android the indeterminate progress bar will show when the feature is requested
+     * On some version of android the indeterminate progress bar will show when the feature is
+     * requested, so we make sure it is hidden here
      */
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -172,15 +176,15 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     }
 
     private SpinnerAdapter getListNavigationSpinner() {
-        List<String> subReddits = SharedPreferencesHelper.loadArray(SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, ImageGridActivity.this);
-        if (!(subReddits.size() > 2)) {
-            subReddits = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.default_reddits)));
-        }
+//        List<String> subReddits = SharedPreferencesHelper.loadArray(SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, ImageGridActivity.this);
+//        if (!(subReddits.size() > 2)) {
+//            subReddits = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.default_reddits)));
+//        }
+//
+//        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
+//        subReddits = addHeaderSubreddits(subReddits);
 
-        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
-        subReddits = addHeaderSubreddits(subReddits);
-
-        mSpinnerAdapter = new SubredditMenuAdapter(ImageGridActivity.this, subReddits, mAge, mCategory);
+        mSpinnerAdapter = new SubredditMenuCursorAdapter(ImageGridActivity.this, null, mAge, mCategory);
 
         return mSpinnerAdapter;
     }
@@ -221,7 +225,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.main, menu);
-        
+
         MenuItem item = null;
         //@formatter:off
         // Put a checkmark by the currently selected Category + Age combination
@@ -286,7 +290,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         else
             return SubredditManager.class;
     }
-    
+
     public Class<? extends PreferenceActivity> getPreferencesClass() {
         if (Util.hasHoneycomb())
             return RedditInPicturesPreferencesFragment.class;
@@ -309,7 +313,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         } else if (itemId == R.id.login) {
             handleLoginAndLogout();
         }
-//@formatter:off
+        //@formatter:off
         else if (itemId == R.id.category_hot)                    { mCategory = Category.HOT;                                   loadFromUrl = true; }
         else if (itemId == R.id.category_new)                    { mCategory = Category.NEW;                                   loadFromUrl = true; }
         else if (itemId == R.id.category_rising)                 { mCategory = Category.RISING;                                loadFromUrl = true; } 
@@ -328,7 +332,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         // @formatter:on
         if (loadFromUrl) {
             SharedPreferencesHelper.saveCategorySelectionLoginInformation(mAge, mCategory, ImageGridActivity.this);
-            ((SubredditMenuAdapter) mSpinnerAdapter).notifyDataSetChanged(mCategory, mAge);
+            getSubredditAdapter().notifyDataSetChanged(mCategory, mAge);
             Log.i(TAG, "onOptionsItemSelected, loadFromUrl = true, calling populateViewPagerFromSpinner()");
             onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
         }
@@ -408,7 +412,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
         return -1;
     }
-    
+
     public void selectSubredditInNavigation(String subredditName) {
         int position = getSubredditPosition(subredditName);
         if (position == -1) {
@@ -421,7 +425,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
             getSupportActionBar().setSelectedNavigationItem(position);
         }
     }
-    
+
     public boolean subredditExistsInNavigation(String subredditName) {
         return getSubredditPosition(subredditName) >= 0;
     }
@@ -447,7 +451,7 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     public void onFinishLogoutDialog() {
         int rowsDeleted = getContentResolver().delete(RedditContract.Login.CONTENT_URI, null, null);
         Log.i(TAG, "rows deleted = " + rowsDeleted);
-        
+
         invalidateOptionsMenu();
         getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
         onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
@@ -474,8 +478,11 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         switch (id) {
             case Consts.LOADER_LOGIN:
                 return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
+                
+            case Consts.LOADER_SUBREDDITS:
+                return new CursorLoader(this, RedditContract.Subreddits.CONTENT_URI, RedditContract.Subreddits.SUBREDDITS_PROJECTION, null, null, RedditContract.Subreddits.DEFAULT_SORT);
         }
-        
+
         return null;
     }
 
@@ -486,28 +493,45 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
                 Log.i(TAG, "onLoadFinished LOADER_LOGIN, " + cursor.getCount() + " rows");
                 if (cursor != null && cursor.moveToFirst()) {
                     mUsername = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
-                    Log.i(TAG, "Username = " + mUsername);
                     String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
                     String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
+                    Log.i(TAG, "Username = " + mUsername);
                     Log.i(TAG, "Cookie = " + cookie);
                     Log.i(TAG, "Modhash = " + modhash);
 
                     LoginData data = new LoginData(mUsername, modhash, cookie);
                     RedditLoginInformation.setLoginData(data);
-                    
+
                     hideProgressDialog();
                     invalidateOptionsMenu();
-                    showProgressDialog(getString(R.string.loading), getString(R.string.retrieving_subscribed_subreddits));
-                    RedditService.getMySubreddits(this);
+//                    showProgressDialog(getString(R.string.loading), getString(R.string.retrieving_subscribed_subreddits));
+//                    RedditService.getMySubreddits(this);
                 }
                 break;
+                
+            case Consts.LOADER_SUBREDDITS:
+                Log.i(TAG,  "onLoadFinished LOADER_SUBREDDITS, " + cursor.getCount() + " rows");
+                if (cursor != null && cursor.moveToFirst()) {
+                    getSubredditAdapter().swapCursor(cursor);
+                    hideProgressDialog();
+                    invalidateOptionsMenu();
+                }
+                
+                
+                break;
         }
+        
 
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> paramLoader) {
-
+        if (getSubredditAdapter() != null)
+            getSubredditAdapter().swapCursor(null);
+    }
+    
+    public SubredditMenuCursorAdapter getSubredditAdapter() {
+        return (SubredditMenuCursorAdapter) mSpinnerAdapter;
     }
 
 }

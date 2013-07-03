@@ -50,7 +50,7 @@ import com.antew.redditinpictures.library.utils.Consts;
  *      article</a>
  */
 public class RESTService extends IntentService {
-    private static final String TAG                = RESTService.class.getName();
+    private static final String TAG                = RESTService.class.getSimpleName();
 
     public static final int     GET                = 0x1;
     public static final int     POST               = 0x2;

@@ -16,7 +16,6 @@
 package com.antew.redditinpictures.library.imgur;
 
 import java.io.OutputStream;
-import java.security.InvalidParameterException;
 
 import android.content.Context;
 import android.widget.ImageView;
@@ -47,9 +46,7 @@ public class SizeAwareImageFetcher extends ImageFetcher {
      */
     public SizeAwareImageFetcher(Context context, int sizeInPxToScaleImagesTo, ImageSize size) {
         super(context, sizeInPxToScaleImagesTo);
-        
-        if (size == null)
-            throw new InvalidParameterException("ImageSize must not be null.");
+        assert size != null : "ImageSize must not be null!";
         
         mImageSize = size;
     }
@@ -74,13 +71,17 @@ public class SizeAwareImageFetcher extends ImageFetcher {
 
     @Override
     public void loadImage(Object data, ImageView imageView, ProgressBar progressBar, TextView errorMessage) {
-        super.loadImage(mImageSize.name() + data, imageView, progressBar, errorMessage);
+        super.loadImage(getImageSizeName() + data, imageView, progressBar, errorMessage);
     }
 
     private String removeImageSizeFromUrl(String url) {
-        if (url.startsWith(mImageSize.name()))
-            url = url.replace(mImageSize.name(), "");
+        if (url.startsWith(getImageSizeName()))
+            url = url.replace(getImageSizeName(), "");
 
         return url;
+    }
+    
+    private String getImageSizeName() {
+        return mImageSize.name();
     }
 }

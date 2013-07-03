@@ -2,9 +2,6 @@ package com.antew.redditinpictures.sqlite;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.support.v4.util.SparseArrayCompat;
-
-import com.antew.redditinpictures.sqlite.RedditDatabase.Tables;
 
 public class RedditContract {
 
@@ -30,27 +27,6 @@ public class RedditContract {
     public static final String              PATH_REDDIT_DATA  = "reddit_data";
     public static final String              PATH_SUBREDDITS   = "subreddits";
     public static final String              PATH_LOGIN        = "login";
-
-    /**
-     * Used to allow retrieving the table name from an id
-     */
-    public static SparseArrayCompat<String> TABLES;
-    static {
-        SparseArrayCompat<String> tempTables = new SparseArrayCompat<String>();
-        tempTables.put(RedditContract.POSTS, Tables.POSTDATA);
-        tempTables.put(RedditContract.POSTS_ID, Tables.POSTDATA);
-
-        tempTables.put(RedditContract.REDDIT, Tables.REDDIT_DATA);
-        tempTables.put(RedditContract.REDDIT_ID, Tables.REDDIT_DATA);
-
-        tempTables.put(RedditContract.LOGIN, Tables.LOGIN);
-        tempTables.put(RedditContract.LOGIN_ID, Tables.LOGIN);
-
-        tempTables.put(RedditContract.SUBREDDIT, Tables.SUBREDDITS);
-        tempTables.put(RedditContract.SUBREDDIT_ID, Tables.SUBREDDITS);
-
-        TABLES = tempTables;
-    }
 
     public interface RedditDataColumns {
         String MODHASH = "modhash";
@@ -165,7 +141,9 @@ public class RedditContract {
         public static final String CONTENT_TYPE      = "vnd.android.cursor.dir/vnd.redditinpictures.subreddits";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.redditinpictures.subreddits";
 
-        public static final String DEFAULT_SORT      = BaseColumns._ID + " ASC";
+        public static final String[] SUBREDDITS_PROJECTION = new String[] { _ID, DISPLAY_NAME };
+        
+        public static final String DEFAULT_SORT      = DISPLAY_NAME + " COLLATE NOCASE ASC";
 
         public static Uri buildSubredditUri(String displayName) {
             return CONTENT_URI.buildUpon().appendPath(displayName).build();

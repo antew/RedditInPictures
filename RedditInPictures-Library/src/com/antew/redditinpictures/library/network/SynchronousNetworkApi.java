@@ -3,7 +3,9 @@ package com.antew.redditinpictures.library.network;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -13,8 +15,8 @@ import android.os.Build;
 import com.antew.redditinpictures.library.logging.Log;
 
 public class SynchronousNetworkApi {
-    private static final int IO_BUFFER_SIZE = 8 * 1024;
-    public static final String TAG = SynchronousNetworkApi.class.getSimpleName();
+    private static final int   IO_BUFFER_SIZE = 8 * 1024;
+    public static final String TAG            = SynchronousNetworkApi.class.getSimpleName();
 
     /**
      * Download the input URL and return the output as a String
@@ -31,6 +33,7 @@ public class SynchronousNetworkApi {
         BufferedInputStream in = null;
 
         try {
+
             final URL url = new URL(urlString);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setReadTimeout(10000);
@@ -67,6 +70,56 @@ public class SynchronousNetworkApi {
             }
         }
         return null;
+    }
+
+    public static byte[] downloadUrlToByteArray(String urlString) {
+        disableConnectionReuseIfNecessary();
+        HttpURLConnection urlConnection = null;
+        BufferedInputStream in = null;
+
+        try {
+            final URL url = new URL(urlString);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setReadTimeout(10000);
+            urlConnection.setConnectTimeout(15000);
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+            if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+
+                in = new BufferedInputStream(urlConnection.getInputStream(), IO_BUFFER_SIZE);
+                
+                return streamToBytes(in);
+            }
+        } catch (final IOException e) {
+            Log.e(TAG, "Error in downloadUrl - " + e);
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ignored) {
+                    // Ignored
+                }
+            }
+
+        }
+        return null;
+    }
+
+    private static byte[] streamToBytes(InputStream is) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
+        byte[] buffer = new byte[1024];
+        int len;
+        try {
+            while ((len = is.read(buffer)) >= 0) {
+                os.write(buffer, 0, len);
+            }
+        } catch (java.io.IOException e) {
+        }
+        return os.toByteArray();
     }
 
     /**
