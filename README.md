@@ -38,7 +38,7 @@
 * [Colorful Joy - robokow](http://www.flickr.com/photos/robino/463790976/)
 * [Nexus Above Erskine Lake - drp](http://www.flickr.com/photos/drp/43707772/in/photostream/)
 
-## Issues and Features
+## Issues and Feature Requests
 Please see the [issues](https://github.com/antew/RedditInPictures/issues) section
 to report any bugs or feature requests and to see the list of known issues.
 
