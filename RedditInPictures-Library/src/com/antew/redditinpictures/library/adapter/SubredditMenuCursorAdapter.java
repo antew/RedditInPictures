@@ -34,9 +34,9 @@ import com.antew.redditinpictures.sqlite.RedditContract;
 /**
  * This is the Adapter for the drop down in the Action Bar of {@link ImageGridActivity}. It displays
  * the current Subreddit along with the selected Category and Age
- * 
+ *
  * @author Antew
- * 
+ *
  */
 public class SubredditMenuCursorAdapter extends CursorAdapter {
 
@@ -47,7 +47,7 @@ public class SubredditMenuCursorAdapter extends CursorAdapter {
 
     /**
      * Create a new Adapter for the Subreddit/Category/Age combo
-     * 
+     *
      * @param context
      *            The context
      * @param listdata
@@ -83,7 +83,7 @@ public class SubredditMenuCursorAdapter extends CursorAdapter {
 
         mCursor.moveToPosition(position);
         String subredditDisplayName = mCursor.getString(mCursor.getColumnIndex(RedditContract.SubredditColumns.DISPLAY_NAME));
-        
+
         holder.subreddit.setText(subredditDisplayName);
         holder.category.setText(RedditUrl.getCategorySimpleName(category, age));
 
@@ -107,7 +107,7 @@ public class SubredditMenuCursorAdapter extends CursorAdapter {
         }
 
         mCursor.moveToPosition(position);
-        String subredditDisplayName = getSubredditDisplayName(mCursor); 
+        String subredditDisplayName = getSubredditDisplayName(mCursor);
         holder.subreddit.setText(subredditDisplayName);
 
         return v;
@@ -115,6 +115,10 @@ public class SubredditMenuCursorAdapter extends CursorAdapter {
 
     @Override
     public Object getItem(int position) {
+        if (mCursor == null) {
+            return "";
+        }
+
         mCursor.moveToPosition(position);
         return getSubredditDisplayName(mCursor);
     }
@@ -122,7 +126,7 @@ public class SubredditMenuCursorAdapter extends CursorAdapter {
     private static String getSubredditDisplayName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(RedditContract.SubredditColumns.DISPLAY_NAME));
     }
-    
+
     @Override
     public long getItemId(int position) {
         return position;
@@ -130,7 +134,7 @@ public class SubredditMenuCursorAdapter extends CursorAdapter {
 
     /**
      * Refreshes the Category/Age in the Adapter
-     * 
+     *
      * @param category
      *            The {@link RedditUrl#category}
      * @param age

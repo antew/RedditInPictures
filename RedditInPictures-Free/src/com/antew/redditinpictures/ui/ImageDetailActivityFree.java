@@ -18,7 +18,7 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
 
     @Override
     public FragmentStatePagerAdapter getPagerAdapter() {
-        return new ImagePagerAdapterFree(getSupportFragmentManager(), getImages());
+        return new ImagePagerAdapterFree(getSupportFragmentManager(), null);
     }
     
     @Override

@@ -9,7 +9,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.RelativeLayout;
 
 import com.antew.redditinpictures.library.R;
-import com.antew.redditinpictures.library.reddit.RedditApi.PostData;
+import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;

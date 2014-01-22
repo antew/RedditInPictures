@@ -71,7 +71,7 @@ public class Util {
                 .setClassInstanceLimit(ImageDetailActivity.class, 1)
                 .setClassInstanceLimit(ImgurAlbumActivity.class, 1);
             }
-            
+
             StrictMode.setThreadPolicy(threadPolicyBuilder.build());
             StrictMode.setVmPolicy(vmPolicyBuilder.build());
         }
