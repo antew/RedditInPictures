@@ -490,33 +490,37 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         switch (loader.getId()) {
             case Consts.LOADER_LOGIN:
-                Log.i(TAG, "onLoadFinished LOADER_LOGIN, " + cursor.getCount() + " rows");
-                if (cursor != null && cursor.moveToFirst()) {
-                    mUsername = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
-                    String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
-                    String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
-                    Log.i(TAG, "Username = " + mUsername);
-                    Log.i(TAG, "Cookie = " + cookie);
-                    Log.i(TAG, "Modhash = " + modhash);
+                if (cursor != null) {
+                    Log.i(TAG, "onLoadFinished LOADER_LOGIN, " + cursor.getCount() + " rows");
+                    if (cursor.moveToFirst()) {
+                        mUsername = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
+                        String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
+                        String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
+                        Log.i(TAG, "Username = " + mUsername);
+                        Log.i(TAG, "Cookie = " + cookie);
+                        Log.i(TAG, "Modhash = " + modhash);
 
-                    LoginData data = new LoginData(mUsername, modhash, cookie);
-                    RedditLoginInformation.setLoginData(data);
+                        LoginData data = new LoginData(mUsername, modhash, cookie);
+                        RedditLoginInformation.setLoginData(data);
 
-                    hideProgressDialog();
-                    invalidateOptionsMenu();
+                        hideProgressDialog();
+                        invalidateOptionsMenu();
 //                    showProgressDialog(getString(R.string.loading), getString(R.string.retrieving_subscribed_subreddits));
 //                    RedditService.getMySubreddits(this);
+                    }
                 }
                 break;
                 
             case Consts.LOADER_SUBREDDITS:
-                Log.i(TAG,  "onLoadFinished LOADER_SUBREDDITS, " + cursor.getCount() + " rows");
-                if (cursor != null && cursor.moveToFirst()) {
-                    getSubredditAdapter().swapCursor(cursor);
-                    hideProgressDialog();
-                    invalidateOptionsMenu();
+                if (cursor != null) {
+                    Log.i(TAG, "onLoadFinished LOADER_SUBREDDITS, " + cursor.getCount() + " rows");
+                    if (cursor.moveToFirst()) {
+                        getSubredditAdapter().swapCursor(cursor);
+                        hideProgressDialog();
+                        invalidateOptionsMenu();
+                    }
                 }
-                
+
                 
                 break;
         }
