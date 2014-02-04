@@ -301,6 +301,19 @@ public class PostData implements Parcelable, ContentValuesOperation {
         return values;
     }
 
+    public static PostData fromListViewProjection(Cursor cursor) {
+        PostData postData = new PostData();
+        //@formatter:off
+        postData.selftext  = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT));
+        postData.title     = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
+        postData.score     = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.SCORE));
+        postData.thumbnail = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL));
+        postData.url       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
+        //decodedUrl            = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DECODED_URL));
+        //@formatter:off
+        return postData;
+    }
+
     public PostData(Cursor cursor) {
         //@formatter:off
         domain                = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));

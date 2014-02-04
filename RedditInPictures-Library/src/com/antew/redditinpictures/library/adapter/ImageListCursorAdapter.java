@@ -18,33 +18,36 @@ package com.antew.redditinpictures.library.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.antew.redditinpictures.library.ui.ImageGridFragment;
+import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 /**
- * This is used as the backing adapter for the {@link GridView} in {@link ImageGridFragment}
- * 
+ * This is used as the backing adapter for the {@link android.widget.GridView} in {@link com.antew.redditinpictures.library.ui.ImageGridFragment}
+ *
  * @author Antew
- * 
+ *
  */
-public class ImageCursorAdapter extends CursorAdapter {
-    public static final String    TAG         = ImageCursorAdapter.class.getSimpleName();
+public class ImageListCursorAdapter extends CursorAdapter {
+    public static final String    TAG         = ImageListCursorAdapter.class.getSimpleName();
     private int                   mItemHeight = 0;
     private int                   mNumColumns = 0;
     private GridView.LayoutParams mImageViewLayoutParams;
     private ImageFetcher          mImageFetcher;
     private Cursor                mCursor;
+    private LayoutInflater mInflater;
 
     /**
-     * 
+     *
      * @param context
      *            The context
      * @param imageFetcher
@@ -52,13 +55,12 @@ public class ImageCursorAdapter extends CursorAdapter {
      * @param cursor
      *            Cursor to a database containing PostData information
      */
-    public ImageCursorAdapter(Context context, ImageFetcher imageFetcher, Cursor cursor) {
+    public ImageListCursorAdapter(Context context, ImageFetcher imageFetcher, Cursor cursor) {
         super(context, cursor, 0);
         mContext = context;
         mImageFetcher = imageFetcher;
         mCursor = cursor;
-        mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -72,61 +74,35 @@ public class ImageCursorAdapter extends CursorAdapter {
         return position;
     }
 
-    /**
-     * Sets the item height. Useful for when we know the column width so the height can be set to
-     * match.
-     * 
-     * @param height
-     */
-    public void setItemHeight(int height) {
-        if (height == mItemHeight) {
-            return;
-        }
-        mItemHeight = height;
-        mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, mItemHeight);
-        mImageFetcher.setImageSize(height);
-        notifyDataSetChanged();
-    }
-
-    /**
-     * Sets the number of columns, this is currently used in the {@link OnGlobalLayoutListener} in
-     * {@link ImageGridFragment}
-     * 
-     * @param numColumns
-     */
-    public void setNumColumns(int numColumns) {
-        mNumColumns = numColumns;
-    }
-
-    public int getNumColumns() {
-        return mNumColumns;
-    }
-
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ImageView imageView = (ImageView) view;
-        // Check the height matches our calculated column width
-        if (imageView.getLayoutParams().height != mItemHeight) {
-            imageView.setLayoutParams(mImageViewLayoutParams);
-        }
+        ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+        TextView postTitle = (TextView) view.findViewById(R.id.post_title);
+        TextView postInformation = (TextView) view.findViewById(R.id.post_information);
+        TextView postVotes = (TextView) view.findViewById(R.id.post_votes);
+        PostData postData = PostData.fromListViewProjection(cursor);
 
-        String url = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.URL));
-        String thumbnail = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.THUMBNAIL));
+//        String url = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.URL));
+//        String thumbnail = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.THUMBNAIL));
+//        String upvotes = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.SCORE));
+
         // If we have a thumbnail from Reddit use that, otherwise use the full URL
         // Reddit will send 'default' for one of the default alien icons, which we want to avoid using
+        String url = postData.getUrl();
+        String thumbnail = postData.getThumbnail();
         if (!thumbnail.trim().equals("") && !thumbnail.equals("default")) {
             url = thumbnail;
         }
+
         mImageFetcher.loadImage(url, imageView, null, null);
+        postTitle.setText(postData.getTitle());
+        postInformation.setText(postData.getSelftext());
+        postVotes.setText("" + postData.getScore());
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        ImageView imageView = new ImageView(context);
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imageView.setLayoutParams(mImageViewLayoutParams);
-        return imageView;
-
+        return  mInflater.inflate(R.layout.image_list_item, parent, false);
     }
 
 }

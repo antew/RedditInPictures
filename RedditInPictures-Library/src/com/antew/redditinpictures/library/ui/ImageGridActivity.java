@@ -92,7 +92,8 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         }
 
         loadSharedPreferences();
-        initializeImageGridFragment();
+        //initializeImageGridFragment();
+        initializeImageListFragment();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
         
@@ -128,10 +129,24 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
         ft.replace(android.R.id.content, getImageGridFragment(), ImageGridFragment.TAG).commit();
     }
 
+    private void initializeImageListFragment() {
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(android.R.id.content, getImageListFragment(), ImageListFragment.TAG).commit();
+    }
+
     public Fragment getImageGridFragment() {
         ImageGridFragment fragment = (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG);
         if (fragment == null) {
             fragment = getNewImageGridFragment();
+        }
+
+        return fragment;
+    }
+
+    public Fragment getImageListFragment() {
+        ImageListFragment fragment = (ImageListFragment) getSupportFragmentManager().findFragmentByTag(ImageListFragment.TAG);
+        if (fragment == null) {
+            fragment = getNewImageListFragment();
         }
 
         return fragment;
@@ -191,6 +206,10 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
     public ImageGridFragment getNewImageGridFragment() {
         return new ImageGridFragment();
+    }
+
+    public ImageListFragment getNewImageListFragment() {
+        return new ImageListFragment();
     }
 
     public String getSubredditName(int position) {
@@ -469,7 +488,13 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
     @Override
     public String getSubreddit() {
-        return getSubredditName(getSupportActionBar().getSelectedNavigationIndex());
+        // TODO: Fix subreddit loading and remove this hack of selecting 'All'
+        String subreddit = getSubredditName(getSupportActionBar().getSelectedNavigationIndex());
+        if (subreddit != null && !subreddit.equals("")) {
+            return subreddit;
+        } else {
+            return "All";
+        }
     }
 
     @Override
@@ -505,8 +530,8 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
 
                         hideProgressDialog();
                         invalidateOptionsMenu();
-//                    showProgressDialog(getString(R.string.loading), getString(R.string.retrieving_subscribed_subreddits));
-//                    RedditService.getMySubreddits(this);
+                    showProgressDialog(getString(R.string.loading), getString(R.string.retrieving_subscribed_subreddits));
+                    RedditService.getMySubreddits(this);
                     }
                 }
                 break;
@@ -521,7 +546,6 @@ public class ImageGridActivity extends SherlockFragmentActivity implements OnNav
                     }
                 }
 
-                
                 break;
         }
         
