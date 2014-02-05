@@ -47,12 +47,12 @@ public class LoginResponse extends RedditResponseHandler {
         loginNotify.putExtra(Consts.EXTRA_USERNAME, username);
         if (loginValues.getAsBoolean(RedditContract.Login.SUCCESS)) {
             loginNotify.putExtra(Consts.EXTRA_SUCCESS, true);
+            resolver.insert(RedditContract.Login.CONTENT_URI, loginValues);
         } else {
             loginNotify.putExtra(Consts.EXTRA_SUCCESS, false);
             loginNotify.putExtra(Consts.EXTRA_ERROR_MESSAGE, loginValues.getAsString(RedditContract.Login.ERROR_MESSAGE));
         }
         
-        resolver.insert(RedditContract.Login.CONTENT_URI, loginValues);
         LocalBroadcastManager.getInstance(context).sendBroadcast(loginNotify);
         
     }
