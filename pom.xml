@@ -88,6 +88,7 @@
         <build-helper-maven-plugin.version>1.5</build-helper-maven-plugin.version>
         <findbugs.version>2.5.2</findbugs.version>
         <disklrucache.version>2.02</disklrucache.version>
+        <menudrawer.version>3.0.1</menudrawer.version>
     </properties>
 
     <dependencies>
@@ -141,6 +142,13 @@
             <groupId>com.google.android</groupId>
             <artifactId>android-test</artifactId>
             <version>${android.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.simonvt.menudrawer</groupId>
+            <artifactId>menudrawer</artifactId>
+            <type>apklib</type>
+            <version>${menudrawer.version}</version>
         </dependency>
     </dependencies>
 
