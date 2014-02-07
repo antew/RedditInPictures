@@ -10,6 +10,7 @@ import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener;
 import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.ui.ImageGridFragment;
+import com.antew.redditinpictures.library.ui.ImageListFragment;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.preferences.RedditInPicturesFreePreferences;
 import com.antew.redditinpictures.preferences.RedditInPicturesFreePreferencesFragment;
@@ -24,11 +25,17 @@ public class ImageGridActivityFree extends ImageGridActivity implements UpdateTo
         return new ImageGridFragmentFree();
     }
 
+    @Override
     public Class<? extends PreferenceActivity> getPreferencesClass() {
         if (Util.hasHoneycomb())
             return RedditInPicturesFreePreferencesFragment.class;
         else
             return RedditInPicturesFreePreferences.class;
+    }
+
+    @Override
+    public ImageListFragment getNewImageListFragment() {
+        return new ImageListFragmentFree();
     }
 
     @Override

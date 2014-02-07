@@ -17,11 +17,6 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
     public static final String TAG = ImageDetailActivityFree.class.getSimpleName();
 
     @Override
-    public FragmentStatePagerAdapter getPagerAdapter() {
-        return new ImagePagerAdapterFree(getSupportFragmentManager(), null);
-    }
-    
-    @Override
     public void handleVote(MenuItem item) {
         showUpgradeDialog();
     }
