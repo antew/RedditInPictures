@@ -125,17 +125,6 @@ public class ImageDetailFragment extends ImageViewerFragment {
     }
 
     @Override
-    protected void downloadImage(Intent intent) {
-        if (intent.hasExtra(Consts.EXTRA_PERMALINK) && 
-                intent.hasExtra(Consts.EXTRA_FILENAME) &&
-                mImage != null &&
-                mImage.getPermalink().equals(intent.getStringExtra(Consts.EXTRA_PERMALINK))) {
-            
-                new DownloadImageTask().execute(mImage.getUrl(), intent.getStringExtra(Consts.EXTRA_FILENAME));
-        }
-    }
-
-    @Override
     protected boolean shouldShowPostInformation() {
         return true;
     }

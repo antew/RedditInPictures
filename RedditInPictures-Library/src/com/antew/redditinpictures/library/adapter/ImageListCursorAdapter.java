@@ -43,7 +43,6 @@ public class ImageListCursorAdapter extends CursorAdapter {
     private int                   mItemHeight = 0;
     private int                   mNumColumns = 0;
     private GridView.LayoutParams mImageViewLayoutParams;
-    private ImageFetcher          mImageFetcher;
     private Cursor                mCursor;
     private LayoutInflater mInflater;
 
@@ -51,15 +50,12 @@ public class ImageListCursorAdapter extends CursorAdapter {
      *
      * @param context
      *            The context
-     * @param imageFetcher
-     *            The image fetcher (currently using a {@link com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher}
      * @param cursor
      *            Cursor to a database containing PostData information
      */
-    public ImageListCursorAdapter(Context context, ImageFetcher imageFetcher, Cursor cursor) {
+    public ImageListCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
         mContext = context;
-        mImageFetcher = imageFetcher;
         mCursor = cursor;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -95,7 +91,6 @@ public class ImageListCursorAdapter extends CursorAdapter {
             url = thumbnail;
         }
 
-        Picasso.with(mContext).setDebugging(true);
         Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(imageView);
 
         postTitle.setText(postData.getTitle());

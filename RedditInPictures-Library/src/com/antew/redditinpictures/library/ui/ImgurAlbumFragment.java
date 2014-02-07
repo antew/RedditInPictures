@@ -28,6 +28,7 @@ import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageUtil;
+import com.squareup.picasso.Picasso;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImgurAlbumActivity}.
@@ -68,7 +69,7 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         if (ImageUtil.isGif(imageUrl)) {
             super.loadGifInWebView(imageUrl);
         } else {
-            mImageFetcher.loadImage(imageUrl, mImageView, mProgress, mErrorMessage);
+            Picasso.with(getActivity()).load(mResolvedImageUrl).placeholder(R.drawable.empty_photo).into(mImageView);
         }
     }
 
@@ -112,19 +113,6 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         }
     }
 
-    @Override
-    protected void downloadImage(Intent intent) {
-        //@formatter:off
-        if (intent.hasExtra(Consts.EXTRA_IMAGE_HASH) && 
-                intent.hasExtra(Consts.EXTRA_FILENAME) &&
-                mImage != null &&
-                mImage.getImage().getHash().equals(intent.getStringExtra(Consts.EXTRA_IMAGE_HASH))) {
-            
-                new DownloadImageTask().execute(mImage.getLinks().getOriginal(), intent.getStringExtra(Consts.EXTRA_FILENAME));
-        }
-        //@formatter:on
-    }
-    
     private boolean hasTitle() {
         return mImage.getImage().getTitle() != null && !mImage.getImage().getTitle().trim().equals("");
     }

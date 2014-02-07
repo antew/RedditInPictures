@@ -16,14 +16,6 @@
 
 package com.antew.redditinpictures.library.ui;
 
-import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
-import uk.co.senab.photoview.PhotoView;
-import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -32,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.media.MediaScannerConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -51,7 +42,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.antew.redditinpictures.library.R;
@@ -59,18 +49,20 @@ import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
-import com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.utils.AsyncTask;
 import com.antew.redditinpictures.library.utils.Consts;
-import com.antew.redditinpictures.library.utils.DiskUtil;
-import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.ImageWorker;
 import com.antew.redditinpictures.library.utils.Util;
 import com.squareup.picasso.Picasso;
+
+import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
+
+import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
@@ -81,7 +73,6 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     protected static final String               IMAGE_ALBUM_EXTRA = "extra_image_album";
     protected PostData                          mImage;
     protected ImageView                         mImageView;
-    protected ImageFetcher                      mImageFetcher;
     protected ProgressBar                       mProgress;
     protected RelativeLayout                    mPostInformationWrapper;
     protected Button                            mBtnViewGallery;
@@ -101,14 +92,14 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     private boolean                             mCancelClick      = false;
     private float                               mDownXPos         = 0;
     private float                               mDownYPos         = 0;
-    
+
     /**
-     * Movement threshold used to decide whether to cancel the toggle 
+     * Movement threshold used to decide whether to cancel the toggle
      * between windowed mode and fullscreen mode in the
      * WebView in {@link #getWebViewOnTouchListener()}
      */
     private static float                        MOVE_THRESHOLD;
-    
+
     protected SystemUiStateProvider             mSystemUiStateProvider;
 
     /**
@@ -119,8 +110,6 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     protected abstract void resolveImage();
 
     protected abstract void populatePostData(View v);
-
-    protected abstract void downloadImage(Intent intent);
 
     protected abstract boolean shouldShowPostInformation();
 
@@ -159,7 +148,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         mProgress               = (ProgressBar)    v.findViewById(R.id.progress);
         mBtnViewGallery         = (Button)         v.findViewById(R.id.btn_view_gallery);
         mImageView              = (PhotoView)      v.findViewById(R.id.imageView);
-        mViewStub               = (ViewStub)       v.findViewById(R.id.webview_stub); 
+        mViewStub               = (ViewStub)       v.findViewById(R.id.webview_stub);
         mImageView              = (ImageView)      v.findViewById(R.id.imageView);
         mVotes                  = (TextView)       v.findViewById(R.id.post_votes);
         mPostInformationWrapper = (RelativeLayout) v.findViewById(R.id.post_information_wrapper);
@@ -183,7 +172,6 @@ public abstract class ImageViewerFragment extends SherlockFragment {
 
         LocalBroadcastManager.getInstance(act).registerReceiver(mScoreUpdateReceiver, new IntentFilter(Consts.BROADCAST_UPDATE_SCORE));
         LocalBroadcastManager.getInstance(act).registerReceiver(mToggleFullscreenIntent, new IntentFilter(Consts.BROADCAST_TOGGLE_FULLSCREEN));
-        LocalBroadcastManager.getInstance(act).registerReceiver(mDownloadImageIntent, new IntentFilter(Consts.BROADCAST_DOWNLOAD_IMAGE));
 
         // Set up on our tap listener for the PhotoView which we use to toggle between fullscreen
         // and windowed mode
@@ -206,7 +194,6 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         // Use the parent activity to load the image asynchronously into the ImageView (so a single
         // cache can be used over all pages in the ViewPager
         if (ImageViewerActivity.class.isInstance(getActivity())) {
-            mImageFetcher = ((ImageViewerActivity) getActivity()).getImageFetcher();
             resolveImage();
         }
     }
@@ -249,7 +236,6 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         Log.i(TAG, "onDestroy");
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mScoreUpdateReceiver);
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mToggleFullscreenIntent);
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mDownloadImageIntent);
 
         if (mImageView != null) {
             ImageWorker.cancelWork(mImageView);
@@ -286,17 +272,17 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     }
 
     /**
-     * This handles receiving the touch events in the WebView so that we can 
+     * This handles receiving the touch events in the WebView so that we can
      * toggle between fullscreen and windowed mode.
-     * 
+     *
      * The first time the user touches the screen we save the X and Y coordinates.
      * If we receive a {@link MotionEvent#ACTION_DOWN} event we compare the previous
      * X and Y coordinates to the saved coordinates, if they are greater than {@link MOVE_THRESHOLD}
      * we prevent the toggle from windowed mode to fullscreen mode or vice versa, the idea
      * being that the user is either dragging the image or using pinch-to-zoom.
-     * 
+     *
      * TODO: Implement handling for double tap to zoom.
-     * 
+     *
      * @return The {@link OnTouchListener} for the {@link WebView} to use.
      */
     public OnTouchListener getWebViewOnTouchListener() {
@@ -347,7 +333,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             Picasso.with(getActivity()).load(mResolvedImageUrl).placeholder(R.drawable.empty_photo).into(mImageView);
         }
     }
-    
+
     public void loadGifInWebView(String imageUrl) {
         if (mViewStub.getParent() != null)
             mWebView = (WebView) mViewStub.inflate();
@@ -356,26 +342,26 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         mImageView.setVisibility(View.GONE);
         mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
     }
-    
+
     public String getHtmlForImageDisplay(String imageUrl) {
         return String.format(Consts.WEBVIEW_IMAGE_HTML, imageUrl);
     }
-    
+
     @SuppressLint("SetJavaScriptEnabled")
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void initializeWebView(WebView webview) {
         assert webview != null : "WebView should not be null!";
-        
+
         WebSettings settings = webview.getSettings();
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
         settings.setJavaScriptEnabled(true);
         settings.setBuiltInZoomControls(true);
         settings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
-        
+
         if (Util.hasHoneycomb())
             settings.setDisplayZoomControls(false);
-        
+
         webview.setBackgroundColor(Color.BLACK);
         webview.setVisibility(View.VISIBLE);
         webview.setOnTouchListener(getWebViewOnTouchListener());
@@ -391,7 +377,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra(Consts.EXTRA_PERMALINK) && 
+            if (intent.hasExtra(Consts.EXTRA_PERMALINK) &&
                     intent.hasExtra(Consts.EXTRA_SCORE) &&
                     mImage != null &&
                     mImage.getPermalink().equals(intent.getStringExtra(Consts.EXTRA_PERMALINK))) {
@@ -415,15 +401,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
                 showPostDetails();
         }
     };
-    
-    private BroadcastReceiver   mDownloadImageIntent = new BroadcastReceiver() {
-        
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "Received download image intent!");
-            downloadImage(intent);
-        }
-    };
+
     //@formatter:on
 
     /**
@@ -486,69 +464,4 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         }
     }
 
-    class DownloadImageTask extends AsyncTask<String, Void, String> {
-        private String data;
-        private String filename;
-
-        public DownloadImageTask() {}
-
-        /**
-         * Background processing.
-         */
-        @Override
-        protected String doInBackground(String... params) {
-            StringBuilder returnVal = new StringBuilder();
-
-            data = params[0];
-            filename = params[1];
-
-            Log.d(TAG, "DownloadImageTask - doInBackground - starting work");
-
-            String url = null;
-            if (mResolvedImageUrl != null) {
-                Log.i(TAG, "DownloadImageTask - Resolved image = " + mResolvedImageUrl);
-                url = mResolvedImageUrl;
-            } else {
-                Log.i(TAG, "DownloadImageTask - Using passed in URL = " + data);
-                url = ((SizeAwareImageFetcher) mImageFetcher).decodeUrl(data);
-                Log.i(TAG, "DownloadImageTask - Passed in URL Resolved To = " + mResolvedImageUrl);
-            }
-
-            String fileExtension = url.substring(url.lastIndexOf("."));
-            Log.i(TAG, "DownloadImageTask - fileExtension = " + fileExtension);
-
-            File file = DiskUtil.getPicturesDirectory();
-            File destination = new File(file, filename + fileExtension);
-            FileOutputStream fos = null;
-            Activity act = getActivity();
-            try {
-                fos = new FileOutputStream(destination);
-                boolean result = ((SizeAwareImageFetcher) mImageFetcher).downloadUrlToStream(url, fos);
-
-                if (result) {
-                    returnVal.append("File downloaded to: " + destination.getAbsolutePath());
-                    if (act != null)
-                        MediaScannerConnection.scanFile(act, new String[] { destination.getAbsolutePath() }, new String[] { "image/*" }, null);
-                } else
-                    returnVal.append("Download failed :(");
-
-            } catch (FileNotFoundException e) {
-                Log.e(TAG, "DownloadImageTask - Error creating file", e);
-            }
-
-            Log.d(TAG, "DownloadImageTask - doInBackground - finished work");
-            return returnVal.toString();
-        }
-
-        /**
-         * Once we're resolved the URL, pass it to our load function to download/display it
-         */
-        @Override
-        protected void onPostExecute(String result) {
-            Activity act = getActivity();
-            if (act != null)
-                Toast.makeText(act, result, Toast.LENGTH_SHORT).show();
-        }
-
-    }
 }

@@ -74,7 +74,7 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
         initializeImageFetcher();
 
         // Initialize the adapter to null, the adapter will be populated in onLoadFinished
-        mAdapter = new ImageListCursorAdapter(getActivity(), mImageFetcher, null);
+        mAdapter = new ImageListCursorAdapter(getActivity(), null);
         setListAdapter(mAdapter);
 
     }
