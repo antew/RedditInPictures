@@ -156,12 +156,6 @@
             <artifactId>picasso</artifactId>
             <version>2.2.0</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.jakewharton</groupId>
-            <artifactId>butterknife</artifactId>
-            <version>4.0.1</version>
-        </dependency>
     </dependencies>
 
     <build>
