@@ -70,6 +70,7 @@ import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.ImageWorker;
 import com.antew.redditinpictures.library.utils.Util;
+import com.squareup.picasso.Picasso;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
@@ -343,7 +344,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         if (ImageUtil.isGif(mResolvedImageUrl)) {
             loadGifInWebView(mResolvedImageUrl);
         } else {
-            mImageFetcher.loadImage(mResolvedImageUrl, mImageView, mProgress, mErrorMessage);
+            Picasso.with(getActivity()).load(mResolvedImageUrl).placeholder(R.drawable.empty_photo).into(mImageView);
         }
     }
     

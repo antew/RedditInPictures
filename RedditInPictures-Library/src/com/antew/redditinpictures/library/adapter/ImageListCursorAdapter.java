@@ -30,6 +30,7 @@ import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.sqlite.RedditContract;
+import com.squareup.picasso.Picasso;
 
 /**
  * This is used as the backing adapter for the {@link android.widget.GridView} in {@link com.antew.redditinpictures.library.ui.ImageGridFragment}
@@ -94,7 +95,9 @@ public class ImageListCursorAdapter extends CursorAdapter {
             url = thumbnail;
         }
 
-        mImageFetcher.loadImage(url, imageView, null, null);
+        Picasso.with(mContext).setDebugging(true);
+        Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(imageView);
+
         postTitle.setText(postData.getTitle());
         postInformation.setText(postData.getSelftext());
         postVotes.setText("" + postData.getScore());
