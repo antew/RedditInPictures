@@ -5,7 +5,7 @@
     android:layout_height="100dp">
 
     <TextView
-        android:id="@+id/post_votes"
+        android:id="@+id/tv_votes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -20,49 +20,61 @@
         android:textSize="14sp" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/iv_image"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:layout_toRightOf="@id/post_votes"
+        android:layout_toRightOf="@+id/tv_votes"
         android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
         android:contentDescription="@string/imageview_description"
-        android:focusableInTouchMode="false" />
+        android:focusableInTouchMode="false"
+        android:src="@drawable/empty_photo" />
 
     <RelativeLayout
         android:id="@+id/post_information_wrapper"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/imageView"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/iv_image"
         android:layout_centerVertical="true">
 
         <TextView
-            android:id="@+id/post_title"
+            android:id="@+id/tv_title"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignWithParentIfMissing="true"
-            android:ellipsize="none"
-            android:paddingBottom="3dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:paddingTop="3dp"
-            android:layout_marginLeft="10dp"
+            android:ellipsize="end"
             android:textColor="@android:color/primary_text_dark"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="This is a title that is really quite long and goes on for a long time because reasons"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_above="@+id/tv_subreddit" />
 
         <TextView
-            android:id="@+id/post_information"
+            android:id="@+id/tv_subreddit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/post_title"
-            android:layout_alignWithParentIfMissing="true"
-            android:layout_below="@id/post_title"
-            android:paddingBottom="3dp"
-            android:paddingLeft="5dp"
-            android:textColor="@color/white"
-            android:textSize="11sp" />
+            android:layout_alignWithParentIfMissing="false"
+            android:textSize="12sp"
+            android:text="whitepeoplegifs"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="5dp" />
+
+        <TextView
+            android:id="@+id/tv_comment_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignWithParentIfMissing="false"
+            android:textSize="12sp"
+            android:text="482 comments"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="5dp" />
     </RelativeLayout>
 
 </RelativeLayout>

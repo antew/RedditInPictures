@@ -21,15 +21,12 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.reddit.PostData;
-import com.antew.redditinpictures.library.utils.ImageFetcher;
-import com.antew.redditinpictures.sqlite.RedditContract;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -73,15 +70,12 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
-        TextView postTitle = (TextView) view.findViewById(R.id.post_title);
-        TextView postInformation = (TextView) view.findViewById(R.id.post_information);
-        TextView postVotes = (TextView) view.findViewById(R.id.post_votes);
+        ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
+        TextView postTitle = (TextView) view.findViewById(R.id.tv_title);
+        TextView postSubreddit = (TextView) view.findViewById(R.id.tv_subreddit);
+        TextView postComments = (TextView) view.findViewById(R.id.tv_comment_count);
+        TextView postVotes = (TextView) view.findViewById(R.id.tv_votes);
         PostData postData = PostData.fromListViewProjection(cursor);
-
-//        String url = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.URL));
-//        String thumbnail = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.THUMBNAIL));
-//        String upvotes = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.SCORE));
 
         // If we have a thumbnail from Reddit use that, otherwise use the full URL
         // Reddit will send 'default' for one of the default alien icons, which we want to avoid using
@@ -94,7 +88,9 @@ public class ImageListCursorAdapter extends CursorAdapter {
         Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(imageView);
 
         postTitle.setText(postData.getTitle());
-        postInformation.setText(postData.getSelftext());
+        postSubreddit.setText(postData.getSubreddit());
+        //TODO: This is being dumb right now, doesn't seem to be returned from the API right now, so I'll leave it hardcoded for the time being.
+        //postComments.setText(postData.getNum_comments());
         postVotes.setText("" + postData.getScore());
     }
 
@@ -102,5 +98,4 @@ public class ImageListCursorAdapter extends CursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return  mInflater.inflate(R.layout.image_list_item, parent, false);
     }
-
 }
