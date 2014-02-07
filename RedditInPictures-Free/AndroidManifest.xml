@@ -19,8 +19,17 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
 
+        <service android:name="com.antew.redditinpictures.library.service.RedditService" />
+
+        <provider
+            android:name="com.antew.redditinpictures.library.provider.RedditProvider"
+            android:authorities="com.antew.redditinpictures"
+            android:label="@string/app_name"
+            android:exported="false"
+            android:syncable="false" />
+
         <activity
-            android:name="com.antew.redditinpictures.ui.ImageGridActivityFree"
+            android:name="com.antew.redditinpictures.library.ui.ImageGridActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme"
             android:uiOptions="splitActionBarWhenNarrow" >
@@ -31,24 +40,27 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.antew.redditinpictures.ui.ImageDetailActivityFree"
+            android:name="com.antew.redditinpictures.library.ImageViewer"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.antew.redditinpictures.library.ui.ImageDetailActivity"
             android:label="@string/app_name"
-            android:parentActivityName="com.antew.redditinpictures.ui.ImageGridActivityFree"
+            android:parentActivityName="com.antew.redditinpictures.library.ui.ImageGridActivity"
             android:theme="@style/AppTheme.FullScreen"
             android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.antew.redditinpictures.ui.ImageGridActivityFree" />
+                android:value="com.antew.redditinpictures.library.ui.ImageGridActivity" />
         </activity>
         <activity
-            android:name="com.antew.redditinpictures.ui.ImgurAlbumActivityFree"
+            android:name="com.antew.redditinpictures.library.ui.ImgurAlbumActivity"
             android:label="@string/app_name"
-            android:parentActivityName="com.antew.redditinpictures.ui.ImageDetailActivityFree"
+            android:parentActivityName="com.antew.redditinpictures.library.ui.ImageDetailActivity"
             android:theme="@style/AppTheme.FullScreen"
             android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.antew.redditinpictures.ui.ImageDetailActivityFree" />
+                android:value="com.antew.redditinpictures.library.ui.ImageDetailActivity" />
         </activity>
         <activity
             android:name="com.antew.redditinpictures.library.subredditmanager.SubredditManager"
@@ -59,11 +71,11 @@
             android:label="@string/edit_subreddits"
             android:theme="@style/Theme.Sherlock" />
         <activity
-            android:name="com.antew.redditinpictures.preferences.RedditInPicturesFreePreferencesFragment"
+            android:name="com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.antew.redditinpictures.preferences.RedditInPicturesFreePreferences"
+            android:name="com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences"
             android:label="@string/app_name" >
         </activity>
         <activity
