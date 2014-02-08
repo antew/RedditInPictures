@@ -12,4 +12,9 @@ public class SubredditChildren {
         return data;
     }
 
+    public SubredditChildren(String kind, String subredditDisplayName) {
+        this.kind = kind;
+        SubredditData subreddit = new SubredditData(subredditDisplayName);
+        this.data = subreddit;
+    }
 }

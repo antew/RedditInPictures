@@ -15,6 +15,7 @@
  */
 package com.antew.redditinpictures.library.reddit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -63,14 +64,36 @@ public class MySubreddits implements ContentValuesArrayOperation {
 
     @Override
     public ContentValues[] getContentValuesArray() {
-        ContentValues[] operations = new ContentValues[getData().getChildren().size()];
+        int subredditCount = data.getChildren().size();
+        DefaultSubreddit[] defaultSubreddits = DefaultSubreddit.values();
+        int totalSubredditCount = subredditCount + defaultSubreddits.length;
 
-        List<SubredditChildren> c = getData().getChildren();
-        for (int i = 0; i < getData().getChildren().size(); i++) {
-            operations[i] = getContentValues(c.get(i).getData());
+        List<ContentValues> operations = new ArrayList<ContentValues>(totalSubredditCount);
+
+        for (DefaultSubreddit subreddit : defaultSubreddits) {
+            operations.add(getContentValues(new SubredditData(subreddit.getDisplayName())));
         }
 
-        return operations;
+        for (SubredditChildren children : data.getChildren()) {
+            operations.add(getContentValues(children.getData()));
+        }
+
+        return operations.toArray(new ContentValues[operations.size()]);
+    }
+
+    private enum DefaultSubreddit {
+        FRONTPAGE("Frontpage"),
+        ALL("All");
+        private final String displayName;
+
+        DefaultSubreddit(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
     }
 
 }

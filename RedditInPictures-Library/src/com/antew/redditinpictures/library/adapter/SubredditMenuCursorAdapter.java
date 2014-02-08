@@ -50,10 +50,10 @@ public class SubredditMenuCursorAdapter extends CursorAdapter {
      *
      * @param context
      *            The context
-     * @param listdata
-     *            The list of subreddits
+     * @param cursor
+     *            Cursor containing the list of subreddits
      * @param age
-     *            The {@link RedditUrl#Age}
+     *            The {@link Age}
      * @param category
      *            The {@link RedditUrl#category}
      */

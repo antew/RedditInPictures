@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppTheme" parent="@style/Theme.Sherlock">
+    <style name="AppTheme" parent="Theme.Sherlock">
         <item name="android:windowBackground">@color/dark_gray</item>
         <item name="spinnerDropDownItemStyle">@style/Widget.Sherlock.DropDownItem.Spinner</item>
-    </style>
+    </style>
+
     <style name="AppTheme.FullScreen">
         <item name="android:windowActionBarOverlay">true</item>
         <item name="windowActionBarOverlay">true</item>
@@ -16,7 +17,8 @@
     <style name="TranslucentDarkActionBar" parent="Widget.Sherlock.ActionBar">
         <item name="android:background">@drawable/actionbar_background</item>
         <item name="background">@drawable/actionbar_background</item>
-    </style>
+    </style>
+
     <style name="PhotoGridLayout">
         <item name="android:drawSelectorOnTop">true</item>
         <item name="android:listSelector">@drawable/photogrid_list_selector</item>

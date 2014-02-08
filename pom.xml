@@ -72,11 +72,11 @@
         <android.platform>16</android.platform>
         <android-support.version>r7</android-support.version>
 
-        <android-maven.version>3.4.0</android-maven.version>
+        <android-maven.version>3.8.2</android-maven.version>
         <nineoldandroids.version>2.4.0</nineoldandroids.version>
         <robolectric.version>1.0</robolectric.version>
         <junit.version>4.11</junit.version>
-        <actionbarsherlock.version>4.2.0</actionbarsherlock.version>
+        <actionbarsherlock.version>4.4.0</actionbarsherlock.version>
         <gson.version>2.2.4</gson.version>
         <android-annotations.version>3.0.1</android-annotations.version>
         <maven-compiler-plugin.version>2.5</maven-compiler-plugin.version>
@@ -88,7 +88,7 @@
         <build-helper-maven-plugin.version>1.5</build-helper-maven-plugin.version>
         <findbugs.version>2.5.2</findbugs.version>
         <disklrucache.version>2.02</disklrucache.version>
-        <menudrawer.version>3.0.1</menudrawer.version>
+        <menudrawer.version>3.0.2</menudrawer.version>
     </properties>
 
     <dependencies>
@@ -107,7 +107,7 @@
 
         <dependency>
             <groupId>com.actionbarsherlock</groupId>
-            <artifactId>library</artifactId>
+            <artifactId>actionbarsherlock</artifactId>
             <version>${actionbarsherlock.version}</version>
             <type>apklib</type>
         </dependency>
@@ -241,7 +241,6 @@
                 <version>${findbugs.version}</version>
                 <configuration>
                     <findbugsXmlOutput>true</findbugsXmlOutput>
-                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
                     <xmlOutput>true</xmlOutput>
                     <excludeFilterFile>${user.dir}/findbugs-exclude.xml</excludeFilterFile>
                 </configuration>

@@ -44,19 +44,18 @@ import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class ImageListFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    public static final String   TAG                = "ImageListFragment";
-    private static final String  IMAGE_CACHE_DIR    = "thumbs";
-    private ThumbnailInfo mThumbnailInfo;
+    public static final  String TAG             = "ImageListFragment";
+    private static final String IMAGE_CACHE_DIR = "thumbs";
     protected ImageListCursorAdapter mAdapter;
-    private ImageFetcher mImageFetcher;
-    private String               mAfter;
-    private boolean              mRequestInProgress = false;
-    private boolean              mFirstRequest      = true;
-    private ProgressBar mProgress;
-    private TextView mNoImages;
+    private   ThumbnailInfo          mThumbnailInfo;
+    private   ImageFetcher           mImageFetcher;
+    private   String                 mAfter;
+    private boolean mRequestInProgress = false;
+    private boolean mFirstRequest      = true;
+    private TextView           mNoImages;
     private RedditDataProvider mRedditDataProvider;
-    private MenuItem mLoginMenuItem;
-    private ListView mImageListView;
+    private MenuItem           mLoginMenuItem;
+    private ListView           mImageListView;
 
     /**
      * Empty constructor as per the Fragment documentation
@@ -141,7 +140,6 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.image_list_fragment, container, false);
         mNoImages = (TextView) v.findViewById(R.id.no_images);
-        mProgress = (ProgressBar) v.findViewById(R.id.progress);
         return v;
     }
 
@@ -282,17 +280,13 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
     private void setRequestInProgress(boolean inProgress) {
         mRequestInProgress = inProgress;
 
-        final SherlockFragmentActivity activity = getSherlockActivity();
-        if (activity != null) {
-            activity.setSupportProgressBarIndeterminateVisibility(inProgress);
-        }
-
-
         if (inProgress) {
-            mProgress.setVisibility(View.VISIBLE);
+            final SherlockFragmentActivity activity = getSherlockActivity();
+            if (activity != null) {
+                activity.setSupportProgressBarIndeterminateVisibility(inProgress);
+            }
+
             mNoImages.setVisibility(View.GONE);
-        } else {
-            mProgress.setVisibility(View.GONE);
         }
     }
 

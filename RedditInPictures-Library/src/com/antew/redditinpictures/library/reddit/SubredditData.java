@@ -77,4 +77,7 @@ public class SubredditData {
         return accounts_active;
     }
 
+    public SubredditData(String display_name) {
+        this.display_name = display_name;
+    }
 }
