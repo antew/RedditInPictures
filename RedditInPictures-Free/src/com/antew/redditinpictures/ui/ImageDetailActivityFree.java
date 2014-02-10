@@ -6,7 +6,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.actionbarsherlock.view.MenuItem;
-import com.antew.redditinpictures.adapter.ImagePagerAdapterFree;
+import com.antew.redditinpictures.adapter.CursorPagerAdapterFree;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
@@ -38,5 +38,10 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
             intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
             startActivity(intent);        
         }
+    }
+
+    @Override
+    public FragmentStatePagerAdapter getPagerAdapter() {
+        return new CursorPagerAdapterFree(getSupportFragmentManager(), null);
     }
 }

@@ -6,9 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
@@ -23,6 +26,7 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     private AdView mAdView;
     private boolean mAdsDisabled;
     private RelativeLayout mWrapper;
+    private Button mViewGalleryButton;
 
     /**
      * Factory method to generate a new instance of the fragment given an image number.
@@ -45,17 +49,10 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mWrapper = (RelativeLayout) getView().findViewById(R.id.fragment_wrapper);
+        mViewGalleryButton = (Button) getView().findViewById(R.id.btn_view_gallery);
         mAdsDisabled = SharedPreferencesHelperFree.getDisableAds(getActivity());
-        
     }
-    
-    
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        RelativeLayout v = (RelativeLayout) super.onCreateView(inflater, container, savedInstanceState);
-        return v;
-    }
-    
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -64,10 +61,11 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
             mAdView = null;
         }
     }
-    
+
     @Override
-    public void hidePostDetails() {
-        super.hidePostDetails();
+    public void loadImage(Image image) {
+        super.loadImage(image);
+
         /**
          * If ads are disabled we don't need to load any
          */
@@ -79,46 +77,23 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
              */
             RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+
+            if (mViewGalleryButton != null) {
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
+                adParams.bottomMargin = lp.bottomMargin;
+            }
+
             mAdView.setLayoutParams(adParams);
             mWrapper.addView(mAdView, adParams);
             mAdView.setVisibility(View.VISIBLE);
             mAdView.loadAd(AdUtil.getAdRequest());
-        }
-            
-        if (mAdView != null) {
-            /**
-             * We use the onGlobalLayoutListener here in order to adjust the bottom margin of the ImageView
-             * so that the ad doesn't obscure the image
-             */
-            mAdView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-                
-                @Override
-                public void onGlobalLayout() {
-                    if (mAdView != null && mImageView != null) {
-                        int height = mAdView.getHeight();
-                        if (height > 0) {
-                            RelativeLayout.LayoutParams imageParams = (RelativeLayout.LayoutParams) mImageView.getLayoutParams();
-                            imageParams.setMargins(0, 0, 0, height);
-                            mImageView.setLayoutParams(imageParams);
-                            mAdView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        }
-                    }
-                }
-            });
+
+            RelativeLayout.LayoutParams imageViewParams = (RelativeLayout.LayoutParams) mImageView.getLayoutParams();
+            imageViewParams.addRule(RelativeLayout.ABOVE, mAdView.getId());
+            mImageView.setLayoutParams(imageViewParams);
         }
     }
-    
-    @Override
-    public void showPostDetails() {
-        super.showPostDetails();
-        if (mAdView != null && mImageView != null) {
-            mAdView.setVisibility(View.GONE);
-            RelativeLayout.LayoutParams imageParams = (RelativeLayout.LayoutParams) mImageView.getLayoutParams();
-            imageParams.setMargins(0, 0, 0, 0);
-            mImageView.setLayoutParams(imageParams);
-        }
-    }
-    
+
     @Override
     public Class<? extends ImgurAlbumActivity> getImgurAlbumActivity() {
         return ImgurAlbumActivityFree.class;
