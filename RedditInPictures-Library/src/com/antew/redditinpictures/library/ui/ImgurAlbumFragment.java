@@ -75,8 +75,6 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
 
     @Override
     public void populatePostData(View v) {
-
-
         // Normally has the title of the Reddit post
         TextView postCaption = (TextView) v.findViewById(R.id.post_title);
 

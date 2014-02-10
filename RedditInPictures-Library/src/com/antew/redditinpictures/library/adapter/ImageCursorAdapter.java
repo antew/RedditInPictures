@@ -25,9 +25,11 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.ui.ImageGridFragment;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.sqlite.RedditContract;
+import com.squareup.picasso.Picasso;
 
 /**
  * This is used as the backing adapter for the {@link GridView} in {@link ImageGridFragment}
@@ -117,7 +119,7 @@ public class ImageCursorAdapter extends CursorAdapter {
         if (!thumbnail.trim().equals("") && !thumbnail.equals("default")) {
             url = thumbnail;
         }
-        mImageFetcher.loadImage(url, imageView, null, null);
+        Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(imageView);
     }
 
     @Override
