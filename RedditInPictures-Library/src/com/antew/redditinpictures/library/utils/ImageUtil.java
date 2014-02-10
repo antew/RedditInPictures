@@ -198,6 +198,7 @@ public class ImageUtil {
      * @return True if the image is a gif, otherwise false
      */
     public static boolean isGif(String url) {
+        if (url != null)
         url = url.toLowerCase(Locale.US);
         return url.endsWith(".gif");
     }
