@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.antew.redditinpictures.library.R;
@@ -24,6 +26,7 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     private AdView mAdView;
     private boolean mAdsDisabled;
     private RelativeLayout mWrapper;
+    private Button mViewGalleryButton;
 
     /**
      * Factory method to generate a new instance of the fragment given an image number.
@@ -46,6 +49,7 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mWrapper = (RelativeLayout) getView().findViewById(R.id.fragment_wrapper);
+        mViewGalleryButton = (Button) getView().findViewById(R.id.btn_view_gallery);
         mAdsDisabled = SharedPreferencesHelperFree.getDisableAds(getActivity());
     }
 
@@ -73,6 +77,12 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
              */
             RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+
+            if (mViewGalleryButton != null) {
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
+                adParams.bottomMargin = lp.bottomMargin;
+            }
+
             mAdView.setLayoutParams(adParams);
             mWrapper.addView(mAdView, adParams);
             mAdView.setVisibility(View.VISIBLE);
