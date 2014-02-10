@@ -37,6 +37,7 @@ import com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
+import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageCache;
 import com.antew.redditinpictures.library.utils.ImageCache.ImageCacheParams;
@@ -44,7 +45,7 @@ import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.library.widgets.CustomViewPager;
 
-public abstract class ImageViewerActivity extends SherlockFragmentActivity implements SaveImageDialogListener, SystemUiStateProvider {
+public abstract class ImageViewerActivity extends BaseFragmentActivity implements SaveImageDialogListener, SystemUiStateProvider {
 
     public static final String           TAG             = "ImageViewerActivity";
     private static final String          IMAGE_CACHE_DIR = "images";

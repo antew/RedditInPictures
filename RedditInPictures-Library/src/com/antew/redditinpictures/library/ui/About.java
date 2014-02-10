@@ -9,9 +9,10 @@ import android.widget.ImageView;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.ui.base.BaseActivity;
 import com.antew.redditinpictures.library.utils.Util;
 
-public class About extends SherlockActivity {
+public class About extends BaseActivity {
     private ImageView mImageView;
     private static final int MAX_TRIES = 4;
 

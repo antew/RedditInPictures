@@ -44,6 +44,7 @@ import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManagerApi11Plus;
+import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.sqlite.RedditContract;
@@ -51,7 +52,7 @@ import com.antew.redditinpictures.sqlite.RedditContract;
 import net.simonvt.menudrawer.MenuDrawer;
 import net.simonvt.menudrawer.Position;
 
-public class ImageGridActivity extends SherlockFragmentActivity implements OnNavigationListener, LoginDialogListener, LogoutDialogListener, RedditDataProvider,
+public class ImageGridActivity extends BaseFragmentActivity implements OnNavigationListener, LoginDialogListener, LogoutDialogListener, RedditDataProvider,
         LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG                     = "ImageGridActivity";
     protected boolean           mShowNsfwImages;
