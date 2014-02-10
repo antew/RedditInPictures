@@ -44,7 +44,7 @@ public class ImageUtil {
     private static boolean isEHostImage(String url) {
         return url.contains("eho.st");
     }
-    
+
     /**
      * Returns true if the input URL is a Snaggy image
      * @param url The URL to evaluate
@@ -53,7 +53,7 @@ public class ImageUtil {
     private static boolean isSnaggyImage(String url) {
         return url.contains("snag.gy/");
     }
-    
+
     /**
      * Returns true if the input URL is a PicsHD image
      * @param url The URL to evaluate
@@ -62,7 +62,7 @@ public class ImageUtil {
     private static boolean isPicsHDImage(String url) {
         return url.contains("picshd.com/");
     }
-    
+
     /**
      * Returns true if the input URL is a Picsarus image
      * @param url The URL to evaluate
@@ -71,7 +71,7 @@ public class ImageUtil {
     private static boolean isPicsarusImage(String url) {
         return url.contains("picsarus.com");
     }
-    
+
     /**
      * Returns true if the input URL is a min.us image
      * @param url The URL to evaluate
@@ -80,7 +80,7 @@ public class ImageUtil {
     private static boolean isMinusImage(String url) {
         return url.contains("min.us") && !url.contains("blog.");
     }
-    
+
     /**
      * Returns true if the input URL is a min.us image
      * @param url The URL to evaluate
@@ -89,7 +89,7 @@ public class ImageUtil {
     private static boolean isFlickrImage(String url) {
         return url.matches("^http://(?:\\w+).?flickr.com/(?:.*)/([\\d]{10})/?(?:.*)?$");
     }
-    
+
     /**
      * Returns true if the input URL is a Steam image
      * @param url The URL to evaluate
@@ -98,7 +98,7 @@ public class ImageUtil {
     private static boolean isSteamImage(String url) {
         return url.contains("cloud.steampowered.com");
     }
-    
+
     /**
      * Returns true if the input URL is a QuickMeme image
      * @param url The URL to evaluate
@@ -107,7 +107,7 @@ public class ImageUtil {
     private static boolean isQuickMemeImage(String url) {
         return url.contains("qkme.me") || url.contains("quickmeme.com");
     }
-    
+
     /**
      * Returns true if the input URL is a DeviantArt image
      * @param url The URL to evaluate
@@ -116,7 +116,7 @@ public class ImageUtil {
     private static boolean isDeviantArtImage(String url) {
         return url.matches("^http://(?:fav.me/.*|(?:.+\\.)?deviantart.com/(?:art/.*|[^#]*#/d.*)$");
     }
-    
+
     /**
      * Returns true if the input URL is a Tumblr image
      * @param url The URL to evaluate
@@ -125,7 +125,7 @@ public class ImageUtil {
     private static boolean isTumblrImage(String url) {
         return url.matches("^https?://([a-z0-9-]+\\.tumblr\\.com)/post/(\\d+)(?:/.*)?$");
     }
-    
+
     /**
      * Returns true if the input URL is a MemeCrunch image
      * @param url The URL to evaluate
@@ -134,7 +134,7 @@ public class ImageUtil {
     private static boolean isMemeCrunchImage(String url) {
         return url.contains("memecrunch.com");
     }
-    
+
     /**
      * Returns true if the input URL is a LiveMeme image
      * @param url The URL to evaluate
@@ -143,7 +143,7 @@ public class ImageUtil {
     private static boolean isLiveMemeImage(String url) {
         return url.contains("livememe.com");
     }
-    
+
     /**
      * Returns true if the input URL is a MemeFive image
      * @param url The URL to evaluate
@@ -152,7 +152,7 @@ public class ImageUtil {
     private static boolean isMemeFiveImage(String url) {
         return url.contains("memefive.com");
     }
-    
+
     /**
      * Returns true if the input URL is an Imgur gallery
      * @param url The URL to evaluate
@@ -161,10 +161,10 @@ public class ImageUtil {
     private static boolean isImgurGallery(String url) {
         return url.contains("imgur.com/gallery");
     }
-    
+
     /**
      * Returns true if the input URL is an Imgur album
-     * 
+     *
      * @param url The URL to evaluate
      * @return True if the input URL is an Imgur album, otherwise false
      */
@@ -174,7 +174,7 @@ public class ImageUtil {
 
     /**
      * Returns true if the input URL is an unresolved Imgur image
-     * 
+     *
      * @param url The URL to evaluate
      * @return True if the input URL is an unresolved Imgur image, otherwise false
      */
@@ -184,27 +184,29 @@ public class ImageUtil {
 
     /**
      * Returns true if the input URL is supported.
-     * 
+     *
      * @param url The URL to evaluate
      * @return True if the input URL is supported, otherwise false
      */
     public static boolean isSupportedUrl(String url) {
         return !ImageType.UNSUPPORTED_IMAGE.equals(getImageType(url));
     }
-    
+
     /**
      * Returns true if the image is a gif
      * @param url The URL of the image to evaluate
      * @return True if the image is a gif, otherwise false
      */
     public static boolean isGif(String url) {
-        if (url != null)
-        url = url.toLowerCase(Locale.US);
-        return url.endsWith(".gif");
+        if (Strings.notEmpty(url)) {
+            url = url.toLowerCase(Locale.US);
+            return url.endsWith(".gif");
+        }
+        return false;
     }
 
     /**
-     * Returns the {@link ImageType} of the input URL. 
+     * Returns the {@link ImageType} of the input URL.
      * @param url The URL to evaluate
      * @return The {@link ImageType} of the input URL
      */
@@ -213,13 +215,13 @@ public class ImageUtil {
         ImageType type = ImageTypeCache.getType(url);
 
         if (type == null) {
-            if (isUnresolvedImgurImage(url)) { type = ImageType.IMGUR_IMAGE; } 
-            else if (isImgurAlbum(url))      { type = ImageType.IMGUR_ALBUM; } 
-            else if (isImgurGallery(url))    { type = ImageType.IMGUR_GALLERY; } 
+            if (isUnresolvedImgurImage(url)) { type = ImageType.IMGUR_IMAGE; }
+            else if (isImgurAlbum(url))      { type = ImageType.IMGUR_ALBUM; }
+            else if (isImgurGallery(url))    { type = ImageType.IMGUR_GALLERY; }
             else if (isSupportedImage(url))  { type = ImageType.OTHER_SUPPORTED_IMAGE; }
             else if (isFlickrImage(url))     { type = ImageType.FLICKR_IMAGE; }
             else if (isEHostImage(url))      { type = ImageType.EHOST_IMAGE; }
-            else if (isQuickMemeImage(url))  { type = ImageType.QUICKMEME_IMAGE; } 
+            else if (isQuickMemeImage(url))  { type = ImageType.QUICKMEME_IMAGE; }
             
             /*
             else if (isSnaggyImage(url))     { type = ImageType.SNAGGY_IMAGE; } 
@@ -233,17 +235,17 @@ public class ImageUtil {
             else if (isLiveMemeImage(url))   { type = ImageType.LIVEMEME_IMAGE; } 
             else if (isMemeFiveImage(url))   { type = ImageType.MEMEFIVE_IMAGE; }
             */
-            
-            else { 
+
+            else {
                 type = ImageType.UNSUPPORTED_IMAGE;
             }
-            
+
             ImageTypeCache.addImage(url, type);
         }
 
         return type;
     }
-    
+
     /**
      * Returns an error icon for use with {@link EditText#setError(CharSequence)}
      * @param context Context to use for retrieving the resource
@@ -252,7 +254,7 @@ public class ImageUtil {
     public static Drawable getErrorDrawable(Context context) {
         Drawable dr = context.getResources().getDrawable(R.drawable.custom_indicator_input_error);
         dr.setBounds(0, 0, dr.getIntrinsicWidth(), dr.getIntrinsicHeight());
-        
+
         return dr;
     }
 }
