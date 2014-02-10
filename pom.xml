@@ -78,7 +78,6 @@
         <junit.version>4.11</junit.version>
         <actionbarsherlock.version>4.4.0</actionbarsherlock.version>
         <gson.version>2.2.4</gson.version>
-        <android-annotations.version>3.0.1</android-annotations.version>
         <maven-compiler-plugin.version>2.5</maven-compiler-plugin.version>
         <maven-javadoc-plugin.version>2.8</maven-javadoc-plugin.version>
         <maven-checkstyle-plugin.version>2.9.1</maven-checkstyle-plugin.version>
@@ -87,8 +86,10 @@
         <maven-jarsigner.version>1.2</maven-jarsigner.version>
         <build-helper-maven-plugin.version>1.5</build-helper-maven-plugin.version>
         <findbugs.version>2.5.2</findbugs.version>
-        <disklrucache.version>2.02</disklrucache.version>
+        <disklrucache.version>2.0.2</disklrucache.version>
         <menudrawer.version>3.0.2</menudrawer.version>
+        <photoview.version>1.2.2</photoview.version>
+        <picasso.version>2.2.0</picasso.version>
     </properties>
 
     <dependencies>
@@ -113,13 +114,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.androidannotations</groupId>
-            <artifactId>androidannotations</artifactId>
-            <version>${android-annotations.version}</version>
-            <type>jar</type>
-        </dependency>
-
-        <dependency>
             <groupId>com.nineoldandroids</groupId>
             <artifactId>library</artifactId>
             <version>${nineoldandroids.version}</version>
@@ -128,14 +122,14 @@
         <dependency>
             <groupId>com.github.chrisbanes.photoview</groupId>
             <artifactId>library</artifactId>
-            <version>1.1</version>
+            <version>${photoview.version}</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>com.jakewharton</groupId>
             <artifactId>disklrucache</artifactId>
-            <version>1.2.1</version>
+            <version>${disklrucache.version}</version>
         </dependency>
 
         <dependency>
@@ -154,7 +148,7 @@
         <dependency>
             <groupId>com.squareup.picasso</groupId>
             <artifactId>picasso</artifactId>
-            <version>2.2.0</version>
+            <version>${picasso.version}</version>
         </dependency>
     </dependencies>
 

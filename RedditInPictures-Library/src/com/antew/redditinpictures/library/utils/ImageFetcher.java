@@ -35,22 +35,22 @@ import android.widget.Toast;
 
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
-import com.jakewharton.DiskLruCache;
+import com.jakewharton.disklrucache.DiskLruCache;
 
 /**
  * A simple subclass of {@link ImageResizer} that fetches and resizes images fetched from a URL.
  */
 public class ImageFetcher extends ImageResizer {
-    private static final String TAG = "ImageFetcher";
-    private static final int HTTP_CACHE_SIZE = 10 * 1024 * 1024; // 10MB
-    private static final String HTTP_CACHE_DIR = "http";
-    private static final int IO_BUFFER_SIZE = 8 * 1024;
+    private static final String TAG             = "ImageFetcher";
+    private static final int    HTTP_CACHE_SIZE = 10 * 1024 * 1024; // 10MB
+    private static final String HTTP_CACHE_DIR  = "http";
+    private static final int    IO_BUFFER_SIZE  = 8 * 1024;
 
     private DiskLruCache mHttpDiskCache;
-    private File mHttpCacheDir;
-    private boolean mHttpDiskCacheStarting = true;
-    private final Object mHttpDiskCacheLock = new Object();
-    private static final int DISK_CACHE_INDEX = 0;
+    private File         mHttpCacheDir;
+    private              boolean mHttpDiskCacheStarting = true;
+    private final        Object  mHttpDiskCacheLock     = new Object();
+    private static final int     DISK_CACHE_INDEX       = 0;
 
     /**
      * Initialize providing a target image width and height for the processing images.

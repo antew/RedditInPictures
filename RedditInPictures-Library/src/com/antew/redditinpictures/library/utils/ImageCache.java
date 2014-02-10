@@ -16,13 +16,6 @@
 
 package com.antew.redditinpictures.library.utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -37,7 +30,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.util.LruCache;
 
 import com.antew.redditinpictures.library.logging.Log;
-import com.jakewharton.DiskLruCache;
+import com.jakewharton.disklrucache.DiskLruCache;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 /**
