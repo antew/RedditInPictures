@@ -16,13 +16,14 @@ import android.widget.RelativeLayout;
 
 import com.antew.redditinpictures.R;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
+import com.antew.redditinpictures.library.ui.ImageGridFragment;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
 import com.antew.redditinpictures.util.AdUtil;
 import com.antew.redditinpictures.util.ConstsFree;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
-public class ImageGridFragmentFree extends com.antew.redditinpictures.library.ui.ImageGridFragment {
+public class ImageGridFragmentFree extends ImageGridFragment {
     public static final String TAG = ImageGridFragmentFree.class.getSimpleName();
     private AdView mAdView;
     private GridView mGridView;

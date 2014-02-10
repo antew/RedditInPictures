@@ -40,9 +40,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.antew.redditinpictures.library.ImageViewer"
-            android:label="@string/app_name" />
-        <activity
             android:name="com.antew.redditinpictures.ui.ImageDetailActivityFree"
             android:label="@string/app_name"
             android:parentActivityName="com.antew.redditinpictures.ui.ImageGridActivityFree"
@@ -53,7 +50,7 @@
                 android:value="com.antew.redditinpictures.ui.ImageGridActivityFree" />
         </activity>
         <activity
-            android:name="com.antew.redditinpictures.ui.ImageDetailActivityFree"
+            android:name="com.antew.redditinpictures.ui.ImgurAlbumActivityFree"
             android:label="@string/app_name"
             android:parentActivityName="com.antew.redditinpictures.ui.ImageDetailActivityFree"
             android:theme="@style/AppTheme.FullScreen"
