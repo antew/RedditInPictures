@@ -16,7 +16,6 @@
 
 package com.antew.redditinpictures.library.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
@@ -26,7 +25,6 @@ import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.Image;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.logging.Log;
-import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.squareup.picasso.Picasso;
 
@@ -69,7 +67,7 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         if (ImageUtil.isGif(imageUrl)) {
             super.loadGifInWebView(imageUrl);
         } else {
-            Picasso.with(getActivity()).load(mResolvedImageUrl).placeholder(R.drawable.empty_photo).into(mImageView);
+            Picasso.with(getActivity()).load(imageUrl).placeholder(R.drawable.empty_photo).into(mImageView);
         }
     }
 
