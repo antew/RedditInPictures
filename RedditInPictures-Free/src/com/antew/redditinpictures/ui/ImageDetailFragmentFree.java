@@ -91,7 +91,7 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
 
                 if (mViewGalleryButton != null) {
                     RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
-                    lp.bottomMargin += lp.bottomMargin;
+                    lp.bottomMargin = ConstsFree.getActionBarSize(getActivity()) * 2;
                 }
 
                 mAdView.setLayoutParams(adParams);
