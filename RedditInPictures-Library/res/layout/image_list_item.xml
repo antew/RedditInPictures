@@ -3,21 +3,47 @@
     android:id="@+id/fragment_wrapper"
     android:layout_width="match_parent"
     android:minHeight="?android:attr/listPreferredItemHeight"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:descendantFocusability="blocksDescendants">
 
-    <TextView
-        android:id="@+id/tv_votes"
+    <LinearLayout
+        android:id="@+id/fragment_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:drawableBottom="@drawable/arrow_down"
-        android:drawablePadding="5dp"
-        android:drawableTop="@drawable/arrow_up"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:text="12345"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_size_small" />
+        android:orientation="vertical">
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ib_upVote"
+            android:src="@drawable/arrow_up"
+            android:background="@android:color/transparent"
+            android:paddingBottom="10dp"
+            android:paddingTop="5dp"/>
+
+        <TextView
+            android:id="@+id/tv_votes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="12345"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small" />
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ib_downVote"
+            android:src="@drawable/arrow_down"
+            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
+            android:background="@android:color/transparent"/>
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/iv_image"
