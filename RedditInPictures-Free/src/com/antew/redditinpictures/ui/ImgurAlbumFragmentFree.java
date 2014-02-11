@@ -51,24 +51,21 @@ public class ImgurAlbumFragmentFree extends ImgurAlbumFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        displayAdIfNeeded();
-    }
-
-    @Override
     public void loadImage(Image image) {
         super.loadImage(image);
         displayAdIfNeeded();
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        removeAdIfNeeded();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mAdView != null) {
-            mAdView.destroy();
-            mAdView = null;
-        }
+        removeAdIfNeeded();
     }
 
     @Override
@@ -113,7 +110,13 @@ public class ImgurAlbumFragmentFree extends ImgurAlbumFragment {
                 imageViewParams.addRule(RelativeLayout.ABOVE, mAdView.getId());
                 mImageView.setLayoutParams(imageViewParams);
             }
-        } else if (mAdView != null) {
+        } else {
+            removeAdIfNeeded();
+        }
+    }
+
+    private void removeAdIfNeeded() {
+        if (mAdView != null) {
             mAdView.setVisibility(View.GONE);
             mAdView.destroy();
             mAdView = null;
