@@ -96,7 +96,7 @@ public class ImgurAlbumFragmentFree extends ImgurAlbumFragment {
                  */
                 RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                adParams.bottomMargin = ConstsFree.getActionBarSize(getActivity());;
+                adParams.bottomMargin = ConstsFree.getActionBarSize(getActivity());
 
                 mAdView.setLayoutParams(adParams);
                 mWrapper.addView(mAdView, adParams);

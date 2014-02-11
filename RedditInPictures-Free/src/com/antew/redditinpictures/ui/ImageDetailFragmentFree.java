@@ -84,10 +84,11 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
                  */
                 RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                adParams.bottomMargin = ConstsFree.getActionBarSize(getActivity());
 
                 if (mViewGalleryButton != null) {
                     RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
-                    adParams.bottomMargin = lp.bottomMargin;
+                    lp.bottomMargin += lp.bottomMargin;
                 }
 
                 mAdView.setLayoutParams(adParams);
