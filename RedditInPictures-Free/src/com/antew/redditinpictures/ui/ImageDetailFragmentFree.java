@@ -1,5 +1,6 @@
 package com.antew.redditinpictures.ui;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +45,7 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
 
         return f;
     }
-    
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -54,12 +55,15 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        removeAdIfNeeded();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mAdView != null) {
-            mAdView.destroy();
-            mAdView = null;
-        }
+        removeAdIfNeeded();
     }
 
     @Override
@@ -85,9 +89,14 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
                 RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
-                if (mViewGalleryButton != null) {
-                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
-                    adParams.bottomMargin = lp.bottomMargin;
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    adParams.bottomMargin = ConstsFree.getActionBarSize(getActivity());
+
+                    if (mViewGalleryButton != null) {
+                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
+                        lp.bottomMargin = ConstsFree.getActionBarSize(getActivity()) * 2;
+                    }
                 }
 
                 mAdView.setLayoutParams(adParams);
@@ -99,7 +108,13 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
                 imageViewParams.addRule(RelativeLayout.ABOVE, mAdView.getId());
                 mImageView.setLayoutParams(imageViewParams);
             }
-        } else if (mAdView != null) {
+        } else {
+            removeAdIfNeeded();
+        }
+    }
+
+    private void removeAdIfNeeded() {
+        if (mAdView != null) {
             mAdView.setVisibility(View.GONE);
             mAdView.destroy();
             mAdView = null;

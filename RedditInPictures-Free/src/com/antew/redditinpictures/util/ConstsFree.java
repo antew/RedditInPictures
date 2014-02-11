@@ -1,5 +1,8 @@
 package com.antew.redditinpictures.util;
 
+import android.content.Context;
+import android.content.res.TypedArray;
+
 import com.antew.redditinpictures.library.utils.Consts;
 
 public class ConstsFree extends Consts {
@@ -8,4 +11,15 @@ public class ConstsFree extends Consts {
     public static final String MARKET_INTENT       = "market://details?id=";
     public static final String REMOVE_ADS          = "removeAds";
     public static final String PRO_VERSION_PACKAGE = "com.antew.redditinpictures.pro";
+    private static Integer mActionBarSize;
+
+    public static int getActionBarSize(Context context) {
+        if (mActionBarSize == null) {
+            final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
+                    new int[] { android.R.attr.actionBarSize });
+            mActionBarSize = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+        }
+        return mActionBarSize;
+    }
 }
