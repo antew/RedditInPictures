@@ -51,6 +51,12 @@ public class ImgurAlbumFragmentFree extends ImgurAlbumFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        displayAdIfNeeded();
+    }
+
+    @Override
     public void loadImage(Image image) {
         super.loadImage(image);
         displayAdIfNeeded();

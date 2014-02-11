@@ -44,7 +44,7 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
 
         return f;
     }
-    
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -54,12 +54,15 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        removeAdIfNeeded();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mAdView != null) {
-            mAdView.destroy();
-            mAdView = null;
-        }
+        removeAdIfNeeded();
     }
 
     @Override
@@ -100,7 +103,13 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
                 imageViewParams.addRule(RelativeLayout.ABOVE, mAdView.getId());
                 mImageView.setLayoutParams(imageViewParams);
             }
-        } else if (mAdView != null) {
+        } else {
+            removeAdIfNeeded();
+        }
+    }
+
+    private void removeAdIfNeeded() {
+        if (mAdView != null) {
             mAdView.setVisibility(View.GONE);
             mAdView.destroy();
             mAdView = null;
