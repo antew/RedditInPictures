@@ -1,5 +1,6 @@
 package com.antew.redditinpictures.ui;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,11 +88,15 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
                  */
                 RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                adParams.bottomMargin = ConstsFree.getActionBarSize(getActivity());
 
-                if (mViewGalleryButton != null) {
-                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
-                    lp.bottomMargin = ConstsFree.getActionBarSize(getActivity()) * 2;
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    adParams.bottomMargin = ConstsFree.getActionBarSize(getActivity());
+
+                    if (mViewGalleryButton != null) {
+                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
+                        lp.bottomMargin = ConstsFree.getActionBarSize(getActivity()) * 2;
+                    }
                 }
 
                 mAdView.setLayoutParams(adParams);

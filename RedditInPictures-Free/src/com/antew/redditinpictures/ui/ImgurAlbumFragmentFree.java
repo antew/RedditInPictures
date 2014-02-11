@@ -1,5 +1,6 @@
 package com.antew.redditinpictures.ui;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -99,7 +100,11 @@ public class ImgurAlbumFragmentFree extends ImgurAlbumFragment {
                  */
                 RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                adParams.bottomMargin = ConstsFree.getActionBarSize(getActivity());
+
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    adParams.bottomMargin = ConstsFree.getActionBarSize(getActivity());
+                }
 
                 mAdView.setLayoutParams(adParams);
                 mWrapper.addView(mAdView, adParams);
