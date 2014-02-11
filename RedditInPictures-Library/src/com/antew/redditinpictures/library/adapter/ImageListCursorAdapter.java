@@ -88,9 +88,9 @@ public class ImageListCursorAdapter extends CursorAdapter {
         Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(imageView);
 
         postTitle.setText(postData.getTitle());
-        postSubreddit.setText(postData.getSubreddit());
-        //TODO: This is being dumb right now, doesn't seem to be returned from the API right now, so I'll leave it hardcoded for the time being.
-        //postComments.setText(postData.getNum_comments());
+        postSubreddit.setText("r/" + postData.getSubreddit());
+
+        postComments.setText(postData.getNum_comments() + " " + mContext.getString(R.string.comments));
         postVotes.setText("" + postData.getScore());
     }
 
