@@ -15,8 +15,11 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
@@ -52,22 +55,27 @@ import com.antew.redditinpictures.sqlite.RedditContract;
 import net.simonvt.menudrawer.MenuDrawer;
 import net.simonvt.menudrawer.Position;
 
-public class ImageGridActivity extends BaseFragmentActivity implements OnNavigationListener, LoginDialogListener, LogoutDialogListener, RedditDataProvider,
+public class ImageGridActivity extends BaseFragmentActivity implements LoginDialogListener, LogoutDialogListener, RedditDataProvider,
         LoaderManager.LoaderCallbacks<Cursor> {
+    public static final  int    EDIT_SUBREDDITS_REQUEST = 10;
+    public static final  int    SETTINGS_REQUEST        = 20;
+
     private static final String TAG                     = "ImageGridActivity";
-    protected boolean           mShowNsfwImages;
-    protected Age               mAge                    = Age.TODAY;
-    protected Category          mCategory               = Category.HOT;
-    public static final int     EDIT_SUBREDDITS_REQUEST = 10;
-    public static final int     SETTINGS_REQUEST        = 20;
-    private boolean             mFirstCall              = true;
-    private ProgressDialog      mProgressDialog;
-    private MenuItem            mLoginMenuItem;
-    protected RelativeLayout    mLayoutWrapper;
-    private   String            mUsername;
-    private   MenuDrawer        mSubredditDrawer;
-    private   ListView          mSubredditList;
-    private   SubredditMenuDrawerCursorAdapter mSubredditAdapter;
+
+    protected boolean mShowNsfwImages;
+    protected Age      mAge      = Age.TODAY;
+    protected Category mCategory = Category.HOT;
+    protected RelativeLayout mLayoutWrapper;
+
+    private boolean mFirstCall = true;
+    private ProgressDialog                   mProgressDialog;
+    private MenuItem                         mLoginMenuItem;
+    private String                           mUsername;
+    private MenuDrawer                       mSubredditDrawer;
+    private ListView                         mSubredditList;
+    private String                           mSelectedSubreddit;
+    private int                              mActivePosition;
+    private SubredditMenuDrawerCursorAdapter mSubredditAdapter;
 
     //@formatter:off
     private BroadcastReceiver mMySubreddits = new BroadcastReceiver() {
@@ -105,7 +113,9 @@ public class ImageGridActivity extends BaseFragmentActivity implements OnNavigat
         mSubredditAdapter = getSubredditMenuAdapter();
         mSubredditList = new ListView(this);
         mSubredditList.setAdapter(mSubredditAdapter);
+        mSubredditList.setOnItemClickListener(mSubredditClickListener);
         mSubredditDrawer.setMenuView(mSubredditList);
+
 
         loadSharedPreferences();
         //initializeImageGridFragment();
@@ -213,24 +223,29 @@ public class ImageGridActivity extends BaseFragmentActivity implements OnNavigat
         return new ImageListFragment();
     }
 
-    public String getSubredditName(int position) {
-        return "All";
-//        return position == Consts.POSITION_FRONTPAGE ? RedditUrl.REDDIT_FRONTPAGE : mSpinnerAdapter.getItem(position).toString();
-    }
+    private AdapterView.OnItemClickListener mSubredditClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            mActivePosition = position;
 
-    @Override
-    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        if (mFirstCall) {
-            mFirstCall = false;
-            return true;
+            // TODO: Get this working using the cursor adapter
+            // Right now getting:
+            // 02-10 22:07:14.820  13737-13737/com.antew.redditinpictures.pro E/AndroidRuntime﹕ FATAL EXCEPTION: main
+            //     java.lang.IllegalStateException: attempt to re-open an already-closed object: SQLiteQuery: SELECT _id, displayName FROM subreddits ORDER BY displayName COLLATE NOCASE ASC
+            mSelectedSubreddit = ((TextView) view.findViewById(R.id.subreddit)).getText().toString();
+            mSubredditDrawer.setActiveView(view, position);
+            mSubredditAdapter.setActivePosition(position);
+            loadSubreddit(mSelectedSubreddit);
+
         }
+    };
 
+    private void loadSubreddit(String subredditName) {
         Intent intent = new Intent(Consts.BROADCAST_SUBSCRIBE);
-        intent.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, getSubredditName(itemPosition));
+        intent.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, subredditName);
         intent.putExtra(Consts.EXTRA_AGE, mAge.name());
         intent.putExtra(Consts.EXTRA_CATEGORY, mCategory.name());
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-        return true;
+        LocalBroadcastManager.getInstance(ImageGridActivity.this).sendBroadcast(intent);
     }
 
     @Override
@@ -333,7 +348,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements OnNavigat
         } else if (itemId == R.id.settings) {
             startPreferences();
         } else if (itemId == R.id.refresh_all) {
-            onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
+            // TODO: Reload active subreddit
         } else if (itemId == R.id.login) {
             handleLoginAndLogout();
         }
@@ -386,7 +401,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements OnNavigat
             if (data.hasExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT)) {
                 mFirstCall = false;
                 int pos = getSubredditPosition(data.getStringExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT));
-                onNavigationItemSelected(pos, 0);
+//                onNavigationItemSelected(pos, 0);
                 return;
             }
             // If the user didn't choose a subreddit (meaning we are returned the subreddit they
@@ -397,7 +412,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements OnNavigat
                 selectSubredditInNavigation(subredditName);
             } else {
                 // Select the Reddit Front Page
-                onNavigationItemSelected(Consts.POSITION_FRONTPAGE, 0);
+//                onNavigationItemSelected(Consts.POSITION_FRONTPAGE, 0);
             }
 
         } else if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK) {
@@ -407,7 +422,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements OnNavigat
                 // If we're removing NSFW images we can modify the adapter in place, otherwise we
                 // need to refresh
                 if (mShowNsfwImages) {
-                    onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
+//                    onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
                 } else {
                     LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
                 }
@@ -494,13 +509,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements OnNavigat
 
     @Override
     public String getSubreddit() {
-        // TODO: Fix subreddit loading and remove this hack of selecting 'All'
-//        String subreddit = getSubredditName(getSupportActionBar().getSelectedNavigationIndex());
-//        if (subreddit != null && !subreddit.equals("")) {
-//            return subreddit;
-//        } else {
-            return "All";
-//        }
+        return mSelectedSubreddit;
     }
 
     @Override
@@ -564,5 +573,5 @@ public class ImageGridActivity extends BaseFragmentActivity implements OnNavigat
         if (mSubredditAdapter != null)
             mSubredditAdapter.swapCursor(null);
     }
-    
+
 }

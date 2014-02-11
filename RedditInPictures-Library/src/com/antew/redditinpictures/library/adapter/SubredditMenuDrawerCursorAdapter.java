@@ -28,6 +28,7 @@ import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
+import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 /**
@@ -74,6 +75,15 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
         return position;
     }
 
+    public String getSubreddit(int position) {
+        Cursor cursor = getCursor();
+        if (cursor.moveToPosition(position)) {
+            return getSubredditDisplayName(cursor);
+        }
+
+        return null;
+    }
+
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         TextView subreddit = (TextView) view.findViewById(R.id.subreddit);
@@ -87,4 +97,7 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
         return inflater.inflate(R.layout.subredditdrawer_item, parent, false);
     }
 
+    public void setActivePosition(int activePosition) {
+        this.mActivePosition = activePosition;
+    }
 }
