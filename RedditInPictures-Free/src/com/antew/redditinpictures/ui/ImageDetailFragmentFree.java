@@ -65,32 +65,59 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     @Override
     public void loadImage(Image image) {
         super.loadImage(image);
+        displayAdIfNeeded();
+    }
 
+    private void displayAdIfNeeded() {
         /**
          * If ads are disabled we don't need to load any
          */
         if (!mAdsDisabled) {
-            mAdView = new AdView(getActivity(), AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
+            if (mAdView != null) {
+                mAdView.setVisibility(View.VISIBLE);
+                mAdView.loadAd(AdUtil.getAdRequest());
+            } else {
+                mAdView = new AdView(getActivity(), AdSize.SMART_BANNER, ConstsFree.ADMOB_ID);
 
-            /**
-             * The AdView should be attached to the bottom of the screen
-             */
-            RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                /**
+                 * The AdView should be attached to the bottom of the screen
+                 */
+                RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
-            if (mViewGalleryButton != null) {
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
-                adParams.bottomMargin = lp.bottomMargin;
+                if (mViewGalleryButton != null) {
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
+                    adParams.bottomMargin = lp.bottomMargin;
+                }
+
+                mAdView.setLayoutParams(adParams);
+                mWrapper.addView(mAdView, adParams);
+                mAdView.setVisibility(View.VISIBLE);
+                mAdView.loadAd(AdUtil.getAdRequest());
+
+                RelativeLayout.LayoutParams imageViewParams = (RelativeLayout.LayoutParams) mImageView.getLayoutParams();
+                imageViewParams.addRule(RelativeLayout.ABOVE, mAdView.getId());
+                mImageView.setLayoutParams(imageViewParams);
             }
+        } else if (mAdView != null) {
+            mAdView.setVisibility(View.GONE);
+            mAdView.destroy();
+            mAdView = null;
+        }
+    }
 
-            mAdView.setLayoutParams(adParams);
-            mWrapper.addView(mAdView, adParams);
-            mAdView.setVisibility(View.VISIBLE);
-            mAdView.loadAd(AdUtil.getAdRequest());
+    @Override
+    public void showPostDetails() {
+        super.showPostDetails();
+        displayAdIfNeeded();
+    }
 
-            RelativeLayout.LayoutParams imageViewParams = (RelativeLayout.LayoutParams) mImageView.getLayoutParams();
-            imageViewParams.addRule(RelativeLayout.ABOVE, mAdView.getId());
-            mImageView.setLayoutParams(imageViewParams);
+    @Override
+    public void hidePostDetails() {
+        super.hidePostDetails();
+
+        if (mAdView != null) {
+            mAdView.setVisibility(View.GONE);
         }
     }
 
