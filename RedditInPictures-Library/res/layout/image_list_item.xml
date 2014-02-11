@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/fragment_wrapper"
-    android:layout_width="fill_parent"
-    android:layout_height="100dp">
+    android:layout_width="match_parent"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/tv_votes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
         android:drawableBottom="@drawable/arrow_down"
         android:drawablePadding="5dp"
         android:drawableTop="@drawable/arrow_up"
@@ -17,64 +17,64 @@
         android:paddingRight="5dp"
         android:text="12345"
         android:textColor="@color/white"
-        android:textSize="14sp" />
+        android:textSize="@dimen/text_size_small" />
 
     <ImageView
         android:id="@+id/iv_image"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="?android:attr/listPreferredItemHeight"
+        android:layout_height="match_parent"
         android:layout_toRightOf="@+id/tv_votes"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="5dp"
         android:layout_centerVertical="true"
+        android:layout_alignParentTop="true"
         android:contentDescription="@string/imageview_description"
         android:focusableInTouchMode="false"
-        android:src="@drawable/empty_photo" />
+        android:scaleType="fitXY"
+        android:src="@drawable/empty_photo"/>
 
     <RelativeLayout
         android:id="@+id/post_information_wrapper"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_toRightOf="@+id/iv_image"
-        android:layout_centerVertical="true">
+        android:layout_height="wrap_content"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:layout_toRightOf="@id/iv_image">
 
         <TextView
             android:id="@+id/tv_title"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignWithParentIfMissing="true"
-            android:ellipsize="end"
             android:textColor="@android:color/primary_text_dark"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textSize="@dimen/text_size_small"
             android:text="This is a title that is really quite long and goes on for a long time because reasons"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
-            android:layout_above="@+id/tv_subreddit" />
+            android:layout_alignParentTop="true" />
 
         <TextView
             android:id="@+id/tv_subreddit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignWithParentIfMissing="false"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_micro"
             android:text="whitepeoplegifs"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="5dp" />
+            android:layout_marginLeft="5dp"
+            android:gravity="bottom"
+            android:layout_below="@id/tv_title"/>
 
         <TextView
             android:id="@+id/tv_comment_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignWithParentIfMissing="false"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_micro"
             android:text="482 comments"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="10dp"
+            android:gravity="bottom"
+            android:layout_below="@id/tv_title"
             android:layout_marginRight="5dp" />
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>

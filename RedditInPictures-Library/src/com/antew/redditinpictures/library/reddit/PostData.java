@@ -311,6 +311,7 @@ public class PostData implements Parcelable, ContentValuesOperation {
         postData.url          = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
         postData.num_comments = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.COMMENTS));
         postData.subreddit    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));
+        postData.domain       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
         //@formatter:off
         return postData;
     }
