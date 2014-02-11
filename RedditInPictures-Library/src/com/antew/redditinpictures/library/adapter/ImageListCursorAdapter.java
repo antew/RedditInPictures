@@ -18,6 +18,7 @@ package com.antew.redditinpictures.library.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,7 +88,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
         Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(imageView);
 
-        postTitle.setText(postData.getTitle() + " (" + postData.getDomain() + ")");
+        String titleText = postData.getTitle() + " <font color='#BEBEBE'>(" + postData.getDomain() + ")</font>";
+        postTitle.setText(Html.fromHtml(titleText));
         postSubreddit.setText("r/" + postData.getSubreddit());
 
         postComments.setText(postData.getNum_comments() + " " + mContext.getString(R.string.comments));
