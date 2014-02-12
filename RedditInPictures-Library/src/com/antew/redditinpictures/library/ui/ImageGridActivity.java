@@ -134,7 +134,6 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
     private void initializeActionBar() {
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowHomeEnabled(true);
     }
 
@@ -242,7 +241,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     };
 
     private void loadSubreddit(String subredditName) {
-        Intent intent = new Intent(Consts.BROADCAST_SUBSCRIBE);
+        Intent intent = new Intent(Consts.BROADCAST_SUBREDDIT_SELECTED);
+        getSupportActionBar().setTitle(subredditName);
         intent.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, subredditName);
         intent.putExtra(Consts.EXTRA_AGE, mAge.name());
         intent.putExtra(Consts.EXTRA_CATEGORY, mCategory.name());
