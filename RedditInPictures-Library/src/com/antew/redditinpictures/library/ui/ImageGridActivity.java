@@ -235,6 +235,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
             mSelectedSubreddit = ((TextView) view.findViewById(R.id.subreddit)).getText().toString();
             mSubredditDrawer.setActiveView(view, position);
             mSubredditAdapter.setActivePosition(position);
+            mSubredditDrawer.closeMenu(true);
             loadSubreddit(mSelectedSubreddit);
 
         }
