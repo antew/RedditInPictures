@@ -22,8 +22,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -57,10 +55,10 @@ import net.simonvt.menudrawer.Position;
 
 public class ImageGridActivity extends BaseFragmentActivity implements LoginDialogListener, LogoutDialogListener, RedditDataProvider,
         LoaderManager.LoaderCallbacks<Cursor> {
-    public static final  int    EDIT_SUBREDDITS_REQUEST = 10;
-    public static final  int    SETTINGS_REQUEST        = 20;
+    public static final int EDIT_SUBREDDITS_REQUEST = 10;
+    public static final int SETTINGS_REQUEST        = 20;
 
-    private static final String TAG                     = "ImageGridActivity";
+    private static final String TAG = "ImageGridActivity";
 
     protected boolean mShowNsfwImages;
     protected Age      mAge      = Age.TODAY;
@@ -70,12 +68,16 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     private boolean mFirstCall = true;
     private ProgressDialog                   mProgressDialog;
     private MenuItem                         mLoginMenuItem;
+    private MenuItem                         mActiveViewMenuItem;
     private String                           mUsername;
     private MenuDrawer                       mSubredditDrawer;
     private ListView                         mSubredditList;
     private String                           mSelectedSubreddit;
     private int                              mActivePosition;
     private SubredditMenuDrawerCursorAdapter mSubredditAdapter;
+    private ViewType                         mActiveViewType = ViewType.LIST;
+
+    private enum ViewType {LIST, GRID, VIEWPAGER}
 
     //@formatter:off
     private BroadcastReceiver mMySubreddits = new BroadcastReceiver() {
@@ -118,8 +120,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
 
         loadSharedPreferences();
-        //initializeImageGridFragment();
-        initializeImageListFragment();
+        displayImageListFragment();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
         LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
@@ -147,12 +148,14 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         }
     }
 
-    private void initializeImageGridFragment() {
+    private void displayImageGridFragment() {
+        mActiveViewType = ViewType.GRID;
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(mSubredditDrawer.getContentContainer().getId(), getImageGridFragment(), ImageGridFragment.TAG).commit();
     }
 
-    private void initializeImageListFragment() {
+    private void displayImageListFragment() {
+        mActiveViewType = ViewType.LIST;
         final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(mSubredditDrawer.getContentContainer().getId(), getImageListFragment(), ImageListFragment.TAG).commit();
     }
@@ -194,7 +197,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        mLoginMenuItem = menu.findItem(R.id.login);
+
 
         // If the user is logged in, update the Logout menu item to "Log out <username>"
         if (RedditLoginInformation.isLoggedIn()) {
@@ -263,6 +266,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.main, menu);
 
+        mLoginMenuItem = menu.findItem(R.id.login);
         MenuItem item = null;
         //@formatter:off
         // Put a checkmark by the currently selected Category + Age combination
@@ -306,6 +310,21 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         } 
         //@formatter:on
 
+        mActiveViewMenuItem = menu.findItem(R.id.change_view);
+        switch (mActiveViewType) {
+            case LIST:
+                mActiveViewMenuItem.setIcon(R.drawable.ic_action_view_as_grid);
+                break;
+
+            case GRID:
+                mActiveViewMenuItem.setIcon(R.drawable.ic_action_view_as_list);
+                break;
+
+            case VIEWPAGER:
+
+                break;
+        }
+
         return true;
     }
 
@@ -335,6 +354,26 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
             return RedditInPicturesPreferences.class;
     }
 
+    private void changeActiveViewType(ViewType viewType) {
+        switch (viewType) {
+            case GRID:
+                displayImageListFragment();
+                mActiveViewType = ViewType.LIST;
+                invalidateOptionsMenu();
+                break;
+
+            case LIST:
+                displayImageGridFragment();
+
+                invalidateOptionsMenu();
+                break;
+
+            case VIEWPAGER:
+
+                break;
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         item.setChecked(true);
@@ -343,13 +382,15 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         int itemId = item.getItemId();
         if (itemId == R.id.edit_subreddits) {
             editSubreddits();
+        } else if (itemId == R.id.change_view) {
+            changeActiveViewType(mActiveViewType);
         } else if (itemId == android.R.id.home) {
             mSubredditDrawer.toggleMenu();
             return true;
         } else if (itemId == R.id.settings) {
             startPreferences();
         } else if (itemId == R.id.refresh_all) {
-            // TODO: Reload active subreddit
+            loadSubreddit(getSupportActionBar().getTitle().toString());
         } else if (itemId == R.id.login) {
             handleLoginAndLogout();
         }
