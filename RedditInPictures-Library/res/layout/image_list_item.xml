@@ -45,7 +45,7 @@
 
     </LinearLayout>
 
-    <ImageView
+    <com.antew.redditinpictures.library.widgets.SquaredImageView
         android:id="@+id/iv_image"
         android:layout_width="?android:attr/listPreferredItemHeight"
         android:layout_height="match_parent"
