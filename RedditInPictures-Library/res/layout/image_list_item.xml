@@ -9,7 +9,7 @@
 
     <LinearLayout
         android:id="@+id/fragment_wrapper"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:orientation="vertical">
@@ -28,6 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:gravity="center"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:text="12345"
@@ -45,25 +46,24 @@
 
     </LinearLayout>
 
-    <com.antew.redditinpictures.library.widgets.SquaredImageView
+    <ImageView
         android:id="@+id/iv_image"
-        android:layout_width="?android:attr/listPreferredItemHeight"
-        android:layout_height="match_parent"
-        android:layout_toRightOf="@+id/tv_votes"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
         android:layout_marginLeft="5dp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentTop="true"
         android:contentDescription="@string/imageview_description"
         android:focusableInTouchMode="false"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         android:src="@drawable/empty_photo"/>
 
     <RelativeLayout
         android:id="@+id/post_information_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minHeight="?android:attr/listPreferredItemHeight"
-        android:layout_toRightOf="@id/iv_image">
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp"
+        android:minHeight="?android:attr/listPreferredItemHeight">
 
         <TextView
             android:id="@+id/tv_title"
@@ -73,7 +73,6 @@
             android:textSize="@dimen/text_size_small"
             android:text="This is a title that is really quite long and goes on for a long time because reasons"
             android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"
             android:layout_alignParentTop="true" />
 
         <TextView
@@ -85,8 +84,6 @@
             android:text="whitepeoplegifs"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="5dp"
-            android:gravity="bottom"
             android:layout_below="@id/tv_title"/>
 
         <TextView
@@ -98,7 +95,6 @@
             android:text="482 comments"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:gravity="bottom"
             android:layout_below="@id/tv_title"
             android:layout_marginRight="5dp" />
     </RelativeLayout>
