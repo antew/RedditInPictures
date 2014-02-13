@@ -1,34 +1,25 @@
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
 # Java class files
 *.class
 
 # generated files
-bin
-gen
-build
-out
-lib
-.DS_Store
-classes
-
-# Maven
-target
-pom.xml.*
-release.properties
-
-#IntelliJ
-.idea
-*.iml
-classes
-gen-external-apklibs
+bin/
+gen/
 
 # Local configuration file (sdk path, etc)
 local.properties
 
-# Eclipse project files
-.classpath
-.project
-project.properties
-.settings
-
-# MySQL Workbench
-*.mwb.bak
+/.classpath
+/.settings
+/bin
+/gen
+/target
+/RedditInPictures-Library/build
+/RedditInPictures-Library/.idea
+/RedditInPictures-Library/.gradle
