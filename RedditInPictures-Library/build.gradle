@@ -1,10 +1,49 @@
 buildscript {
+  repositories {
+    mavenCentral()
+  }
+
   dependencies {
     classpath 'com.android.tools.build:gradle:0.7.+'
   }
 }
 
-apply plugin: 'android-library'
+apply plugin: 'android'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.0.1'
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 19
+
+    }
+
+    productFlavors {
+        free {
+            packageName "com.antew.redditinpictures"
+            versionCode 2
+        }
+
+        pro {
+            packageName "com.antew.redditinpictures.pro"
+            versionCode 3
+        }
+    }
+
+    sourceSets.free {
+        res.srcDirs = ['res', '/free/src/res']
+    }
+
+    sourceSets.pro {
+        res.srcDirs = ['res']
+    }
+}
+
+repositories {
+    mavenCentral()
+}
 
 dependencies {
 	compile 'com.google.code.gson:gson:2.2.4'
@@ -12,23 +51,8 @@ dependencies {
 	compile 'com.nineoldandroids:library:2.4.0'
 	compile 'com.github.chrisbanes.photoview:library:1.1'
 	compile 'com.jakewharton:disklrucache:1.2.1'
-	compile 'net.simonvt.menudrawer:menudrawer:3.0.2'
+	compile 'net.simonvt.menudrawer:menudrawer:3.0.4@aar'
 	compile 'com.squareup.picasso:picasso:2.2.0'
-}
-
-android {
-  compileSdkVersion 19
-  buildToolsVersion '19.0.1'
-
-    defaultConfig {
-        minSdkVersion 8
-        targetSdkVersion 17
-
-    }
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            res.srcDirs = ['res']
-        }
-    }
+    compile 'com.android.support:support-v4:19.0.+'
+    compile 'com.jakewharton:disklrucache:2.0.2'
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+        <PreferenceCategory
+                android:title="Disable Ads">
+                <CheckBoxPreference
+                        android:title="Disable Ads"
+                        android:defaultValue="false"
+                        android:summary="@string/in_exchange_for_disabling_ads"
+                        android:key="@string/pref_disable_ads" />
+        </PreferenceCategory>
+        <PreferenceCategory
+                android:title="Upgrade">
+                <Preference
+                        android:title="Upgrade to Pro"
+                        android:defaultValue="false"
+                        android:summary="Upgrade to the Pro version to log in, view your subscribed subreddits, vote, save images, and support future development."
+                        android:key="@string/pref_get_pro_version" />
+        </PreferenceCategory>
+</PreferenceScreen>

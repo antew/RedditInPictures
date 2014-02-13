@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <group   android:menuCategory="container">
+        <item
+            android:id="@+id/upvote"
+            android:icon="@drawable/ic_action_upvote"
+            android:orderInCategory="1"
+            android:showAsAction="ifRoom"
+            android:title="Upvote"/>
+        <item
+            android:id="@+id/downvote"
+            android:icon="@drawable/ic_action_downvote"
+            android:orderInCategory="2"
+            android:showAsAction="ifRoom"
+            android:title="Downvote"/>
+    </group>
+
+</menu>

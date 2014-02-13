@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_wrapper"
+    android:layout_width="match_parent"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:descendantFocusability="blocksDescendants">
+
+    <LinearLayout
+        android:id="@+id/fragment_wrapper"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ib_upVote"
+            android:src="@drawable/arrow_up"
+            android:background="@android:color/transparent"
+            android:paddingBottom="10dp"
+            android:paddingTop="5dp"/>
+
+        <TextView
+            android:id="@+id/tv_votes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="12345"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_small" />
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ib_downVote"
+            android:src="@drawable/arrow_down"
+            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
+            android:background="@android:color/transparent"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp"
+        android:contentDescription="@string/imageview_description"
+        android:focusableInTouchMode="false"
+        android:scaleType="centerCrop"
+        android:src="@drawable/empty_photo"/>
+
+    <RelativeLayout
+        android:id="@+id/post_information_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp"
+        android:minHeight="?android:attr/listPreferredItemHeight">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/primary_text_dark"
+            android:textSize="@dimen/text_size_small"
+            android:text="This is a title that is really quite long and goes on for a long time because reasons"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentTop="true" />
+
+        <TextView
+            android:id="@+id/tv_subreddit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignWithParentIfMissing="false"
+            android:textSize="@dimen/text_size_micro"
+            android:text="whitepeoplegifs"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/tv_title"/>
+
+        <TextView
+            android:id="@+id/tv_comment_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignWithParentIfMissing="false"
+            android:textSize="@dimen/text_size_micro"
+            android:text="482 comments"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/tv_title"
+            android:layout_marginRight="5dp" />
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_holo_dark" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/about_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Reddit In Pictures"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/about_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/about_title"
+            android:contentDescription="Reddit In Pictures icon" />
+
+        <TextView
+            android:id="@+id/about_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/about_title"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Version 2.0"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/about_copyright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/about_version"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Copyright 2012"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/about_link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/about_copyright"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:autoLink="web"
+            android:text="http://antew.com"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/about_thanks_to"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/about_link"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:text="Credits"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/about_divider1"
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/about_thanks_to"
+            android:layout_margin="10dp"
+            android:background="#777777" />
+        
+        <TextView
+            android:id="@+id/about_thanks1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/about_divider1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:autoLink="web"
+            android:text="Android-Query
+            \nhttp://code.google.com/p/android-query/"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+        
+        <TextView
+            android:id="@+id/about_thanks2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/about_thanks1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:autoLink="web"
+            android:text="PhotoView
+            \nhttps://github.com/chrisbanes/PhotoView"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+        
+        <TextView
+            android:id="@+id/about_thanks3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/about_thanks2"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:autoLink="web"
+            android:text="Images
+            \nReddit Alien Vector image - MakoSanders
+            \nhttp://makosanders.deviantart.com/
+            \n\nSunset Cruise - ecstaticist
+            \nhttp://www.flickr.com/photos/ecstaticist/2812682461/
+            \n\nRacing Stars - ANdrew Stawarz
+            \nhttp://www.flickr.com/photos/stawarz/2981086612/
+            \n\nMy Tree At Dusk - Joiseyshowaa
+            \nhttp://www.flickr.com/photos/joiseyshowaa/1400175456/
+            \n\nAutumn is on its way - AmUnivers
+            \nhttp://www.flickr.com/photos/amunivers/239455430/
+            \n\nGrey skies over Matsumoto - EugeniusD80
+            \nhttp://www.flickr.com/photos/zhzheka/701816373/
+            \n\nThe Green Ascent - vsz
+            \nhttp://www.flickr.com/photos/vs/29582361/
+            \n\nThe Tree - helmet13
+            \nhttp://www.flickr.com/photos/22281745@N04/2149169348/
+            \n\nSee Harness - DCCXLIX
+            \nhttp://www.flickr.com/photos/dccxlix/399948328/
+            \n\nQ - Darny
+            \nhttp://www.flickr.com/photos/darn/539225017/
+            \n\nColorful Joy - robokow
+            \nhttp://www.flickr.com/photos/robino/463790976/
+            \n\nNexus Above Erskine Lake - drp
+            \nhttp://www.flickr.com/photos/drp/43707772/in/photostream/"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+        
+        
+        
+        
+    </RelativeLayout>
+
+</ScrollView>
