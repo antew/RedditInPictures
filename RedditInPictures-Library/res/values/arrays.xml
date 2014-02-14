@@ -13,24 +13,35 @@
         <item>Home @AndroidQuery</item>
         <item>Javadoc</item>              
     </string-array>
-    
-    <string-array name="default_reddits">
+
+    <!-- Default Subreddits, grabbed image subreddits from the top 125 subreddits by activity -->
+    <string-array name="default_subreddits">
         <item>pics</item>
         <item>funny</item>
-        <item>wtf</item>
+        <item>gaming</item>
         <item>aww</item>
         <item>AdviceAnimals</item>
         <item>EarthPorn</item>
         <item>gifs</item>
-        <item>ITookAPicture</item>
+        <item>woahdude</item>
+        <item>mildlyinteresting</item>
+        <item>lifehacks</item>
+        <item>reactiongifs</item>
+        <item>photoshopbattles</item>
+        <item>FoodPorn</item>
+        <item>wheredidthesodago</item>
+        <item>HistoryPorn</item>
+        <item>cats</item>
         <item>fffffffuuuuuuuuuuuu</item>
-        <item>lolcats</item>
-        <item>ImaginaryLandscapes</item>
-        <item>wallpaper</item>
-        <item>photocritique</item>
-        <item>reddit.com</item>
+        <item>standupshots</item>
+        <item>thewalkingdead</item>
+        <item>doctorwho</item>
+        <item>comics</item>
+        <item>QuotesPorn</item>
+        <item>carporn</item>
+        <item>SpacePorn</item>
     </string-array>
-    
+
     <string-array name="top_values">
         <item>com.androidquery.test.IntentListActivity:async:updated</item>
         <item>com.androidquery.test.IntentListActivity:image:updated</item>

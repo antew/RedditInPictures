@@ -75,7 +75,7 @@ public class SubredditManagerApi11Plus extends SubredditManager {
         List<String> subreddits = SharedPreferencesHelper.loadArray(PREFS_NAME, ARRAY_NAME, SubredditManagerApi11Plus.this);
 
         if (subreddits.size() == 0) {
-            subreddits = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.default_reddits)));
+            subreddits = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.default_subreddits)));
         }
 
         Collections.sort(subreddits, StringUtil.getCaseInsensitiveComparator());
@@ -135,7 +135,7 @@ public class SubredditManagerApi11Plus extends SubredditManager {
     public void resetToDefaultSubreddits() {
         List<String> subreddits = new ArrayList<String>();
 
-        String[] reddits = getResources().getStringArray(R.array.default_reddits);
+        String[] reddits = getResources().getStringArray(R.array.default_subreddits);
         for (int i = 0; i < reddits.length; i++) {
             subreddits.add(reddits[i]);
         }
