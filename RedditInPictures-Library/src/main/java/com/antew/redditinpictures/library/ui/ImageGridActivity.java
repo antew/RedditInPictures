@@ -111,7 +111,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         setContentView(R.layout.image_grid_activity);
         initializeActionBar();
 
-        mSubredditDrawer = MenuDrawer.attach(this, MenuDrawer.Type.BEHIND, Position.LEFT, MenuDrawer.MENU_DRAG_WINDOW);
+        mSubredditDrawer = MenuDrawer.attach(this, MenuDrawer.Type.OVERLAY, Position.LEFT, MenuDrawer.MENU_DRAG_WINDOW);
         mSubredditAdapter = getSubredditMenuAdapter();
         mSubredditList = new ListView(this);
         mSubredditList.setAdapter(mSubredditAdapter);
