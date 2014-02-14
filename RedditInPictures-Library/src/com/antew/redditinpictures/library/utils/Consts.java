@@ -39,6 +39,7 @@ public class Consts {
     public static final String EXTRA_SHOW_NSFW_IMAGES         = "showNsfwImages";
     public static final String EXTRA_SHOW_NSFW_IMAGES_CHANGED = "showNsfwImagesChanged";
     public static final String EXTRA_USERNAME                 = "username";
+    public static final String EXTRA_QUERY                    = "query";
 
     // Constants for dialog tags
     public static final String DIALOG_GET_FILENAME            = "getFilename";

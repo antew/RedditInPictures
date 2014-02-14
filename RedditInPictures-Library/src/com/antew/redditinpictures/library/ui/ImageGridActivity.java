@@ -19,8 +19,13 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.FilterQueryProvider;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -102,6 +107,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     private SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     private ViewType                         mActiveViewType = ViewType.LIST;
     private SetDefaultSubredditsTask         defaultSubredditsTask;
+    private EditText                         mSubredditFilter;
 
     private enum ViewType {LIST, GRID, VIEWPAGER}
 
@@ -134,19 +140,46 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         }
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.image_grid_activity);
         initializeActionBar();
 
-        mSubredditDrawer = MenuDrawer.attach(this, MenuDrawer.Type.BEHIND, Position.LEFT, MenuDrawer.MENU_DRAG_WINDOW);
+        mSubredditDrawer = MenuDrawer.attach(this, MenuDrawer.Type.OVERLAY);
+        mSubredditDrawer.setContentView(R.layout.image_grid_activity);
+        mSubredditDrawer.setMenuView(R.layout.subreddit_menudrawer);
+        mSubredditDrawer.setSlideDrawable(R.drawable.ic_drawer);
+        mSubredditDrawer.setDrawerIndicatorEnabled(true);
+
         mSubredditAdapter = getSubredditMenuAdapter();
-        mSubredditList = new ListView(this);
+        mSubredditList = (ListView) findViewById(R.id.lv_subreddits);
         mSubredditList.setAdapter(mSubredditAdapter);
         mSubredditList.setOnItemClickListener(mSubredditClickListener);
-        mSubredditDrawer.setMenuView(mSubredditList);
+
+        mSubredditFilter = (EditText) findViewById(R.id.et_subreddit_filter);
+        mSubredditFilter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                return;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s == null) {
+                    return;
+                }
+
+                LoaderManager loaderManager = getSupportLoaderManager();
+                Bundle filterBundle = new Bundle();
+                filterBundle.putString(Consts.EXTRA_QUERY, s.toString());
+                loaderManager.restartLoader(Consts.LOADER_SUBREDDITS, filterBundle, ImageGridActivity.this);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                return;
+            }
+        });
 
         defaultSubredditsTask = new SetDefaultSubredditsTask();
         defaultSubredditsTask.execute();
-
 
         loadSharedPreferences();
         displayImageListFragment();
@@ -409,7 +442,9 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         boolean loadFromUrl = false;
 
         int itemId = item.getItemId();
-        if (itemId == R.id.edit_subreddits) {
+        if (itemId == android.R.id.home) {
+            mSubredditDrawer.toggleMenu();
+        } else if (itemId == R.id.edit_subreddits) {
             editSubreddits();
         } else if (itemId == R.id.change_view) {
             changeActiveViewType(mActiveViewType);
@@ -589,9 +624,19 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         switch (id) {
             case Consts.LOADER_LOGIN:
                 return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
-                
             case Consts.LOADER_SUBREDDITS:
-                return new CursorLoader(this, RedditContract.Subreddits.CONTENT_URI, RedditContract.Subreddits.SUBREDDITS_PROJECTION, null, null, RedditContract.Subreddits.DEFAULT_SORT);
+                String selection = null;
+                String[] selectionArgs = null;
+
+                if (paramBundle != null && paramBundle.containsKey(Consts.EXTRA_QUERY)) {
+                    String query = paramBundle.getString(Consts.EXTRA_QUERY);
+
+                    if (Strings.notEmpty(query)) {
+                        selection = RedditContract.SubredditColumns.DISPLAY_NAME + " LIKE ?";
+                        selectionArgs = new String[] {"%" + query + "%"};
+                    }
+                }
+                return new CursorLoader(this, RedditContract.Subreddits.CONTENT_URI, RedditContract.Subreddits.SUBREDDITS_PROJECTION, selection, selectionArgs, RedditContract.Subreddits.DEFAULT_SORT);
         }
 
         return null;
