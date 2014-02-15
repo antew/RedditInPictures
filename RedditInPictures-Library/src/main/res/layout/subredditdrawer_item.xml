@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/subreddit_layout"
     android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
-    android:background="#ff2c3240">
+    android:layout_height="?android:attr/listPreferredItemHeight">
 
     <TextView
         android:id="@+id/subreddit"

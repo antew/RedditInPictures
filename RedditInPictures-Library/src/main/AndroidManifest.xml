@@ -29,8 +29,7 @@
         <activity
             android:name="com.antew.redditinpictures.library.ui.ImageGridActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,8 +43,7 @@
             android:name="com.antew.redditinpictures.library.ui.ImageDetailActivity"
             android:label="@string/app_name"
             android:parentActivityName="com.antew.redditinpictures.library.ui.ImageGridActivity"
-            android:theme="@style/AppTheme.FullScreen"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:theme="@style/AppTheme.FullScreen" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.antew.redditinpictures.library.ui.ImageGridActivity" />
@@ -54,8 +52,7 @@
             android:name="com.antew.redditinpictures.library.ui.ImgurAlbumActivity"
             android:label="@string/app_name"
             android:parentActivityName="com.antew.redditinpictures.library.ui.ImageDetailActivity"
-            android:theme="@style/AppTheme.FullScreen"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:theme="@style/AppTheme.FullScreen" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.antew.redditinpictures.library.ui.ImageDetailActivity" />

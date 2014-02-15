@@ -83,5 +83,8 @@
     <string name="pref_use_mobile_interface">Use Mobile Interface</string>
     <string name="pref_about">about</string>
     <!-- End Shared Preferences keys -->
-    
+
+    <!-- Default Subreddits, grabbed image subreddits from the top 125 subreddits by activity -->
+    <string name="default_subreddits_multi">pics+funny+gaming+aww+AdviceAnimals+EarthPorn+gifs+woahdude+mildlyinteresting+lifehacks+reactiongifs+photoshopbattles+FoodPorn+wheredidthesodago+HistoryPorn+cats+fffffffuuuuuuuuuuuu+standupshots+thewalkingdead+doctorwho+comics+QuotesPorn+carporn+SpacePorn</string>
+
 </resources>

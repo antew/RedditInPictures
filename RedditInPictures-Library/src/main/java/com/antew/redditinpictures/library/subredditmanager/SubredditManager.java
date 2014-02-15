@@ -69,7 +69,7 @@ public class SubredditManager extends SherlockListActivity {
         List<String> subreddits = SharedPreferencesHelper.loadArray(PREFS_NAME, ARRAY_NAME, SubredditManager.this);
 
         if (subreddits.size() == 0) {
-            String[] reddits = getResources().getStringArray(R.array.default_reddits);
+            String[] reddits = getResources().getStringArray(R.array.default_subreddits);
             for (int i = 0; i < reddits.length; i++) {
                 subreddits.add(reddits[i]);
             }
@@ -237,7 +237,7 @@ public class SubredditManager extends SherlockListActivity {
     public void resetToDefaultSubreddits() {
         List<String> subreddits = new ArrayList<String>();
 
-        String[] reddits = getResources().getStringArray(R.array.default_reddits);
+        String[] reddits = getResources().getStringArray(R.array.default_subreddits);
         for (int i = 0; i < reddits.length; i++) {
             subreddits.add(reddits[i]);
         }

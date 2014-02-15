@@ -2,12 +2,19 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#ff2c3240">
+    android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:hint="Type a subreddit name"
+        android:id="@+id/et_subreddit_filter"
+        android:layout_alignParentTop="true" />
 
     <ListView
-        android:id="@+id/subreddit_list"
+        android:id="@+id/lv_subreddits"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/et_subreddit_filter" />
 
 </RelativeLayout>

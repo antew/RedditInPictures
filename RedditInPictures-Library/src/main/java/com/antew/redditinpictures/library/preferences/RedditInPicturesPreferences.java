@@ -23,7 +23,9 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.library.utils.Consts;
@@ -73,6 +75,13 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
             }
         });
 
+        final ActionBar actionBar = getSupportActionBar();
+
+        // Hide title text and set home as up
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(R.string.reddit_in_pictures);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
     }
 
     @Override
@@ -105,6 +114,19 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
         i.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
         setResult(RESULT_OK, i);
         super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            Intent i = new Intent();
+            i.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
+            setResult(RESULT_OK, i);
+            finish();
+        }
+
+        return true;
     }
 
 }

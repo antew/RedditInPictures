@@ -27,9 +27,6 @@ public class ImageGridActivityFree extends ImageGridActivity implements UpdateTo
 
     @Override
     public Class<? extends PreferenceActivity> getPreferencesClass() {
-        if (Util.hasHoneycomb())
-            return RedditInPicturesFreePreferencesFragment.class;
-        else
             return RedditInPicturesFreePreferences.class;
     }
 
