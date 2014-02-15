@@ -6,12 +6,6 @@
         android:icon="@drawable/ic_action_view_as_list"
         android:showAsAction="ifRoom"
         android:title="Switch views"/>
-
-    <item
-        android:id="@+id/edit_subreddits"
-        android:icon="@drawable/subreddit"
-        android:showAsAction="ifRoom"
-        android:title="Edit Subreddits"/>
     
     <item android:id="@+id/sort_subreddits" android:icon="@drawable/ic_action_sort" android:showAsAction="ifRoom" android:title="Sort">
         <menu>
