@@ -2,8 +2,6 @@ package com.antew.redditinpictures.library.ui;
 
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -19,13 +17,11 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.FilterQueryProvider;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -45,26 +41,16 @@ import com.antew.redditinpictures.library.dialog.LogoutDialogFragment.LogoutDial
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
-import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
-import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.LoginData;
-import com.antew.redditinpictures.library.reddit.MySubreddits;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
-import com.antew.redditinpictures.library.reddit.SubredditChildren;
-import com.antew.redditinpictures.library.reddit.SubredditData;
-import com.antew.redditinpictures.library.service.RESTService;
 import com.antew.redditinpictures.library.service.RedditService;
-import com.antew.redditinpictures.library.service.RequestCode;
-import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
-import com.antew.redditinpictures.library.subredditmanager.SubredditManagerApi11Plus;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.SafeAsyncTask;
-import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.library.utils.Util;
@@ -72,16 +58,6 @@ import com.antew.redditinpictures.sqlite.RedditContract;
 import com.antew.redditinpictures.sqlite.RedditDatabase;
 
 import net.simonvt.menudrawer.MenuDrawer;
-import net.simonvt.menudrawer.Position;
-
-import org.apache.http.util.EntityUtils;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class ImageGridActivity extends BaseFragmentActivity implements LoginDialogListener, LogoutDialogListener, RedditDataProvider,
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -95,19 +71,13 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     protected Category mCategory = Category.HOT;
     protected RelativeLayout mLayoutWrapper;
 
-    private boolean mFirstCall = true;
     private ProgressDialog                   mProgressDialog;
     private MenuItem                         mLoginMenuItem;
-    private MenuItem                         mActiveViewMenuItem;
     private String                           mUsername;
     private MenuDrawer                       mSubredditDrawer;
-    private ListView                         mSubredditList;
     private String                           mSelectedSubreddit;
-    private int                              mActivePosition;
     private SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     private ViewType                         mActiveViewType = ViewType.LIST;
-    private SetDefaultSubredditsTask         defaultSubredditsTask;
-    private EditText                         mSubredditFilter;
 
     private enum ViewType {LIST, GRID, VIEWPAGER}
 
@@ -117,8 +87,6 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Received mySubreddits callback");
-            // getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), ImageGridActivity.this);
-
             hideProgressDialog();
         }
     };
@@ -149,11 +117,11 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         mSubredditDrawer.setDrawerIndicatorEnabled(true);
 
         mSubredditAdapter = getSubredditMenuAdapter();
-        mSubredditList = (ListView) findViewById(R.id.lv_subreddits);
+        ListView mSubredditList = (ListView) findViewById(R.id.lv_subreddits);
         mSubredditList.setAdapter(mSubredditAdapter);
         mSubredditList.setOnItemClickListener(mSubredditClickListener);
 
-        mSubredditFilter = (EditText) findViewById(R.id.et_subreddit_filter);
+        EditText mSubredditFilter = (EditText) findViewById(R.id.et_subreddit_filter);
         mSubredditFilter.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -178,7 +146,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
             }
         });
 
-        defaultSubredditsTask = new SetDefaultSubredditsTask();
+        SetDefaultSubredditsTask defaultSubredditsTask = new SetDefaultSubredditsTask();
         defaultSubredditsTask.execute();
 
         loadSharedPreferences();
@@ -290,7 +258,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     private AdapterView.OnItemClickListener mSubredditClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            mActivePosition = position;
+            int mActivePosition = position;
 
             // TODO: Get this working using the cursor adapter
             // Right now getting:
@@ -329,7 +297,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         inflater.inflate(R.menu.main, menu);
 
         mLoginMenuItem = menu.findItem(R.id.login);
-        MenuItem item = null;
+        MenuItem item;
         //@formatter:off
         // Put a checkmark by the currently selected Category + Age combination
         switch (mCategory) {
@@ -372,7 +340,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         } 
         //@formatter:on
 
-        mActiveViewMenuItem = menu.findItem(R.id.change_view);
+        MenuItem mActiveViewMenuItem = menu.findItem(R.id.change_view);
         switch (mActiveViewType) {
             case LIST:
                 mActiveViewMenuItem.setIcon(R.drawable.ic_action_view_as_grid);
@@ -390,23 +358,10 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         return true;
     }
 
-    private void editSubreddits() {
-        Intent intent = new Intent(ImageGridActivity.this, getEditSubredditsClass());
-        intent.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, getSubreddit());
-        startActivityForResult(intent, EDIT_SUBREDDITS_REQUEST);
-    }
-
     public void startPreferences() {
         Intent intent = new Intent(ImageGridActivity.this, getPreferencesClass());
         intent.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES, mShowNsfwImages);
         startActivityForResult(intent, SETTINGS_REQUEST);
-    }
-
-    public Class<? extends SubredditManager> getEditSubredditsClass() {
-        if (Util.hasHoneycomb())
-            return SubredditManagerApi11Plus.class;
-        else
-            return SubredditManager.class;
     }
 
     public Class<? extends PreferenceActivity> getPreferencesClass() {
@@ -441,8 +396,6 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         int itemId = item.getItemId();
         if (itemId == android.R.id.home) {
             mSubredditDrawer.toggleMenu();
-        } else if (itemId == R.id.edit_subreddits) {
-            editSubreddits();
         } else if (itemId == R.id.change_view) {
             changeActiveViewType(mActiveViewType);
         } else if (itemId == R.id.settings) {
@@ -499,7 +452,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
             // If the user tapped an item in the subreddit list, select that subreddit and load the
             // new images
             if (data.hasExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT)) {
-                mFirstCall = false;
+                boolean mFirstCall = false;
                 int pos = getSubredditPosition(data.getStringExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT));
 //                onNavigationItemSelected(pos, 0);
                 return;
