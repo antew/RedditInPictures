@@ -75,7 +75,7 @@
             android:layout_alignParentTop="true" />
 
         <TextView
-            android:id="@+id/tv_subreddit"
+            android:id="@+id/tv_post_information"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignWithParentIfMissing="false"
@@ -84,18 +84,6 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
             android:layout_below="@id/tv_title"/>
-
-        <TextView
-            android:id="@+id/tv_comment_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignWithParentIfMissing="false"
-            android:textSize="@dimen/text_size_micro"
-            android:text="482 comments"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@id/tv_title"
-            android:layout_marginRight="5dp" />
     </RelativeLayout>
 
 </LinearLayout>

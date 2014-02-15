@@ -18,6 +18,7 @@ package com.antew.redditinpictures.library.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -84,10 +85,11 @@ public class ImageDetailFragment extends ImageViewerFragment {
         TextView postInformation = (TextView) v.findViewById(R.id.post_information);
         
         mVotes.setText("" + mImage.getScore());
-        postTitle.setText(mImage.getTitle());
 
-        postInformation
-                .setText(mImage.getSubreddit() + separator + mImage.getNum_comments() + " comments" + separator + mImage.getAuthor());
+        String titleText = mImage.getTitle() + " <font color='#BEBEBE'>(" + mImage.getDomain() + ")</font>";
+        postTitle.setText(Html.fromHtml(titleText));
+
+        postInformation.setText(mImage.getSubreddit() + separator + mImage.getNum_comments() + " comments" + separator + mImage.getAuthor());
     }
 
     @Override

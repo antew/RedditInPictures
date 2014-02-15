@@ -73,8 +73,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
         TextView postTitle = (TextView) view.findViewById(R.id.tv_title);
-        TextView postSubreddit = (TextView) view.findViewById(R.id.tv_subreddit);
-        TextView postComments = (TextView) view.findViewById(R.id.tv_comment_count);
+        TextView postInformation = (TextView) view.findViewById(R.id.tv_post_information);
         TextView postVotes = (TextView) view.findViewById(R.id.tv_votes);
         PostData postData = PostData.fromListViewProjection(cursor);
 
@@ -88,11 +87,10 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
         Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(imageView);
 
+        String separator = " " + "\u2022" + " ";
         String titleText = postData.getTitle() + " <font color='#BEBEBE'>(" + postData.getDomain() + ")</font>";
         postTitle.setText(Html.fromHtml(titleText));
-        postSubreddit.setText("r/" + postData.getSubreddit());
-
-        postComments.setText(postData.getNum_comments() + " " + mContext.getString(R.string.comments));
+        postInformation.setText(postData.getSubreddit() + separator + postData.getNum_comments() + " " + mContext.getString(R.string.comments) + separator + postData.getAuthor());
         postVotes.setText("" + postData.getScore());
     }
 
