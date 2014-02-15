@@ -109,6 +109,12 @@ public class ImageListCursorAdapter extends CursorAdapter {
         postInformation.setText(postData.getSubreddit() + separator + postData.getNum_comments() + " " + mContext.getString(R.string.comments) + separator + postData.getAuthor());
         postVotes.setText("" + postData.getScore());
 
+        if (postData.getVote() == Vote.UP) {
+            upVote.setImageResource(R.drawable.arrow_up_highlighted);
+        } else if (postData.getVote() == Vote.DOWN) {
+            downVote.setImageResource(R.drawable.arrow_down_highlighted);
+        }
+
         upVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
