@@ -85,7 +85,7 @@ public class RedditService extends RESTService {
         context.startService(intent);
     }
 
-    public static void vote(Context context, String id, String subreddit, Vote vote) {
+    public static void vote(Context context, String name, Vote vote) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.setData(Uri.parse(REDDIT_VOTE_URL));
@@ -93,9 +93,8 @@ public class RedditService extends RESTService {
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.VOTE);
 
         Bundle bundle = new Bundle();
-        bundle.putString("id", id);
+        bundle.putString("id", name);
         bundle.putInt("dir", vote.getVote());
-        bundle.putString("r", subreddit);
         bundle.putString("uh", RedditLoginInformation.getModhash());
 
         intent.putExtra(EXTRA_PARAMS, bundle);

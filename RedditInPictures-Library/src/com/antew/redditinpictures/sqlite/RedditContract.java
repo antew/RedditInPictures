@@ -105,7 +105,7 @@ public class RedditContract {
         public static final String   DEFAULT_SORT        = BaseColumns._ID + " ASC";
 
         public static final String[] GRIDVIEW_PROJECTION = new String[] { _ID, URL, THUMBNAIL };
-        public static final String[] LISTVIEW_PROJECTION = new String[] { _ID, URL, THUMBNAIL, TITLE, SCORE, SELFTEXT, COMMENTS, SUBREDDIT, DOMAIN, AUTHOR, VOTE };
+        public static final String[] LISTVIEW_PROJECTION = new String[] { _ID, URL, THUMBNAIL, TITLE, SCORE, SELFTEXT, COMMENTS, SUBREDDIT, DOMAIN, AUTHOR, VOTE, NAME };
 
         public static Uri buildPostDataUri(long postNumber) {
             return CONTENT_URI.buildUpon().appendPath(String.valueOf(postNumber)).build();

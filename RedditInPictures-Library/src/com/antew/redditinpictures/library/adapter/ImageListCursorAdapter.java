@@ -174,7 +174,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
             switch (whichVoteButton) {
                 case UP:
                     Ln.d("Voting Up Post");
-                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.UP);
+                    RedditService.vote(mContext, p.getName(), Vote.UP);
                     p.setVote(Vote.UP);
                     p.setScore(p.getScore() + 1);
                     postVotes.setText("" + p.getScore());
@@ -182,7 +182,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
                     break;
                 case DOWN:
                     Ln.d("Voting Down Post");
-                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.DOWN);
+                    RedditService.vote(mContext, p.getName(), Vote.DOWN);
                     p.setVote(Vote.DOWN);
                     p.setScore(p.getScore() - 1);
                     postVotes.setText("" + p.getScore());
@@ -193,7 +193,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
             switch (whichVoteButton) {
                 case UP:
                     Ln.d("Voting Neutral Post");
-                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.NEUTRAL);
+                    RedditService.vote(mContext, p.getName(), Vote.NEUTRAL);
                     p.setVote(Vote.NEUTRAL);
                     p.setScore(p.getScore() - 1);
                     postVotes.setText("" + p.getScore());
@@ -201,7 +201,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
                     break;
                 case DOWN:
                     Ln.d("Voting Down Post");
-                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.DOWN);
+                    RedditService.vote(mContext, p.getName(), Vote.DOWN);
                     p.setVote(Vote.DOWN);
                     p.setScore(p.getScore() - 2);
                     postVotes.setText("" + p.getScore());
@@ -213,7 +213,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
             switch (whichVoteButton) {
                 case UP:
                     Ln.d("Voting Up Post");
-                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.UP);
+                    RedditService.vote(mContext, p.getName(), Vote.UP);
                     p.setVote(Vote.UP);
                     p.setScore(p.getScore() + 2);
                     postVotes.setText("" + p.getScore());
@@ -222,7 +222,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
                     break;
                 case DOWN:
                     Ln.d("Voting Neutral Post");
-                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.NEUTRAL);
+                    RedditService.vote(mContext, p.getName(), Vote.NEUTRAL);
                     p.setVote(Vote.NEUTRAL);
                     p.setScore(p.getScore() + 1);
                     postVotes.setText("" + p.getScore());
@@ -230,5 +230,9 @@ public class ImageListCursorAdapter extends CursorAdapter {
                     break;
             }
         }
+
+        // Broadcast the intent to update the score in the ImageDetailFragment
+        intent.putExtra(Consts.EXTRA_SCORE, p.getScore());
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 }
