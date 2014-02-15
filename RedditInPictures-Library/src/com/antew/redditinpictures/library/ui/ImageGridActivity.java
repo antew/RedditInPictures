@@ -375,15 +375,12 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                 mActiveViewType = ViewType.LIST;
                 invalidateOptionsMenu();
                 break;
-
             case LIST:
                 displayImageGridFragment();
-
+                mActiveViewType = ViewType.GRID;
                 invalidateOptionsMenu();
                 break;
-
             case VIEWPAGER:
-
                 break;
         }
     }

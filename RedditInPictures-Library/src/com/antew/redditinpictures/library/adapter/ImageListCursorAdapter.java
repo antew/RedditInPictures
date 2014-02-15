@@ -106,7 +106,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
         String separator = " " + "\u2022" + " ";
         String titleText = postData.getTitle() + " <font color='#BEBEBE'>(" + postData.getDomain() + ")</font>";
         postTitle.setText(Html.fromHtml(titleText));
-        postInformation.setText(postData.getSubreddit() + separator + postData.getNum_comments() + " " + mContext.getString(R.string.comments) + separator + postData.getAuthor());
+        postInformation.setText(postData.getSubreddit() + separator + postData.getNum_comments() + " " + mContext.getString(R.string.comments));
         postVotes.setText("" + postData.getScore());
 
         if (postData.getVote() == Vote.UP) {
