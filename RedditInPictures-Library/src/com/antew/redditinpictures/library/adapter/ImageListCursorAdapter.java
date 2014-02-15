@@ -16,18 +16,31 @@
 package com.antew.redditinpictures.library.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
+import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.reddit.PostData;
+import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
+import com.antew.redditinpictures.library.service.RedditService;
+import com.antew.redditinpictures.library.ui.ImageGridActivity;
+import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -74,8 +87,11 @@ public class ImageListCursorAdapter extends CursorAdapter {
         ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
         TextView postTitle = (TextView) view.findViewById(R.id.tv_title);
         TextView postInformation = (TextView) view.findViewById(R.id.tv_post_information);
-        TextView postVotes = (TextView) view.findViewById(R.id.tv_votes);
-        PostData postData = PostData.fromListViewProjection(cursor);
+        final TextView postVotes = (TextView) view.findViewById(R.id.tv_votes);
+        final PostData postData = PostData.fromListViewProjection(cursor);
+        final ImageButton upVote = (ImageButton) view.findViewById(R.id.ib_upVote);
+        final ImageButton downVote = (ImageButton) view.findViewById(R.id.ib_downVote);
+
 
         // If we have a thumbnail from Reddit use that, otherwise use the full URL
         // Reddit will send 'default' for one of the default alien icons, which we want to avoid using
@@ -92,10 +108,121 @@ public class ImageListCursorAdapter extends CursorAdapter {
         postTitle.setText(Html.fromHtml(titleText));
         postInformation.setText(postData.getSubreddit() + separator + postData.getNum_comments() + " " + mContext.getString(R.string.comments) + separator + postData.getAuthor());
         postVotes.setText("" + postData.getScore());
+
+        upVote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vote(Vote.UP, postData, postVotes, upVote, downVote);
+            }
+        });
+
+        downVote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vote(Vote.DOWN, postData, postVotes, upVote, downVote);
+            }
+        });
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return  mInflater.inflate(R.layout.image_list_item, parent, false);
+    }
+
+    /**
+     * Handles updating the vote based on the action bar vote icon that was clicked, broadcasts a
+     * message to have the fragment update the score.
+     * <p>
+     * If the user is not logged in, we return immediately.
+     * </p>
+     * <p>
+     * If the current vote is UP and the new vote is UP, the vote is changed to NEUTRAL.<br>
+     * If the current vote is UP and the new vote is DOWN, the vote is changed to DOWN.
+     * </p>
+     * <p>
+     * If the current vote is DOWN and the new vote is DOWN, the vote is changed to NEUTRAL<br>
+     * If the current vote is DOWN and the new vote is UP, the vote is changed to UP.
+     * </p>
+     *
+     * @param whichVoteButton
+     *            The vote representing the menu item which was clicked
+     * @param p
+     *            The post this vote is for
+     */
+    private void vote(Vote whichVoteButton, PostData p, TextView postVotes, ImageButton upVote, ImageButton downVote) {
+        if (!RedditLoginInformation.isLoggedIn()) {
+            if (mContext instanceof ImageGridActivity) {
+                ((ImageGridActivity) mContext).handleLoginAndLogout();
+            }
+            return;
+        }
+
+        Intent intent = new Intent(Consts.BROADCAST_UPDATE_SCORE);
+        intent.putExtra(Consts.EXTRA_PERMALINK, p.getPermalink());
+
+        Ln.d("Vote is: %s", p.getVote());
+        Ln.d("Vote Button is: %s", whichVoteButton);
+
+        // If the user hasn't voted on this post yet, put it through no matter what.
+        if (p.getVote() == null || p.getVote() == Vote.NEUTRAL) {
+            switch (whichVoteButton) {
+                case UP:
+                    Ln.d("Voting Up Post");
+                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.UP);
+                    p.setVote(Vote.UP);
+                    p.setScore(p.getScore() + 1);
+                    postVotes.setText("" + p.getScore());
+                    upVote.setImageResource(R.drawable.arrow_up_highlighted);
+                    break;
+                case DOWN:
+                    Ln.d("Voting Down Post");
+                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.DOWN);
+                    p.setVote(Vote.DOWN);
+                    p.setScore(p.getScore() - 1);
+                    postVotes.setText("" + p.getScore());
+                    downVote.setImageResource(R.drawable.arrow_down_highlighted);
+                    break;
+            }
+        } else if (p.getVote() == Vote.UP) {
+            switch (whichVoteButton) {
+                case UP:
+                    Ln.d("Voting Neutral Post");
+                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.NEUTRAL);
+                    p.setVote(Vote.NEUTRAL);
+                    p.setScore(p.getScore() - 1);
+                    postVotes.setText("" + p.getScore());
+                    upVote.setImageResource(R.drawable.arrow_up);
+                    break;
+                case DOWN:
+                    Ln.d("Voting Down Post");
+                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.DOWN);
+                    p.setVote(Vote.DOWN);
+                    p.setScore(p.getScore() - 2);
+                    postVotes.setText("" + p.getScore());
+                    upVote.setImageResource(R.drawable.arrow_up);
+                    downVote.setImageResource(R.drawable.arrow_down_highlighted);
+                    break;
+            }
+        } else if (p.getVote() == Vote.DOWN) {
+            switch (whichVoteButton) {
+                case UP:
+                    Ln.d("Voting Up Post");
+                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.UP);
+                    p.setVote(Vote.UP);
+                    p.setScore(p.getScore() + 2);
+                    postVotes.setText("" + p.getScore());
+                    downVote.setImageResource(R.drawable.arrow_down);
+                    upVote.setImageResource(R.drawable.arrow_up_highlighted);
+                    break;
+                case DOWN:
+                    Ln.d("Voting Neutral Post");
+                    //RedditService.vote(mContext, p.getName(), p.getSubreddit(), Vote.NEUTRAL);
+                    p.setVote(Vote.NEUTRAL);
+                    p.setScore(p.getScore() + 1);
+                    postVotes.setText("" + p.getScore());
+                    downVote.setImageResource(R.drawable.arrow_down);
+                    break;
+            }
+        }
     }
 }
