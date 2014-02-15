@@ -410,9 +410,6 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     }
 
     public Class<? extends PreferenceActivity> getPreferencesClass() {
-        if (Util.hasHoneycomb())
-            return RedditInPicturesPreferencesFragment.class;
-        else
             return RedditInPicturesPreferences.class;
     }
 
@@ -448,9 +445,6 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
             editSubreddits();
         } else if (itemId == R.id.change_view) {
             changeActiveViewType(mActiveViewType);
-        } else if (itemId == android.R.id.home) {
-            mSubredditDrawer.toggleMenu();
-            return true;
         } else if (itemId == R.id.settings) {
             startPreferences();
         } else if (itemId == R.id.refresh_all) {
