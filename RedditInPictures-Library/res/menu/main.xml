@@ -4,10 +4,10 @@
     <item
         android:id="@+id/change_view"
         android:icon="@drawable/ic_action_view_as_list"
-        android:showAsAction="ifRoom"
-        android:title="Switch views"/>
+        android:showAsAction="always"
+        android:title="Switch View"/>
     
-    <item android:id="@+id/sort_subreddits" android:icon="@drawable/ic_action_sort" android:showAsAction="ifRoom" android:title="Sort">
+    <item android:id="@+id/sort_subreddits" android:icon="@drawable/ic_action_sort" android:showAsAction="always" android:title="Sort">
         <menu>
             <group android:id="@+id/categories" android:checkableBehavior="single">
                 <item android:id="@+id/category_hot"                     android:title="Hot" /> 
@@ -29,23 +29,23 @@
         </menu>
         
     </item>
-    
-    <item
-        android:id="@+id/login"
-        android:icon="@drawable/ic_action_login"
-        android:showAsAction="ifRoom"
-        android:title="Log on" />
-    
+
     <item
         android:id="@+id/refresh_all"
         android:icon="@drawable/ic_action_refresh"
-        android:showAsAction="ifRoom"
-        android:title="Refresh" />>
-    
-    <item 
+        android:showAsAction="always"
+        android:title="Refresh" />
+
+    <item
+        android:id="@+id/login"
+        android:icon="@drawable/ic_action_login"
+        android:showAsAction="never"
+        android:title="Log In" />
+
+    <item
         android:id="@+id/settings"
         android:icon="@drawable/ic_action_settings"
-        android:showAsAction="ifRoom|withText"
+        android:showAsAction="never"
         android:title="Settings" />
     
 
