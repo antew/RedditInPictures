@@ -3,7 +3,7 @@
     android:id="@+id/fragment_wrapper"
     android:layout_width="match_parent"
     android:minHeight="?android:attr/listPreferredItemHeight"
-    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:descendantFocusability="blocksDescendants">
 
@@ -60,11 +60,11 @@
         android:scaleType="centerCrop"
         android:src="@drawable/empty_photo" />
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/post_information_wrapper"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:orientation="vertical"
         android:layout_marginLeft="5dp"
         android:minHeight="?android:attr/listPreferredItemHeight">
 
@@ -73,20 +73,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@android:color/primary_text_dark"
-            android:textSize="@dimen/text_size_small"
-            android:text="This is a title that is really quite long and goes on for a long time because reasons"
-            android:layout_alignParentTop="true" />
+            android:textSize="@dimen/text_size_small"/>
 
         <TextView
             android:id="@+id/tv_post_information"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignWithParentIfMissing="false"
-            android:textSize="@dimen/text_size_micro"
-            android:text="whitepeoplegifs"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@id/tv_title" />
-    </RelativeLayout>
+            android:textSize="@dimen/text_size_micro"/>
+    </LinearLayout>
 
 </LinearLayout>
