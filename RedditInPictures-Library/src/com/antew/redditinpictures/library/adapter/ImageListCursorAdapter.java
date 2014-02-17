@@ -55,6 +55,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
     private GridView.LayoutParams mImageViewLayoutParams;
     private Cursor                mCursor;
     private LayoutInflater mInflater;
+    private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
 
     /**
      *
@@ -99,9 +100,10 @@ public class ImageListCursorAdapter extends CursorAdapter {
         if (Strings.notEmpty(thumbnail) && !thumbnail.equals("default")) {
             url = thumbnail;
         } else {
+            // If the url is not pointing directly to the image. (Normally at i.imgur.com not imgur.com
             if (postData.getDomain() != null && postData.getDomain().equals("imgur.com")) {
-                Pattern imgurNonImagePattern = Pattern.compile("^https?://imgur.com/[^/]*$");
-                if (imgurNonImagePattern.matcher(url).matches()) {
+                // If the url is not an album but is just using a shortlink to an image append .jpg to the end and hope for the best.
+                if (mImgurNonAlbumPattern.matcher(url).matches()) {
                     url += ".jpg";
                     Ln.d("Updating Url To: %s", url);
                 }
