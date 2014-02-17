@@ -28,12 +28,8 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.R;
-import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
@@ -41,7 +37,10 @@ import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.utils.Strings;
 import com.squareup.picasso.Picasso;
+
+import java.util.regex.Pattern;
 
 /**
  * This is used as the backing adapter for the {@link android.widget.GridView} in {@link com.antew.redditinpictures.library.ui.ImageGridFragment}
@@ -97,8 +96,16 @@ public class ImageListCursorAdapter extends CursorAdapter {
         // Reddit will send 'default' for one of the default alien icons, which we want to avoid using
         String url = postData.getUrl();
         String thumbnail = postData.getThumbnail();
-        if (!thumbnail.trim().equals("") && !thumbnail.equals("default")) {
+        if (Strings.notEmpty(thumbnail) && !thumbnail.equals("default")) {
             url = thumbnail;
+        } else {
+            if (postData.getDomain() != null && postData.getDomain().equals("imgur.com")) {
+                Pattern imgurNonImagePattern = Pattern.compile("^https?://imgur.com/[^/]*$");
+                if (imgurNonImagePattern.matcher(url).matches()) {
+                    url += ".jpg";
+                    Ln.d("Updating Url To: %s", url);
+                }
+            }
         }
 
         Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(imageView);
