@@ -20,6 +20,8 @@ abstract class RedditResponseHandler {
                 return new SubscribeResponse(result);
             case VOTE:
                 return new VoteResponse(result);
+            case SEARCH_SUBREDDITS:
+                return new SubredditsSearchResponse(result);
         }
 
         return null;

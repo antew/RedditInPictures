@@ -21,9 +21,13 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -59,6 +63,8 @@ import com.antew.redditinpictures.sqlite.RedditDatabase;
 
 import net.simonvt.menudrawer.MenuDrawer;
 
+import java.util.ArrayList;
+
 public class ImageGridActivity extends BaseFragmentActivity implements LoginDialogListener, LogoutDialogListener, RedditDataProvider,
         LoaderManager.LoaderCallbacks<Cursor> {
     public static final int EDIT_SUBREDDITS_REQUEST = 10;
@@ -80,6 +86,37 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     private ViewType                         mActiveViewType = ViewType.LIST;
 
     private enum ViewType {LIST, GRID, VIEWPAGER}
+
+    private BroadcastReceiver mSubredditsSearch = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra(Consts.EXTRA_SUBREDDIT_NAMES)) {
+                Ln.d("Got Back Subreddit Search Result");
+                final ArrayList<String> subredditNames = intent.getStringArrayListExtra(Consts.EXTRA_SUBREDDIT_NAMES);
+                AutoCompleteTextView mSubredditFilter = (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
+                if (mSubredditFilter != null) {
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(ImageGridActivity.this, android.R.layout.simple_dropdown_item_1line, subredditNames);
+                    mSubredditFilter.setAdapter(adapter);
+                    mSubredditFilter.showDropDown();
+
+                    mSubredditFilter.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            mSelectedSubreddit = subredditNames.get(position);
+                            RedditService.aboutSubreddit(ImageGridActivity.this, mSelectedSubreddit);
+
+                            mSubredditDrawer.setActiveView(view, position);
+                            mSubredditAdapter.setActivePosition(position);
+                            mSubredditDrawer.closeMenu(true);
+                            loadSubreddit(mSelectedSubreddit);
+                        }
+                    });
+                }
+
+            }
+        }
+    };
 
     //@formatter:off
     private BroadcastReceiver mMySubreddits = new BroadcastReceiver() {
@@ -121,7 +158,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         mSubredditList.setAdapter(mSubredditAdapter);
         mSubredditList.setOnItemClickListener(mSubredditClickListener);
 
-        EditText mSubredditFilter = (EditText) findViewById(R.id.et_subreddit_filter);
+        final AutoCompleteTextView mSubredditFilter = (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
         mSubredditFilter.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -146,6 +183,14 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
             }
         });
 
+        Button subredditSearch = (Button) findViewById(R.id.btn_search);
+        subredditSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RedditService.searchSubreddits(ImageGridActivity.this, mSubredditFilter.getText().toString(), SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this));
+            }
+        });
+
         SetDefaultSubredditsTask defaultSubredditsTask = new SetDefaultSubredditsTask();
         defaultSubredditsTask.execute();
 
@@ -154,6 +199,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
         LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSubredditsSearch, new IntentFilter(Consts.BROADCAST_SUBREDDIT_SEARCH));
         initializeLoaders();
     }
 

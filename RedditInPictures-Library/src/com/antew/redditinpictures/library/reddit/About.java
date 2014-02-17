@@ -16,6 +16,10 @@
 package com.antew.redditinpictures.library.reddit;
 
 
+import android.content.ContentValues;
+
+import com.antew.redditinpictures.sqlite.RedditContract;
+
 public class About {
     private String        kind;
     private SubredditData data;
@@ -34,5 +38,32 @@ public class About {
 
     public void setData(SubredditData data) {
         this.data = data;
+    }
+
+    public ContentValues getContentValues() {
+        ContentValues values = new ContentValues();
+
+        //@formatter:off
+        values.put(RedditContract.Subreddits.DISPLAY_NAME      , data.getDisplay_name() );
+        values.put(RedditContract.Subreddits.HEADER_IMAGE      , data.getHeader_img());
+        values.put(RedditContract.Subreddits.TITLE             , data.getTitle());
+        values.put(RedditContract.Subreddits.URL               , data.getUrl());
+        values.put(RedditContract.Subreddits.DESCRIPTION       , data.getDescription());
+        values.put(RedditContract.Subreddits.CREATED           , data.getCreated());
+        values.put(RedditContract.Subreddits.CREATED_UTC       , data.getCreated_utc());
+
+        if (data.getHeader_size() != null)
+            values.put(RedditContract.Subreddits.HEADER_SIZE       , data.getHeader_size()[0] + ", " + data.getHeader_size()[1]);
+
+        values.put(RedditContract.Subreddits.OVER_18           , data.isOver18());
+        values.put(RedditContract.Subreddits.SUBSCRIBERS       , data.getSubscribers());
+        values.put(RedditContract.Subreddits.ACCOUNTS_ACTIVE   , data.getAccountsActive());
+        values.put(RedditContract.Subreddits.PUBLIC_DESCRIPTION, data.getPublic_description());
+        values.put(RedditContract.Subreddits.HEADER_TITLE      , data.getHeader_title());
+        values.put(RedditContract.Subreddits.SUBREDDIT_ID      , data.getSubscribers());
+        values.put(RedditContract.Subreddits.NAME              , data.getName());
+        //@formatter:on
+
+        return values;
     }
 }

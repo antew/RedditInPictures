@@ -28,6 +28,7 @@ public class Consts {
     public static final String EXTRA_IMAGE_HASH               = "imageHash";
     public static final String EXTRA_IS_SYSTEM_UI_VISIBLE     = "isSystemUiVisible";
     public static final String EXTRA_MY_SUBREDDITS            = "mySubreddits";
+    public static final String EXTRA_SUBREDDIT_NAMES          = "subredditNames";
     public static final String EXTRA_NAV_POSITION             = "navPosition";
     public static final String EXTRA_NEWLY_SELECTED_SUBREDDIT = "newSelectedSubreddit";
     public static final String EXTRA_PERMALINK                = "permalink";
@@ -57,6 +58,7 @@ public class Consts {
     public static final String BROADCAST_REMOVE_NSFW_IMAGES   = "remove-nsfw-images";
     public static final String BROADCAST_TOGGLE_FULLSCREEN    = "fullscreen-toggle";
     public static final String BROADCAST_UPDATE_SCORE         = "update-score";
+    public static final String BROADCAST_SUBREDDIT_SEARCH     = "subreddit-search";
 
     public static final int    LOADER_REDDIT                  = 10;
     public static final int    LOADER_POSTS                   = 20;
