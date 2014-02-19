@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -24,10 +25,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -195,7 +194,12 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         defaultSubredditsTask.execute();
 
         loadSharedPreferences();
-        displayImageListFragment();
+
+        // Whether we are in grid or list view
+        if (savedInstanceState != null && savedInstanceState.containsKey(Consts.ACTIVE_VIEW)) {
+            mActiveViewType = ViewType.valueOf(savedInstanceState.getString(Consts.ACTIVE_VIEW));
+        }
+        changeActiveViewType(mActiveViewType);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
         LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
@@ -224,18 +228,6 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         }
     }
 
-    private void displayImageGridFragment() {
-        mActiveViewType = ViewType.GRID;
-        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(mSubredditDrawer.getContentContainer().getId(), getImageGridFragment(), ImageGridFragment.TAG).commit();
-    }
-
-    private void displayImageListFragment() {
-        mActiveViewType = ViewType.LIST;
-        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(mSubredditDrawer.getContentContainer().getId(), getImageListFragment(), ImageListFragment.TAG).commit();
-    }
-
     public Fragment getImageGridFragment() {
         ImageGridFragment fragment = (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG);
         if (fragment == null) {
@@ -258,6 +250,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMySubreddits);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mLoginComplete);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSubredditsSearch);
         super.onPause();
     }
 
@@ -332,6 +325,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     protected void onSaveInstanceState(Bundle outState) {
 //        outState.putInt(Consts.EXTRA_NAV_POSITION, getSupportActionBar().getSelectedNavigationIndex());
         outState.putString(Consts.EXTRA_SELECTED_SUBREDDIT, getSubreddit());
+        outState.putString(Consts.ACTIVE_VIEW, mActiveViewType.name());
         super.onSaveInstanceState(outState);
     }
 
@@ -414,21 +408,46 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
             return RedditInPicturesPreferences.class;
     }
 
-    private void changeActiveViewType(ViewType viewType) {
-        switch (viewType) {
+    /**
+     * Change the current view type to the input viewtype
+     * @param newViewType {@link ViewType} to switch to.
+     */
+    private void changeActiveViewType(ViewType newViewType) {
+        mActiveViewType = ViewType.GRID;
+        FragmentManager fm = getSupportFragmentManager();
+        final FragmentTransaction ft = fm.beginTransaction();
+        String oldFragmentTag = null;
+        String newFragmentTag = null;
+        Fragment newFragment = null;
+
+        switch (newViewType) {
             case GRID:
-                displayImageListFragment();
-                mActiveViewType = ViewType.LIST;
-                invalidateOptionsMenu();
+                mActiveViewType = ViewType.GRID;
+                oldFragmentTag = ImageListFragment.TAG;
+                newFragmentTag = ImageGridFragment.TAG;
+                newFragment = getImageGridFragment();
                 break;
             case LIST:
-                displayImageGridFragment();
-                mActiveViewType = ViewType.GRID;
-                invalidateOptionsMenu();
+                mActiveViewType = ViewType.LIST;
+                oldFragmentTag = ImageGridFragment.TAG;
+                newFragmentTag = ImageListFragment.TAG;
+                newFragment = getImageListFragment();
                 break;
             case VIEWPAGER:
                 break;
         }
+
+        if (newFragment.isAdded()) {
+            Fragment oldFragment = fm.findFragmentByTag(oldFragmentTag);
+            if (oldFragment != null) {
+                ft.hide(oldFragment);
+            }
+
+            ft.show(newFragment).commit();
+        } else {
+            ft.add(mSubredditDrawer.getContentContainer().getId(), newFragment, newFragmentTag).commit();
+        }
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -440,7 +459,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         if (itemId == android.R.id.home) {
             mSubredditDrawer.toggleMenu();
         } else if (itemId == R.id.change_view) {
-            changeActiveViewType(mActiveViewType);
+            ViewType newViewType = mActiveViewType == ViewType.LIST ? ViewType.GRID : ViewType.LIST;
+            changeActiveViewType(newViewType);
         } else if (itemId == R.id.settings) {
             startPreferences();
         } else if (itemId == R.id.refresh_all) {
