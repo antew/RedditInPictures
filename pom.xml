@@ -19,9 +19,9 @@
     </modules>
 
     <scm>
-        <url>https://bitbucket.org/antew/redditinpicturesv2/</url>
-        <connection>scm:git:https://antew@bitbucket.org/antew/redditinpicturesv2.git</connection>
-        <developerConnection>scm:git:git@bitbucket.org:antew/redditinpicturesv2.git</developerConnection>
+        <url>https://github.com/antew/RedditInPictures/</url>
+        <connection>scm:git:https://github.com/antew/RedditInPictures.git</connection>
+        <developerConnection>scm:git:git@github.com:antew/RedditInPictures.git</developerConnection>
     </scm>
 
     <developers>
@@ -30,6 +30,15 @@
             <email>antewcode@gmail.com</email>
             <id>antew</id>
             <url>http://antew.com</url>
+            <timezone>-5</timezone>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>David Pate</name>
+            <id>davidtpate</id>
+            <url>http://davidtpate.com</url>
             <timezone>-5</timezone>
             <roles>
                 <role>developer</role>
