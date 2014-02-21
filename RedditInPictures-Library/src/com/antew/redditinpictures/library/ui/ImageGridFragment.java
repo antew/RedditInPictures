@@ -1,6 +1,7 @@
 package com.antew.redditinpictures.library.ui;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -35,6 +36,7 @@ import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
 import com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
+import com.antew.redditinpictures.library.interfaces.ScrollPosReadable;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
@@ -45,7 +47,7 @@ import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
-public class ImageGridFragment extends SherlockFragment implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class ImageGridFragment extends SherlockFragment implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, ScrollPosReadable {
     public static final String   TAG                = "ImageGridFragment";
     private static final String  IMAGE_CACHE_DIR    = "thumbs";
     private ThumbnailInfo        mThumbnailInfo;
@@ -58,7 +60,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     private TextView             mNoImages;
     private RedditDataProvider   mRedditDataProvider;
     private MenuItem             mLoginMenuItem;
-
+    private GridView             mGridView;
     /**
      * Empty constructor as per the Fragment documentation
      */
@@ -136,10 +138,10 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.image_grid_fragment, container, false);
-        final GridView gridView = (GridView) v.findViewById(R.id.gridView);
+        mGridView = (GridView) v.findViewById(R.id.gridView);
         mNoImages = (TextView) v.findViewById(R.id.no_images);
         mProgress = (ProgressBar) v.findViewById(R.id.progress);
-        setUpGridView(gridView);
+        setUpGridView(mGridView);
         return v;
     }
 
@@ -381,6 +383,10 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                 Log.i(TAG, "onLoadFinished POST_LOADER, total = " + cursor.getCount() + " rows");
                 mAdapter.swapCursor(cursor);
                 setRequestInProgress(false);
+                // This sets the correct first visible position if we're loading the fragment
+                // for the first time
+                int firstVisiblePos = ((ScrollPosReadable) getActivity()).getFirstVisiblePosition();
+                setFirstVisiblePosition(firstVisiblePos);
 
                 if (cursor.getCount() == 0) {
                     fetchImagesFromReddit(true);
@@ -399,4 +405,32 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         mAdapter.swapCursor(null);
     }
 
+    @Override
+    public int getFirstVisiblePosition() {
+        if (mGridView == null)
+            return 0;
+
+        return mGridView.getFirstVisiblePosition();
+    }
+
+    @Override
+    public void setFirstVisiblePosition(final int firstVisiblePosition) {
+        mGridView.setSelection(firstVisiblePosition);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        Activity activity = getActivity();
+        if (activity != null && activity instanceof ScrollPosReadable) {
+            if (hidden) {
+                // Save the first visible position so that the next image viewing fragment can pick it up
+                ((ScrollPosReadable) activity).setFirstVisiblePosition(mGridView.getFirstVisiblePosition());
+            } else {
+                // Set the first visible position to the same as the previous image viewing fragment
+                int firstVisiblePos = ((ScrollPosReadable) activity).getFirstVisiblePosition();
+                setFirstVisiblePosition(firstVisiblePos);
+            }
+        }
+    }
 }

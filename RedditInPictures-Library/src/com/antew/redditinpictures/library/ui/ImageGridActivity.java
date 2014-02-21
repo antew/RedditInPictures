@@ -44,6 +44,7 @@ import com.antew.redditinpictures.library.dialog.LogoutDialogFragment.LogoutDial
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
+import com.antew.redditinpictures.library.interfaces.ScrollPosReadable;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
@@ -65,7 +66,7 @@ import net.simonvt.menudrawer.MenuDrawer;
 import java.util.ArrayList;
 
 public class ImageGridActivity extends BaseFragmentActivity implements LoginDialogListener, LogoutDialogListener, RedditDataProvider,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, ScrollPosReadable {
     public static final int EDIT_SUBREDDITS_REQUEST = 10;
     public static final int SETTINGS_REQUEST        = 20;
 
@@ -83,6 +84,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     private String                           mSelectedSubreddit;
     private SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     private ViewType                         mActiveViewType = ViewType.LIST;
+    private int                              mFirstVisiblePos = 0;
 
     private enum ViewType {LIST, GRID, VIEWPAGER}
 
@@ -437,16 +439,23 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                 break;
         }
 
-        if (newFragment.isAdded()) {
-            Fragment oldFragment = fm.findFragmentByTag(oldFragmentTag);
-            if (oldFragment != null) {
-                ft.hide(oldFragment);
-            }
-
-            ft.show(newFragment).commit();
-        } else {
-            ft.add(mSubredditDrawer.getContentContainer().getId(), newFragment, newFragmentTag).commit();
+        Fragment oldFragment = fm.findFragmentByTag(oldFragmentTag);
+        if (oldFragment != null) {
+            // Setting the first visible item in the
+            // ImageGridFragment and ImageListFragment
+            // is dependent on the fragment being
+            // hidden so that the first visible position
+            // can be saved and picked up by the next
+            // image viewing fragment
+            ft.hide(oldFragment);
         }
+
+        if (newFragment.isAdded()) {
+            ft.show(newFragment);
+        } else {
+            ft.add(mSubredditDrawer.getContentContainer().getId(), newFragment, newFragmentTag);
+        }
+        ft.commit();
         invalidateOptionsMenu();
     }
 
@@ -757,4 +766,13 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         }
     }
 
+    @Override
+    public int getFirstVisiblePosition() {
+        return mFirstVisiblePos;
+    }
+
+    @Override
+    public void setFirstVisiblePosition(int firstVisiblePosition) {
+        mFirstVisiblePos = firstVisiblePosition;
+    }
 }
