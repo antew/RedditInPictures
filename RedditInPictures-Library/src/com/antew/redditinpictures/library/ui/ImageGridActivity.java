@@ -224,10 +224,6 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         mShowNsfwImages = SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this);
         mAge = SharedPreferencesHelper.getAge(ImageGridActivity.this);
         mCategory = SharedPreferencesHelper.getCategory(ImageGridActivity.this);
-
-        if (SharedPreferencesHelper.getUseHoloBackground(ImageGridActivity.this)) {
-            getWindow().setBackgroundDrawableResource(R.drawable.background_holo_dark);
-        }
     }
 
     public Fragment getImageGridFragment() {

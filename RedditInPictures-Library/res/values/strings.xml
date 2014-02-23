@@ -78,7 +78,6 @@
 
     <!-- Shared Preferences Keys -->
     <string name="pref_show_nsfw_images">Show NSFW Images</string>
-    <string name="pref_use_holo_background">Use Holo background</string>
     <string name="pref_load_high_quality_thumbnails">Load high quality thumbnails</string>
     <string name="pref_use_mobile_interface">Use Mobile Interface</string>
     <string name="pref_about">about</string>

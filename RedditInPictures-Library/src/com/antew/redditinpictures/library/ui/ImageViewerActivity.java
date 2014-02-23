@@ -1,8 +1,5 @@
 package com.antew.redditinpictures.library.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,7 +21,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.BuildConfig;
@@ -36,7 +32,6 @@ import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
-import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageCache;
@@ -44,6 +39,9 @@ import com.antew.redditinpictures.library.utils.ImageCache.ImageCacheParams;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.library.widgets.CustomViewPager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class ImageViewerActivity extends BaseFragmentActivity implements SaveImageDialogListener, SystemUiStateProvider {
 
@@ -112,10 +110,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         initializeAdapter();
         initializeActionBar();
         initializeViewPager();
-
-        if (SharedPreferencesHelper.getUseHoloBackground(this)) {
-            mWrapper.setBackgroundResource(R.drawable.background_holo_dark);
-        }
 
         invalidateOptionsMenu();
     }

@@ -44,7 +44,6 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
     private CheckBoxPreference loadHighQualityThumbs;
     private boolean            showNsfwImagesOldValue;
     private boolean            showNsfwImagesNewValue;
-    private CheckBoxPreference useHoloBackground;
 
     /**
      * This uses the deprecated addPreferencesFromResource because fragment preferences aren't part
@@ -63,7 +62,6 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
         addPreferencesFromResource(R.xml.preferences);
         useMobileInterface = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_use_mobile_interface));
         showNsfwImages = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_show_nsfw_images));
-        useHoloBackground = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_use_holo_background));
         loadHighQualityThumbs = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_load_high_quality_thumbnails));
 
         getPreferenceScreen().findPreference(getString(R.string.pref_about)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
