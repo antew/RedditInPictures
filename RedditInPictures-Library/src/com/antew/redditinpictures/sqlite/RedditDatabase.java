@@ -12,7 +12,7 @@ import com.antew.redditinpictures.sqlite.RedditContract.SubredditColumns;
 
 public class RedditDatabase extends SQLiteOpenHelper {
 
-    private static final int    DATABASE_VERSION = 1;
+    private static final int    DATABASE_VERSION = 2;
     private static final String DATABASE_NAME    = "redditinpictures.db";
 
     public interface Tables {
@@ -50,7 +50,8 @@ public class RedditDatabase extends SQLiteOpenHelper {
                     + SubredditColumns.PUBLIC_DESCRIPTION + " TEXT, "
                     + SubredditColumns.HEADER_TITLE       + " TEXT, "
                     + SubredditColumns.SUBREDDIT_ID       + " TEXT, "
-                    + SubredditColumns.NAME               + " TEXT"
+                    + SubredditColumns.NAME               + " TEXT, "
+                    + SubredditColumns.PRIORITY           + " INTEGER DEFAULT 0"
                     + " );"; 
             
             String POSTDATA = "CREATE TABLE " + Tables.POSTDATA + 
@@ -115,10 +116,21 @@ public class RedditDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        /* Dropping the tables is useful for quick development, but shouldn't
+           be used in release versions.
         db.execSQL("DROP TABLE IF EXISTS " + Tables.POSTDATA);
         db.execSQL("DROP TABLE IF EXISTS " + Tables.REDDIT_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + Tables.LOGIN);
         db.execSQL("DROP TABLE IF EXISTS " + Tables.SUBREDDITS);
+        */
+
+        switch (oldVersion) {
+            case 1:
+                // Database version 1 didn't have the 'priority' column
+                db.execSQL("ALTER TABLE " + Tables.SUBREDDITS + " ADD COLUMN " + SubredditColumns.PRIORITY + " INTEGER DEFAULT 0");
+        }
+
+
         onCreate(db);
     }
 

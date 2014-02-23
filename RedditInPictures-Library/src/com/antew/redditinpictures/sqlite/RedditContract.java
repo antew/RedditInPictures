@@ -61,6 +61,7 @@ public class RedditContract {
         String HEADER_TITLE       = "headerTitle";
         String SUBREDDIT_ID       = "subredditId";
         String NAME               = "name";
+        String PRIORITY           = "priority";
     }
 
     public interface PostColumns {
@@ -144,7 +145,7 @@ public class RedditContract {
 
         public static final String[] SUBREDDITS_PROJECTION = new String[] { _ID, DISPLAY_NAME };
         
-        public static final String DEFAULT_SORT      = DISPLAY_NAME + " COLLATE NOCASE ASC";
+        public static final String DEFAULT_SORT      = PRIORITY + " DESC, " + DISPLAY_NAME + " COLLATE NOCASE ASC";
 
         public static Uri buildSubredditUri(String displayName) {
             return CONTENT_URI.buildUpon().appendPath(displayName).build();
