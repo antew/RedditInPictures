@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    android:background="@drawable/background_menudrawer">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -17,6 +17,7 @@
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:hint="Type a subreddit name"
             android:id="@+id/et_subreddit_filter"
+            android:textColorHint="@android:color/white"
             android:layout_weight=".75"
             android:singleLine="true" />
 
