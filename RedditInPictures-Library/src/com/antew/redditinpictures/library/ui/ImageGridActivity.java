@@ -20,6 +20,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -111,6 +112,15 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                             mSubredditAdapter.setActivePosition(position);
                             mSubredditDrawer.closeMenu(true);
                             loadSubreddit(mSelectedSubreddit);
+                        }
+                    });
+
+                    mSubredditFilter.setImeActionLabel(getString(R.string.go), KeyEvent.KEYCODE_ENTER);
+                    mSubredditFilter.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                            Ln.d("Action: %d Event: %s", actionId, event);
+                            return true;
                         }
                     });
                 }
