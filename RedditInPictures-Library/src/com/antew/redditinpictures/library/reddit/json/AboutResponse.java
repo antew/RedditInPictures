@@ -36,7 +36,6 @@ public class AboutResponse extends RedditResponseHandler {
         this.result = result;
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void processHttpResponse(Context context) {
         Ln.v("About Subreddit complete! = %s", result.getJson());
@@ -49,16 +48,15 @@ public class AboutResponse extends RedditResponseHandler {
 
         RedditDatabase mDatabaseHelper = new RedditDatabase(context);
         SQLiteDatabase mDatabase = mDatabaseHelper.getWritableDatabase();
-        long numEntries = DatabaseUtils.queryNumEntries(mDatabase, RedditDatabase.Tables.SUBREDDITS, "subredditId = ?", new String[] { aboutSubreddit.getData().getId()});
-        if (numEntries > 0) {
-            ContentResolver resolver = context.getContentResolver();
-            resolver.update(RedditContract.Subreddits.CONTENT_URI, aboutSubreddit.getContentValues(), "subredditId = ?", new String[] { aboutSubreddit.getData().getId()});
-            Ln.v("Inserted row");
-        } else {
-            ContentResolver resolver = context.getContentResolver();
-            resolver.insert(RedditContract.Subreddits.CONTENT_URI, aboutSubreddit.getContentValues());
-            Ln.v("Inserted row");
-        }
+
+
+        ContentResolver resolver = context.getContentResolver();
+        //TODO: Once API-11 is sunset, replace with an update instead of delete/insert.
+        // Updates with parameters aren't supported prior to API-11 (Honeycomb). So instead we are just deleting the record if it exists and recreating it.
+        resolver.delete(RedditContract.Subreddits.CONTENT_URI, "subredditId = ?", new String[] { aboutSubreddit.getData().getId()});
+        Ln.v("Deleted row");
+        resolver.insert(RedditContract.Subreddits.CONTENT_URI, aboutSubreddit.getContentValues());
+        Ln.v("Inserted row");
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Consts.BROADCAST_ABOUT_SUBREDDIT));
     }
