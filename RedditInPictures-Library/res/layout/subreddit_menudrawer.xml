@@ -15,9 +15,8 @@
         <AutoCompleteTextView
             android:layout_width="wrap_content"
             android:layout_height="?android:attr/listPreferredItemHeight"
-            android:hint="Type a subreddit name"
+            android:hint="Search"
             android:id="@+id/et_subreddit_filter"
-            android:textColorHint="@android:color/white"
             android:layout_weight=".75"
             android:singleLine="true" />
 

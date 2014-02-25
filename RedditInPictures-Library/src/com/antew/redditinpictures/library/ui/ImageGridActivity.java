@@ -51,6 +51,7 @@ import com.antew.redditinpictures.library.preferences.RedditInPicturesPreference
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.LoginData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
+import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.utils.Consts;
@@ -654,7 +655,10 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
     @Override
     public String getSubreddit() {
-        return mSelectedSubreddit;
+        if (mSelectedSubreddit == null)
+            return null;
+
+        return mSelectedSubreddit.equals("Frontpage") ? RedditUrl.REDDIT_FRONTPAGE : mSelectedSubreddit;
     }
 
     @Override
