@@ -143,7 +143,7 @@ public class RedditContract {
         public static final String CONTENT_TYPE      = "vnd.android.cursor.dir/vnd.redditinpictures.subreddits";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.redditinpictures.subreddits";
 
-        public static final String[] SUBREDDITS_PROJECTION = new String[] { _ID, DISPLAY_NAME };
+        public static final String[] SUBREDDITS_PROJECTION = new String[] { _ID, DISPLAY_NAME, PRIORITY };
         
         public static final String DEFAULT_SORT      = PRIORITY + " DESC, " + DISPLAY_NAME + " COLLATE NOCASE ASC";
 

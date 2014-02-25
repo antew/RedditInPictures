@@ -50,6 +50,7 @@ import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.LoginData;
+import com.antew.redditinpictures.library.reddit.MySubreddits;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
@@ -306,13 +307,16 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     private AdapterView.OnItemClickListener mSubredditClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            int mActivePosition = position;
+            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+            mSelectedSubreddit = cursor.getString(cursor.getColumnIndex(RedditContract.SubredditColumns.DISPLAY_NAME));
+            int priority = cursor.getInt(cursor.getColumnIndex(RedditContract.SubredditColumns.PRIORITY));
 
-            // TODO: Get this working using the cursor adapter
-            // Right now getting:
-            // 02-10 22:07:14.820  13737-13737/com.antew.redditinpictures.pro E/AndroidRuntime﹕ FATAL EXCEPTION: main
-            //     java.lang.IllegalStateException: attempt to re-open an already-closed object: SQLiteQuery: SELECT _id, displayName FROM subreddits ORDER BY displayName COLLATE NOCASE ASC
-            mSelectedSubreddit = ((TextView) view.findViewById(R.id.subreddit)).getText().toString();
+            // TODO: Make this less hacky...
+            // Load the actual frontpage of reddit if selected
+            if (priority == MySubreddits.DefaultSubreddit.FRONTPAGE.getPriority()) {
+                mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
+            }
+
             mSubredditDrawer.setActiveView(view, position);
             mSubredditAdapter.setActivePosition(position);
             mSubredditDrawer.closeMenu(true);
@@ -322,8 +326,13 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     };
 
     private void loadSubreddit(String subredditName) {
+        String title = subredditName;
+        if (subredditName.equals(RedditUrl.REDDIT_FRONTPAGE)) {
+            title = "Frontpage";
+        }
+
         Intent intent = new Intent(Consts.BROADCAST_SUBREDDIT_SELECTED);
-        getSupportActionBar().setTitle(subredditName);
+        getSupportActionBar().setTitle(title);
         intent.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, subredditName);
         intent.putExtra(Consts.EXTRA_AGE, mAge.name());
         intent.putExtra(Consts.EXTRA_CATEGORY, mCategory.name());
@@ -361,11 +370,11 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                     case TODAY:     item = menu.findItem(R.id.category_controversial_today)   ; item.setChecked(true); break;
                 }
                 break;
-            case HOT: 
-                menu.findItem(R.id.category_hot).setChecked(true); 
+            case HOT:
+                menu.findItem(R.id.category_hot).setChecked(true);
                 break;
             case NEW:
-                menu.findItem(R.id.category_new).setChecked(true); 
+                menu.findItem(R.id.category_new).setChecked(true);
                 break;
             case RISING:
                 menu.findItem(R.id.category_rising).setChecked(true);
@@ -386,7 +395,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                 mAge = Age.TODAY;
                 menu.findItem(R.id.category_hot).setChecked(true);
                 break;
-        } 
+        }
         //@formatter:on
 
         MenuItem mActiveViewMenuItem = menu.findItem(R.id.change_view);
@@ -414,7 +423,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     }
 
     public Class<? extends PreferenceActivity> getPreferencesClass() {
-            return RedditInPicturesPreferences.class;
+        return RedditInPicturesPreferences.class;
     }
 
     /**
@@ -480,14 +489,14 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         } else if (itemId == R.id.settings) {
             startPreferences();
         } else if (itemId == R.id.refresh_all) {
-            loadSubreddit(getSupportActionBar().getTitle().toString());
+            loadSubreddit(mSelectedSubreddit);
         } else if (itemId == R.id.login) {
             handleLoginAndLogout();
         }
         //@formatter:off
         else if (itemId == R.id.category_hot)                    { mCategory = Category.HOT;                                   loadFromUrl = true; }
         else if (itemId == R.id.category_new)                    { mCategory = Category.NEW;                                   loadFromUrl = true; }
-        else if (itemId == R.id.category_rising)                 { mCategory = Category.RISING;                                loadFromUrl = true; } 
+        else if (itemId == R.id.category_rising)                 { mCategory = Category.RISING;                                loadFromUrl = true; }
         else if (itemId == R.id.category_top_hour)               { mCategory = Category.TOP;            mAge = Age.THIS_HOUR ; loadFromUrl = true; }
         else if (itemId == R.id.category_top_today)              { mCategory = Category.TOP;            mAge = Age.TODAY     ; loadFromUrl = true; }
         else if (itemId == R.id.category_top_week)               { mCategory = Category.TOP;            mAge = Age.THIS_WEEK ; loadFromUrl = true; }
@@ -499,7 +508,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         else if (itemId == R.id.category_controversial_week)     { mCategory = Category.CONTROVERSIAL;  mAge = Age.THIS_WEEK ; loadFromUrl = true; }
         else if (itemId == R.id.category_controversial_month)    { mCategory = Category.CONTROVERSIAL;  mAge = Age.THIS_MONTH; loadFromUrl = true; }
         else if (itemId == R.id.category_controversial_year)     { mCategory = Category.CONTROVERSIAL;  mAge = Age.THIS_YEAR ; loadFromUrl = true; }
-        else if (itemId == R.id.category_controversial_all_time) { mCategory = Category.CONTROVERSIAL;  mAge = Age.ALL_TIME  ; loadFromUrl = true; } 
+        else if (itemId == R.id.category_controversial_all_time) { mCategory = Category.CONTROVERSIAL;  mAge = Age.ALL_TIME  ; loadFromUrl = true; }
         // @formatter:on
         if (loadFromUrl) {
             SharedPreferencesHelper.saveCategorySelectionLoginInformation(mAge, mCategory, ImageGridActivity.this);
@@ -655,10 +664,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
     @Override
     public String getSubreddit() {
-        if (mSelectedSubreddit == null)
-            return null;
-
-        return mSelectedSubreddit.equals("Frontpage") ? RedditUrl.REDDIT_FRONTPAGE : mSelectedSubreddit;
+        return mSelectedSubreddit;
     }
 
     @Override
@@ -712,13 +718,11 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                 break;
                 
             case Consts.LOADER_SUBREDDITS:
+                mSubredditAdapter.swapCursor(cursor);
                 if (cursor != null) {
                     Log.i(TAG, "onLoadFinished LOADER_SUBREDDITS, " + cursor.getCount() + " rows");
-                    if (cursor.moveToFirst()) {
-                        mSubredditAdapter.swapCursor(cursor);
-                        hideProgressDialog();
-                        invalidateOptionsMenu();
-                    }
+                    hideProgressDialog();
+                    invalidateOptionsMenu();
                 }
 
                 break;

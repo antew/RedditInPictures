@@ -81,7 +81,7 @@ public class SubredditData {
     public int getPriority() { return priority; }
 
     public SubredditData(String display_name) {
-        this.display_name = display_name;
+        this(display_name, 0);
     }
 
     public SubredditData(String display_name, int priority) {

@@ -15,13 +15,13 @@
  */
 package com.antew.redditinpictures.library.reddit;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentValues;
 
 import com.antew.redditinpictures.library.interfaces.ContentValuesArrayOperation;
 import com.antew.redditinpictures.sqlite.RedditContract;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MySubreddits implements ContentValuesArrayOperation {
     private String           kind;
@@ -82,7 +82,7 @@ public class MySubreddits implements ContentValuesArrayOperation {
         return operations.toArray(new ContentValues[operations.size()]);
     }
 
-    private enum DefaultSubreddit {
+    public enum DefaultSubreddit {
         FRONTPAGE("Frontpage", 99999),
         ALL("All", 99998);
         private final String displayName;
