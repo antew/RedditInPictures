@@ -10,6 +10,9 @@ lib
 .DS_Store
 classes
 
+# Gradle
+.gradle
+
 # Maven
 target
 pom.xml.*
