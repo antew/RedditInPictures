@@ -2,7 +2,6 @@ package com.antew.redditinpictures.library.ui.base;
 
 import android.os.Bundle;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.android.debug.hv.ViewServer;
 import com.antew.redditinpictures.library.BuildConfig;

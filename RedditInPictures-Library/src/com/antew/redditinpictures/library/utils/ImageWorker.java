@@ -16,8 +16,6 @@
 
 package com.antew.redditinpictures.library.utils;
 
-import java.lang.ref.WeakReference;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -34,6 +32,8 @@ import android.widget.TextView;
 
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.logging.Log;
+
+import java.lang.ref.WeakReference;
 
 /**
  * This class wraps up completing some arbitrary long running work when loading a bitmap to an

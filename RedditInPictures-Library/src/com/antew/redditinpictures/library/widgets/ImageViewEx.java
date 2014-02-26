@@ -1,7 +1,5 @@
 package com.antew.redditinpictures.library.widgets;
 
-import java.io.InputStream;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -20,6 +18,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+
+import java.io.InputStream;
 
 /**
  * Extension of the ImageView that handles any kind of image already supported

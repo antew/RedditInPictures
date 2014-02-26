@@ -16,8 +16,6 @@
 
 package com.antew.redditinpictures.library.utils;
 
-import java.io.FileDescriptor;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
@@ -25,6 +23,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.antew.redditinpictures.library.logging.Log;
+
+import java.io.FileDescriptor;
 
 /**
  * A simple subclass of {@link ImageWorker} that resizes images from resources given a target width

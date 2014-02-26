@@ -15,8 +15,6 @@
  */
 package com.antew.redditinpictures.library.imgur;
 
-import java.io.OutputStream;
-
 import android.content.Context;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -27,6 +25,8 @@ import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
 import com.antew.redditinpictures.library.ui.ImageViewerFragment;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
+
+import java.io.OutputStream;
 
 /**
  * Used to load original versions of images in {@link ImageViewerFragment} and subclasses

@@ -37,7 +37,6 @@ import com.antew.redditinpictures.library.interfaces.ScrollPosReadable;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
-import com.antew.redditinpictures.library.service.RequestCode;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageCache;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
@@ -255,14 +254,6 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
             if (mFirstRequest) {
                 mFirstRequest = false;
             }
-
-            Bundle args = intent.getBundleExtra(RedditService.EXTRA_BUNDLE);
-            RequestCode requestCode = (RequestCode) intent.getSerializableExtra(RedditService.EXTRA_REQUEST_CODE);
-
-            Bundle passThru = intent.getBundleExtra(RedditService.EXTRA_PASS_THROUGH);
-            int statusCode = args.getInt(RedditService.EXTRA_STATUS_CODE);
-            boolean replaceAll = args.getBoolean(RedditService.EXTRA_REPLACE_ALL);
-            String json = args.getString(RedditService.REST_RESULT);
         }
     };
 

@@ -15,14 +15,14 @@
  */
 package com.antew.redditinpictures.library.utils;
 
-import java.util.Locale;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.widget.EditText;
 
 import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.enums.ImageType;
+
+import java.util.Locale;
 
 public class ImageUtil {
     public static final String TAG = ImageUtil.class.getSimpleName();

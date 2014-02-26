@@ -15,9 +15,9 @@
  */
 package com.antew.redditinpictures.library.imageapi;
 
-import java.util.List;
-
 import com.antew.redditinpictures.library.logging.Log;
+
+import java.util.List;
 
 /**
  * This class is used by Gson to parse JSON from Flickr into POJOs
@@ -88,7 +88,7 @@ public class Flickr {
         boolean walkForward = imageSize.ordinal() < (flickrSizes.length / 2);
         
         
-        while (result == null && !searchedAll) {
+        while (!searchedAll) {
             String searchKey = imageSize.getKey();
             if (sizes != null) {
                 for (FlickrImage f : sizes.getSize()) {

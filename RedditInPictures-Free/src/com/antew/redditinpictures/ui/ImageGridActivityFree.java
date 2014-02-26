@@ -13,7 +13,6 @@ import com.antew.redditinpictures.library.ui.ImageGridFragment;
 import com.antew.redditinpictures.library.ui.ImageListFragment;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.preferences.RedditInPicturesFreePreferences;
-import com.antew.redditinpictures.preferences.RedditInPicturesFreePreferencesFragment;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
 import com.antew.redditinpictures.util.ConstsFree;
 

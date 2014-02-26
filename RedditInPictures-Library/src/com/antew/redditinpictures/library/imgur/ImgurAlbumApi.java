@@ -15,13 +15,13 @@
  */
 package com.antew.redditinpictures.library.imgur;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is used by Gson to parse the Imgur Album API into POJOs

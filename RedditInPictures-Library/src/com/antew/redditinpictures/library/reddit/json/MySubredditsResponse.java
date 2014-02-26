@@ -1,8 +1,5 @@
 package com.antew.redditinpictures.library.reddit.json;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -19,6 +16,9 @@ import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.sqlite.RedditContract;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class MySubredditsResponse extends RedditResponseHandler {
 

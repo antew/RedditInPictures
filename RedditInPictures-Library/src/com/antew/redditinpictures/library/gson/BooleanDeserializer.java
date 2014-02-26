@@ -15,12 +15,12 @@
  */
 package com.antew.redditinpictures.library.gson;
 
-import java.lang.reflect.Type;
-
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+
+import java.lang.reflect.Type;
 
 /**
  * This is used to deserialize booleans from Flickr because they come across and either 1 or 0
