@@ -57,6 +57,7 @@ import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.ImageWorker;
 import com.antew.redditinpictures.library.utils.Util;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import uk.co.senab.photoview.PhotoView;
@@ -330,7 +331,19 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         if (ImageUtil.isGif(mResolvedImageUrl)) {
             loadGifInWebView(mResolvedImageUrl);
         } else {
-            Picasso.with(getActivity()).load(mResolvedImageUrl).placeholder(R.drawable.empty_photo).into(mImageView);
+            Picasso.with(getActivity()).load(mResolvedImageUrl).into(mImageView, new Callback() {
+                @Override
+                public void onSuccess() {
+                    if (mProgress != null)
+                        mProgress.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onError() {
+                    if (mErrorMessage != null)
+                        mErrorMessage.setVisibility(View.VISIBLE);
+                }
+            });
         }
     }
 
