@@ -15,12 +15,12 @@
  */
 package com.antew.redditinpictures.library.textcolor;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Replacer {
     public enum TextColor {

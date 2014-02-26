@@ -15,6 +15,10 @@
  */
 package com.antew.redditinpictures.library.subredditmanager;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -40,10 +44,6 @@ import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.StringUtil;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * 
@@ -194,7 +194,7 @@ public class SubredditManager extends SherlockListActivity {
 
     private void createResetSubredditsAlertDialog() {
         new AlertDialog.Builder(SubredditManager.this).setTitle(R.string.reset).setMessage(R.string.reset_to_default_subreddits_)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         resetToDefaultSubreddits();
                     }
@@ -212,7 +212,7 @@ public class SubredditManager extends SherlockListActivity {
                        .setTitle(R.string.add_subreddit)
                        .setMessage(R.string.enter_the_subreddit)
                        .setView(input)
-                       .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                       .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 String subreddit = input.getText().toString();
                                 

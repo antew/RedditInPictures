@@ -1,10 +1,10 @@
 package com.antew.redditinpictures.library.reddit;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 public class RedditApiData implements Parcelable {
     private String         modhash;

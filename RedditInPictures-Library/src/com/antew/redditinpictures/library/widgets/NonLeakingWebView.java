@@ -1,5 +1,7 @@
 package com.antew.redditinpictures.library.widgets;
 
+import java.lang.ref.WeakReference;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -7,8 +9,6 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import java.lang.ref.WeakReference;
 
 /**
  * @see <a href="http://stackoverflow.com/questions/3130654/memory-leak-in-webview">Stackoverflow post</a>

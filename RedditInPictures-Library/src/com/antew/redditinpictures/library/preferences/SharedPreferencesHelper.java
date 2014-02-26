@@ -15,6 +15,9 @@
  */
 package com.antew.redditinpictures.library.preferences;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -28,9 +31,6 @@ import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.utils.Util;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressLint("CommitPrefEdits")
 public class SharedPreferencesHelper {

@@ -15,6 +15,11 @@
  */
 package com.antew.redditinpictures.library.subredditmanager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -37,11 +42,6 @@ import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.StringUtil;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 @TargetApi(11)
 public class SubredditManagerApi11Plus extends SubredditManager {
@@ -171,7 +171,7 @@ public class SubredditManagerApi11Plus extends SubredditManager {
                        .setTitle(R.string.add_subreddit)
                        .setMessage(R.string.enter_the_subreddit)
                        .setView(input)
-                       .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                       .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 ArrayAdapter<String> adapter = getAdapter();
                                 String value = input.getText().toString();

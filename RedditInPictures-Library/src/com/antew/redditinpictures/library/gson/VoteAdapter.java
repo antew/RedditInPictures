@@ -15,13 +15,13 @@
  */
 package com.antew.redditinpictures.library.gson;
 
+import java.io.IOException;
+
 import com.antew.redditinpictures.library.enums.Vote;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-
-import java.io.IOException;
 
 /**
  * This is used to serialize/deserialize Votes on Reddit posts Reddit uses true for an upvote, false

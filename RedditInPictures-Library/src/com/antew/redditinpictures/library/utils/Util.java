@@ -15,6 +15,8 @@
  */
 package com.antew.redditinpictures.library.utils;
 
+import java.lang.reflect.Method;
+
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
@@ -23,8 +25,6 @@ import android.os.StrictMode;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
-
-import java.lang.reflect.Method;
 
 public class Util {
     public static final String TAG = Util.class.getSimpleName();

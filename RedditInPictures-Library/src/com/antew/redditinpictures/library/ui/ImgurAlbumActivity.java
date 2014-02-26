@@ -1,5 +1,7 @@
 package com.antew.redditinpictures.library.ui;
 
+import java.util.List;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,8 +14,6 @@ import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.StringUtil;
-
-import java.util.List;
 
 public class ImgurAlbumActivity extends ImageViewerActivity {
     public static final String TAG         = "ImgurAlbumActivity";

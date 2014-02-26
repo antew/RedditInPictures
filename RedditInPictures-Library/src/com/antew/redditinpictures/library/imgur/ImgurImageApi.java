@@ -52,7 +52,9 @@ public class ImgurImageApi {
         
         @Override
         public String toString() {
-            return "Links: [ ImgurPage: " + r(links.getImgur_page()) + ", LargeThumbnail: " + r(links.getLarge_thumbnail()) + ", Original: " + r(links.getOriginal()) + ", SmallSquare: " + r(links.getSmall_square()) + "]";
+            StringBuffer buf = new StringBuffer();
+            buf.append("Links: [ ImgurPage: " + r(links.getImgur_page()) + ", LargeThumbnail: " + r(links.getLarge_thumbnail()) + ", Original: " + r(links.getOriginal()) + ", SmallSquare: " + r(links.getSmall_square()) + "]");
+            return buf.toString();
         }
         
         public String getSize(ImageSize size) {

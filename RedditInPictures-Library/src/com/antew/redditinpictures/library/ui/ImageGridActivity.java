@@ -466,7 +466,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
             ft.hide(oldFragment);
         }
 
-        if (newFragment != null && newFragment.isAdded()) {
+        if (newFragment.isAdded()) {
             ft.show(newFragment);
         } else {
             ft.add(mSubredditDrawer.getContentContainer().getId(), newFragment, newFragmentTag);
@@ -554,6 +554,9 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
             // If the user tapped an item in the subreddit list, select that subreddit and load the
             // new images
             if (data.hasExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT)) {
+                boolean mFirstCall = false;
+                int pos = getSubredditPosition(data.getStringExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT));
+//                onNavigationItemSelected(pos, 0);
                 return;
             }
             // If the user didn't choose a subreddit (meaning we are returned the subreddit they
@@ -564,13 +567,21 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                 selectSubredditInNavigation(subredditName);
             } else {
                 // Select the Reddit Front Page
-                loadSubreddit(RedditUrl.REDDIT_FRONTPAGE);
+//                onNavigationItemSelected(Consts.POSITION_FRONTPAGE, 0);
             }
 
         } else if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK) {
             if (data.getBooleanExtra(Consts.EXTRA_SHOW_NSFW_IMAGES_CHANGED, false)) {
                 mShowNsfwImages = SharedPreferencesHelper.getShowNsfwImages(this);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
+
+                // If we're removing NSFW images we can modify the adapter in place, otherwise we
+                // need to refresh
+                if (mShowNsfwImages) {
+//                    onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
+                } else {
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
+                }
+
             }
 
         }

@@ -1,0 +1,3 @@
+include ':RedditInPictures-Library'
+include ':RedditInPictures-Free'
+include ':RedditInPictures-Pro'

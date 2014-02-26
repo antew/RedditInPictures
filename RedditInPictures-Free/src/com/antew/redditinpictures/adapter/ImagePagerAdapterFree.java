@@ -1,13 +1,13 @@
 package com.antew.redditinpictures.adapter;
 
+import java.util.List;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.antew.redditinpictures.library.adapter.ImagePagerAdapter;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.ui.ImageDetailFragmentFree;
-
-import java.util.List;
 
 /**
  * The main adapter that backs the ViewPager. A subclass of FragmentStatePagerAdapter as there
