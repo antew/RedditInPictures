@@ -1,20 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:background="@drawable/background_menudrawer">
 
-    <EditText
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/listPreferredItemHeight"
-        android:hint="Type a subreddit name"
-        android:id="@+id/et_subreddit_filter"
-        android:layout_alignParentTop="true" />
+        android:layout_height="wrap_content"
+        android:id="@+id/ll_menudrawer_search">
+
+        <AutoCompleteTextView
+            android:layout_width="wrap_content"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:hint="Search"
+            android:id="@+id/et_subreddit_filter"
+            android:layout_weight=".75"
+            android:singleLine="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/go"
+            android:id="@+id/btn_search"/>
+    </LinearLayout>
 
     <ListView
         android:id="@+id/lv_subreddits"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/et_subreddit_filter" />
+        android:layout_below="@+id/ll_menudrawer_search" />
 
 </RelativeLayout>

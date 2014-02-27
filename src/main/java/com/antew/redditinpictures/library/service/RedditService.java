@@ -23,6 +23,7 @@ public class RedditService extends RESTService {
     private static final String REDDIT_SUBSCRIBE_URL     = "http://www.reddit.com/api/subscribe";
     private static final String REDDIT_VOTE_URL          = "http://www.reddit.com/api/vote";
     private static final String REDDIT_ABOUT_URL         = "http://www.reddit.com/r/%s/about.json";
+    private static final String REDDIT_SEARCH_SUBREDDITS_URL = "http://www.reddit.com/api/search_reddit_names.json";
     public static final String  REDDIT_SESSION           = "reddit_session";
     private static final String REDDIT_MY_SUBREDDITS_URL = "http://www.reddit.com/reddits/mine/subscriber.json";
     public static final String  COMPACT_URL              = "/.compact";
@@ -85,7 +86,7 @@ public class RedditService extends RESTService {
         context.startService(intent);
     }
 
-    public static void vote(Context context, String id, String subreddit, Vote vote) {
+    public static void vote(Context context, String name, Vote vote) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.setData(Uri.parse(REDDIT_VOTE_URL));
@@ -93,9 +94,8 @@ public class RedditService extends RESTService {
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.VOTE);
 
         Bundle bundle = new Bundle();
-        bundle.putString("id", id);
+        bundle.putString("id", name);
         bundle.putInt("dir", vote.getVote());
-        bundle.putString("r", subreddit);
         bundle.putString("uh", RedditLoginInformation.getModhash());
 
         intent.putExtra(EXTRA_PARAMS, bundle);
@@ -162,6 +162,17 @@ public class RedditService extends RESTService {
         intent.putExtra("action", action.getAction());
         intent.putExtra("sr_name", subreddit);
         intent.putExtra("uh", RedditLoginInformation.getModhash());
+
+        context.startService(intent);
+    }
+
+    public static void searchSubreddits(Context context, String query, boolean searchNsfw) {
+        Intent intent = new Intent(context, RedditService.class);
+        intent = getIntentBasics(intent);
+        intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.SEARCH_SUBREDDITS);
+        String url = REDDIT_SEARCH_SUBREDDITS_URL + "?query=" + query + "&include_over_18=" + (searchNsfw == true ? "true" : "false");
+        intent.setData(Uri.parse(url));
+        intent.putExtra(EXTRA_HTTP_VERB, POST);
 
         context.startService(intent);
     }

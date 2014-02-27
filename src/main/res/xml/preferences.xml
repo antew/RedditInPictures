@@ -12,12 +12,7 @@
             android:key="@string/pref_show_nsfw_images"
             android:summary="@string/show_nsfw_images_while_browsing"
             android:title="@string/pref_show_nsfw_images" />
-        <CheckBoxPreference 
-            android:defaultValue="false"
-            android:key="@string/pref_use_holo_background"
-            android:summary="@string/may_impact_performance"
-            android:title="@string/pref_use_holo_background"/>
-        <CheckBoxPreference 
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/pref_load_high_quality_thumbnails"
             android:summary="@string/uses_more_bandwidth"

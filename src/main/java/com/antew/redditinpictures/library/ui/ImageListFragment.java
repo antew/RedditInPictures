@@ -1,6 +1,7 @@
 package com.antew.redditinpictures.library.ui;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +33,7 @@ import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
 import com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
+import com.antew.redditinpictures.library.interfaces.ScrollPosReadable;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
@@ -43,7 +44,7 @@ import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
-public class ImageListFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ImageListFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<Cursor>, ScrollPosReadable {
     public static final  String TAG             = "ImageListFragment";
     private static final String IMAGE_CACHE_DIR = "thumbs";
     protected ImageListCursorAdapter mAdapter;
@@ -292,8 +293,8 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
 
     private void fetchImagesFromReddit(boolean replaceAll) {
         SherlockFragmentActivity activity = getSherlockActivity();
-        if (activity != null)
-            setRequestInProgress(true);
+        setRequestInProgress(true);
+
         //@formatter:off
         RedditService.getPosts(activity,
                 mRedditDataProvider.getSubreddit(),
@@ -346,6 +347,11 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
                 mAdapter.swapCursor(cursor);
                 setRequestInProgress(false);
 
+                // This sets the correct first visible position if we're loading the fragment
+                // for the first time
+                int firstVisiblePos = ((ScrollPosReadable) getActivity()).getFirstVisiblePosition();
+                setFirstVisiblePosition(firstVisiblePos);
+
                 if (cursor.getCount() == 0) {
                     fetchImagesFromReddit(true);
                     mNoImages.setVisibility(View.VISIBLE);
@@ -361,5 +367,35 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
     public void onLoaderReset(Loader<Cursor> cursor) {
         Log.i(TAG, "onLoaderReset");
         mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public int getFirstVisiblePosition() {
+        if (mImageListView == null)
+            return 0;
+
+        return mImageListView.getFirstVisiblePosition();
+    }
+
+    @Override
+    public void setFirstVisiblePosition(final int firstVisiblePosition) {
+        mImageListView.setSelection(firstVisiblePosition);
+    }
+
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        Activity activity = getActivity();
+        if (activity != null && activity instanceof ScrollPosReadable) {
+            if (hidden) {
+                // Save the first visible position so that the next image viewing fragment can pick it up
+                ((ScrollPosReadable) activity).setFirstVisiblePosition(mImageListView.getFirstVisiblePosition());
+            } else {
+                // Set the first visible position to the same as the previous image viewing fragment
+                int firstVisiblePos = ((ScrollPosReadable) activity).getFirstVisiblePosition();
+                setFirstVisiblePosition(firstVisiblePos);
+            }
+        }
     }
 }

@@ -61,6 +61,7 @@ public class RedditContract {
         String HEADER_TITLE       = "headerTitle";
         String SUBREDDIT_ID       = "subredditId";
         String NAME               = "name";
+        String PRIORITY           = "priority";
     }
 
     public interface PostColumns {
@@ -105,7 +106,7 @@ public class RedditContract {
         public static final String   DEFAULT_SORT        = BaseColumns._ID + " ASC";
 
         public static final String[] GRIDVIEW_PROJECTION = new String[] { _ID, URL, THUMBNAIL };
-        public static final String[] LISTVIEW_PROJECTION = new String[] { _ID, URL, THUMBNAIL, TITLE, SCORE, SELFTEXT, COMMENTS, SUBREDDIT, DOMAIN };
+        public static final String[] LISTVIEW_PROJECTION = new String[] { _ID, URL, THUMBNAIL, TITLE, SCORE, SELFTEXT, COMMENTS, SUBREDDIT, DOMAIN, AUTHOR, VOTE, NAME };
 
         public static Uri buildPostDataUri(long postNumber) {
             return CONTENT_URI.buildUpon().appendPath(String.valueOf(postNumber)).build();
@@ -142,9 +143,9 @@ public class RedditContract {
         public static final String CONTENT_TYPE      = "vnd.android.cursor.dir/vnd.redditinpictures.subreddits";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.redditinpictures.subreddits";
 
-        public static final String[] SUBREDDITS_PROJECTION = new String[] { _ID, DISPLAY_NAME };
+        public static final String[] SUBREDDITS_PROJECTION = new String[] { _ID, DISPLAY_NAME, PRIORITY };
         
-        public static final String DEFAULT_SORT      = DISPLAY_NAME + " COLLATE NOCASE ASC";
+        public static final String DEFAULT_SORT      = PRIORITY + " DESC, " + DISPLAY_NAME + " COLLATE NOCASE ASC";
 
         public static Uri buildSubredditUri(String displayName) {
             return CONTENT_URI.buildUpon().appendPath(displayName).build();

@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.antew.redditinpictures.sqlite.RedditContract.Login;
 import com.antew.redditinpictures.sqlite.RedditContract.LoginColumns;
@@ -150,7 +151,7 @@ public class RedditProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        Log.i(TAG, "delete(uri=" + uri + ")");
+        Ln.i("delete(uri=" + uri + ")");
         final SQLiteDatabase db = mDatabase.getWritableDatabase();
         ContentResolver resolver = getContext().getContentResolver();
         

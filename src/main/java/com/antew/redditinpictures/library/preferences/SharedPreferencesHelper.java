@@ -251,18 +251,6 @@ public class SharedPreferencesHelper {
     }
 
     /**
-     * Whether the holo background should be used. Some users reported performance problems and I
-     * think it may have been due to issues with scaling the Holo background image
-     * 
-     * @param context
-     *            The context
-     * @return Whether the Holo background should be used
-     */
-    public static boolean getUseHoloBackground(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.pref_use_holo_background), false);
-    }
-
-    /**
      * The saved {@link RedditUrl#Age}
      * 
      * @param context

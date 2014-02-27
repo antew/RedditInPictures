@@ -312,6 +312,9 @@ public class PostData implements Parcelable, ContentValuesOperation {
         postData.num_comments = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.COMMENTS));
         postData.subreddit    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));
         postData.domain       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
+        postData.author       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR));
+        postData.likes        = Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE)));
+        postData.name         = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME));
         //@formatter:off
         return postData;
     }

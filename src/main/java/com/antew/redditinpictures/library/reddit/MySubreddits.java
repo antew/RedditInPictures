@@ -15,13 +15,13 @@
  */
 package com.antew.redditinpictures.library.reddit;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentValues;
 
 import com.antew.redditinpictures.library.interfaces.ContentValuesArrayOperation;
 import com.antew.redditinpictures.sqlite.RedditContract;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MySubreddits implements ContentValuesArrayOperation {
     private String           kind;
@@ -57,6 +57,7 @@ public class MySubreddits implements ContentValuesArrayOperation {
         values.put(RedditContract.Subreddits.HEADER_TITLE      , data.getHeader_title());
         values.put(RedditContract.Subreddits.SUBREDDIT_ID      , data.getSubscribers());
         values.put(RedditContract.Subreddits.NAME              , data.getName());
+        values.put(RedditContract.Subreddits.PRIORITY          , data.getPriority());
         //@formatter:on
 
         return values;
@@ -71,7 +72,7 @@ public class MySubreddits implements ContentValuesArrayOperation {
         List<ContentValues> operations = new ArrayList<ContentValues>(totalSubredditCount);
 
         for (DefaultSubreddit subreddit : defaultSubreddits) {
-            operations.add(getContentValues(new SubredditData(subreddit.getDisplayName())));
+            operations.add(getContentValues(new SubredditData(subreddit.getDisplayName(), subreddit.getPriority())));
         }
 
         for (SubredditChildren children : data.getChildren()) {
@@ -81,18 +82,21 @@ public class MySubreddits implements ContentValuesArrayOperation {
         return operations.toArray(new ContentValues[operations.size()]);
     }
 
-    private enum DefaultSubreddit {
-        FRONTPAGE("Frontpage"),
-        ALL("All");
+    public enum DefaultSubreddit {
+        FRONTPAGE("Frontpage", 99999),
+        ALL("All", 99998);
         private final String displayName;
+        private final int    priority;
 
-        DefaultSubreddit(String displayName) {
+        DefaultSubreddit(String displayName, int priority) {
             this.displayName = displayName;
+            this.priority = priority;
         }
 
         public String getDisplayName() {
             return displayName;
         }
+        public int getPriority() { return priority; }
 
     }
 

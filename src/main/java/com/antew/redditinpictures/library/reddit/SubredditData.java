@@ -16,6 +16,7 @@ public class SubredditData {
     private String  header_title;
     private String  id;
     private String  header_img;
+    private int     priority;
 
     public String getDisplay_name() {
         return display_name;
@@ -77,7 +78,14 @@ public class SubredditData {
         return accounts_active;
     }
 
+    public int getPriority() { return priority; }
+
     public SubredditData(String display_name) {
+        this(display_name, 0);
+    }
+
+    public SubredditData(String display_name, int priority) {
         this.display_name = display_name;
+        this.priority = priority;
     }
 }

@@ -45,7 +45,7 @@ public class MySubredditsResponse extends RedditResponseHandler {
             return;
         }
 
-        
+        // Get the subreddits, adding in the default subreddits ('Frontpage' and 'All')
         ContentValues[] operations = mySubreddits.getContentValuesArray();
         
         int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, operations);

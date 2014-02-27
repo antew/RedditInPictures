@@ -90,10 +90,12 @@ public class Flickr {
         
         while (result == null && !searchedAll) {
             String searchKey = imageSize.getKey();
-            for (FlickrImage f : sizes.getSize()) {
-                Log.i(TAG, "Requested Size - " + searchKey + ", Current Size - " + f.getLabel());
-                if (f.getLabel().equalsIgnoreCase(searchKey))
-                    return f;
+            if (sizes != null) {
+                for (FlickrImage f : sizes.getSize()) {
+                    Log.i(TAG, "Requested Size - " + searchKey + ", Current Size - " + f.getLabel());
+                    if (f.getLabel().equalsIgnoreCase(searchKey))
+                        return f;
+                }
             }
             
             
