@@ -14,10 +14,10 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 
-import com.antew.redditinpictures.R;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.ui.ImageGridFragment;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
+import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.util.AdUtil;
 import com.antew.redditinpictures.util.ConstsFree;
 import com.google.ads.AdSize;

@@ -33,7 +33,7 @@ android {
     }
 
     sourceSets.free {
-        res.srcDirs = ['res', '/free/src/res']
+        res.srcDirs = ['src/free/res']
     }
 
     sourceSets.pro {
@@ -55,4 +55,5 @@ dependencies {
 	compile 'com.squareup.picasso:picasso:2.2.0'
     compile 'com.android.support:support-v4:19.0.+'
     compile 'com.jakewharton:disklrucache:2.0.2'
+    freeCompile files('lib/admob-6.2.1.jar')
 }

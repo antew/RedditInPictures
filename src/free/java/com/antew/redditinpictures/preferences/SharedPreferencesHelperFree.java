@@ -3,9 +3,9 @@ package com.antew.redditinpictures.preferences;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
-import com.antew.redditinpictures.R;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
+import com.antew.redditinpictures.pro.R;
 
 public class SharedPreferencesHelperFree extends SharedPreferencesHelper {
 

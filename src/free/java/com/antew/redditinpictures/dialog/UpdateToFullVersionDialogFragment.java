@@ -6,7 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
-import com.antew.redditinpictures.library.R;
+import com.antew.redditinpictures.pro.R;
+
 
 public class UpdateToFullVersionDialogFragment extends DialogFragment {
 

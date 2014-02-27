@@ -10,10 +10,10 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 
-import com.antew.redditinpictures.R;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.util.ConstsFree;
 
 public class RedditInPicturesFreePreferences extends RedditInPicturesPreferences {

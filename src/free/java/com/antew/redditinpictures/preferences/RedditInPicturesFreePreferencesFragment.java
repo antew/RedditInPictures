@@ -15,8 +15,8 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 
-import com.antew.redditinpictures.R;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment;
+import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.util.ConstsFree;
 
 // This really only requires API 11, the Lint check for setOnPreferenceChangeListener seems to be incorrect and reports that it requires API level 14

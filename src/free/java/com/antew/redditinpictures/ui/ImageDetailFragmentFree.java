@@ -2,21 +2,17 @@ package com.antew.redditinpictures.ui;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
+import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.util.AdUtil;
 import com.antew.redditinpictures.util.ConstsFree;
 import com.google.ads.AdSize;

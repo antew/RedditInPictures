@@ -10,13 +10,13 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.ui.ImgurAlbumFragment;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
+import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.util.AdUtil;
 import com.antew.redditinpictures.util.ConstsFree;
 import com.google.ads.AdSize;
