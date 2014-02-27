@@ -29,7 +29,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.reddit.PostData;
