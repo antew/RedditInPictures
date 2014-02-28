@@ -6,7 +6,6 @@ bin
 gen
 build
 out
-lib
 .DS_Store
 classes
 
