@@ -23,6 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
@@ -83,19 +85,33 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView subreddit = (TextView) view.findViewById(R.id.subreddit);
+        ViewHolder holder;
+        if (view != null && view.getTag() != null) {
+            holder = (ViewHolder) view.getTag();
+        } else {
+            holder = new ViewHolder(view);
+            view.setTag(holder);
+        }
+
         String subredditDisplayName = getSubredditDisplayName(cursor);
-        subreddit.setText(subredditDisplayName);
+        holder.subreddit.setText(subredditDisplayName);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         Log.i(TAG, "newView cursorPosition = " + cursor.getPosition());
-        return inflater.inflate(R.layout.subredditdrawer_item, parent, false);
+        return inflater.inflate(R.layout.subreddit_menudrawer_item, parent, false);
     }
 
     public void setActivePosition(int activePosition) {
         this.mActivePosition = activePosition;
     }
 
+    static class ViewHolder {
+        @InjectView(R.id.tv_subreddit) TextView subreddit;
+
+        public ViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
+    }
 }
