@@ -11,7 +11,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="55" />
-        <ImageButton
+    
+    <ImageButton
         android:id="@+id/edit_subreddits"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -37,6 +38,6 @@
         android:background="@drawable/button"
         android:layout_weight="15"
         android:padding="12dp"
-        android:src="@drawable/ic_action_share" />
+        android:src="@drawable/ic_action_share_dark" />
         
 </LinearLayout>
