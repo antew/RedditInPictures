@@ -3,11 +3,11 @@
 
     <item
         android:id="@+id/change_view"
-        android:icon="@drawable/ic_action_list_2"
+        android:icon="@drawable/ic_action_list_2_dark"
         android:showAsAction="always"
         android:title="Switch View"/>
     
-    <item android:id="@+id/sort_subreddits" android:icon="@drawable/ic_action_sort" android:showAsAction="always" android:title="Sort">
+    <item android:id="@+id/sort_subreddits" android:icon="@drawable/ic_action_sort_1_dark" android:showAsAction="always" android:title="Sort">
         <menu>
             <group android:id="@+id/categories" android:checkableBehavior="single">
                 <item android:id="@+id/category_hot"                     android:title="Hot" /> 
@@ -38,15 +38,15 @@
 
     <item
         android:id="@+id/login"
-        android:icon="@drawable/ic_action_login"
-        android:showAsAction="never"
+        android:icon="@drawable/ic_action_key_dark"
+        android:showAsAction="ifRoom"
         android:title="Log In" />
 
     <item
         android:id="@+id/settings"
-        android:icon="@drawable/ic_action_settings"
-        android:showAsAction="never"
+        android:icon="@drawable/ic_action_settings_dark"
+        android:showAsAction="ifRoom"
         android:title="Settings" />
-    
+
 
 </menu>

@@ -3,6 +3,8 @@
 
     <style name="AppTheme" parent="Theme.Sherlock">
         <item name="spinnerDropDownItemStyle">@style/Widget.Sherlock.DropDownItem.Spinner</item>
+        <item name="android:actionOverflowButtonStyle">@style/DarkOverFlow</item>
+        <item name="actionOverflowButtonStyle">@style/DarkOverFlow</item>
     </style>
 
     <style name="AppTheme.FullScreen">
@@ -22,5 +24,11 @@
         <item name="android:drawSelectorOnTop">true</item>
         <item name="android:listSelector">@drawable/photogrid_list_selector</item>
     </style>
+
+    <style name="DarkOverFlow" parent="Widget.Sherlock.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_action_overflow_dark</item>
+    </style>
+
+
 
 </resources>
