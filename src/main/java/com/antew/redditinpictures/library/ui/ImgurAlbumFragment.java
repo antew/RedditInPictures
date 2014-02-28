@@ -20,12 +20,11 @@ import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
-
-import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.Image;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.ImageUtil;
+import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -33,13 +32,12 @@ import com.squareup.picasso.Picasso;
  */
 public class ImgurAlbumFragment extends ImageViewerFragment {
     public static final String TAG = "ImgurAlbumFragment";
-    private ImgurImage         mImage;
+    private ImgurImage mImage;
 
     /**
      * Factory method to generate a new instance of the fragment given an {@link ImgurImage}
-     * 
-     * @param postData
-     *            The post to load
+     *
+     * @param postData The post to load
      * @return A new instance of ImageDetailFragment with imageNum extras
      */
     public static ImgurAlbumFragment newInstance(ImgurImage image) {
@@ -54,11 +52,14 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
     /**
      * Empty constructor as per the Fragment documentation
      */
-    public ImgurAlbumFragment() {}
+    public ImgurAlbumFragment() {
+    }
 
     @Override
     public void loadExtras() {
-        mImage = getArguments() != null ? (ImgurImage) getArguments().getParcelable(IMAGE_DATA_EXTRA) : null;
+        mImage =
+            getArguments() != null ? (ImgurImage) getArguments().getParcelable(IMAGE_DATA_EXTRA)
+                : null;
     }
 
     @Override
@@ -67,7 +68,10 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         if (ImageUtil.isGif(imageUrl)) {
             super.loadGifInWebView(imageUrl);
         } else {
-            Picasso.with(getActivity()).load(imageUrl).placeholder(R.drawable.empty_photo).into(mImageView);
+            Picasso.with(getActivity())
+                .load(imageUrl)
+                .placeholder(R.drawable.empty_photo)
+                .into(mImageView);
         }
     }
 
@@ -110,11 +114,17 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
     }
 
     private boolean hasTitle() {
-        return mImage.getImage().getTitle() != null && !mImage.getImage().getTitle().trim().equals("");
+        return mImage.getImage().getTitle() != null && !mImage.getImage()
+            .getTitle()
+            .trim()
+            .equals("");
     }
-    
+
     private boolean hasCaption() {
-        return mImage.getImage().getCaption() != null && !mImage.getImage().getCaption().trim().equals("");
+        return mImage.getImage().getCaption() != null && !mImage.getImage()
+            .getCaption()
+            .trim()
+            .equals("");
     }
 
     @Override

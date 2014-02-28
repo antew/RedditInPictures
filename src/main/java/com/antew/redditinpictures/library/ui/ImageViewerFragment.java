@@ -42,9 +42,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.actionbarsherlock.app.SherlockFragment;
-import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
@@ -57,9 +55,9 @@ import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.ImageWorker;
 import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 
@@ -69,44 +67,45 @@ import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
 public abstract class ImageViewerFragment extends SherlockFragment {
-    public static final String                  TAG               = "ImageViewerFragment";
-    protected static final String               IMAGE_DATA_EXTRA  = "extra_image_data";
-    protected static final String               IMAGE_ALBUM_EXTRA = "extra_image_album";
-    protected PostData                          mImage;
-    protected ImageView                         mImageView;
-    protected ProgressBar                       mProgress;
-    protected RelativeLayout                    mPostInformationWrapper;
-    protected Button                            mBtnViewGallery;
-    protected ViewStub                          mViewStub;
-    protected WebView                           mWebView;
-    protected boolean                           mPauseWork        = false;
-    protected TextView                          mVotes;
-    protected TextView                          mErrorMessage;
-    private final Object                        mPauseWorkLock    = new Object();
-    private boolean                             mExitTasksEarly   = false;
-    protected String                            mResolvedImageUrl = null;
-    protected Image                             mResolvedImage    = null;
-    protected int                               mActionBarHeight;
-    protected Album                             mAlbum;
+    public static final String TAG = "ImageViewerFragment";
+    protected static final String IMAGE_DATA_EXTRA = "extra_image_data";
+    protected static final String IMAGE_ALBUM_EXTRA = "extra_image_album";
+    protected PostData mImage;
+    protected ImageView mImageView;
+    protected ProgressBar mProgress;
+    protected RelativeLayout mPostInformationWrapper;
+    protected Button mBtnViewGallery;
+    protected ViewStub mViewStub;
+    protected WebView mWebView;
+    protected boolean mPauseWork = false;
+    protected TextView mVotes;
+    protected TextView mErrorMessage;
+    private final Object mPauseWorkLock = new Object();
+    private boolean mExitTasksEarly = false;
+    protected String mResolvedImageUrl = null;
+    protected Image mResolvedImage = null;
+    protected int mActionBarHeight;
+    protected Album mAlbum;
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
 
-    private boolean                             mCancelClick      = false;
-    private float                               mDownXPos         = 0;
-    private float                               mDownYPos         = 0;
+    private boolean mCancelClick = false;
+    private float mDownXPos = 0;
+    private float mDownYPos = 0;
 
     /**
      * Movement threshold used to decide whether to cancel the toggle
      * between windowed mode and fullscreen mode in the
      * WebView in {@link #getWebViewOnTouchListener()}
      */
-    private static float                        MOVE_THRESHOLD;
+    private static float MOVE_THRESHOLD;
 
-    protected SystemUiStateProvider             mSystemUiStateProvider;
+    protected SystemUiStateProvider mSystemUiStateProvider;
 
     /**
      * Empty constructor as per the Fragment documentation
      */
-    public ImageViewerFragment() {}
+    public ImageViewerFragment() {
+    }
 
     protected abstract void resolveImage();
 
@@ -130,30 +129,33 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     public void onResume() {
         Log.i(TAG, "onResume");
         super.onResume();
-        if (mSystemUiStateProvider.isSystemUiVisible())
+        if (mSystemUiStateProvider.isSystemUiVisible()) {
             showPostDetails();
-        else
+        } else {
             hidePostDetails();
+        }
     }
 
     public void loadExtras() {
-        mImage = getArguments() != null ? (PostData) getArguments().getParcelable(IMAGE_DATA_EXTRA) : null;
+        mImage = getArguments() != null ? (PostData) getArguments().getParcelable(IMAGE_DATA_EXTRA)
+            : null;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+        Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
         // Inflate and locate the main ImageView
         final View v = inflater.inflate(R.layout.image_detail_fragment, container, false);
         //@formatter:off
-        mProgress               = (ProgressBar)    v.findViewById(R.id.progress);
-        mBtnViewGallery         = (Button)         v.findViewById(R.id.btn_view_gallery);
-        mImageView              = (PhotoView)      v.findViewById(R.id.imageView);
-        mViewStub               = (ViewStub)       v.findViewById(R.id.webview_stub);
-        mImageView              = (ImageView)      v.findViewById(R.id.imageView);
-        mVotes                  = (TextView)       v.findViewById(R.id.post_votes);
+        mProgress = (ProgressBar) v.findViewById(R.id.progress);
+        mBtnViewGallery = (Button) v.findViewById(R.id.btn_view_gallery);
+        mImageView = (PhotoView) v.findViewById(R.id.imageView);
+        mViewStub = (ViewStub) v.findViewById(R.id.webview_stub);
+        mImageView = (ImageView) v.findViewById(R.id.imageView);
+        mVotes = (TextView) v.findViewById(R.id.post_votes);
         mPostInformationWrapper = (RelativeLayout) v.findViewById(R.id.post_information_wrapper);
-        mErrorMessage           = (TextView)       v.findViewById(R.id.error_message);
+        mErrorMessage = (TextView) v.findViewById(R.id.error_message);
         //@formatter:on
 
         return v;
@@ -166,13 +168,16 @@ public abstract class ImageViewerFragment extends SherlockFragment {
 
         populatePostData(mPostInformationWrapper);
 
-        if (savedInstanceState != null)
-            loadSavedInstanceState(savedInstanceState);
+        if (savedInstanceState != null) loadSavedInstanceState(savedInstanceState);
 
         final Activity act = getActivity();
 
-        LocalBroadcastManager.getInstance(act).registerReceiver(mScoreUpdateReceiver, new IntentFilter(Consts.BROADCAST_UPDATE_SCORE));
-        LocalBroadcastManager.getInstance(act).registerReceiver(mToggleFullscreenIntent, new IntentFilter(Consts.BROADCAST_TOGGLE_FULLSCREEN));
+        LocalBroadcastManager.getInstance(act)
+            .registerReceiver(mScoreUpdateReceiver,
+                new IntentFilter(Consts.BROADCAST_UPDATE_SCORE));
+        LocalBroadcastManager.getInstance(act)
+            .registerReceiver(mToggleFullscreenIntent,
+                new IntentFilter(Consts.BROADCAST_TOGGLE_FULLSCREEN));
 
         // Set up on our tap listener for the PhotoView which we use to toggle between fullscreen
         // and windowed mode
@@ -183,7 +188,8 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         // Calculate ActionBar height
         TypedValue tv = new TypedValue();
         if (getActivity().getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
-            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getActivity().getResources().getDisplayMetrics());
+            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
+                getActivity().getResources().getDisplayMetrics());
         }
 
         try {
@@ -205,29 +211,29 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             @Override
             public void onPhotoTap(View view, float x, float y) {
                 Intent intent = new Intent(Consts.BROADCAST_TOGGLE_FULLSCREEN);
-                intent.putExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
+                intent.putExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE,
+                    mSystemUiStateProvider.isSystemUiVisible());
                 LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
             }
         };
     }
 
     protected void loadSavedInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState.containsKey(IMAGE_DATA_EXTRA))
+        if (savedInstanceState.containsKey(IMAGE_DATA_EXTRA)) {
             mImage = savedInstanceState.getParcelable(IMAGE_DATA_EXTRA);
+        }
 
-        if (savedInstanceState.containsKey(IMAGE_ALBUM_EXTRA))
+        if (savedInstanceState.containsKey(IMAGE_ALBUM_EXTRA)) {
             mAlbum = savedInstanceState.getParcelable(IMAGE_ALBUM_EXTRA);
-
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.i(TAG, "onSaveInstanceState");
-        if (mImage != null)
-            outState.putParcelable(IMAGE_DATA_EXTRA, mImage);
+        if (mImage != null) outState.putParcelable(IMAGE_DATA_EXTRA, mImage);
 
-        if (mAlbum != null)
-            outState.putParcelable(IMAGE_ALBUM_EXTRA, mAlbum);
+        if (mAlbum != null) outState.putParcelable(IMAGE_ALBUM_EXTRA, mAlbum);
 
         super.onSaveInstanceState(outState);
     }
@@ -236,25 +242,25 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     public void onDestroy() {
         Log.i(TAG, "onDestroy");
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mScoreUpdateReceiver);
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mToggleFullscreenIntent);
+        LocalBroadcastManager.getInstance(getActivity())
+            .unregisterReceiver(mToggleFullscreenIntent);
 
         if (mImageView != null) {
             ImageWorker.cancelWork(mImageView);
             mImageView.setImageDrawable(null);
         }
 
-        if (mWebView != null)
-            mWebView.destroy();
+        if (mWebView != null) mWebView.destroy();
 
         if (mResolveImageTask != null) {
             Log.i(TAG, "onDestroy - resolveImageTask not null");
             if (mResolveImageTask.getStatus() != AsyncTask.Status.FINISHED) {
                 Log.i(TAG, "onDestroy - Cancelling resolveImageTask");
                 mResolveImageTask.cancel(true);
-
             }
-        } else
+        } else {
             Log.i(TAG, "onDestroy - Not cancelling resolveImageTask");
+        }
 
         super.onDestroy();
     }
@@ -278,7 +284,8 @@ public abstract class ImageViewerFragment extends SherlockFragment {
      *
      * The first time the user touches the screen we save the X and Y coordinates.
      * If we receive a {@link MotionEvent#ACTION_DOWN} event we compare the previous
-     * X and Y coordinates to the saved coordinates, if they are greater than {@link MOVE_THRESHOLD}
+     * X and Y coordinates to the saved coordinates, if they are greater than {@link
+     * MOVE_THRESHOLD}
      * we prevent the toggle from windowed mode to fullscreen mode or vice versa, the idea
      * being that the user is either dragging the image or using pinch-to-zoom.
      *
@@ -301,13 +308,16 @@ public abstract class ImageViewerFragment extends SherlockFragment {
                         if (!mCancelClick) {
 
                             Intent intent = new Intent(Consts.BROADCAST_TOGGLE_FULLSCREEN);
-                            intent.putExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
+                            intent.putExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE,
+                                mSystemUiStateProvider.isSystemUiVisible());
                             LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        if (Math.abs(event.getX() - mDownXPos) > MOVE_THRESHOLD || Math.abs(event.getY() - mDownYPos) > MOVE_THRESHOLD)
+                        if (Math.abs(event.getX() - mDownXPos) > MOVE_THRESHOLD
+                            || Math.abs(event.getY() - mDownYPos) > MOVE_THRESHOLD) {
                             mCancelClick = true;
+                        }
                         break;
                 }
 
@@ -334,22 +344,19 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             Picasso.with(getActivity()).load(mResolvedImageUrl).into(mImageView, new Callback() {
                 @Override
                 public void onSuccess() {
-                    if (mProgress != null)
-                        mProgress.setVisibility(View.GONE);
+                    if (mProgress != null) mProgress.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void onError() {
-                    if (mErrorMessage != null)
-                        mErrorMessage.setVisibility(View.VISIBLE);
+                    if (mErrorMessage != null) mErrorMessage.setVisibility(View.VISIBLE);
                 }
             });
         }
     }
 
     public void loadGifInWebView(String imageUrl) {
-        if (mViewStub.getParent() != null)
-            mWebView = (WebView) mViewStub.inflate();
+        if (mViewStub.getParent() != null) mWebView = (WebView) mViewStub.inflate();
 
         initializeWebView(mWebView);
         mImageView.setVisibility(View.GONE);
@@ -360,8 +367,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         return String.format(Consts.WEBVIEW_IMAGE_HTML, imageUrl);
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @SuppressLint("SetJavaScriptEnabled") @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void initializeWebView(WebView webview) {
         assert webview != null : "WebView should not be null!";
 
@@ -372,28 +378,25 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         settings.setBuiltInZoomControls(true);
         settings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
 
-        if (Util.hasHoneycomb())
-            settings.setDisplayZoomControls(false);
+        if (Util.hasHoneycomb()) settings.setDisplayZoomControls(false);
 
         webview.setBackgroundColor(Color.BLACK);
         webview.setVisibility(View.VISIBLE);
         webview.setOnTouchListener(getWebViewOnTouchListener());
     }
 
-
-
     //@formatter:off
     /**
      * This BroadcastReceiver handles updating the score when a vote is cast or changed
      */
-    private BroadcastReceiver   mScoreUpdateReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mScoreUpdateReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra(Consts.EXTRA_PERMALINK) &&
-                    intent.hasExtra(Consts.EXTRA_SCORE) &&
-                    mImage != null &&
-                    mImage.getPermalink().equals(intent.getStringExtra(Consts.EXTRA_PERMALINK))) {
+                intent.hasExtra(Consts.EXTRA_SCORE) &&
+                mImage != null &&
+                mImage.getPermalink().equals(intent.getStringExtra(Consts.EXTRA_PERMALINK))) {
 
                 if (mVotes != null) {
                     Log.i(TAG, "Updating score to " + intent.getIntExtra(Consts.EXTRA_SCORE, 0));
@@ -403,15 +406,17 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         }
     };
 
-    private BroadcastReceiver   mToggleFullscreenIntent = new BroadcastReceiver() {
+    private BroadcastReceiver mToggleFullscreenIntent = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            boolean isSystemUiVisible = intent.getBooleanExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
-            if (isSystemUiVisible)
+            boolean isSystemUiVisible =
+                intent.getBooleanExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
+            if (isSystemUiVisible) {
                 hidePostDetails();
-            else
+            } else {
                 showPostDetails();
+            }
         }
     };
 
@@ -423,7 +428,8 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     class ResolveImageTask extends AsyncTask<String, Void, Image> {
         private String data;
 
-        public ResolveImageTask() {}
+        public ResolveImageTask() {
+        }
 
         /**
          * Background processing.
@@ -465,7 +471,6 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             }
 
             loadImage(image);
-
         }
 
         @Override
@@ -476,5 +481,4 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             }
         }
     }
-
 }
