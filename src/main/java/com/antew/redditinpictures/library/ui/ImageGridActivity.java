@@ -402,11 +402,11 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         MenuItem mActiveViewMenuItem = menu.findItem(R.id.change_view);
         switch (mActiveViewType) {
             case LIST:
-                mActiveViewMenuItem.setIcon(R.drawable.ic_action_view_as_grid);
+                mActiveViewMenuItem.setIcon(R.drawable.ic_action_tiles_small);
                 break;
 
             case GRID:
-                mActiveViewMenuItem.setIcon(R.drawable.ic_action_view_as_list);
+                mActiveViewMenuItem.setIcon(R.drawable.ic_action_list_2);
                 break;
 
             case VIEWPAGER:
