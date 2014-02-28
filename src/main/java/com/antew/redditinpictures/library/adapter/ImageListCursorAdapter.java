@@ -108,7 +108,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
             }
         }
 
-        Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(holder.imageView);
+        Picasso.with(mContext).load(url).placeholder(R.drawable.loading_spinner_small).error(R.drawable.empty_photo).into(holder.imageView);
 
         String separator = " " + "\u2022" + " ";
         String titleText =
