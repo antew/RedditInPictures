@@ -24,43 +24,38 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.GridView;
 import android.widget.ImageView;
-
-import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.ui.ImageGridFragment;
 import com.antew.redditinpictures.library.utils.ImageFetcher;
+import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.squareup.picasso.Picasso;
 
 /**
  * This is used as the backing adapter for the {@link GridView} in {@link ImageGridFragment}
- * 
+ *
  * @author Antew
- * 
  */
 public class ImageCursorAdapter extends CursorAdapter {
-    public static final String    TAG         = ImageCursorAdapter.class.getSimpleName();
-    private int                   mItemHeight = 0;
-    private int                   mNumColumns = 0;
+    public static final String TAG = ImageCursorAdapter.class.getSimpleName();
+    private int mItemHeight = 0;
+    private int mNumColumns = 0;
     private GridView.LayoutParams mImageViewLayoutParams;
-    private ImageFetcher          mImageFetcher;
-    private Cursor                mCursor;
+    private ImageFetcher mImageFetcher;
+    private Cursor mCursor;
 
     /**
-     * 
-     * @param context
-     *            The context
-     * @param imageFetcher
-     *            The image fetcher (currently using a {@link com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher}
-     * @param cursor
-     *            Cursor to a database containing PostData information
+     * @param context The context
+     * @param imageFetcher The image fetcher (currently using a {@link
+     * com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher}
+     * @param cursor Cursor to a database containing PostData information
      */
     public ImageCursorAdapter(Context context, ImageFetcher imageFetcher, Cursor cursor) {
         super(context, cursor, 0);
         mContext = context;
         mImageFetcher = imageFetcher;
         mCursor = cursor;
-        mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-
+        mImageViewLayoutParams =
+            new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
     }
 
     @Override
@@ -77,8 +72,6 @@ public class ImageCursorAdapter extends CursorAdapter {
     /**
      * Sets the item height. Useful for when we know the column width so the height can be set to
      * match.
-     * 
-     * @param height
      */
     public void setItemHeight(int height) {
         if (height == mItemHeight) {
@@ -93,8 +86,6 @@ public class ImageCursorAdapter extends CursorAdapter {
     /**
      * Sets the number of columns, this is currently used in the {@link OnGlobalLayoutListener} in
      * {@link ImageGridFragment}
-     * 
-     * @param numColumns
      */
     public void setNumColumns(int numColumns) {
         mNumColumns = numColumns;
@@ -113,7 +104,8 @@ public class ImageCursorAdapter extends CursorAdapter {
         }
 
         String url = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.URL));
-        String thumbnail = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.THUMBNAIL));
+        String thumbnail =
+            cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.THUMBNAIL));
         // If we have a thumbnail from Reddit use that, otherwise use the full URL
         // Reddit will send 'default' for one of the default alien icons, which we want to avoid using
         if (!thumbnail.trim().equals("") && !thumbnail.equals("default")) {
@@ -128,7 +120,5 @@ public class ImageCursorAdapter extends CursorAdapter {
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imageView.setLayoutParams(mImageViewLayoutParams);
         return imageView;
-
     }
-
 }
