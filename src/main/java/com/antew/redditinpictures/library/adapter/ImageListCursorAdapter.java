@@ -28,8 +28,6 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
@@ -38,31 +36,28 @@ import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
+import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Picasso;
-
 import java.util.regex.Pattern;
 
 /**
- * This is used as the backing adapter for the {@link android.widget.GridView} in {@link com.antew.redditinpictures.library.ui.ImageGridFragment}
+ * This is used as the backing adapter for the {@link android.widget.GridView} in {@link
+ * com.antew.redditinpictures.library.ui.ImageGridFragment}
  *
  * @author Antew
- *
  */
 public class ImageListCursorAdapter extends CursorAdapter {
-    public static final String    TAG         = ImageListCursorAdapter.class.getSimpleName();
-    private int                   mItemHeight = 0;
-    private int                   mNumColumns = 0;
+    public static final String TAG = ImageListCursorAdapter.class.getSimpleName();
+    private int mItemHeight = 0;
+    private int mNumColumns = 0;
     private GridView.LayoutParams mImageViewLayoutParams;
-    private Cursor                mCursor;
+    private Cursor mCursor;
     private LayoutInflater mInflater;
     private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
 
     /**
-     *
-     * @param context
-     *            The context
-     * @param cursor
-     *            Cursor to a database containing PostData information
+     * @param context The context
+     * @param cursor Cursor to a database containing PostData information
      */
     public ImageListCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
@@ -92,7 +87,6 @@ public class ImageListCursorAdapter extends CursorAdapter {
         final ImageButton upVote = (ImageButton) view.findViewById(R.id.ib_upVote);
         final ImageButton downVote = (ImageButton) view.findViewById(R.id.ib_downVote);
 
-
         // If we have a thumbnail from Reddit use that, otherwise use the full URL
         // Reddit will send 'default' for one of the default alien icons, which we want to avoid using
         String url = postData.getUrl();
@@ -113,9 +107,14 @@ public class ImageListCursorAdapter extends CursorAdapter {
         Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(imageView);
 
         String separator = " " + "\u2022" + " ";
-        String titleText = postData.getTitle() + " <font color='#BEBEBE'>(" + postData.getDomain() + ")</font>";
+        String titleText =
+            postData.getTitle() + " <font color='#BEBEBE'>(" + postData.getDomain() + ")</font>";
         postTitle.setText(Html.fromHtml(titleText));
-        postInformation.setText(postData.getSubreddit() + separator + postData.getNum_comments() + " " + mContext.getString(R.string.comments));
+        postInformation.setText(postData.getSubreddit()
+            + separator
+            + postData.getNum_comments()
+            + " "
+            + mContext.getString(R.string.comments));
         postVotes.setText("" + postData.getScore());
 
         if (postData.getVote() == Vote.UP) {
@@ -141,7 +140,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return  mInflater.inflate(R.layout.image_list_item, parent, false);
+        return mInflater.inflate(R.layout.image_list_item, parent, false);
     }
 
     /**
@@ -159,12 +158,11 @@ public class ImageListCursorAdapter extends CursorAdapter {
      * If the current vote is DOWN and the new vote is UP, the vote is changed to UP.
      * </p>
      *
-     * @param whichVoteButton
-     *            The vote representing the menu item which was clicked
-     * @param p
-     *            The post this vote is for
+     * @param whichVoteButton The vote representing the menu item which was clicked
+     * @param p The post this vote is for
      */
-    private void vote(Vote whichVoteButton, PostData p, TextView postVotes, ImageButton upVote, ImageButton downVote) {
+    private void vote(Vote whichVoteButton, PostData p, TextView postVotes, ImageButton upVote,
+        ImageButton downVote) {
         if (!RedditLoginInformation.isLoggedIn()) {
             if (mContext instanceof ImageGridActivity) {
                 ((ImageGridActivity) mContext).handleLoginAndLogout();
