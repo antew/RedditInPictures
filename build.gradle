@@ -1,17 +1,61 @@
-allprojects {
-  buildscript {
-    repositories {
-      mavenCentral()
-    }
+buildscript {
+  repositories {
+    mavenCentral()
   }
 
   dependencies {
-    repositories {
-      mavenCentral()
-    }
+    classpath 'com.android.tools.build:gradle:0.7.+'
   }
 }
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '1.9'
+apply plugin: 'android'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.0.1'
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 19
+
+    }
+
+    productFlavors {
+        free {
+            packageName "com.antew.redditinpictures"
+            versionCode 2
+        }
+
+        pro {
+            packageName "com.antew.redditinpictures.pro"
+            versionCode 3
+        }
+    }
+
+    sourceSets.free {
+        res.srcDirs = ['src/free/res']
+        java.srcDirs = ['src/free/java']
+    }
+
+    sourceSets.pro {
+        res.srcDirs = ['res']
+        java.srcDirs = ['src/pro/java']
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	compile 'com.google.code.gson:gson:2.2.4'
+	compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+	compile 'com.nineoldandroids:library:2.4.0'
+	compile 'com.github.chrisbanes.photoview:library:1.1'
+	compile 'com.jakewharton:disklrucache:1.2.1'
+	compile 'net.simonvt.menudrawer:menudrawer:3.0.4@aar'
+	compile 'com.squareup.picasso:picasso:2.2.0'
+    compile 'com.android.support:support-v4:19.0.+'
+    compile 'com.jakewharton:disklrucache:2.0.2'
+    freeCompile files('lib/admob-6.2.1.jar')
 }

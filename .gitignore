@@ -6,7 +6,6 @@ bin
 gen
 build
 out
-lib
 .DS_Store
 classes
 
@@ -17,6 +16,9 @@ classes
 target
 pom.xml.*
 release.properties
+
+# Gradle
+.gradle
 
 #IntelliJ
 .idea

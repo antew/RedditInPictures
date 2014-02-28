@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.antew.redditinpictures.pro"
+    android:versionCode="2"
+    android:versionName="1.1" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="19" />
+
+    <application
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <service android:name="com.antew.redditinpictures.library.service.RedditService" />
+        
+        <activity
+            android:name="com.antew.redditinpictures.library.ui.ImageGridActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.antew.redditinpictures.library.ImageViewer"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.antew.redditinpictures.library.ui.ImageDetailActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="com.antew.redditinpictures.library.ui.ImageGridActivity"
+            android:theme="@style/AppTheme.FullScreen" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.antew.redditinpictures.library.ui.ImageGridActivity" />
+        </activity>
+        <activity
+            android:name="com.antew.redditinpictures.library.ui.ImgurAlbumActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="com.antew.redditinpictures.library.ui.ImageDetailActivity"
+            android:theme="@style/AppTheme.FullScreen" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.antew.redditinpictures.library.ui.ImageDetailActivity" />
+        </activity>
+        <activity
+            android:name="com.antew.redditinpictures.library.subredditmanager.SubredditManager"
+            android:label="@string/edit_subreddits"
+            android:theme="@style/Theme.Sherlock" />
+        <activity
+            android:name="com.antew.redditinpictures.library.subredditmanager.SubredditManagerApi11Plus"
+            android:label="@string/edit_subreddits"
+            android:theme="@style/Theme.Sherlock" />
+        <activity
+            android:name="com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.antew.redditinpictures.library.ui.About"
+            android:label="@string/app_name" >
+        </activity>
+    </application>
+
+</manifest>
