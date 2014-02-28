@@ -34,10 +34,12 @@ android {
 
     sourceSets.free {
         res.srcDirs = ['src/free/res']
+        java.srcDirs = ['src/free/java']
     }
 
     sourceSets.pro {
         res.srcDirs = ['res']
+        java.srcDirs = ['src/pro/java']
     }
 }
 

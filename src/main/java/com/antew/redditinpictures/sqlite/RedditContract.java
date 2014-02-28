@@ -3,11 +3,16 @@ package com.antew.redditinpictures.sqlite;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.pro.BuildConfig;
+
+import java.lang.reflect.Field;
+
 public class RedditContract {
 
     private RedditContract() {};
 
-    public static final String              CONTENT_AUTHORITY = "com.antew.redditinpictures";
+    public static final String              CONTENT_AUTHORITY = "com.antew.redditinpictures." + BuildConfig.FLAVOR;
     public static final int                 BASE              = 1;
     public static final int                 REDDIT            = 100;
     public static final int                 REDDIT_ID         = 101;

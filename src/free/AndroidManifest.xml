@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.antew.redditinpictures.pro"
-    android:versionCode="2"
-    android:versionName="1.1" >
+    package="com.antew.redditinpictures"
+    android:versionCode="1"
+    android:versionName="1.0" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -10,17 +10,26 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="16" />
 
     <application
+        android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <service android:name="com.antew.redditinpictures.library.service.RedditService" />
-        
+
+        <provider
+            android:name="com.antew.redditinpictures.library.provider.RedditProvider"
+            android:authorities="com.antew.redditinpictures.free"
+            android:label="@string/app_name"
+            android:exported="false"
+            android:syncable="false" />
+
         <activity
-            android:name="com.antew.redditinpictures.library.ui.ImageGridActivity"
+            android:name="com.antew.redditinpictures.ui.ImageGridActivityFree"
             android:label="@string/app_name"
             android:theme="@style/AppTheme" >
             <intent-filter>
@@ -30,25 +39,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.antew.redditinpictures.library.ImageViewer"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.antew.redditinpictures.library.ui.ImageDetailActivity"
+            android:name="com.antew.redditinpictures.ui.ImageDetailActivityFree"
             android:label="@string/app_name"
-            android:parentActivityName="com.antew.redditinpictures.library.ui.ImageGridActivity"
+            android:parentActivityName="com.antew.redditinpictures.ui.ImageGridActivityFree"
             android:theme="@style/AppTheme.FullScreen" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.antew.redditinpictures.library.ui.ImageGridActivity" />
+                android:value="com.antew.redditinpictures.ui.ImageGridActivityFree" />
         </activity>
         <activity
-            android:name="com.antew.redditinpictures.library.ui.ImgurAlbumActivity"
+            android:name="com.antew.redditinpictures.ui.ImgurAlbumActivityFree"
             android:label="@string/app_name"
-            android:parentActivityName="com.antew.redditinpictures.library.ui.ImageDetailActivity"
+            android:parentActivityName="com.antew.redditinpictures.ui.ImageDetailActivityFree"
             android:theme="@style/AppTheme.FullScreen" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.antew.redditinpictures.library.ui.ImageDetailActivity" />
+                android:value="com.antew.redditinpictures.ui.ImageDetailActivityFree" />
         </activity>
         <activity
             android:name="com.antew.redditinpictures.library.subredditmanager.SubredditManager"
@@ -59,17 +65,20 @@
             android:label="@string/edit_subreddits"
             android:theme="@style/Theme.Sherlock" />
         <activity
-            android:name="com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment"
+            android:name="com.antew.redditinpictures.preferences.RedditInPicturesFreePreferencesFragment"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences"
+            android:name="com.antew.redditinpictures.preferences.RedditInPicturesFreePreferences"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name="com.antew.redditinpictures.library.ui.About"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:name="com.google.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
     </application>
 
 </manifest>
