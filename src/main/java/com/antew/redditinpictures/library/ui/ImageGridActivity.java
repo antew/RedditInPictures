@@ -327,7 +327,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
     private void loadSubreddit(String subredditName) {
         String title = subredditName;
-        if (subredditName.equals(RedditUrl.REDDIT_FRONTPAGE)) {
+        // If we don't have a subreddit, default to the Frontpage also.
+        if (Strings.isEmpty(subredditName) || subredditName.equals(RedditUrl.REDDIT_FRONTPAGE)) {
             title = "Frontpage";
         }
 
