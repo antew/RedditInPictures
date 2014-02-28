@@ -28,6 +28,8 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
@@ -79,13 +81,15 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
-        TextView postTitle = (TextView) view.findViewById(R.id.tv_title);
-        TextView postInformation = (TextView) view.findViewById(R.id.tv_post_information);
-        final TextView postVotes = (TextView) view.findViewById(R.id.tv_votes);
+        final ViewHolder holder;
+        if (view != null && view.getTag() != null) {
+            holder = (ViewHolder) view.getTag();
+        } else {
+            holder = new ViewHolder(view);
+            view.setTag(holder);
+        }
+
         final PostData postData = PostData.fromListViewProjection(cursor);
-        final ImageButton upVote = (ImageButton) view.findViewById(R.id.ib_upVote);
-        final ImageButton downVote = (ImageButton) view.findViewById(R.id.ib_downVote);
 
         // If we have a thumbnail from Reddit use that, otherwise use the full URL
         // Reddit will send 'default' for one of the default alien icons, which we want to avoid using
@@ -104,36 +108,36 @@ public class ImageListCursorAdapter extends CursorAdapter {
             }
         }
 
-        Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(imageView);
+        Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).into(holder.imageView);
 
         String separator = " " + "\u2022" + " ";
         String titleText =
             postData.getTitle() + " <font color='#BEBEBE'>(" + postData.getDomain() + ")</font>";
-        postTitle.setText(Html.fromHtml(titleText));
-        postInformation.setText(postData.getSubreddit()
+        holder.postTitle.setText(Html.fromHtml(titleText));
+        holder.postInformation.setText(postData.getSubreddit()
             + separator
             + postData.getNum_comments()
             + " "
             + mContext.getString(R.string.comments));
-        postVotes.setText("" + postData.getScore());
+        holder.postVotes.setText("" + postData.getScore());
 
         if (postData.getVote() == Vote.UP) {
-            upVote.setImageResource(R.drawable.arrow_up_highlighted);
+            holder.upVote.setImageResource(R.drawable.arrow_up_highlighted);
         } else if (postData.getVote() == Vote.DOWN) {
-            downVote.setImageResource(R.drawable.arrow_down_highlighted);
+            holder.downVote.setImageResource(R.drawable.arrow_down_highlighted);
         }
 
-        upVote.setOnClickListener(new View.OnClickListener() {
+        holder.upVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                vote(Vote.UP, postData, postVotes, upVote, downVote);
+                vote(Vote.UP, postData, holder);
             }
         });
 
-        downVote.setOnClickListener(new View.OnClickListener() {
+        holder.downVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                vote(Vote.DOWN, postData, postVotes, upVote, downVote);
+                vote(Vote.DOWN, postData, holder);
             }
         });
     }
@@ -161,8 +165,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
      * @param whichVoteButton The vote representing the menu item which was clicked
      * @param p The post this vote is for
      */
-    private void vote(Vote whichVoteButton, PostData p, TextView postVotes, ImageButton upVote,
-        ImageButton downVote) {
+    private void vote(Vote whichVoteButton, PostData p, ViewHolder holder) {
         if (!RedditLoginInformation.isLoggedIn()) {
             if (mContext instanceof ImageGridActivity) {
                 ((ImageGridActivity) mContext).handleLoginAndLogout();
@@ -184,16 +187,16 @@ public class ImageListCursorAdapter extends CursorAdapter {
                     RedditService.vote(mContext, p.getName(), Vote.UP);
                     p.setVote(Vote.UP);
                     p.setScore(p.getScore() + 1);
-                    postVotes.setText("" + p.getScore());
-                    upVote.setImageResource(R.drawable.arrow_up_highlighted);
+                    holder.postVotes.setText("" + p.getScore());
+                    holder.upVote.setImageResource(R.drawable.arrow_up_highlighted);
                     break;
                 case DOWN:
                     Ln.d("Voting Down Post");
                     RedditService.vote(mContext, p.getName(), Vote.DOWN);
                     p.setVote(Vote.DOWN);
                     p.setScore(p.getScore() - 1);
-                    postVotes.setText("" + p.getScore());
-                    downVote.setImageResource(R.drawable.arrow_down_highlighted);
+                    holder.postVotes.setText("" + p.getScore());
+                    holder.downVote.setImageResource(R.drawable.arrow_down_highlighted);
                     break;
             }
         } else if (p.getVote() == Vote.UP) {
@@ -203,17 +206,17 @@ public class ImageListCursorAdapter extends CursorAdapter {
                     RedditService.vote(mContext, p.getName(), Vote.NEUTRAL);
                     p.setVote(Vote.NEUTRAL);
                     p.setScore(p.getScore() - 1);
-                    postVotes.setText("" + p.getScore());
-                    upVote.setImageResource(R.drawable.arrow_up);
+                    holder.postVotes.setText("" + p.getScore());
+                    holder.upVote.setImageResource(R.drawable.arrow_up);
                     break;
                 case DOWN:
                     Ln.d("Voting Down Post");
                     RedditService.vote(mContext, p.getName(), Vote.DOWN);
                     p.setVote(Vote.DOWN);
                     p.setScore(p.getScore() - 2);
-                    postVotes.setText("" + p.getScore());
-                    upVote.setImageResource(R.drawable.arrow_up);
-                    downVote.setImageResource(R.drawable.arrow_down_highlighted);
+                    holder.postVotes.setText("" + p.getScore());
+                    holder.upVote.setImageResource(R.drawable.arrow_up);
+                    holder.downVote.setImageResource(R.drawable.arrow_down_highlighted);
                     break;
             }
         } else if (p.getVote() == Vote.DOWN) {
@@ -223,17 +226,17 @@ public class ImageListCursorAdapter extends CursorAdapter {
                     RedditService.vote(mContext, p.getName(), Vote.UP);
                     p.setVote(Vote.UP);
                     p.setScore(p.getScore() + 2);
-                    postVotes.setText("" + p.getScore());
-                    downVote.setImageResource(R.drawable.arrow_down);
-                    upVote.setImageResource(R.drawable.arrow_up_highlighted);
+                    holder.postVotes.setText("" + p.getScore());
+                    holder.downVote.setImageResource(R.drawable.arrow_down);
+                    holder.upVote.setImageResource(R.drawable.arrow_up_highlighted);
                     break;
                 case DOWN:
                     Ln.d("Voting Neutral Post");
                     RedditService.vote(mContext, p.getName(), Vote.NEUTRAL);
                     p.setVote(Vote.NEUTRAL);
                     p.setScore(p.getScore() + 1);
-                    postVotes.setText("" + p.getScore());
-                    downVote.setImageResource(R.drawable.arrow_down);
+                    holder.postVotes.setText("" + p.getScore());
+                    holder.downVote.setImageResource(R.drawable.arrow_down);
                     break;
             }
         }
@@ -241,5 +244,18 @@ public class ImageListCursorAdapter extends CursorAdapter {
         // Broadcast the intent to update the score in the ImageDetailFragment
         intent.putExtra(Consts.EXTRA_SCORE, p.getScore());
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+    }
+
+    static class ViewHolder {
+        @InjectView(R.id.iv_image) ImageView imageView;
+        @InjectView(R.id.tv_title) TextView postTitle;
+        @InjectView(R.id.tv_post_information) TextView postInformation;
+        @InjectView(R.id.tv_votes) TextView postVotes;
+        @InjectView(R.id.ib_upVote) ImageButton upVote;
+        @InjectView(R.id.ib_downVote) ImageButton downVote;
+
+        public ViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
     }
 }
