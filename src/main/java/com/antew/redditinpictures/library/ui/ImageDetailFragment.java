@@ -81,15 +81,10 @@ public class ImageDetailFragment extends ImageViewerFragment {
 
     public void populatePostData(View v) {
         String separator = " " + "\u2022" + " ";
-        TextView postTitle = (TextView) v.findViewById(R.id.post_title);
-        TextView postInformation = (TextView) v.findViewById(R.id.post_information);
-        
-        mVotes.setText("" + mImage.getScore());
-
+        mPostVotes.setText("" + mImage.getScore());
         String titleText = mImage.getTitle() + " <font color='#BEBEBE'>(" + mImage.getDomain() + ")</font>";
-        postTitle.setText(Html.fromHtml(titleText));
-
-        postInformation.setText(mImage.getSubreddit() + separator + mImage.getNum_comments() + " comments" + separator + mImage.getAuthor());
+        mPostTitle.setText(Html.fromHtml(titleText));
+        mPostInformation.setText(mImage.getSubreddit() + separator + mImage.getNum_comments() + " comments" + separator + mImage.getAuthor());
     }
 
     @Override

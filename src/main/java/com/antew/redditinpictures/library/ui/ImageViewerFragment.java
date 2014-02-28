@@ -42,6 +42,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.image.Image;
@@ -71,15 +73,28 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     protected static final String IMAGE_DATA_EXTRA = "extra_image_data";
     protected static final String IMAGE_ALBUM_EXTRA = "extra_image_album";
     protected PostData mImage;
-    protected ImageView mImageView;
-    protected ProgressBar mProgress;
-    protected RelativeLayout mPostInformationWrapper;
-    protected Button mBtnViewGallery;
-    protected ViewStub mViewStub;
+
+    @InjectView(R.id.iv_imageView)
+    ImageView mImageView;
+    @InjectView(R.id.pb_progress)
+    ProgressBar mProgress;
+    @InjectView(R.id.rl_post_information_wrapper)
+    RelativeLayout mPostInformationWrapper;
+    @InjectView(R.id.tv_post_title)
+    TextView mPostTitle;
+    @InjectView(R.id.tv_post_information)
+    TextView mPostInformation;
+    @InjectView(R.id.btn_view_gallery)
+    Button mBtnViewGallery;
+    @InjectView(R.id.webview_stub)
+    ViewStub mViewStub;
+    @InjectView(R.id.tv_post_votes)
+    TextView mPostVotes;
+    @InjectView(R.id.tv_error_message)
+    TextView mErrorMessage;
+
     protected WebView mWebView;
     protected boolean mPauseWork = false;
-    protected TextView mVotes;
-    protected TextView mErrorMessage;
     private final Object mPauseWorkLock = new Object();
     private boolean mExitTasksEarly = false;
     protected String mResolvedImageUrl = null;
@@ -145,20 +160,9 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
-        // Inflate and locate the main ImageView
-        final View v = inflater.inflate(R.layout.image_detail_fragment, container, false);
-        //@formatter:off
-        mProgress = (ProgressBar) v.findViewById(R.id.progress);
-        mBtnViewGallery = (Button) v.findViewById(R.id.btn_view_gallery);
-        mImageView = (PhotoView) v.findViewById(R.id.imageView);
-        mViewStub = (ViewStub) v.findViewById(R.id.webview_stub);
-        mImageView = (ImageView) v.findViewById(R.id.imageView);
-        mVotes = (TextView) v.findViewById(R.id.post_votes);
-        mPostInformationWrapper = (RelativeLayout) v.findViewById(R.id.post_information_wrapper);
-        mErrorMessage = (TextView) v.findViewById(R.id.error_message);
-        //@formatter:on
-
-        return v;
+        final View view = inflater.inflate(R.layout.image_detail_fragment, container, false);
+        ButterKnife.inject(this, view);
+        return view;
     }
 
     @Override
@@ -398,9 +402,9 @@ public abstract class ImageViewerFragment extends SherlockFragment {
                 mImage != null &&
                 mImage.getPermalink().equals(intent.getStringExtra(Consts.EXTRA_PERMALINK))) {
 
-                if (mVotes != null) {
+                if (mPostVotes != null) {
                     Log.i(TAG, "Updating score to " + intent.getIntExtra(Consts.EXTRA_SCORE, 0));
-                    mVotes.setText("" + intent.getIntExtra(Consts.EXTRA_SCORE, 0));
+                    mPostVotes.setText("" + intent.getIntExtra(Consts.EXTRA_SCORE, 0));
                 }
             }
         }

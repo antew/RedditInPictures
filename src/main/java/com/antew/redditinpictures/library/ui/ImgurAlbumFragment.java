@@ -19,7 +19,6 @@ package com.antew.redditinpictures.library.ui;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
-import android.widget.TextView;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.Image;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.logging.Log;
@@ -37,7 +36,6 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
     /**
      * Factory method to generate a new instance of the fragment given an {@link ImgurImage}
      *
-     * @param postData The post to load
      * @return A new instance of ImageDetailFragment with imageNum extras
      */
     public static ImgurAlbumFragment newInstance(ImgurImage image) {
@@ -77,17 +75,12 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
 
     @Override
     public void populatePostData(View v) {
-        // Normally has the title of the Reddit post
-        TextView postCaption = (TextView) v.findViewById(R.id.post_title);
-
         // Normally has the details of the reddit post (e.g.
         // "Android * 120 Comments * monkeyonatypewriter")
-        TextView postInformation = (TextView) v.findViewById(R.id.post_information);
-        postInformation.setTextSize(14);
+        mPostInformation.setTextSize(14);
 
         // Hide the number of votes
-        TextView votes = (TextView) v.findViewById(R.id.post_votes);
-        votes.setVisibility(View.GONE);
+        mPostVotes.setVisibility(View.GONE);
 
         Image image = mImage.getImage();
         boolean hasTitle = hasTitle();
@@ -96,16 +89,16 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         if (hasTitle || hasCaption) {
             if (hasTitle) {
                 Log.i(TAG, "Title - " + image.getTitle());
-                postCaption.setText(Html.fromHtml(image.getTitle()));
+                mPostTitle.setText(Html.fromHtml(image.getTitle()));
             } else {
-                postCaption.setVisibility(View.GONE);
+                mPostTitle.setVisibility(View.GONE);
             }
 
             if (hasCaption) {
                 Log.i(TAG, "Caption - " + image.getCaption());
-                postInformation.setText(Html.fromHtml(image.getCaption()));
+                mPostInformation.setText(Html.fromHtml(image.getCaption()));
             } else {
-                postInformation.setVisibility(View.GONE);
+                mPostInformation.setVisibility(View.GONE);
             }
         } else {
             v.setVisibility(View.GONE);
