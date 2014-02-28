@@ -47,6 +47,9 @@ import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 public class ImageGridFragment extends SherlockFragment implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, ScrollPosReadable {
     public static final String   TAG                = "ImageGridFragment";
     private static final String  IMAGE_CACHE_DIR    = "thumbs";
@@ -60,11 +63,15 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     private TextView             mNoImages;
     private RedditDataProvider   mRedditDataProvider;
     private MenuItem             mLoginMenuItem;
-    private GridView             mGridView;
+
+    @InjectView(R.id.gridView)
+    protected GridView           mGridView;
+
     /**
      * Empty constructor as per the Fragment documentation
      */
-    public ImageGridFragment() {}
+    public ImageGridFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -138,7 +145,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.image_grid_fragment, container, false);
-        mGridView = (GridView) v.findViewById(R.id.gridView);
+        ButterKnife.inject(this, v);
         mNoImages = (TextView) v.findViewById(R.id.no_images);
         mProgress = (ProgressBar) v.findViewById(R.id.progress);
         setUpGridView(mGridView);
