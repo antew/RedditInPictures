@@ -3,11 +3,15 @@ package com.antew.redditinpictures.sqlite;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.antew.redditinpictures.library.utils.Ln;
+
+import java.lang.reflect.Field;
+
 public class RedditContract {
 
     private RedditContract() {};
 
-    public static final String              CONTENT_AUTHORITY = "com.antew.redditinpictures";
+    public static final String              CONTENT_AUTHORITY = getAuthority();
     public static final int                 BASE              = 1;
     public static final int                 REDDIT            = 100;
     public static final int                 REDDIT_ID         = 101;
@@ -28,6 +32,28 @@ public class RedditContract {
     public static final String              PATH_SUBREDDITS   = "subreddits";
     public static final String              PATH_LOGIN        = "login";
 
+    private static String getAuthority() {
+        String authority = "com.antew.redditinpictures";
+
+        try {
+            ClassLoader loader = RedditContract.class.getClassLoader();
+
+            Class<?> clz = loader.loadClass("com.antew.redditinpictures.ContentProviderAuthority");
+            Field declaredField = clz.getDeclaredField("CONTENT_AUTHORITY");
+
+            authority = declaredField.get(null).toString();
+        } catch (ClassNotFoundException e) {
+            Ln.e("Error initializing content authority to: " + authority);
+        } catch (NoSuchFieldException e) {
+            Ln.e("Error initializing content authority to: " + authority);
+        } catch (IllegalArgumentException e) {
+            Ln.e("Error initializing content authority to: " + authority);
+        } catch (IllegalAccessException e) {
+            Ln.e("Error initializing content authority to: " + authority);
+        }
+
+        return authority;
+    }
     public interface RedditDataColumns {
         String MODHASH = "modhash";
         String AFTER   = "after";
