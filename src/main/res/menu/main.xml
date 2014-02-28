@@ -32,7 +32,7 @@
 
     <item
         android:id="@+id/refresh_all"
-        android:icon="@drawable/ic_action_refresh"
+        android:icon="@drawable/ic_action_reload_dark"
         android:showAsAction="always"
         android:title="Refresh" />
 
