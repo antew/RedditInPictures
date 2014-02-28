@@ -27,6 +27,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.adapter.ImageListCursorAdapter;
 import com.antew.redditinpictures.library.enums.ImageSize;
@@ -45,18 +46,17 @@ import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class ImageListFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<Cursor>, ScrollPosReadable {
-    public static final  String TAG             = "ImageListFragment";
+    public static final String TAG = "ImageListFragment";
     private static final String IMAGE_CACHE_DIR = "thumbs";
     protected ImageListCursorAdapter mAdapter;
-    private   ThumbnailInfo          mThumbnailInfo;
-    private   ImageFetcher           mImageFetcher;
-    private   String                 mAfter;
+    private ThumbnailInfo mThumbnailInfo;
+    private String mAfter;
     private boolean mRequestInProgress = false;
-    private boolean mFirstRequest      = true;
-    private TextView           mNoImages;
+    private boolean mFirstRequest = true;
+    private TextView mNoImages;
     private RedditDataProvider mRedditDataProvider;
-    private MenuItem           mLoginMenuItem;
-    private ListView           mImageListView;
+    private MenuItem mLoginMenuItem;
+    private ListView mImageListView;
 
     /**
      * Empty constructor as per the Fragment documentation
@@ -71,7 +71,6 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
         setHasOptionsMenu(true);
 
         mThumbnailInfo = ThumbnailInfo.getThumbnailInfo(getResources());
-        initializeImageFetcher();
 
         // Initialize the adapter to null, the adapter will be populated in onLoadFinished
         mAdapter = new ImageListCursorAdapter(getActivity(), null);
@@ -79,24 +78,10 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
 
     }
 
-    private void initializeImageFetcher() {
-        // The ImageFetcher takes care of loading images into our ImageView children asynchronously
-        mImageFetcher = new SizeAwareImageFetcher(getActivity(), mThumbnailInfo.getSize(), ImageSize.SMALL_SQUARE);
-        mImageFetcher.setLoadingImage(R.drawable.empty_photo);
-        mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), getImageCache());
-    }
-
     private ImageCache.ImageCacheParams getImageCache() {
         ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(getActivity(), IMAGE_CACHE_DIR);
         cacheParams.setMemCacheSizePercent(getActivity(), Consts.IMAGE_CACHE_SIZE);
         return cacheParams;
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        if (mImageFetcher != null)
-            mImageFetcher.clearCache();
     }
 
     @Override
@@ -148,12 +133,7 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
         return new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int scrollState) {
-                // Pause fetcher to ensure smoother scrolling when flinging
-                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
-                    mImageFetcher.setPauseWork(true);
-                } else {
-                    mImageFetcher.setPauseWork(false);
-                }
+
             }
 
             @Override
@@ -171,21 +151,12 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
     @Override
     public void onResume() {
         super.onResume();
-        mImageFetcher.setExitTasksEarly(false);
         mAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mImageFetcher.setExitTasksEarly(true);
-        mImageFetcher.flushCache();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mImageFetcher.closeCache();
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mRemoveNsfwImages);
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mHttpRequestComplete);
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mSubredditSelected);
@@ -319,12 +290,20 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
                         RedditContract.Posts.DEFAULT_SORT);    // sort
 
             case Consts.LOADER_POSTS:
+                // If the user doesn't want to see NSFW images, filter them out. Otherwise do nothing.
+                String selection = null;
+                String[] selectionArgs = null;
+
+                if (!SharedPreferencesHelper.getShowNsfwImages(getActivity())) {
+                    selection = RedditContract.PostColumns.OVER_18 + " = ?";
+                    selectionArgs = new String[] {"0"};
+                }
                 return new CursorLoader(getActivity(),
-                        RedditContract.Posts.CONTENT_URI,         // uri
-                        RedditContract.Posts.LISTVIEW_PROJECTION, // projection
-                        null,                                     // selection
-                        null,                                     // selectionArgs[]
-                        RedditContract.RedditData.DEFAULT_SORT);  // sort
+                        RedditContract.Posts.CONTENT_URI,        // uri
+                        RedditContract.Posts.LISTVIEW_PROJECTION,// projection
+                        selection,                               // selection
+                        selectionArgs,                           // selectionArgs[]
+                        RedditContract.RedditData.DEFAULT_SORT); // sort
             //@formatter:on
         }
 
