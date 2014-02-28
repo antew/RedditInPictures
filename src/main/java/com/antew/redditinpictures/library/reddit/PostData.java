@@ -52,7 +52,7 @@ public class PostData implements Parcelable, ContentValuesOperation {
      * Leaving media commented out for now. On some subreddits it seems to return an object, but on
      * others it returns a string. Here is an example of it returning a string from the "funny"
      * subreddit.
-     * 
+     *
      * { "data" : { "approved_by" : null, "author" : "AlejandroTheGreat", "author_flair_css_class" :
      * null, "author_flair_text" : null, "banned_by" : null, "clicked" : false, "created" :
      * 1246982492.0, "created_utc" : 1246982492.0, "domain" : "youtube.com", "downs" : 925, "edited"
@@ -85,7 +85,7 @@ public class PostData implements Parcelable, ContentValuesOperation {
     public String getTitle()                  { return title; }
     public int getNum_comments()              { return num_comments; }
     public int getScore()                     { return score; }
-    public void setScore(int score)           { this.score = score; } 
+    public void setScore(int score)           { this.score = score; }
     public String getApproved_by()            { return approved_by; }
     public boolean isOver_18()                { return over_18; }
     public boolean isHidden()                 { return hidden; }
@@ -104,7 +104,7 @@ public class PostData implements Parcelable, ContentValuesOperation {
     public String getLink_flair_text()        { return link_flair_text; }
   //public Media getMedia()                   { return media; }
     public int getNum_reports()               { return num_reports; }
-    public int getUps()                       { return ups; } 
+    public int getUps()                       { return ups; }
     public Vote getVote()                     { return likes; }
     public void setVote(Vote vote)            { this.likes = vote; }
     public void setDecodedUrl(String url)     { this.decoded_url = url; }
@@ -227,8 +227,8 @@ public class PostData implements Parcelable, ContentValuesOperation {
             public PostData[] newArray(int size) {
                 return new PostData[size];
             }
-            
-        
+
+
     };
 
     public void setDomain(String domain)                                 { this.domain = domain; }
@@ -315,6 +315,7 @@ public class PostData implements Parcelable, ContentValuesOperation {
         postData.author       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR));
         postData.likes        = Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE)));
         postData.name         = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME));
+        postData.over_18      = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1;
         //@formatter:off
         return postData;
     }

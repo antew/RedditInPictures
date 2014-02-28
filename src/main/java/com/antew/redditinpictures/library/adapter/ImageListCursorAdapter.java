@@ -108,18 +108,33 @@ public class ImageListCursorAdapter extends CursorAdapter {
             }
         }
 
-        Picasso.with(mContext).load(url).placeholder(R.drawable.loading_spinner_48).error(
-            R.drawable.empty_photo).into(holder.imageView);
+        Picasso.with(mContext)
+            .load(url)
+            .placeholder(R.drawable.loading_spinner_48)
+            .error(R.drawable.empty_photo)
+            .into(holder.imageView);
 
         String separator = " " + "\u2022" + " ";
         String titleText =
             postData.getTitle() + " <font color='#BEBEBE'>(" + postData.getDomain() + ")</font>";
         holder.postTitle.setText(Html.fromHtml(titleText));
-        holder.postInformation.setText(postData.getSubreddit()
+        String postInformation = "";
+
+        //If we have a NSFW image.
+        if (postData.isOver_18()) {
+            postInformation = "<font color='#AC3939'>"
+                + mContext.getString(R.string.nsfw)
+                + "</font>"
+                + separator;
+        }
+
+        postInformation += postData.getSubreddit()
             + separator
             + postData.getNum_comments()
             + " "
-            + mContext.getString(R.string.comments));
+            + mContext.getString(R.string.comments);
+
+        holder.postInformation.setText(Html.fromHtml(postInformation));
         holder.postVotes.setText("" + postData.getScore());
 
         if (postData.getVote() == Vote.UP) {
