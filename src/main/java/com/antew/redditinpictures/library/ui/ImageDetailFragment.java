@@ -40,7 +40,7 @@ public class ImageDetailFragment extends ImageViewerFragment {
     /**
      * Factory method to generate a new instance of the fragment given an image number.
      * 
-     * @param postData
+     * @param image
      *            The post to load
      * @return A new instance of ImageDetailFragment with imageNum extras
      */
@@ -61,7 +61,7 @@ public class ImageDetailFragment extends ImageViewerFragment {
 
     /**
      * Populate image using a url from extras, use the convenience factory method
-     * {@link ImageDetailFragment#newInstance(String)} to create this fragment.
+     * {@link ImageDetailFragment#newInstance(com.antew.redditinpictures.library.reddit.PostData)} to create this fragment.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
