@@ -24,10 +24,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.GridView;
 import android.widget.ImageView;
-
-import com.antew.redditinpictures.library.R;
 import com.antew.redditinpictures.library.ui.ImageGridFragment;
-import com.antew.redditinpictures.library.utils.ImageFetcher;
+import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.squareup.picasso.Picasso;
 
@@ -42,22 +40,18 @@ public class ImageCursorAdapter extends CursorAdapter {
     private int                   mItemHeight = 0;
     private int                   mNumColumns = 0;
     private GridView.LayoutParams mImageViewLayoutParams;
-    private ImageFetcher          mImageFetcher;
     private Cursor                mCursor;
 
     /**
      * 
      * @param context
      *            The context
-     * @param imageFetcher
-     *            The image fetcher (currently using a {@link com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher}
      * @param cursor
      *            Cursor to a database containing PostData information
      */
-    public ImageCursorAdapter(Context context, ImageFetcher imageFetcher, Cursor cursor) {
+    public ImageCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
         mContext = context;
-        mImageFetcher = imageFetcher;
         mCursor = cursor;
         mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
@@ -86,7 +80,6 @@ public class ImageCursorAdapter extends CursorAdapter {
         }
         mItemHeight = height;
         mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, mItemHeight);
-        mImageFetcher.setImageSize(height);
         notifyDataSetChanged();
     }
 

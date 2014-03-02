@@ -12,7 +12,7 @@
         android:visibility="gone" />
 
     <ListView
-        android:id="@android:id/list"
+        android:id="@+id/image_list"
         style="@style/PhotoGridLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
