@@ -276,15 +276,13 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-
-
         // If the user is logged in, update the Logout menu item to "Log out <username>"
         if (RedditLoginInformation.isLoggedIn()) {
             mLoginMenuItem.setTitle(getString(R.string.log_out_) + RedditLoginInformation.getUsername());
-            mLoginMenuItem.setIcon(R.drawable.ic_action_logout);
+            mLoginMenuItem.setIcon(R.drawable.ic_action_exit_dark);
         } else {
             mLoginMenuItem.setTitle(R.string.log_on);
-            mLoginMenuItem.setIcon(R.drawable.ic_action_login);
+            mLoginMenuItem.setIcon(R.drawable.ic_action_key_dark);
         }
 
         return true;
@@ -402,18 +400,17 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         MenuItem mActiveViewMenuItem = menu.findItem(R.id.change_view);
         switch (mActiveViewType) {
             case LIST:
-                mActiveViewMenuItem.setIcon(R.drawable.ic_action_view_as_grid);
+                mActiveViewMenuItem.setIcon(R.drawable.ic_action_tiles_small_dark);
                 break;
 
             case GRID:
-                mActiveViewMenuItem.setIcon(R.drawable.ic_action_view_as_list);
+                mActiveViewMenuItem.setIcon(R.drawable.ic_action_list_2_dark);
                 break;
 
             case VIEWPAGER:
 
                 break;
         }
-
         return true;
     }
 

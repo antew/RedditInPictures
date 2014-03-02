@@ -115,10 +115,10 @@ public class ImageListFragment extends SherlockListFragment implements LoaderMan
         // If the user is logged in, update the Logout menu item to "Log out <username>"
         if (RedditLoginInformation.isLoggedIn()) {
             mLoginMenuItem.setTitle(getString(R.string.log_out_) + RedditLoginInformation.getUsername());
-            mLoginMenuItem.setIcon(R.drawable.ic_action_logout);
+            mLoginMenuItem.setIcon(R.drawable.ic_action_exit_dark);
         } else {
             mLoginMenuItem.setTitle(R.string.log_on);
-            mLoginMenuItem.setIcon(R.drawable.ic_action_login);
+            mLoginMenuItem.setIcon(R.drawable.ic_action_key_dark);
         }
     }
 

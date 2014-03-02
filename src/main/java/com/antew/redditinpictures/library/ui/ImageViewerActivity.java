@@ -424,7 +424,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     public void toggleViewPagerLock() {
         if (mAdapter != null && mPager != null) {
             mPager.toggleSwipingEnabled();
-            lockViewPagerItem.setIcon(mPager.isSwipingEnabled() ? R.drawable.ic_action_unlock : R.drawable.ic_action_lock_orange);
+            lockViewPagerItem.setIcon(mPager.isSwipingEnabled() ? R.drawable.ic_action_lock_open_dark : R.drawable.ic_action_lock_closed_dark);
             mCrouton.setText(mPager.isSwipingEnabled() ? getString(R.string.swiping_enabled) : getString(R.string.swiping_disabled));
             FadeInThenOut.fadeInThenOut(mCrouton, 1500);
         }
