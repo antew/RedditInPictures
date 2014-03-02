@@ -3,13 +3,13 @@ package com.antew.redditinpictures.library.widgets;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Movie;
+import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
-import com.antew.redditinpictures.library.utils.AsyncTask;
 
 public class GifView extends View {
     public static final String TAG                     = GifView.class.getSimpleName();

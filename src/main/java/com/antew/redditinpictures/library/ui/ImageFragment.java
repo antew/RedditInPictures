@@ -28,9 +28,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
-import com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.interfaces.ScrollPosReadable;
 import com.antew.redditinpictures.library.logging.Log;
@@ -38,8 +36,6 @@ import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.service.RequestCode;
 import com.antew.redditinpictures.library.utils.Consts;
-import com.antew.redditinpictures.library.utils.ImageCache;
-import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
@@ -56,7 +52,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     public static final  String TAG             = "ImageFragment";
     private static final String IMAGE_CACHE_DIR = "thumbs";
     protected V                  mAdapter;
-    protected ImageFetcher       mImageFetcher;
     protected ThumbnailInfo      mThumbnailInfo;
     protected RedditDataProvider mRedditDataProvider;
     private   String             mAfter;
@@ -126,29 +121,9 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
         setHasOptionsMenu(true);
 
         mThumbnailInfo = ThumbnailInfo.getThumbnailInfo(getResources());
-        initializeImageFetcher();
 
         // Initialize the adapter to null, the adapter will be populated in onLoadFinished
         mAdapter = getNewAdapter();
-    }
-
-    private void initializeImageFetcher() {
-        // The ImageFetcher takes care of loading images into our ImageView children asynchronously
-        mImageFetcher = new SizeAwareImageFetcher(getActivity(), mThumbnailInfo.getSize(), ImageSize.SMALL_SQUARE);
-        mImageFetcher.setLoadingImage(R.drawable.empty_photo);
-        mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), getImageCache());
-    }
-
-    private ImageCache.ImageCacheParams getImageCache() {
-        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(getActivity(), IMAGE_CACHE_DIR);
-        cacheParams.setMemCacheSizePercent(getActivity(), Consts.IMAGE_CACHE_SIZE);
-        return cacheParams;
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        if (mImageFetcher != null) mImageFetcher.clearCache();
     }
 
     @Override
@@ -199,21 +174,17 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     @Override
     public void onResume() {
         super.onResume();
-        mImageFetcher.setExitTasksEarly(false);
         mAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mImageFetcher.setExitTasksEarly(true);
-        mImageFetcher.flushCache();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mImageFetcher.closeCache();
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mRemoveNsfwImages);
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mHttpRequestComplete);
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mSubredditSelected);

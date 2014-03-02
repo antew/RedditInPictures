@@ -59,10 +59,11 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
             @Override
             public void onScrollStateChanged(AbsListView absListView, int scrollState) {
                 // Pause fetcher to ensure smoother scrolling when flinging
+                // TODO: Enable this with Picasso https://github.com/square/picasso/issues/248
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
-                    mImageFetcher.setPauseWork(true);
+                    //mImageFetcher.setPauseWork(true);
                 } else {
-                    mImageFetcher.setPauseWork(false);
+                    //mImageFetcher.setPauseWork(false);
                 }
             }
 

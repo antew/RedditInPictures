@@ -19,29 +19,24 @@ import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.antew.redditinpictures.pro.BuildConfig;;
-import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.anim.FadeInThenOut;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
-import com.antew.redditinpictures.library.enums.ImageSize;
-import com.antew.redditinpictures.library.imgur.SizeAwareImageFetcher;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.utils.Consts;
-import com.antew.redditinpictures.library.utils.ImageCache;
-import com.antew.redditinpictures.library.utils.ImageCache.ImageCacheParams;
-import com.antew.redditinpictures.library.utils.ImageFetcher;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.library.widgets.CustomViewPager;
-
+import com.antew.redditinpictures.pro.BuildConfig;
+import com.antew.redditinpictures.pro.R;
 import java.util.ArrayList;
 import java.util.List;
+
+;
 
 public abstract class ImageViewerActivity extends BaseFragmentActivity implements SaveImageDialogListener, SystemUiStateProvider {
 
@@ -52,11 +47,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * The Adapter for the ViewPager
      */
     protected FragmentStatePagerAdapter  mAdapter;
-
-    /**
-     * The ImageFetcher used to retrieve images asynchronously
-     */
-    protected ImageFetcher               mImageFetcher;
 
     /**
      * The ViewPager which holds the fragments
@@ -106,7 +96,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
         registerLocalBroadcastReceivers();
         getExtras();
-        initializeImageFetcher();
         initializeAdapter();
         initializeActionBar();
         initializeViewPager();
@@ -114,6 +103,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         invalidateOptionsMenu();
     }
     
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void initializeViewPager() {
         moveViewPagerToSelectedIndex();
         // Hide and show the ActionBar as the visibility changes
@@ -158,26 +148,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
             mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
         }
-    }
-    
-    /**
-     * The ImageFetcher takes care of loading images into our ImageView children asynchronously
-     */
-    private void initializeImageFetcher() {
-        mImageFetcher = new SizeAwareImageFetcher(this, getImageWidthForResizing(), ImageSize.ORIGINAL);
-        mImageFetcher.addImageCache(getSupportFragmentManager(), getImageCacheParams());
-        mImageFetcher.setImageFadeIn(false);
-    }
-    
-    /**
-     * Get the directory and image cache size to use with the {@link ImageFetcher}
-     * @return ImageCacheParams to use with the {@link ImageFetcher}
-     */
-    private ImageCacheParams getImageCacheParams() {
-        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
-        cacheParams.setMemCacheSizePercent(this, Consts.IMAGE_CACHE_SIZE); // Set memory cache to 25% of mem class
-        
-        return cacheParams;
     }
     
     /**
@@ -308,22 +278,18 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     public void onResume() {
         Log.i(TAG, "onResume");
         super.onResume();
-        mImageFetcher.setExitTasksEarly(false);
     }
 
     @Override
     protected void onPause() {
         Log.i(TAG, "onPause");
         super.onPause();
-        mImageFetcher.setExitTasksEarly(true);
-        mImageFetcher.flushCache();
     }
 
     @Override
     protected void onDestroy() {
         Log.i(TAG, "onDestroy");
         super.onDestroy();
-        mImageFetcher.closeCache();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mToggleFullscreenReceiver);
     }
 
@@ -384,7 +350,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * The default action is to pop up a dialog prompting for a filename to save the image as
      * 
      * @see ImageViewerActivity#getFilenameForSave()
-     * @see SaveImageDialogFragment#onFinishSaveImageDialog
+     * @see SaveImageDialogFragment
      * 
      */
     public void handleSaveImage() {
@@ -409,17 +375,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     }
 
     /**
-     * Called by the ViewPager child fragments to load images via the one ImageFetcher
-     */
-    public ImageFetcher getImageFetcher() {
-        return mImageFetcher;
-    }
-
-    /**
      * Toggle whether swiping is enabled in the ViewPager.
      * 
-     * @param v
-     *            The view
      */
     public void toggleViewPagerLock() {
         if (mAdapter != null && mPager != null) {
@@ -430,7 +387,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         }
     }
 
-    public void goFullscreen() {
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public void goFullscreen() {
         Log.i(TAG, "goFullscreen");
         if (Util.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
@@ -439,7 +396,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         }
     }
 
-    public void exitFullscreen() {
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public void exitFullscreen() {
         Log.i(TAG, "exitFullscreen");
         if (Util.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
@@ -476,7 +433,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     };
     //@formatter:on
 
-    @Override
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB) @Override
     public boolean isSystemUiVisible() {
         if (Util.hasHoneycomb()) {
             final int vis = mPager.getSystemUiVisibility();

@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -52,10 +53,8 @@ import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.PostData;
-import com.antew.redditinpictures.library.utils.AsyncTask;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageUtil;
-import com.antew.redditinpictures.library.utils.ImageWorker;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Callback;
@@ -75,7 +74,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     protected PostData mImage;
 
     @InjectView(R.id.iv_imageView)
-    ImageView mImageView;
+    protected ImageView mImageView;
     @InjectView(R.id.pb_progress)
     ProgressBar mProgress;
     @InjectView(R.id.rl_post_information_wrapper)
@@ -129,8 +128,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     protected abstract boolean shouldShowPostInformation();
 
     /**
-     * Populate image using a url from extras, use the convenience factory method
-     * {@link ImageViewerFragment#newInstance(String)} to create this fragment.
+     * Populate image using a url from extras.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -250,7 +248,6 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             .unregisterReceiver(mToggleFullscreenIntent);
 
         if (mImageView != null) {
-            ImageWorker.cancelWork(mImageView);
             mImageView.setImageDrawable(null);
         }
 
@@ -289,7 +286,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
      * The first time the user touches the screen we save the X and Y coordinates.
      * If we receive a {@link MotionEvent#ACTION_DOWN} event we compare the previous
      * X and Y coordinates to the saved coordinates, if they are greater than {@link
-     * MOVE_THRESHOLD}
+     * #MOVE_THRESHOLD}
      * we prevent the toggle from windowed mode to fullscreen mode or vice versa, the idea
      * being that the user is either dragging the image or using pinch-to-zoom.
      *
@@ -345,7 +342,8 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         if (ImageUtil.isGif(mResolvedImageUrl)) {
             loadGifInWebView(mResolvedImageUrl);
         } else {
-            Picasso.with(getActivity()).load(mResolvedImageUrl).into(mImageView, new Callback() {
+
+            Picasso.with(getActivity()).load(mResolvedImageUrl).resize(mImageView.getWidth(), mImageView.getHeight()).centerInside().into(mImageView, new Callback() {
                 @Override
                 public void onSuccess() {
                     if (mProgress != null) mProgress.setVisibility(View.GONE);
@@ -475,14 +473,6 @@ public abstract class ImageViewerFragment extends SherlockFragment {
             }
 
             loadImage(image);
-        }
-
-        @Override
-        protected void onCancelled(Image image) {
-            super.onCancelled(image);
-            synchronized (mPauseWorkLock) {
-                mPauseWorkLock.notifyAll();
-            }
         }
     }
 }
