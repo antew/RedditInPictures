@@ -19,6 +19,12 @@ android {
         targetSdkVersion 19
     }
 
+    buildTypes {
+        debug {
+            packageNameSuffix = ".debug"
+        }
+    }
+
     signingConfigs {
         prod {
             storeFile file("production.keystore")
@@ -31,13 +37,13 @@ android {
     productFlavors {
         free {
             packageName "com.antew.redditinpictures"
-            versionCode 2
+            versionCode 7
             signingConfig signingConfigs.prod
         }
 
         pro {
             packageName "com.antew.redditinpictures.pro"
-            versionCode 3
+            versionCode 4
             signingConfig signingConfigs.prod
         }
     }
