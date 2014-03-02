@@ -342,8 +342,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         if (ImageUtil.isGif(mResolvedImageUrl)) {
             loadGifInWebView(mResolvedImageUrl);
         } else {
-
-            Picasso.with(getActivity()).load(mResolvedImageUrl).resize(mImageView.getWidth(), mImageView.getHeight()).centerInside().into(mImageView, new Callback() {
+            Picasso.with(getActivity()).load(mResolvedImageUrl).resize(mImageView.getWidth(), mImageView.getHeight()).centerInside().placeholder(R.drawable.loading_spinner_76).into(mImageView, new Callback() {
                 @Override
                 public void onSuccess() {
                     if (mProgress != null) mProgress.setVisibility(View.GONE);
