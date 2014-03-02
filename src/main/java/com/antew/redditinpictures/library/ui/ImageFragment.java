@@ -193,7 +193,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN) @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
         final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
         i.putExtra(Consts.EXTRA_IMAGE, (int) id);
         Bundle b = new Bundle();
