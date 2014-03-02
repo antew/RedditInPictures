@@ -45,11 +45,13 @@ android {
     sourceSets.free {
         res.srcDirs = ['src/free/res']
         java.srcDirs = ['src/free/java']
+        manifest.srcFile 'src/free/AndroidManifest.xml'
     }
 
     sourceSets.pro {
-        res.srcDirs = ['res']
+        res.srcDirs = ['src/pro/res']
         java.srcDirs = ['src/pro/java']
+        manifest.srcFile 'src/pro/AndroidManifest.xml'
     }
 }
 
