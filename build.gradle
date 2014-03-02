@@ -17,18 +17,28 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
+    }
 
+    signingConfigs {
+        prod {
+            storeFile file("production.keystore")
+            storePassword "PASSWORD_GOES_HERE"
+            keyAlias "ALIAS_GOES_HERE"
+            keyPassword "PASSWORD_GOES_HERE"
+        }
     }
 
     productFlavors {
         free {
             packageName "com.antew.redditinpictures"
             versionCode 2
+            signingConfig signingConfigs.prod
         }
 
         pro {
             packageName "com.antew.redditinpictures.pro"
             versionCode 3
+            signingConfig signingConfigs.prod
         }
     }
 

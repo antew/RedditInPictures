@@ -19,6 +19,7 @@ release.properties
 
 # Gradle
 .gradle
+production.keystore
 
 #IntelliJ
 .idea
