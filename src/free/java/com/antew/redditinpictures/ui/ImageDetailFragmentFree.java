@@ -28,7 +28,7 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     /**
      * Factory method to generate a new instance of the fragment given an image number.
      * 
-     * @param postData
+     * @param image
      *            The post to load
      * @return A new instance of ImageDetailFragment with imageNum extras
      */
