@@ -429,7 +429,6 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
      * @param newViewType {@link ViewType} to switch to.
      */
     private void changeActiveViewType(ViewType newViewType) {
-        mActiveViewType = ViewType.GRID;
         FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction ft = fm.beginTransaction();
         String oldFragmentTag = null;

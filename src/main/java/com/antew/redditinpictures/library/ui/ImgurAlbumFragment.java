@@ -68,7 +68,6 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         } else {
             Picasso.with(getActivity())
                 .load(imageUrl)
-                .placeholder(R.drawable.empty_photo)
                 .into(mImageView);
         }
     }
