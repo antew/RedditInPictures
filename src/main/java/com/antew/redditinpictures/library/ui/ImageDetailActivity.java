@@ -366,10 +366,10 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         Log.i(TAG, "onCreateLoader");
         switch (id) {
             case Consts.LOADER_REDDIT:
-                return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, null, null, null, RedditContract.Posts.DEFAULT_SORT);
+                return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, null, null, null, RedditContract.RedditData.DEFAULT_SORT);
 
             case Consts.LOADER_POSTS:
-                return new CursorLoader(this, RedditContract.Posts.CONTENT_URI, null, null, null, RedditContract.RedditData.DEFAULT_SORT);
+                return new CursorLoader(this, RedditContract.Posts.CONTENT_URI, null, null, null, RedditContract.Posts.DEFAULT_SORT);
         }
 
         return null;
