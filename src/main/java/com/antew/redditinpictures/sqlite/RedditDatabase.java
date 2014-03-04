@@ -51,8 +51,8 @@ public class RedditDatabase extends SQLiteOpenHelper {
                     + SubredditColumns.HEADER_TITLE       + " TEXT, "
                     + SubredditColumns.SUBREDDIT_ID       + " TEXT, "
                     + SubredditColumns.NAME               + " TEXT, "
-                    + SubredditColumns.PRIORITY           + " INTEGER DEFAULT 0"
-                    + SubredditColumns.USER_IS_SUBSCRIBER + " INTEGER DEFAULT 0, "
+                    + SubredditColumns.PRIORITY           + " INTEGER DEFAULT 0,"
+                    + SubredditColumns.USER_IS_SUBSCRIBER + " INTEGER DEFAULT 0,"
                     + " );"; 
             
             String POSTDATA = "CREATE TABLE " + Tables.POSTDATA + 
