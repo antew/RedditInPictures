@@ -50,21 +50,15 @@ import java.util.regex.Pattern;
  */
 public class ImageListCursorAdapter extends CursorAdapter {
     public static final String TAG = ImageListCursorAdapter.class.getSimpleName();
-    private int mItemHeight = 0;
-    private int mNumColumns = 0;
-    private GridView.LayoutParams mImageViewLayoutParams;
-    private Cursor mCursor;
     private LayoutInflater mInflater;
     private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
 
     /**
      * @param context The context
-     * @param cursor Cursor to a database containing PostData information
      */
-    public ImageListCursorAdapter(Context context, Cursor cursor) {
-        super(context, cursor, 0);
+    public ImageListCursorAdapter(Context context) {
+        super(context, null, 0);
         mContext = context;
-        mCursor = cursor;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -72,11 +66,6 @@ public class ImageListCursorAdapter extends CursorAdapter {
     public Object getItem(int position) {
         mCursor.moveToPosition(position);
         return mCursor;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
     }
 
     @Override

@@ -40,19 +40,15 @@ public class ImageCursorAdapter extends CursorAdapter {
     private int                   mItemHeight = 0;
     private int                   mNumColumns = 0;
     private GridView.LayoutParams mImageViewLayoutParams;
-    private Cursor                mCursor;
 
     /**
      * 
      * @param context
      *            The context
-     * @param cursor
-     *            Cursor to a database containing PostData information
      */
-    public ImageCursorAdapter(Context context, Cursor cursor) {
-        super(context, cursor, 0);
+    public ImageCursorAdapter(Context context) {
+        super(context, null, 0);
         mContext = context;
-        mCursor = cursor;
         mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
     }
@@ -63,16 +59,11 @@ public class ImageCursorAdapter extends CursorAdapter {
         return mCursor;
     }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
     /**
      * Sets the item height. Useful for when we know the column width so the height can be set to
      * match.
      * 
-     * @param height
+     * @param height The height to use for the grid items
      */
     public void setItemHeight(int height) {
         if (height == mItemHeight) {
@@ -87,7 +78,7 @@ public class ImageCursorAdapter extends CursorAdapter {
      * Sets the number of columns, this is currently used in the {@link OnGlobalLayoutListener} in
      * {@link ImageGridFragment}
      * 
-     * @param numColumns
+     * @param numColumns The number of columns in the GridView
      */
     public void setNumColumns(int numColumns) {
         mNumColumns = numColumns;
