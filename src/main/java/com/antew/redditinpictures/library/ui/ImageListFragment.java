@@ -18,6 +18,7 @@ public class ImageListFragment extends ImageFragment<ListView, ImageListCursorAd
     @InjectView(R.id.image_list)
     protected ListView mImageListView;
 
+
     /**
      * Empty constructor as per the Fragment documentation
      */
@@ -75,6 +76,6 @@ public class ImageListFragment extends ImageFragment<ListView, ImageListCursorAd
     }
 
     @Override protected ImageListCursorAdapter getNewAdapter() {
-        return new ImageListCursorAdapter(getActivity(), null);
+        return new ImageListCursorAdapter(getActivity());
     }
 }

@@ -17,7 +17,8 @@ import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapter> {
     public static final  String        TAG            = "ImageGridFragment";
-    private static final QueryCriteria mQueryCriteria = new QueryCriteria(RedditContract.Posts.GRIDVIEW_PROJECTION, RedditContract.Posts.DEFAULT_SORT);
+    private static final QueryCriteria mQueryCriteria =
+        new QueryCriteria(RedditContract.Posts.GRIDVIEW_PROJECTION, RedditContract.Posts.DEFAULT_SORT);
 
     @InjectView(R.id.gridView)
     protected GridView mGridView;
@@ -41,7 +42,7 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
     public void setUpGridView(GridView gridView) {
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(this);
-        gridView.setOnScrollListener(getGridViewOnScrollListener(gridView));
+        gridView.setOnScrollListener(getGridViewOnScrollListener());
         gridView.getViewTreeObserver().addOnGlobalLayoutListener(getGridGlobalLayoutListener(gridView));
     }
 
@@ -54,7 +55,7 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
         }
     }
 
-    private AbsListView.OnScrollListener getGridViewOnScrollListener(final GridView gridView) {
+    private AbsListView.OnScrollListener getGridViewOnScrollListener() {
         return new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int scrollState) {
@@ -122,7 +123,7 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
     }
 
     @Override protected ImageCursorAdapter getNewAdapter() {
-        return new ImageCursorAdapter(getActivity(), null);
+        return new ImageCursorAdapter(getActivity());
     }
 
     public Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
