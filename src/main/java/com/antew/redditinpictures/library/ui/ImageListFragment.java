@@ -67,6 +67,20 @@ public class ImageListFragment extends ImageFragment<ListView, ImageListCursorAd
         return mListScrollListener;
     }
 
+    @Override public void onPause() {
+        if (mImageListView != null) {
+            mListViewSavedInstanceState = mImageListView.onSaveInstanceState();
+        }
+        super.onPause();
+    }
+
+    @Override public void onResume() {
+        if (mImageListView != null && mListViewSavedInstanceState != null) {
+            mImageListView.onRestoreInstanceState(mListViewSavedInstanceState);
+        }
+        super.onResume();
+    }
+
     @Override public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         // Save scroll position, only if we are just fetching more images.
         if (fetchMoreImages) {
