@@ -1,5 +1,6 @@
 package com.antew.redditinpictures.library.service;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -348,7 +349,7 @@ public class RESTService extends IntentService {
         public InputStream getContent() throws IOException, IllegalStateException {
             // the wrapped entity's getContent() decides about repeatability
             InputStream wrappedin = wrappedEntity.getContent();
-            return new GZIPInputStream(wrappedin);
+            return new GZIPInputStream(new BufferedInputStream(wrappedin));
         }
 
         @Override
