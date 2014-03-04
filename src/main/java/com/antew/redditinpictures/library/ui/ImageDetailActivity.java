@@ -405,7 +405,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                 updateDisplay(mPager.getCurrentItem());
                 break;
         }
-        Toast.makeText(this, "Load finished", Toast.LENGTH_SHORT).show();
     }
 
     @Override
