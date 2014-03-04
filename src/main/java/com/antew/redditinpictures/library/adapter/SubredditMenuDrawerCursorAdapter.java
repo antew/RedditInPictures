@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2012 Antew | antewcode@gmail.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.antew.redditinpictures.library.adapter;
 
 import android.content.Context;
@@ -21,53 +6,43 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
+import com.antew.redditinpictures.library.reddit.SubredditData;
+import com.antew.redditinpictures.library.utils.ViewUtils;
 import com.antew.redditinpictures.pro.R;
-import com.antew.redditinpictures.library.enums.Age;
-import com.antew.redditinpictures.library.enums.Category;
-import com.antew.redditinpictures.library.logging.Log;
-import com.antew.redditinpictures.sqlite.RedditContract;
 
 /**
- * This is the Adapter for the drop down in the Action Bar of {@link com.antew.redditinpictures.library.ui.ImageGridActivity}. It displays
+ * This is the Adapter for the drop down in the Action Bar of {@link
+ * com.antew.redditinpictures.library.ui.ImageGridActivity}. It displays
  * the current Subreddit along with the selected Category and Age
  *
  * @author Antew
- *
  */
 public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
 
     private static final String TAG = SubredditMenuDrawerCursorAdapter.class.getSimpleName();
     private LayoutInflater inflater;
-    private Age            age;
-    private Category       category;
     private int mActivePosition = -1;
+    private OnSubredditActionListener mSubredditActionListener;
 
     /**
      * Create a new Adapter for the Subreddit/Category/Age combo
      *
-     * @param context
-     *            The context
-     * @param cursor
-     *            Cursor containing the list of subreddits
-     * @param age
-     *            The {@link com.antew.redditinpictures.library.enums.Age}
-     * @param category
-     *            The {@link com.antew.redditinpictures.library.reddit.RedditUrl#category}
+     * @param context The context
+     * @param cursor Cursor containing the list of subreddits
      */
-    public SubredditMenuDrawerCursorAdapter(Context context, Cursor cursor, Age age, Category category) {
+    public SubredditMenuDrawerCursorAdapter(Context context, Cursor cursor,
+        OnSubredditActionListener subredditActionListener) {
         super(context, cursor, 0);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.age = age;
-        this.category = category;
         this.mCursor = cursor;
-    }
-
-    private static String getSubredditDisplayName(Cursor cursor) {
-        return cursor.getString(cursor.getColumnIndex(RedditContract.SubredditColumns.DISPLAY_NAME));
+        this.mSubredditActionListener = subredditActionListener;
     }
 
     @Override
@@ -75,26 +50,96 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
         return position;
     }
 
-    public String getSubreddit(int position) {
-        Cursor cursor = (Cursor) getItem(position);
-        if (cursor != null)
-            return getSubredditDisplayName(cursor);
-
-        return null;
-    }
-
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ViewHolder holder;
+        final ViewHolder holder;
         if (view != null && view.getTag() != null) {
             holder = (ViewHolder) view.getTag();
+
+            // If we recycled this row, make sure the menu is not shown.
+            holder.back.setVisibility(View.GONE);
         } else {
             holder = new ViewHolder(view);
             view.setTag(holder);
         }
 
-        String subredditDisplayName = getSubredditDisplayName(cursor);
-        holder.subreddit.setText(subredditDisplayName);
+        final SubredditData subredditData = SubredditData.fromProjection(cursor);
+        holder.subreddit.setText(subredditData.getDisplay_name());
+
+        // TODO: Make this less of a worse hack...
+        // If we don't have a name, then we are assuming this a system generated record. So hide all options for it.
+        if (subredditData.getName() == null) {
+            holder.more.setVisibility(View.GONE);
+            holder.back.setVisibility(View.GONE);
+        } else {
+            holder.more.setVisibility(View.VISIBLE);
+            holder.more.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    ViewUtils.toggleVisibility(holder.back);
+                }
+            });
+
+            holder.view.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    if (mSubredditActionListener != null) {
+                        mSubredditActionListener.onAction(subredditData,
+                            OnSubredditActionListener.SubredditAction.View);
+                    }
+                }
+            });
+
+            if (subredditData.getUserIsSubscriber()) {
+                showUnsubscribe(holder, subredditData);
+            } else {
+                showSubscribe(holder, subredditData);
+            }
+
+            holder.info.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    if (mSubredditActionListener != null) {
+                        mSubredditActionListener.onAction(subredditData,
+                            OnSubredditActionListener.SubredditAction.Info);
+                    }
+                }
+            });
+
+            holder.delete.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    if (mSubredditActionListener != null) {
+                        mSubredditActionListener.onAction(subredditData,
+                            OnSubredditActionListener.SubredditAction.Delete);
+                    }
+                }
+            });
+        }
+    }
+
+    private void showSubscribe(final ViewHolder holder, final SubredditData subredditData) {
+        holder.unsubscribe.setVisibility(View.GONE);
+        holder.subscribe.setVisibility(View.VISIBLE);
+        holder.subscribe.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                if (mSubredditActionListener != null) {
+                    mSubredditActionListener.onAction(subredditData,
+                        OnSubredditActionListener.SubredditAction.Subscribe);
+                }
+                showUnsubscribe(holder, subredditData);
+            }
+        });
+    }
+
+    private void showUnsubscribe(final ViewHolder holder, final SubredditData subredditData) {
+        holder.subscribe.setVisibility(View.GONE);
+        holder.unsubscribe.setVisibility(View.VISIBLE);
+        holder.unsubscribe.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                if (mSubredditActionListener != null) {
+                    mSubredditActionListener.onAction(subredditData,
+                        OnSubredditActionListener.SubredditAction.Unsubscribe);
+                }
+                showSubscribe(holder, subredditData);
+            }
+        });
     }
 
     @Override
@@ -108,6 +153,13 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
 
     static class ViewHolder {
         @InjectView(R.id.tv_subreddit) TextView subreddit;
+        @InjectView(R.id.ib_more) ImageButton more;
+        @InjectView(R.id.back) LinearLayout back;
+        @InjectView(R.id.b_view) Button view;
+        @InjectView(R.id.b_subscribe) Button subscribe;
+        @InjectView(R.id.b_unsubscribe) Button unsubscribe;
+        @InjectView(R.id.b_info) Button info;
+        @InjectView(R.id.b_delete) Button delete;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);

@@ -29,6 +29,7 @@
 
     <ListView
         android:id="@+id/lv_subreddits"
+        android:listSelector="@drawable/photogrid_list_selector"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@+id/ll_menudrawer_search" />

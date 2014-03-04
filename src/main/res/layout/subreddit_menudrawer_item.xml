@@ -1,18 +1,102 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:descendantFocusability="blocksDescendants">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tv_subreddit"
-        android:textStyle="bold"
-        android:textAllCaps="true"
-        android:layout_marginLeft="10dp"
-        android:textSize="@dimen/text_size_medium"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/front">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_more_dark"
+            android:background="@android:color/transparent"
+            android:id="@+id/ib_more"
+            android:layout_alignParentRight="true"
+            android:padding="5dp"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/tv_subreddit"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:layout_marginLeft="10dp"
+            android:textSize="@dimen/text_size_medium"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@id/ib_more"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:id="@+id/back"
+        android:visibility="gone"
+        android:background="#1A1A1A">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/b_view"
+            android:drawableTop="@drawable/ic_action_picture_dark"
+            android:text="@string/view"
+            android:background="@android:color/transparent"
+            android:layout_weight=".25"
+            android:textSize="@dimen/text_size_micro"
+            android:gravity="center"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/b_subscribe"
+            android:drawableTop="@drawable/ic_action_tick_dark"
+            android:text="@string/subscribe"
+            android:background="@android:color/transparent"
+            android:layout_weight=".25"
+            android:textSize="@dimen/text_size_micro"
+            android:gravity="center"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/b_unsubscribe"
+            android:drawableTop="@drawable/ic_action_cancel_dark"
+            android:text="@string/unsubscribe"
+            android:background="@android:color/transparent"
+            android:layout_weight=".25"
+            android:textSize="@dimen/text_size_micro"
+            android:gravity="center"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/b_info"
+            android:drawableTop="@drawable/ic_action_info_dark"
+            android:text="@string/info"
+            android:background="@android:color/transparent"
+            android:layout_weight=".25"
+            android:textSize="@dimen/text_size_micro"
+            android:gravity="center"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/b_delete"
+            android:drawableTop="@drawable/ic_action_trash_dark"
+            android:text="@string/delete"
+            android:background="@android:color/transparent"
+            android:layout_weight=".25"
+            android:textSize="@dimen/text_size_micro"
+            android:gravity="center"/>
+    </LinearLayout>
 
 </LinearLayout>

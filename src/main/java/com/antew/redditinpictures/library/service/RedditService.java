@@ -159,9 +159,12 @@ public class RedditService extends RESTService {
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.SUBSCRIBE);
         intent.setData(Uri.parse(REDDIT_SUBSCRIBE_URL));
         intent.putExtra(EXTRA_HTTP_VERB, POST);
-        intent.putExtra("action", action.getAction());
-        intent.putExtra("sr_name", subreddit);
-        intent.putExtra("uh", RedditLoginInformation.getModhash());
+
+        Bundle bundle = new Bundle();
+        bundle.putString("action", action.getAction());
+        bundle.putString("sr", subreddit);
+        bundle.putString("uh", RedditLoginInformation.getModhash());
+        intent.putExtra(EXTRA_PARAMS, bundle);
 
         context.startService(intent);
     }

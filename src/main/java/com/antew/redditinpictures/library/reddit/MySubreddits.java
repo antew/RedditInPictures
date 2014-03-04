@@ -58,6 +58,7 @@ public class MySubreddits implements ContentValuesArrayOperation {
         values.put(RedditContract.Subreddits.SUBREDDIT_ID      , data.getSubscribers());
         values.put(RedditContract.Subreddits.NAME              , data.getName());
         values.put(RedditContract.Subreddits.PRIORITY          , data.getPriority());
+        values.put(RedditContract.Subreddits.USER_IS_SUBSCRIBER, data.getUserIsSubscriber());
         //@formatter:on
 
         return values;
