@@ -13,6 +13,7 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
+import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.SubredditData;
 import com.antew.redditinpictures.library.utils.ViewUtils;
 import com.antew.redditinpictures.pro.R;
@@ -123,7 +124,10 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
                     mSubredditActionListener.onAction(subredditData,
                         OnSubredditActionListener.SubredditAction.Subscribe);
                 }
-                showUnsubscribe(holder, subredditData);
+                // If the user is logged in, make the assumption that the request went through. If the request was bad, it will just show up on the next MySubreddits reload.
+                if (RedditLoginInformation.isLoggedIn()) {
+                    showUnsubscribe(holder, subredditData);
+                }
             }
         });
     }
@@ -137,7 +141,11 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
                     mSubredditActionListener.onAction(subredditData,
                         OnSubredditActionListener.SubredditAction.Unsubscribe);
                 }
-                showSubscribe(holder, subredditData);
+
+                // If the user is logged in, make the assumption that the request went through. If the request was bad, it will just show up on the next MySubreddits reload.
+                if (RedditLoginInformation.isLoggedIn()) {
+                    showSubscribe(holder, subredditData);
+                }
             }
         });
     }

@@ -107,15 +107,28 @@ public class ImageGridActivity extends BaseFragmentActivity
                     loadSubreddit(mSelectedSubreddit);
                     break;
                 case Subscribe:
-                    RedditService.subscribe(ImageGridActivity.this, subredditData.getName());
+                    if (!RedditLoginInformation.isLoggedIn()) {
+                        handleLoginAndLogout();
+                    } else {
+                        RedditService.subscribe(ImageGridActivity.this, subredditData.getName());
+                    }
                     break;
                 case Unsubscribe:
-                    RedditService.unsubscribe(ImageGridActivity.this, subredditData.getName());
+                    if (!RedditLoginInformation.isLoggedIn()) {
+                        handleLoginAndLogout();
+                    } else {
+                        RedditService.unsubscribe(ImageGridActivity.this, subredditData.getName());
+                    }
                     break;
                 case Delete:
-                    RedditService.unsubscribe(ImageGridActivity.this, subredditData.getName());
+                    // If the user isn't logged in we don't care about subscribing/unsubscribing
+                    if (!RedditLoginInformation.isLoggedIn()) {
+                        RedditService.unsubscribe(ImageGridActivity.this, subredditData.getName());
+                    }
                     ContentResolver resolver = ImageGridActivity.this.getContentResolver();
-                    resolver.delete(RedditContract.Subreddits.CONTENT_URI, RedditContract.SubredditColumns.NAME + " = ?", new String[] { subredditData.getName() });
+                    resolver.delete(RedditContract.Subreddits.CONTENT_URI,
+                        RedditContract.SubredditColumns.NAME + " = ?",
+                        new String[] { subredditData.getName() });
                     break;
             }
         }
