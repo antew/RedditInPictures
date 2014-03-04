@@ -2,6 +2,7 @@ package com.antew.redditinpictures.library.ui;
 
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -29,7 +30,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -44,6 +44,7 @@ import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.interfaces.ScrollPosReadable;
+import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
@@ -51,6 +52,7 @@ import com.antew.redditinpictures.library.reddit.LoginData;
 import com.antew.redditinpictures.library.reddit.MySubreddits;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
+import com.antew.redditinpictures.library.reddit.SubredditData;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.utils.Consts;
@@ -63,52 +65,85 @@ import com.antew.redditinpictures.pro.BuildConfig;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.antew.redditinpictures.sqlite.RedditDatabase;
-
+import java.util.ArrayList;
 import net.simonvt.menudrawer.MenuDrawer;
 
-import java.util.ArrayList;
-
-public class ImageGridActivity extends BaseFragmentActivity implements LoginDialogListener, LogoutDialogListener, RedditDataProvider,
-        LoaderManager.LoaderCallbacks<Cursor>, ScrollPosReadable {
+public class ImageGridActivity extends BaseFragmentActivity
+    implements LoginDialogListener, LogoutDialogListener, RedditDataProvider,
+    LoaderManager.LoaderCallbacks<Cursor>, ScrollPosReadable {
     public static final int EDIT_SUBREDDITS_REQUEST = 10;
-    public static final int SETTINGS_REQUEST        = 20;
+    public static final int SETTINGS_REQUEST = 20;
 
     private static final String TAG = "ImageGridActivity";
 
     protected boolean mShowNsfwImages;
-    protected Age      mAge      = Age.TODAY;
+    protected Age mAge = Age.TODAY;
     protected Category mCategory = Category.HOT;
     protected RelativeLayout mLayoutWrapper;
 
-    private ProgressDialog                   mProgressDialog;
-    private MenuItem                         mLoginMenuItem;
-    private String                           mUsername;
-    private MenuDrawer                       mSubredditDrawer;
-    private String                           mSelectedSubreddit;
+    private ProgressDialog mProgressDialog;
+    private MenuItem mLoginMenuItem;
+    private String mUsername;
+    private MenuDrawer mSubredditDrawer;
+    private String mSelectedSubreddit;
     private SubredditMenuDrawerCursorAdapter mSubredditAdapter;
-    private ViewType                         mActiveViewType = ViewType.LIST;
-    private int                              mFirstVisiblePos = 0;
+    private ViewType mActiveViewType = ViewType.LIST;
+    private int mFirstVisiblePos = 0;
 
     private enum ViewType {LIST, GRID, VIEWPAGER}
+
+    private OnSubredditActionListener mSubredditActionListener = new OnSubredditActionListener() {
+
+        @Override
+        public void onAction(SubredditData subredditData, SubredditAction action) {
+            switch (action) {
+                case View:
+                    if (subredditData.getDisplay_name().equals("Frontpage")) {
+                        mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
+                    } else {
+                        mSelectedSubreddit = subredditData.getDisplay_name();
+                    }
+                    mSubredditDrawer.closeMenu(true);
+                    loadSubreddit(mSelectedSubreddit);
+                    break;
+                case Subscribe:
+                    RedditService.subscribe(ImageGridActivity.this, subredditData.getName());
+                    break;
+                case Unsubscribe:
+                    RedditService.unsubscribe(ImageGridActivity.this, subredditData.getName());
+                    break;
+                case Delete:
+                    RedditService.unsubscribe(ImageGridActivity.this, subredditData.getName());
+                    ContentResolver resolver = ImageGridActivity.this.getContentResolver();
+                    resolver.delete(RedditContract.Subreddits.CONTENT_URI, RedditContract.SubredditColumns.NAME + " = ?", new String[] { subredditData.getName() });
+                    break;
+            }
+        }
+    };
 
     private BroadcastReceiver mSubredditsSearch = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra(Consts.EXTRA_SUBREDDIT_NAMES)) {
                 Ln.d("Got Back Subreddit Search Result");
-                final ArrayList<String> subredditNames = intent.getStringArrayListExtra(Consts.EXTRA_SUBREDDIT_NAMES);
-                AutoCompleteTextView mSubredditFilter = (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
+                final ArrayList<String> subredditNames =
+                    intent.getStringArrayListExtra(Consts.EXTRA_SUBREDDIT_NAMES);
+                AutoCompleteTextView mSubredditFilter =
+                    (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
                 if (mSubredditFilter != null) {
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(ImageGridActivity.this, android.R.layout.simple_dropdown_item_1line, subredditNames);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(ImageGridActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, subredditNames);
                     mSubredditFilter.setAdapter(adapter);
                     mSubredditFilter.showDropDown();
 
                     mSubredditFilter.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                         @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        public void onItemClick(AdapterView<?> parent, View view, int position,
+                            long id) {
                             mSelectedSubreddit = subredditNames.get(position);
-                            RedditService.aboutSubreddit(ImageGridActivity.this, mSelectedSubreddit);
+                            RedditService.aboutSubreddit(ImageGridActivity.this,
+                                mSelectedSubreddit);
 
                             mSubredditDrawer.setActiveView(view, position);
                             mSubredditAdapter.setActivePosition(position);
@@ -117,16 +152,18 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                         }
                     });
 
-                    mSubredditFilter.setImeActionLabel(getString(R.string.go), KeyEvent.KEYCODE_ENTER);
-                    mSubredditFilter.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                        @Override
-                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                            Ln.d("Action: %d Event: %s", actionId, event);
-                            return true;
-                        }
-                    });
+                    mSubredditFilter.setImeActionLabel(getString(R.string.go),
+                        KeyEvent.KEYCODE_ENTER);
+                    mSubredditFilter.setOnEditorActionListener(
+                        new TextView.OnEditorActionListener() {
+                            @Override
+                            public boolean onEditorAction(TextView v, int actionId,
+                                KeyEvent event) {
+                                Ln.d("Action: %d Event: %s", actionId, event);
+                                return true;
+                            }
+                        });
                 }
-
             }
         }
     };
@@ -171,7 +208,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         mSubredditList.setAdapter(mSubredditAdapter);
         mSubredditList.setOnItemClickListener(mSubredditClickListener);
 
-        final AutoCompleteTextView mSubredditFilter = (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
+        final AutoCompleteTextView mSubredditFilter =
+            (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
         mSubredditFilter.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -187,7 +225,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                 LoaderManager loaderManager = getSupportLoaderManager();
                 Bundle filterBundle = new Bundle();
                 filterBundle.putString(Consts.EXTRA_QUERY, s.toString());
-                loaderManager.restartLoader(Consts.LOADER_SUBREDDITS, filterBundle, ImageGridActivity.this);
+                loaderManager.restartLoader(Consts.LOADER_SUBREDDITS, filterBundle,
+                    ImageGridActivity.this);
             }
 
             @Override
@@ -200,7 +239,9 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         subredditSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RedditService.searchSubreddits(ImageGridActivity.this, mSubredditFilter.getText().toString(), SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this));
+                RedditService.searchSubreddits(ImageGridActivity.this,
+                    mSubredditFilter.getText().toString(),
+                    SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this));
             }
         });
 
@@ -215,9 +256,13 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         }
         changeActiveViewType(mActiveViewType);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
-        LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
-        LocalBroadcastManager.getInstance(this).registerReceiver(mSubredditsSearch, new IntentFilter(Consts.BROADCAST_SUBREDDIT_SEARCH));
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(mSubredditsSearch,
+                new IntentFilter(Consts.BROADCAST_SUBREDDIT_SEARCH));
         initializeLoaders();
     }
 
@@ -239,7 +284,9 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     }
 
     public Fragment getImageGridFragment() {
-        ImageGridFragment fragment = (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG);
+        ImageGridFragment fragment =
+            (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(
+                ImageGridFragment.TAG);
         if (fragment == null) {
             fragment = getNewImageGridFragment();
         }
@@ -248,7 +295,9 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     }
 
     public Fragment getImageListFragment() {
-        ImageListFragment fragment = (ImageListFragment) getSupportFragmentManager().findFragmentByTag(ImageListFragment.TAG);
+        ImageListFragment fragment =
+            (ImageListFragment) getSupportFragmentManager().findFragmentByTag(
+                ImageListFragment.TAG);
         if (fragment == null) {
             fragment = getNewImageListFragment();
         }
@@ -278,7 +327,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the user is logged in, update the Logout menu item to "Log out <username>"
         if (RedditLoginInformation.isLoggedIn()) {
-            mLoginMenuItem.setTitle(getString(R.string.log_out_) + RedditLoginInformation.getUsername());
+            mLoginMenuItem.setTitle(
+                getString(R.string.log_out_) + RedditLoginInformation.getUsername());
             mLoginMenuItem.setIcon(R.drawable.ic_action_exit_dark);
         } else {
             mLoginMenuItem.setTitle(R.string.log_on);
@@ -289,7 +339,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     }
 
     private SubredditMenuDrawerCursorAdapter getSubredditMenuAdapter() {
-        mSubredditAdapter = new SubredditMenuDrawerCursorAdapter(ImageGridActivity.this, null, mAge, mCategory);
+        mSubredditAdapter =
+            new SubredditMenuDrawerCursorAdapter(this, null, mSubredditActionListener);
 
         return mSubredditAdapter;
     }
@@ -302,26 +353,28 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         return new ImageListFragment();
     }
 
-    private AdapterView.OnItemClickListener mSubredditClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-            mSelectedSubreddit = cursor.getString(cursor.getColumnIndex(RedditContract.SubredditColumns.DISPLAY_NAME));
-            int priority = cursor.getInt(cursor.getColumnIndex(RedditContract.SubredditColumns.PRIORITY));
+    private AdapterView.OnItemClickListener mSubredditClickListener =
+        new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+                mSelectedSubreddit = cursor.getString(
+                    cursor.getColumnIndex(RedditContract.SubredditColumns.DISPLAY_NAME));
+                int priority =
+                    cursor.getInt(cursor.getColumnIndex(RedditContract.SubredditColumns.PRIORITY));
 
-            // TODO: Make this less hacky...
-            // Load the actual frontpage of reddit if selected
-            if (priority == MySubreddits.DefaultSubreddit.FRONTPAGE.getPriority()) {
-                mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
+                // TODO: Make this less hacky...
+                // Load the actual frontpage of reddit if selected
+                if (priority == MySubreddits.DefaultSubreddit.FRONTPAGE.getPriority()) {
+                    mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
+                }
+
+                mSubredditDrawer.setActiveView(view, position);
+                mSubredditAdapter.setActivePosition(position);
+                mSubredditDrawer.closeMenu(true);
+                loadSubreddit(mSelectedSubreddit);
             }
-
-            mSubredditDrawer.setActiveView(view, position);
-            mSubredditAdapter.setActivePosition(position);
-            mSubredditDrawer.closeMenu(true);
-            loadSubreddit(mSelectedSubreddit);
-
-        }
-    };
+        };
 
     private void loadSubreddit(String subredditName) {
         String title = subredditName;
@@ -340,7 +393,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-//        outState.putInt(Consts.EXTRA_NAV_POSITION, getSupportActionBar().getSelectedNavigationIndex());
+        //        outState.putInt(Consts.EXTRA_NAV_POSITION, getSupportActionBar().getSelectedNavigationIndex());
         outState.putString(Consts.EXTRA_SELECTED_SUBREDDIT, getSubreddit());
         outState.putString(Consts.ACTIVE_VIEW, mActiveViewType.name());
         super.onSaveInstanceState(outState);
@@ -359,14 +412,31 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         // Put a checkmark by the currently selected Category + Age combination
         switch (mCategory) {
             case CONTROVERSIAL:
-                switch (mAge)
-                {
-                    case ALL_TIME:  item = menu.findItem(R.id.category_controversial_all_time); item.setChecked(true); break;
-                    case THIS_HOUR: item = menu.findItem(R.id.category_controversial_hour)    ; item.setChecked(true); break;
-                    case THIS_MONTH:item = menu.findItem(R.id.category_controversial_month)   ; item.setChecked(true); break;
-                    case THIS_WEEK: item = menu.findItem(R.id.category_controversial_week)    ; item.setChecked(true); break;
-                    case THIS_YEAR: item = menu.findItem(R.id.category_controversial_year)    ; item.setChecked(true); break;
-                    case TODAY:     item = menu.findItem(R.id.category_controversial_today)   ; item.setChecked(true); break;
+                switch (mAge) {
+                    case ALL_TIME:
+                        item = menu.findItem(R.id.category_controversial_all_time);
+                        item.setChecked(true);
+                        break;
+                    case THIS_HOUR:
+                        item = menu.findItem(R.id.category_controversial_hour);
+                        item.setChecked(true);
+                        break;
+                    case THIS_MONTH:
+                        item = menu.findItem(R.id.category_controversial_month);
+                        item.setChecked(true);
+                        break;
+                    case THIS_WEEK:
+                        item = menu.findItem(R.id.category_controversial_week);
+                        item.setChecked(true);
+                        break;
+                    case THIS_YEAR:
+                        item = menu.findItem(R.id.category_controversial_year);
+                        item.setChecked(true);
+                        break;
+                    case TODAY:
+                        item = menu.findItem(R.id.category_controversial_today);
+                        item.setChecked(true);
+                        break;
                 }
                 break;
             case HOT:
@@ -379,14 +449,31 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                 menu.findItem(R.id.category_rising).setChecked(true);
                 break;
             case TOP:
-                switch (mAge)
-                {
-                    case ALL_TIME:  item = menu.findItem(R.id.category_top_all_time); item.setChecked(true); break;
-                    case THIS_HOUR: item = menu.findItem(R.id.category_top_hour)    ; item.setChecked(true); break;
-                    case THIS_MONTH:item = menu.findItem(R.id.category_top_month)   ; item.setChecked(true); break;
-                    case THIS_WEEK: item = menu.findItem(R.id.category_top_week)    ; item.setChecked(true); break;
-                    case THIS_YEAR: item = menu.findItem(R.id.category_top_year)    ; item.setChecked(true); break;
-                    case TODAY:     item = menu.findItem(R.id.category_top_today)   ; item.setChecked(true); break;
+                switch (mAge) {
+                    case ALL_TIME:
+                        item = menu.findItem(R.id.category_top_all_time);
+                        item.setChecked(true);
+                        break;
+                    case THIS_HOUR:
+                        item = menu.findItem(R.id.category_top_hour);
+                        item.setChecked(true);
+                        break;
+                    case THIS_MONTH:
+                        item = menu.findItem(R.id.category_top_month);
+                        item.setChecked(true);
+                        break;
+                    case THIS_WEEK:
+                        item = menu.findItem(R.id.category_top_week);
+                        item.setChecked(true);
+                        break;
+                    case THIS_YEAR:
+                        item = menu.findItem(R.id.category_top_year);
+                        item.setChecked(true);
+                        break;
+                    case TODAY:
+                        item = menu.findItem(R.id.category_top_today);
+                        item.setChecked(true);
+                        break;
                 }
                 break;
             default:
@@ -426,6 +513,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
     /**
      * Change the current view type to the input viewtype
+     *
      * @param newViewType {@link ViewType} to switch to.
      */
     private void changeActiveViewType(ViewType newViewType) {
@@ -492,27 +580,72 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
             handleLoginAndLogout();
         }
         //@formatter:off
-        else if (itemId == R.id.category_hot)                    { mCategory = Category.HOT;                                   loadFromUrl = true; }
-        else if (itemId == R.id.category_new)                    { mCategory = Category.NEW;                                   loadFromUrl = true; }
-        else if (itemId == R.id.category_rising)                 { mCategory = Category.RISING;                                loadFromUrl = true; }
-        else if (itemId == R.id.category_top_hour)               { mCategory = Category.TOP;            mAge = Age.THIS_HOUR ; loadFromUrl = true; }
-        else if (itemId == R.id.category_top_today)              { mCategory = Category.TOP;            mAge = Age.TODAY     ; loadFromUrl = true; }
-        else if (itemId == R.id.category_top_week)               { mCategory = Category.TOP;            mAge = Age.THIS_WEEK ; loadFromUrl = true; }
-        else if (itemId == R.id.category_top_month)              { mCategory = Category.TOP;            mAge = Age.THIS_MONTH; loadFromUrl = true; }
-        else if (itemId == R.id.category_top_year)               { mCategory = Category.TOP;            mAge = Age.THIS_YEAR ; loadFromUrl = true; }
-        else if (itemId == R.id.category_top_all_time)           { mCategory = Category.TOP;            mAge = Age.ALL_TIME  ; loadFromUrl = true; }
-        else if (itemId == R.id.category_controversial_hour)     { mCategory = Category.CONTROVERSIAL;  mAge = Age.THIS_HOUR ; loadFromUrl = true; }
-        else if (itemId == R.id.category_controversial_today)    { mCategory = Category.CONTROVERSIAL;  mAge = Age.TODAY     ; loadFromUrl = true; }
-        else if (itemId == R.id.category_controversial_week)     { mCategory = Category.CONTROVERSIAL;  mAge = Age.THIS_WEEK ; loadFromUrl = true; }
-        else if (itemId == R.id.category_controversial_month)    { mCategory = Category.CONTROVERSIAL;  mAge = Age.THIS_MONTH; loadFromUrl = true; }
-        else if (itemId == R.id.category_controversial_year)     { mCategory = Category.CONTROVERSIAL;  mAge = Age.THIS_YEAR ; loadFromUrl = true; }
-        else if (itemId == R.id.category_controversial_all_time) { mCategory = Category.CONTROVERSIAL;  mAge = Age.ALL_TIME  ; loadFromUrl = true; }
+        else if (itemId == R.id.category_hot) {
+            mCategory = Category.HOT;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_new) {
+            mCategory = Category.NEW;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_rising) {
+            mCategory = Category.RISING;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_top_hour) {
+            mCategory = Category.TOP;
+            mAge = Age.THIS_HOUR;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_top_today) {
+            mCategory = Category.TOP;
+            mAge = Age.TODAY;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_top_week) {
+            mCategory = Category.TOP;
+            mAge = Age.THIS_WEEK;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_top_month) {
+            mCategory = Category.TOP;
+            mAge = Age.THIS_MONTH;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_top_year) {
+            mCategory = Category.TOP;
+            mAge = Age.THIS_YEAR;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_top_all_time) {
+            mCategory = Category.TOP;
+            mAge = Age.ALL_TIME;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_controversial_hour) {
+            mCategory = Category.CONTROVERSIAL;
+            mAge = Age.THIS_HOUR;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_controversial_today) {
+            mCategory = Category.CONTROVERSIAL;
+            mAge = Age.TODAY;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_controversial_week) {
+            mCategory = Category.CONTROVERSIAL;
+            mAge = Age.THIS_WEEK;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_controversial_month) {
+            mCategory = Category.CONTROVERSIAL;
+            mAge = Age.THIS_MONTH;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_controversial_year) {
+            mCategory = Category.CONTROVERSIAL;
+            mAge = Age.THIS_YEAR;
+            loadFromUrl = true;
+        } else if (itemId == R.id.category_controversial_all_time) {
+            mCategory = Category.CONTROVERSIAL;
+            mAge = Age.ALL_TIME;
+            loadFromUrl = true;
+        }
         // @formatter:on
         if (loadFromUrl) {
-            SharedPreferencesHelper.saveCategorySelectionLoginInformation(mAge, mCategory, ImageGridActivity.this);
-//            getSubredditAdapter().notifyDataSetChanged(mCategory, mAge);
-            Log.i(TAG, "onOptionsItemSelected, loadFromUrl = true, calling populateViewPagerFromSpinner()");
-//            onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
+            SharedPreferencesHelper.saveCategorySelectionLoginInformation(mAge, mCategory,
+                ImageGridActivity.this);
+            //            getSubredditAdapter().notifyDataSetChanged(mCategory, mAge);
+            Log.i(TAG,
+                "onOptionsItemSelected, loadFromUrl = true, calling populateViewPagerFromSpinner()");
+            //            onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
         }
 
         return true;
@@ -553,8 +686,9 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
             // new images
             if (data.hasExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT)) {
                 boolean mFirstCall = false;
-                int pos = getSubredditPosition(data.getStringExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT));
-//                onNavigationItemSelected(pos, 0);
+                int pos = getSubredditPosition(
+                    data.getStringExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT));
+                //                onNavigationItemSelected(pos, 0);
                 return;
             }
             // If the user didn't choose a subreddit (meaning we are returned the subreddit they
@@ -565,9 +699,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                 selectSubredditInNavigation(subredditName);
             } else {
                 // Select the Reddit Front Page
-//                onNavigationItemSelected(Consts.POSITION_FRONTPAGE, 0);
+                //                onNavigationItemSelected(Consts.POSITION_FRONTPAGE, 0);
             }
-
         } else if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK) {
             if (data.getBooleanExtra(Consts.EXTRA_SHOW_NSFW_IMAGES_CHANGED, false)) {
                 mShowNsfwImages = SharedPreferencesHelper.getShowNsfwImages(this);
@@ -575,31 +708,30 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                 // If we're removing NSFW images we can modify the adapter in place, otherwise we
                 // need to refresh
                 if (mShowNsfwImages) {
-//                    onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
+                    //                    onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
                 } else {
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
+                    LocalBroadcastManager.getInstance(this)
+                        .sendBroadcast(new Intent(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
                 }
-
             }
-
         }
     }
 
     /**
-     * Return the position of the subreddit in the navigation spinner, or -1 if the subreddit is not
+     * Return the position of the subreddit in the navigation spinner, or -1 if the subreddit is
+     * not
      * found.
      *
-     * @param subredditName
-     *            Name of the subreddit to find
+     * @param subredditName Name of the subreddit to find
      * @return The position of the subreddit in the spinner, or -1 if the subreddit is not found
      */
     public int getSubredditPosition(String subredditName) {
-//        for (int i = 0; i < mSpinnerAdapter.getCount(); i++) {
-//            String curReddit = (String) mSpinnerAdapter.getItem(i);
-//            if (curReddit.equalsIgnoreCase(subredditName)) {
-//                return i;
-//            }
-//        }
+        //        for (int i = 0; i < mSpinnerAdapter.getCount(); i++) {
+        //            String curReddit = (String) mSpinnerAdapter.getItem(i);
+        //            if (curReddit.equalsIgnoreCase(subredditName)) {
+        //                return i;
+        //            }
+        //        }
 
         return -1;
     }
@@ -608,7 +740,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         int position = getSubredditPosition(subredditName);
         if (position == -1) {
             if (BuildConfig.DEBUG) {
-                throw new ArrayIndexOutOfBoundsException("Subreddit \"" + subredditName + "\" does not exist in the navigation!");
+                throw new ArrayIndexOutOfBoundsException(
+                    "Subreddit \"" + subredditName + "\" does not exist in the navigation!");
             } else {
                 Log.e(TAG, "Subreddit \"" + subredditName + "\" does not exist in the navigation!");
             }
@@ -626,8 +759,7 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
     }
 
     private void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing())
-            mProgressDialog.dismiss();
+        if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
     }
 
     @Override
@@ -635,7 +767,6 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         mUsername = username;
         showProgressDialog(getString(R.string.log_on), getString(R.string.logging_on));
         RedditService.login(this, username, password);
-
     }
 
     @Override
@@ -646,8 +777,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         invalidateOptionsMenu();
 
         // TODO: Reset subreddit list to default subreddits
-//        getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
-//        onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
+        //        getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
+        //        onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
     }
 
     @Override
@@ -670,7 +801,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
         Log.i(TAG, "onCreateLoader");
         switch (id) {
             case Consts.LOADER_LOGIN:
-                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
+                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null,
+                    RedditContract.Login.DEFAULT_SORT);
             case Consts.LOADER_SUBREDDITS:
                 String selection = null;
                 String[] selectionArgs = null;
@@ -680,10 +812,12 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
                     if (Strings.notEmpty(query)) {
                         selection = RedditContract.SubredditColumns.DISPLAY_NAME + " LIKE ?";
-                        selectionArgs = new String[] {"%" + query + "%"};
+                        selectionArgs = new String[] { "%" + query + "%" };
                     }
                 }
-                return new CursorLoader(this, RedditContract.Subreddits.CONTENT_URI, RedditContract.Subreddits.SUBREDDITS_PROJECTION, selection, selectionArgs, RedditContract.Subreddits.DEFAULT_SORT);
+                return new CursorLoader(this, RedditContract.Subreddits.CONTENT_URI,
+                    RedditContract.Subreddits.SUBREDDITS_PROJECTION, selection, selectionArgs,
+                    RedditContract.Subreddits.DEFAULT_SORT);
         }
 
         return null;
@@ -696,9 +830,12 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                 if (cursor != null) {
                     Log.i(TAG, "onLoadFinished LOADER_LOGIN, " + cursor.getCount() + " rows");
                     if (cursor.moveToFirst()) {
-                        mUsername = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
-                        String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
-                        String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
+                        mUsername =
+                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
+                        String cookie =
+                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
+                        String modhash =
+                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
                         Log.i(TAG, "Username = " + mUsername);
                         Log.i(TAG, "Cookie = " + cookie);
                         Log.i(TAG, "Modhash = " + modhash);
@@ -709,12 +846,13 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                         hideProgressDialog();
                         invalidateOptionsMenu();
 
-                        SetDefaultSubredditsTask defaultSubredditsTask = new SetDefaultSubredditsTask();
+                        SetDefaultSubredditsTask defaultSubredditsTask =
+                            new SetDefaultSubredditsTask();
                         defaultSubredditsTask.execute();
                     }
                 }
                 break;
-                
+
             case Consts.LOADER_SUBREDDITS:
                 mSubredditAdapter.swapCursor(cursor);
                 if (cursor != null) {
@@ -725,20 +863,18 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
 
                 break;
         }
-        
-
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> paramLoader) {
-        if (mSubredditAdapter != null)
-            mSubredditAdapter.swapCursor(null);
+        if (mSubredditAdapter != null) mSubredditAdapter.swapCursor(null);
     }
 
     class SetDefaultSubredditsTask extends SafeAsyncTask<Void> {
         boolean forceDefaults = false;
 
-        public SetDefaultSubredditsTask(){}
+        public SetDefaultSubredditsTask() {
+        }
 
         public SetDefaultSubredditsTask(boolean forceDefaults) {
             this.forceDefaults = forceDefaults;
@@ -759,7 +895,8 @@ public class ImageGridActivity extends BaseFragmentActivity implements LoginDial
                 // If we aren't terminating them by default, check to see if they have none. If so we want to set it to the defaults.
                 if (!terminateSubreddits) {
                     // See how many Subreddits are in the database. Only needed if not forcing defaults.
-                    long numSubreddits = DatabaseUtils.queryNumEntries(mDatabase, RedditDatabase.Tables.SUBREDDITS);
+                    long numSubreddits =
+                        DatabaseUtils.queryNumEntries(mDatabase, RedditDatabase.Tables.SUBREDDITS);
                     Ln.d("Number of Subreddits is: %d", numSubreddits);
                     mDatabase.close();
 

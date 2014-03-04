@@ -12,7 +12,7 @@ import com.antew.redditinpictures.sqlite.RedditContract.SubredditColumns;
 
 public class RedditDatabase extends SQLiteOpenHelper {
 
-    private static final int    DATABASE_VERSION = 2;
+    private static final int    DATABASE_VERSION = 3;
     private static final String DATABASE_NAME    = "redditinpictures.db";
 
     public interface Tables {
@@ -52,6 +52,7 @@ public class RedditDatabase extends SQLiteOpenHelper {
                     + SubredditColumns.SUBREDDIT_ID       + " TEXT, "
                     + SubredditColumns.NAME               + " TEXT, "
                     + SubredditColumns.PRIORITY           + " INTEGER DEFAULT 0"
+                    + SubredditColumns.USER_IS_SUBSCRIBER + " INTEGER DEFAULT 0, "
                     + " );"; 
             
             String POSTDATA = "CREATE TABLE " + Tables.POSTDATA + 
@@ -128,10 +129,12 @@ public class RedditDatabase extends SQLiteOpenHelper {
             case 1:
                 // Database version 1 didn't have the 'priority' column
                 db.execSQL("ALTER TABLE " + Tables.SUBREDDITS + " ADD COLUMN " + SubredditColumns.PRIORITY + " INTEGER DEFAULT 0");
+                break;
+            case 2:
+                //Database version 2 didn't have the 'userIsSubscriber' column
+                db.execSQL("ALTER TABLE " + Tables.SUBREDDITS + " ADD COLUMN " + SubredditColumns.USER_IS_SUBSCRIBER + " INTEGER DEFAULT 0");
+                break;
         }
-
-
-        onCreate(db);
     }
 
     public static void deleteDatabase(Context context) {

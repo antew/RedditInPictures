@@ -27,15 +27,11 @@
             android:id="@+id/btn_search"/>
     </LinearLayout>
 
-    <com.fortysevendeg.swipelistview.SwipeListView
-        xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    <ListView
         android:id="@+id/lv_subreddits"
-        android:listSelector="#00000000"
+        android:listSelector="@drawable/photogrid_list_selector"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/ll_menudrawer_search"
-        swipe:swipeFrontView="@+id/lv_subreddits_front"
-        swipe:swipeBackView="@+id/lv_subreddits_back"
-        />
+        android:layout_below="@+id/ll_menudrawer_search" />
 
 </RelativeLayout>
