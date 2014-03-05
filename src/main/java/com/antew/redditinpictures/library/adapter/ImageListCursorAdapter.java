@@ -51,7 +51,8 @@ import java.util.regex.Pattern;
 public class ImageListCursorAdapter extends CursorAdapter {
     public static final String TAG = ImageListCursorAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
-    private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
+    private Pattern        mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
+    private int            VOTE_TAG = 10;
 
     /**
      * @param context The context
@@ -73,6 +74,18 @@ public class ImageListCursorAdapter extends CursorAdapter {
         final ViewHolder holder;
         if (view != null && view.getTag() != null) {
             holder = (ViewHolder) view.getTag();
+
+            // Make sure to reset the upvote/downvote state
+            // if we're recycling views.
+            if (holder.upVote.getTag() != null) {
+                holder.upVote.setImageResource(R.drawable.arrow_up);
+                holder.upVote.setTag(null);
+            }
+
+            if (holder.downVote.getTag() != null) {
+                holder.downVote.setImageResource(R.drawable.arrow_down);
+                holder.downVote.setTag(null);
+            }
         } else {
             holder = new ViewHolder(view);
             view.setTag(holder);
@@ -127,8 +140,10 @@ public class ImageListCursorAdapter extends CursorAdapter {
         holder.postVotes.setText("" + postData.getScore());
 
         if (postData.getVote() == Vote.UP) {
+            holder.upVote.setTag(Vote.UP);
             holder.upVote.setImageResource(R.drawable.arrow_up_highlighted);
         } else if (postData.getVote() == Vote.DOWN) {
+            holder.upVote.setTag(Vote.DOWN);
             holder.downVote.setImageResource(R.drawable.arrow_down_highlighted);
         }
 
