@@ -877,8 +877,12 @@ public class ImageGridActivity extends BaseFragmentActivity
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> paramLoader) {
-        if (mSubredditAdapter != null) mSubredditAdapter.swapCursor(null);
+    public void onLoaderReset(Loader<Cursor> loader) {
+        switch (loader.getId()) {
+            case Consts.LOADER_SUBREDDITS:
+                mSubredditAdapter.swapCursor(null);
+                break;
+        }
     }
 
     class SetDefaultSubredditsTask extends SafeAsyncTask<Void> {
