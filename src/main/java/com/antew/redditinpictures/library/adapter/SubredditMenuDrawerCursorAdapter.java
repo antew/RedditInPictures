@@ -35,14 +35,14 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
     /**
      * Create a new Adapter for the Subreddit/Category/Age combo
      *
-     * @param context The context
-     * @param cursor Cursor containing the list of subreddits
+     * @param context
+     *            The context
+     * @param subredditActionListener
+     *            Listener for changes to the subreddit (subscribed, unsubscribed, etc)
      */
-    public SubredditMenuDrawerCursorAdapter(Context context, Cursor cursor,
-        OnSubredditActionListener subredditActionListener) {
-        super(context, cursor, 0);
+    public SubredditMenuDrawerCursorAdapter(Context context, OnSubredditActionListener subredditActionListener) {
+        super(context, null, 0);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mCursor = cursor;
         this.mSubredditActionListener = subredditActionListener;
     }
 

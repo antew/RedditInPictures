@@ -352,8 +352,7 @@ public class ImageGridActivity extends BaseFragmentActivity
     }
 
     private SubredditMenuDrawerCursorAdapter getSubredditMenuAdapter() {
-        mSubredditAdapter =
-            new SubredditMenuDrawerCursorAdapter(this, null, mSubredditActionListener);
+        mSubredditAdapter = new SubredditMenuDrawerCursorAdapter(ImageGridActivity.this, mSubredditActionListener);
 
         return mSubredditAdapter;
     }
