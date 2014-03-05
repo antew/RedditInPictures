@@ -74,13 +74,6 @@ public class Consts {
     public static final float  IMAGE_CACHE_SIZE = 0.25f;
     public static final String JSON             = ".json";
 
-    /**
-     * This is from the <a href="http://code.google.com/p/android-query/">Android-Query</a> project.  It uses javascript to fit the image to the viewport
-     * and center the images vertically and horizontally.
-     *
-     * <p>
-     * The image URL should be inserted in to this string using {@link String#format(String, Object...)}
-     * </p>
-     */
-    public static final String WEBVIEW_IMAGE_HTML = "<html><meta name=\"viewport\" content=\"initial-scale=1, minimum-scale=1, user-scalable=1\"><body style=\"background:#000000;margin:0px;padding:0px;\"><script>var ratio=10;var draw;function now(){var d=new Date();return d.getTime();}function change(){resize(false);}function resize(force){var w=window.innerWidth;var h=window.innerHeight;if(w==0 || h==0) return;var r=w / h;var diff=Math.abs((ratio - r) / r);var n=now();if(diff > 0.1){draw=n + 300;}if(force || n < draw){ratio=r;var landscape=w > h;var box=document.getElementById(\"box\");box.style.width=w;box.style.height=h;var img=document.getElementById(\"img\");if(!landscape){img.style.width=w;img.style.height='';}else{img.style.width='';img.style.height=h;}}}</script><div id=\"box\" style=\"vertical-align:middle;text-align:center;display:table-cell;\"><img id=\"img\" src=\"%s\" onload=\"resize(true);this.style.display='inline';\"/></div><script>resize(true);window.onresize=change;</script></body></html>";
+    public static final String WEBVIEW_IMAGE_HTML_BEGIN = "<html><head><style type=\"text/css\">* {padding:0;margin:0;}body {background:#000000;}.center-container {position:absolute;width:100%;height:100%;text-align:center;}.center-agent {display:inline-block;height:100%;vertical-align:middle;}.center-target {display:inline-block;vertical-align:middle;}#image {width: 80%;}</style></head><body><div class=\"center-container\"><span class=\"center-agent\"></span><img id=\"image\" class=\"center-target\" src=\"";
+    public static final String WEBVIEW_IMAGE_HTML_END = "\"/></div></body></html>";
 }

@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2012 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.antew.redditinpictures.library.ui;
 
 import android.annotation.SuppressLint;
@@ -75,22 +59,14 @@ public abstract class ImageViewerFragment extends SherlockFragment {
 
     @InjectView(R.id.iv_imageView)
     protected ImageView mImageView;
-    @InjectView(R.id.pb_progress)
-    ProgressBar mProgress;
-    @InjectView(R.id.rl_post_information_wrapper)
-    RelativeLayout mPostInformationWrapper;
-    @InjectView(R.id.tv_post_title)
-    TextView mPostTitle;
-    @InjectView(R.id.tv_post_information)
-    TextView mPostInformation;
-    @InjectView(R.id.btn_view_gallery)
-    Button mBtnViewGallery;
-    @InjectView(R.id.webview_stub)
-    ViewStub mViewStub;
-    @InjectView(R.id.tv_post_votes)
-    TextView mPostVotes;
-    @InjectView(R.id.tv_error_message)
-    TextView mErrorMessage;
+    @InjectView(R.id.pb_progress) ProgressBar mProgress;
+    @InjectView(R.id.rl_post_information_wrapper) RelativeLayout mPostInformationWrapper;
+    @InjectView(R.id.tv_post_title) TextView mPostTitle;
+    @InjectView(R.id.tv_post_information) TextView mPostInformation;
+    @InjectView(R.id.btn_view_gallery) Button mBtnViewGallery;
+    @InjectView(R.id.webview_stub) ViewStub mViewStub;
+    @InjectView(R.id.tv_post_votes) TextView mPostVotes;
+    @InjectView(R.id.tv_error_message) TextView mErrorMessage;
 
     protected WebView mWebView;
     protected boolean mPauseWork = false;
@@ -340,23 +316,26 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         mResolvedImageUrl = image.getSize(ImageSize.ORIGINAL);
 
         if (ImageUtil.isGif(mResolvedImageUrl)) {
+            Picasso.with(getActivity())
+                .load(R.drawable.loading_spinner_76)
+                .into(mImageView);
             loadGifInWebView(mResolvedImageUrl);
         } else {
             Picasso.with(getActivity())
-                   .load(mResolvedImageUrl)
-                   .resize(mImageView.getWidth(), mImageView.getHeight())
-                   .centerInside()
-                   .into(mImageView, new Callback() {
-                       @Override
-                       public void onSuccess() {
-                           if (mProgress != null) mProgress.setVisibility(View.GONE);
-                       }
+                .load(mResolvedImageUrl)
+                .resize(mImageView.getWidth(), mImageView.getHeight())
+                .centerInside()
+                .into(mImageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        if (mProgress != null) mProgress.setVisibility(View.GONE);
+                    }
 
-                       @Override
-                       public void onError() {
-                           if (mErrorMessage != null) mErrorMessage.setVisibility(View.VISIBLE);
-                       }
-                   });
+                    @Override
+                    public void onError() {
+                        if (mErrorMessage != null) mErrorMessage.setVisibility(View.VISIBLE);
+                    }
+                });
         }
     }
 
@@ -364,27 +343,24 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         if (mViewStub.getParent() != null) mWebView = (WebView) mViewStub.inflate();
 
         initializeWebView(mWebView);
-        mImageView.setVisibility(View.GONE);
         mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
+        mImageView.setVisibility(View.GONE);
     }
 
     public String getHtmlForImageDisplay(String imageUrl) {
-        return String.format(Consts.WEBVIEW_IMAGE_HTML, imageUrl);
+        return Consts.WEBVIEW_IMAGE_HTML_BEGIN + imageUrl + Consts.WEBVIEW_IMAGE_HTML_END;
     }
 
-    @SuppressLint("SetJavaScriptEnabled") @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void initializeWebView(WebView webview) {
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public void initializeWebView(WebView webview) {
         assert webview != null : "WebView should not be null!";
 
         WebSettings settings = webview.getSettings();
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
-        settings.setJavaScriptEnabled(true);
         settings.setBuiltInZoomControls(true);
-        settings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
-
-        if (Util.hasHoneycomb()) settings.setDisplayZoomControls(false);
-
+        if (Util.hasHoneycomb()) {
+            settings.setDisplayZoomControls(false);
+        }
         webview.setBackgroundColor(Color.BLACK);
         webview.setVisibility(View.VISIBLE);
         webview.setOnTouchListener(getWebViewOnTouchListener());

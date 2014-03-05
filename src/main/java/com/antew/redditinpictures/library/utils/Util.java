@@ -15,21 +15,25 @@
  */
 package com.antew.redditinpictures.library.utils;
 
-import java.lang.reflect.Method;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
-
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
 
 public class Util {
     public static final String TAG = Util.class.getSimpleName();
-    
-    private Util() {};
+
+    private Util() {
+    }
+
+    ;
 
     public static boolean isUserAMonkey() {
         boolean isUserAMonkey = false;
@@ -43,33 +47,28 @@ public class Util {
         }
         return isUserAMonkey;
     }
-    
+
     public static int dpToPx(Context context, int dp) {
         return (int) (dp * (context.getResources().getDisplayMetrics().densityDpi / 160f) + 0.5f);
     }
-    
+
     public static int pxToDp(Context context, int px) {
         return (int) (px / (context.getResources().getDisplayMetrics().densityDpi / 160f) + 0.5f);
     }
-    
 
     @TargetApi(11)
     public static void enableStrictMode() {
         if (Util.hasGingerbread()) {
             StrictMode.ThreadPolicy.Builder threadPolicyBuilder =
-                    new StrictMode.ThreadPolicy.Builder()
-                            .detectAll()
-                            .penaltyLog();
+                new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
             StrictMode.VmPolicy.Builder vmPolicyBuilder =
-                    new StrictMode.VmPolicy.Builder()
-                            .detectAll()
-                            .penaltyLog();
+                new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
 
             if (Util.hasHoneycomb()) {
                 threadPolicyBuilder.penaltyFlashScreen();
                 vmPolicyBuilder.setClassInstanceLimit(ImageGridActivity.class, 1)
-                .setClassInstanceLimit(ImageDetailActivity.class, 1)
-                .setClassInstanceLimit(ImgurAlbumActivity.class, 1);
+                    .setClassInstanceLimit(ImageDetailActivity.class, 1)
+                    .setClassInstanceLimit(ImgurAlbumActivity.class, 1);
             }
 
             StrictMode.setThreadPolicy(threadPolicyBuilder.build());
@@ -98,12 +97,22 @@ public class Util {
     public static boolean hasIcs() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
     }
-    
+
     public static boolean hasJellyBean() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
     }
-    
+
     public static byte parcelBoolean(boolean val) {
         return (byte) (val ? 1 : 0);
+    }
+
+    public static void closeQuietly(Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (IOException ioe) {
+            // ignore
+        }
     }
 }
