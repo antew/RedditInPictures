@@ -112,7 +112,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
         Picasso.with(mContext)
             .load(url)
-            .placeholder(R.drawable.empty_photo)
+            .placeholder(R.drawable.loading_spinner_48)
             .error(R.drawable.empty_photo)
             .into(holder.imageView);
 
