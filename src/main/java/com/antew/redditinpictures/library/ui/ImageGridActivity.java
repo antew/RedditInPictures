@@ -221,8 +221,7 @@ public class ImageGridActivity extends BaseFragmentActivity
         mSubredditList.setAdapter(mSubredditAdapter);
         mSubredditList.setOnItemClickListener(mSubredditClickListener);
 
-        final AutoCompleteTextView mSubredditFilter =
-            (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
+        final AutoCompleteTextView mSubredditFilter = (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
         mSubredditFilter.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -238,8 +237,7 @@ public class ImageGridActivity extends BaseFragmentActivity
                 LoaderManager loaderManager = getSupportLoaderManager();
                 Bundle filterBundle = new Bundle();
                 filterBundle.putString(Consts.EXTRA_QUERY, s.toString());
-                loaderManager.restartLoader(Consts.LOADER_SUBREDDITS, filterBundle,
-                    ImageGridActivity.this);
+                loaderManager.restartLoader(Consts.LOADER_SUBREDDITS, filterBundle, ImageGridActivity.this);
             }
 
             @Override
@@ -269,13 +267,9 @@ public class ImageGridActivity extends BaseFragmentActivity
         }
         changeActiveViewType(mActiveViewType);
 
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(mSubredditsSearch,
-                new IntentFilter(Consts.BROADCAST_SUBREDDIT_SEARCH));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSubredditsSearch, new IntentFilter(Consts.BROADCAST_SUBREDDIT_SEARCH));
         initializeLoaders();
     }
 
@@ -424,68 +418,28 @@ public class ImageGridActivity extends BaseFragmentActivity
         // Put a checkmark by the currently selected Category + Age combination
         switch (mCategory) {
             case CONTROVERSIAL:
-                switch (mAge) {
-                    case ALL_TIME:
-                        item = menu.findItem(R.id.category_controversial_all_time);
-                        item.setChecked(true);
-                        break;
-                    case THIS_HOUR:
-                        item = menu.findItem(R.id.category_controversial_hour);
-                        item.setChecked(true);
-                        break;
-                    case THIS_MONTH:
-                        item = menu.findItem(R.id.category_controversial_month);
-                        item.setChecked(true);
-                        break;
-                    case THIS_WEEK:
-                        item = menu.findItem(R.id.category_controversial_week);
-                        item.setChecked(true);
-                        break;
-                    case THIS_YEAR:
-                        item = menu.findItem(R.id.category_controversial_year);
-                        item.setChecked(true);
-                        break;
-                    case TODAY:
-                        item = menu.findItem(R.id.category_controversial_today);
-                        item.setChecked(true);
-                        break;
+                switch (mAge)
+                {
+                    case ALL_TIME:  item = menu.findItem(R.id.category_controversial_all_time); item.setChecked(true); break;
+                    case THIS_HOUR: item = menu.findItem(R.id.category_controversial_hour)    ; item.setChecked(true); break;
+                    case THIS_MONTH:item = menu.findItem(R.id.category_controversial_month)   ; item.setChecked(true); break;
+                    case THIS_WEEK: item = menu.findItem(R.id.category_controversial_week)    ; item.setChecked(true); break;
+                    case THIS_YEAR: item = menu.findItem(R.id.category_controversial_year)    ; item.setChecked(true); break;
+                    case TODAY:     item = menu.findItem(R.id.category_controversial_today)   ; item.setChecked(true); break;
                 }
                 break;
-            case HOT:
-                menu.findItem(R.id.category_hot).setChecked(true);
-                break;
-            case NEW:
-                menu.findItem(R.id.category_new).setChecked(true);
-                break;
-            case RISING:
-                menu.findItem(R.id.category_rising).setChecked(true);
-                break;
+            case HOT:    menu.findItem(R.id.category_hot).setChecked(true)   ; break;
+            case NEW:    menu.findItem(R.id.category_new).setChecked(true)   ; break;
+            case RISING: menu.findItem(R.id.category_rising).setChecked(true); break;
             case TOP:
-                switch (mAge) {
-                    case ALL_TIME:
-                        item = menu.findItem(R.id.category_top_all_time);
-                        item.setChecked(true);
-                        break;
-                    case THIS_HOUR:
-                        item = menu.findItem(R.id.category_top_hour);
-                        item.setChecked(true);
-                        break;
-                    case THIS_MONTH:
-                        item = menu.findItem(R.id.category_top_month);
-                        item.setChecked(true);
-                        break;
-                    case THIS_WEEK:
-                        item = menu.findItem(R.id.category_top_week);
-                        item.setChecked(true);
-                        break;
-                    case THIS_YEAR:
-                        item = menu.findItem(R.id.category_top_year);
-                        item.setChecked(true);
-                        break;
-                    case TODAY:
-                        item = menu.findItem(R.id.category_top_today);
-                        item.setChecked(true);
-                        break;
+                switch (mAge)
+                {
+                    case ALL_TIME:  item = menu.findItem(R.id.category_top_all_time); item.setChecked(true); break;
+                    case THIS_HOUR: item = menu.findItem(R.id.category_top_hour)    ; item.setChecked(true); break;
+                    case THIS_MONTH:item = menu.findItem(R.id.category_top_month)   ; item.setChecked(true); break;
+                    case THIS_WEEK: item = menu.findItem(R.id.category_top_week)    ; item.setChecked(true); break;
+                    case THIS_YEAR: item = menu.findItem(R.id.category_top_year)    ; item.setChecked(true); break;
+                    case TODAY:     item = menu.findItem(R.id.category_top_today)   ; item.setChecked(true); break;
                 }
                 break;
             default:
@@ -591,64 +545,21 @@ public class ImageGridActivity extends BaseFragmentActivity
             handleLoginAndLogout();
         }
         //@formatter:off
-        else if (itemId == R.id.category_hot) {
-            mCategory = Category.HOT;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_new) {
-            mCategory = Category.NEW;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_rising) {
-            mCategory = Category.RISING;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_top_hour) {
-            mCategory = Category.TOP;
-            mAge = Age.THIS_HOUR;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_top_today) {
-            mCategory = Category.TOP;
-            mAge = Age.TODAY;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_top_week) {
-            mCategory = Category.TOP;
-            mAge = Age.THIS_WEEK;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_top_month) {
-            mCategory = Category.TOP;
-            mAge = Age.THIS_MONTH;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_top_year) {
-            mCategory = Category.TOP;
-            mAge = Age.THIS_YEAR;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_top_all_time) {
-            mCategory = Category.TOP;
-            mAge = Age.ALL_TIME;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_controversial_hour) {
-            mCategory = Category.CONTROVERSIAL;
-            mAge = Age.THIS_HOUR;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_controversial_today) {
-            mCategory = Category.CONTROVERSIAL;
-            mAge = Age.TODAY;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_controversial_week) {
-            mCategory = Category.CONTROVERSIAL;
-            mAge = Age.THIS_WEEK;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_controversial_month) {
-            mCategory = Category.CONTROVERSIAL;
-            mAge = Age.THIS_MONTH;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_controversial_year) {
-            mCategory = Category.CONTROVERSIAL;
-            mAge = Age.THIS_YEAR;
-            loadFromUrl = true;
-        } else if (itemId == R.id.category_controversial_all_time) {
-            mCategory = Category.CONTROVERSIAL;
-            mAge = Age.ALL_TIME;
-            loadFromUrl = true;
-        }
+        else if (itemId == R.id.category_hot)                    { mCategory = Category.HOT;                                   loadFromUrl = true; }
+        else if (itemId == R.id.category_new)                    { mCategory = Category.NEW;                                   loadFromUrl = true; }
+        else if (itemId == R.id.category_rising)                 { mCategory = Category.RISING;                                loadFromUrl = true; }
+        else if (itemId == R.id.category_top_hour)               { mCategory = Category.TOP;            mAge = Age.THIS_HOUR ; loadFromUrl = true; }
+        else if (itemId == R.id.category_top_today)              { mCategory = Category.TOP;            mAge = Age.TODAY     ; loadFromUrl = true; }
+        else if (itemId == R.id.category_top_week)               { mCategory = Category.TOP;            mAge = Age.THIS_WEEK ; loadFromUrl = true; }
+        else if (itemId == R.id.category_top_month)              { mCategory = Category.TOP;            mAge = Age.THIS_MONTH; loadFromUrl = true; }
+        else if (itemId == R.id.category_top_year)               { mCategory = Category.TOP;            mAge = Age.THIS_YEAR ; loadFromUrl = true; }
+        else if (itemId == R.id.category_top_all_time)           { mCategory = Category.TOP;            mAge = Age.ALL_TIME  ; loadFromUrl = true; }
+        else if (itemId == R.id.category_controversial_hour)     { mCategory = Category.CONTROVERSIAL;  mAge = Age.THIS_HOUR ; loadFromUrl = true; }
+        else if (itemId == R.id.category_controversial_today)    { mCategory = Category.CONTROVERSIAL;  mAge = Age.TODAY     ; loadFromUrl = true; }
+        else if (itemId == R.id.category_controversial_week)     { mCategory = Category.CONTROVERSIAL;  mAge = Age.THIS_WEEK ; loadFromUrl = true; }
+        else if (itemId == R.id.category_controversial_month)    { mCategory = Category.CONTROVERSIAL;  mAge = Age.THIS_MONTH; loadFromUrl = true; }
+        else if (itemId == R.id.category_controversial_year)     { mCategory = Category.CONTROVERSIAL;  mAge = Age.THIS_YEAR ; loadFromUrl = true; }
+        else if (itemId == R.id.category_controversial_all_time) { mCategory = Category.CONTROVERSIAL;  mAge = Age.ALL_TIME  ; loadFromUrl = true; }
         // @formatter:on
         if (loadFromUrl) {
             SharedPreferencesHelper.saveCategorySelectionLoginInformation(mAge, mCategory,
@@ -710,7 +621,7 @@ public class ImageGridActivity extends BaseFragmentActivity
                 selectSubredditInNavigation(subredditName);
             } else {
                 // Select the Reddit Front Page
-                //                onNavigationItemSelected(Consts.POSITION_FRONTPAGE, 0);
+                // onNavigationItemSelected(Consts.POSITION_FRONTPAGE, 0);
             }
         } else if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK) {
             if (data.getBooleanExtra(Consts.EXTRA_SHOW_NSFW_IMAGES_CHANGED, false)) {
@@ -721,8 +632,7 @@ public class ImageGridActivity extends BaseFragmentActivity
                 if (mShowNsfwImages) {
                     //                    onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
                 } else {
-                    LocalBroadcastManager.getInstance(this)
-                        .sendBroadcast(new Intent(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
                 }
             }
         }
