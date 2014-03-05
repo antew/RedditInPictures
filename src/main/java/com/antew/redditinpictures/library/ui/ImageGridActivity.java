@@ -562,12 +562,9 @@ public class ImageGridActivity extends BaseFragmentActivity
         else if (itemId == R.id.category_controversial_all_time) { mCategory = Category.CONTROVERSIAL;  mAge = Age.ALL_TIME  ; loadFromUrl = true; }
         // @formatter:on
         if (loadFromUrl) {
-            SharedPreferencesHelper.saveCategorySelectionLoginInformation(mAge, mCategory,
-                ImageGridActivity.this);
-            //            getSubredditAdapter().notifyDataSetChanged(mCategory, mAge);
-            Log.i(TAG,
-                "onOptionsItemSelected, loadFromUrl = true, calling populateViewPagerFromSpinner()");
-            //            onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
+            SharedPreferencesHelper.saveCategorySelectionLoginInformation(mAge, mCategory, ImageGridActivity.this);
+            Log.i(TAG, "onOptionsItemSelected, loadFromUrl = true, calling loadSubreddit()");
+            loadSubreddit(mSelectedSubreddit);
         }
 
         return true;
