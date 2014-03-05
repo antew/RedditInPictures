@@ -15,7 +15,7 @@
         <AutoCompleteTextView
             android:layout_width="wrap_content"
             android:layout_height="?android:attr/listPreferredItemHeight"
-            android:hint="Search"
+            android:hint="@string/search"
             android:id="@+id/et_subreddit_filter"
             android:layout_weight=".75"
             android:singleLine="true" />
