@@ -59,6 +59,13 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     private boolean mRequestInProgress = false;
     private boolean mFullRefresh = true;
 
+    /**
+     * If we are currently fetching new images from Reddit.
+     * This is used to make sure we do not scroll the GridView
+     * back to the top when new iamges are loaded
+     */
+    private boolean mFetchingAdditionalImages;
+
     @InjectView(R.id.no_images)
     protected TextView mNoImages;
 
@@ -97,7 +104,7 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
         }
     };
 
-    private BroadcastReceiver mRemoveNsfwImages    = new BroadcastReceiver() {
+    private BroadcastReceiver mRemoveNsfwImages = new BroadcastReceiver() {
         //@formatter:off
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -121,6 +128,7 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
 
         // @formatter:off
         FragmentActivity activity = getActivity();
@@ -166,7 +174,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     @Override
     public void onResume() {
         super.onResume();
-        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -225,6 +232,10 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     }
 
     protected void fetchImagesFromReddit(boolean replaceAll) {
+        if (!replaceAll) {
+            mFetchingAdditionalImages = true;
+        }
+
         SherlockFragmentActivity activity = getSherlockActivity();
         if (activity != null) setRequestInProgress(true);
         mFullRefresh = replaceAll;
@@ -268,6 +279,9 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         Log.i(TAG, "onLoadFinished");
+        if (!cursor.moveToFirst()) {
+            Ln.e("Exiting onLoadFinished cUnable to move to first position on cursor: " + loader.getId());
+        }
         switch (loader.getId()) {
             case Consts.LOADER_REDDIT:
                 Log.i(TAG, "onLoadFinished REDDIT_LOADER, " + cursor.getCount() + " rows");
@@ -301,7 +315,14 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     @Override
     public void onLoaderReset(Loader<Cursor> cursor) {
         Log.i(TAG, "onLoaderReset");
-        mAdapter.swapCursor(null);
+        switch (cursor.getId()) {
+            case Consts.LOADER_REDDIT:
+                break;
+
+            case Consts.LOADER_POSTS:
+                mAdapter.swapCursor(null);
+                break;
+        }
     }
 
     @Override
