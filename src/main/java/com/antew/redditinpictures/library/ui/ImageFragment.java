@@ -57,7 +57,7 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     private   String             mAfter;
     private   MenuItem           mLoginMenuItem;
     private boolean mRequestInProgress = false;
-    private boolean mFirstRequest      = true;
+    private boolean mFullRefresh = true;
 
     @InjectView(R.id.no_images)
     protected TextView mNoImages;
@@ -87,11 +87,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     private BroadcastReceiver mHttpRequestComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "Http request complete, mFirstRequest = " + mFirstRequest);
-            if (mFirstRequest) {
-                mFirstRequest = false;
-            }
-
             Bundle args = intent.getBundleExtra(RedditService.EXTRA_BUNDLE);
             RequestCode requestCode = (RequestCode) intent.getSerializableExtra(RedditService.EXTRA_REQUEST_CODE);
 
@@ -101,14 +96,11 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
             String json = args.getString(RedditService.REST_RESULT);
         }
     };
-    /**
-     * This BroadcastReceiver handles updating the score when a vote is cast or changed
-     */
+
     private BroadcastReceiver mRemoveNsfwImages    = new BroadcastReceiver() {
         //@formatter:off
         @Override
         public void onReceive(Context context, Intent intent) {
-            //            mAdapter.removeNsfwImages();
             mAdapter.notifyDataSetChanged();
         }
     };
@@ -235,6 +227,7 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     protected void fetchImagesFromReddit(boolean replaceAll) {
         SherlockFragmentActivity activity = getSherlockActivity();
         if (activity != null) setRequestInProgress(true);
+        mFullRefresh = replaceAll;
         //@formatter:off
         RedditService.getPosts(activity,
                 mRedditDataProvider.getSubreddit(),
@@ -287,16 +280,18 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
                 Log.i(TAG, "onLoadFinished POST_LOADER, total = " + cursor.getCount() + " rows");
                 mAdapter.swapCursor(cursor);
                 setRequestInProgress(false);
-                // This sets the correct first visible position if we're loading the fragment
-                // for the first time
-                int firstVisiblePos = ((ScrollPosReadable) getActivity()).getFirstVisiblePosition();
-                setFirstVisiblePosition(firstVisiblePos);
 
                 if (cursor.getCount() == 0) {
                     fetchImagesFromReddit(true);
                     mNoImages.setVisibility(View.VISIBLE);
                 } else if (mNoImages.getVisibility() == View.VISIBLE) {
                     mNoImages.setVisibility(View.GONE);
+                }
+
+                // If a full refresh was initiated, scroll to the top.
+                if (mFullRefresh) {
+                    getAdapterView().setSelection(0);
+                    mFullRefresh = false;
                 }
 
                 break;

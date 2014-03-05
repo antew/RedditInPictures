@@ -71,8 +71,8 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount,
                 int totalItemCount) {
-                // if we're at the bottom of the listview, load more data
-                boolean lastItemIsVisible = (firstVisibleItem + visibleItemCount) >= totalItemCount;
+                // if we're are approaching the end of the listview, load more data
+                boolean lastItemIsVisible = (firstVisibleItem + visibleItemCount) >= totalItemCount - 5;
                 if (!isRequestInProgress() && totalItemCount > 0 && lastItemIsVisible) {
                     Log.i(TAG, "Reached last visible item in GridView, fetching more posts");
                     fetchImagesFromReddit(false);

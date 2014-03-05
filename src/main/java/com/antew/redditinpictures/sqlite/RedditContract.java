@@ -67,6 +67,7 @@ public class RedditContract {
         String SUBREDDIT_ID = "subredditId";
         String NAME = "name";
         String PRIORITY = "priority";
+        String USER_IS_SUBSCRIBER = "userIsSubscriber";
     }
 
     public interface PostColumns {
@@ -163,7 +164,7 @@ public class RedditContract {
             "vnd.android.cursor.item/vnd.redditinpictures.subreddits";
 
         public static final String[] SUBREDDITS_PROJECTION =
-            new String[] { _ID, DISPLAY_NAME, PRIORITY };
+            new String[] { _ID, DISPLAY_NAME, PRIORITY, NAME, USER_IS_SUBSCRIBER };
 
         public static final String DEFAULT_SORT =
             PRIORITY + " DESC, " + DISPLAY_NAME + " COLLATE NOCASE ASC";
