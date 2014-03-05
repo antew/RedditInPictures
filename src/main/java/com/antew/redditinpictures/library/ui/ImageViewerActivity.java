@@ -190,6 +190,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         mPager = (CustomViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
         mPager.setPageMargin((int) getResources().getDimension(R.dimen.image_detail_pager_margin));
+        mPager.setPageMarginDrawable(R.drawable.background_holo_dark);
         mPager.setOffscreenPageLimit(2);
         mPager.setOnPageChangeListener(getViewPagerOnPageChangeListener());
     }
