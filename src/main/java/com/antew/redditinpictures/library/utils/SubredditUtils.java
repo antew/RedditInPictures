@@ -80,4 +80,68 @@ public class SubredditUtils {
         intent.putStringArrayListExtra(Consts.EXTRA_MY_SUBREDDITS, subReddits);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
+
+    public static void mergeDefaultSubreddits(Context context) {
+        if (context == null) {
+            Ln.e("Got a Null Context");
+            return;
+        }
+
+        Ln.d("Merging Default Subreddits");
+        // Get the defaults subreddit response (static JSON).
+        BufferedReader reader = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(R.raw.default_subreddits)));
+
+        String fakeJson = "";
+        String line;
+        try
+        {
+            line = reader.readLine();
+            while (line != null)
+            {
+                fakeJson = fakeJson + line;
+                line = reader.readLine();
+            }
+        }
+        catch (IOException e)
+        {
+            Ln.e(e, "Failed to Load Default Subreddits");
+            return;
+        }
+
+        ContentResolver resolver = context.getContentResolver();
+
+        MySubreddits mySubreddits = JsonDeserializer.deserialize(fakeJson, MySubreddits.class);
+
+        if (mySubreddits == null) {
+            Ln.e("Failed to Desearialize Default Subreddits");
+            return;
+        }
+
+
+        ContentValues[] operations = mySubreddits.getContentValuesArray();
+
+        // Delete any currently existing, to allow us to batch merge...limitations of SQLLite on Android make me sad.
+        for (ContentValues contentValue : operations) {
+            //TODO: Once API-11 is sunset, replace with a conditional update instead of delete/insert.
+            // Updates with parameters aren't supported prior to API-11 (Honeycomb). So instead we are just deleting the record if it exists and recreating it.
+            resolver.delete(RedditContract.Subreddits.CONTENT_URI, "subredditId = ?", new String[] { contentValue.getAsString(RedditContract.Subreddits.SUBREDDIT_ID)});
+        }
+
+        int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, operations);
+        Ln.d("Inserted %d subreddits", rowsInserted);
+
+        ArrayList<String> subReddits = new ArrayList<String>();
+
+        for (SubredditChildren c : mySubreddits.getData().getChildren()) {
+            SubredditData data = c.getData();
+            subReddits.add(data.getDisplay_name());
+        }
+
+        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
+        SharedPreferencesHelper.saveArray(subReddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, context);
+
+        Intent intent = new Intent(Consts.BROADCAST_MY_SUBREDDITS);
+        intent.putStringArrayListExtra(Consts.EXTRA_MY_SUBREDDITS, subReddits);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
 }

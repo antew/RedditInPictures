@@ -692,11 +692,9 @@ public class ImageGridActivity extends BaseFragmentActivity
         int rowsDeleted = getContentResolver().delete(RedditContract.Login.CONTENT_URI, null, null);
         Log.i(TAG, "rows deleted = " + rowsDeleted);
 
+        // Clear out the login data, Reddit API doesn't incorporate sessions into how it works so simply clearing out the cached data does the trick.
+        RedditLoginInformation.setLoginData(null);
         invalidateOptionsMenu();
-
-        // TODO: Reset subreddit list to default subreddits
-        //        getSupportActionBar().setListNavigationCallbacks(getListNavigationSpinner(), this);
-        //        onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
     }
 
     @Override
