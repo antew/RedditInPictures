@@ -3,6 +3,7 @@
     package="com.antew.redditinpictures.pro">
 
     <application
-        android:icon="@drawable/ic_launcher" />
+        android:icon="@drawable/ic_launcher"
+        android:name="com.antew.redditinpictures.library.RedditInPicturesApplication" />
 
 </manifest>
