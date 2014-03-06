@@ -18,19 +18,24 @@ package com.antew.redditinpictures.library.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.enums.Vote;
+import com.antew.redditinpictures.library.image.Image;
+import com.antew.redditinpictures.library.image.ImageResolver;
+import com.antew.redditinpictures.library.image.ImgurAlbumType;
+import com.antew.redditinpictures.library.imgur.ImgurAlbumApi;
+import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
@@ -51,8 +56,11 @@ import java.util.regex.Pattern;
 public class ImageListCursorAdapter extends CursorAdapter {
     public static final String TAG = ImageListCursorAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
-    private Pattern        mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
-    private int            VOTE_TAG = 10;
+    private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
+    private Pattern mImgurAlbumPattern = Pattern.compile("^https?://imgur.com/a/.*$");
+    private static final String mImgurImagePrefix = "http://i.imgur.com/";
+    private static final String mImgurImageSuffix = ".jpg";
+    private int VOTE_TAG = 10;
 
     /**
      * @param context The context
@@ -101,20 +109,55 @@ public class ImageListCursorAdapter extends CursorAdapter {
             url = thumbnail;
         } else {
             // If the url is not pointing directly to the image. (Normally at i.imgur.com not imgur.com)
-            if (postData.getDomain() != null && postData.getDomain().equals("imgur.com")) {
+            if (postData.getDomain().equals("imgur.com")) {
                 // If the url is not an album but is just using a shortlink to an image append .jpg to the end and hope for the best.
                 if (mImgurNonAlbumPattern.matcher(url).matches()) {
                     url += ".jpg";
                     Ln.d("Updating Url To: %s", url);
+                } else if (mImgurAlbumPattern.matcher(url).matches()) {
+                    final String finalUrl = url;
+                    //Since this is an album, we don't want it to be attempted to be loaded.
+                    url = null;
+
+                    // If we have an album without a Thumbnail, let's find that thing.
+                    // Try to resolve the album and display the cover.
+                    AsyncTask<String, Void, Image> mResolveAlbumTask = new AsyncTask<String, Void, Image>() {
+
+                        /**
+                         * Background processing.
+                         */
+                        @Override
+                        protected Image doInBackground(String... params) {
+                            Log.d(TAG, "doInBackground - starting work");
+
+                            Ln.d("Resolving url: %s", finalUrl);
+                            return ImageResolver.resolve(finalUrl);
+                        }
+
+                        @Override
+                        protected void onPostExecute(Image image) {
+                            if (image instanceof ImgurAlbumType) {
+                                ImgurAlbumApi.Album album = ((ImgurAlbumType) image).getAlbum();
+                                Picasso.with(mContext)
+                                    .load(mImgurImagePrefix + album.getCover() + mImgurImageSuffix)
+                                    .placeholder(R.drawable.loading_spinner_48)
+                                    .error(R.drawable.empty_photo)
+                                    .into(holder.imageView);
+                            }
+                        }
+                    };
+                    mResolveAlbumTask.execute(url);
                 }
             }
         }
 
-        Picasso.with(mContext)
-            .load(url)
-            .placeholder(R.drawable.loading_spinner_48)
-            .error(R.drawable.empty_photo)
-            .into(holder.imageView);
+        if (Strings.notEmpty(url)) {
+            Picasso.with(mContext)
+                .load(url)
+                .placeholder(R.drawable.loading_spinner_48)
+                .error(R.drawable.empty_photo)
+                .into(holder.imageView);
+        }
 
         String separator = " " + "\u2022" + " ";
         String titleText =

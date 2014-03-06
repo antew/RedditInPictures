@@ -215,8 +215,8 @@ public class ImageUtil {
         ImageType type = ImageTypeCache.getType(url);
 
         if (type == null) {
-            if (isUnresolvedImgurImage(url)) { type = ImageType.IMGUR_IMAGE; }
-            else if (isImgurAlbum(url))      { type = ImageType.IMGUR_ALBUM; }
+            if (isImgurAlbum(url))      { type = ImageType.IMGUR_ALBUM; }
+            else if (isUnresolvedImgurImage(url)) { type = ImageType.IMGUR_IMAGE; }
             else if (isImgurGallery(url))    { type = ImageType.IMGUR_GALLERY; }
             else if (isSupportedImage(url))  { type = ImageType.OTHER_SUPPORTED_IMAGE; }
             else if (isFlickrImage(url))     { type = ImageType.FLICKR_IMAGE; }
