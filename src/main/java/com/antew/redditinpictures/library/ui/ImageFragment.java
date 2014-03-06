@@ -32,6 +32,7 @@ import com.antew.redditinpictures.library.image.ThumbnailInfo;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.interfaces.ScrollPosReadable;
 import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.service.RequestCode;
@@ -264,11 +265,20 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
 
             case Consts.LOADER_POSTS:
                 QueryCriteria queryCriteria = getPostsQueryCriteria();
+                // If the user doesn't want to see NSFW images, filter them out. Otherwise do nothing.
+                String selection = null;
+                String[] selectionArgs = null;
+
+                if (!SharedPreferencesHelper.getShowNsfwImages(getActivity())) {
+                    selection = RedditContract.PostColumns.OVER_18 + " = ?";
+                    selectionArgs = new String[] { "0" };
+                }
+
                 return new CursorLoader(getActivity(),
                     RedditContract.Posts.CONTENT_URI,  // uri
                     queryCriteria.getProjection(),     // projection
-                    null,                              // selection
-                    null,                              // selectionArgs[]
+                    selection,                         // selection
+                    selectionArgs,                     // selectionArgs[]
                     queryCriteria.getSort());          // sort
             //@formatter:on
         }
