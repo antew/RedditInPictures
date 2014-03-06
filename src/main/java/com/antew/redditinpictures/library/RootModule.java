@@ -10,7 +10,7 @@ import dagger.Module;
         includes = {
             AndroidModule.class,
             ApplicationModule.class
-        }
+        }, library = true
     )
 public class RootModule {
 }

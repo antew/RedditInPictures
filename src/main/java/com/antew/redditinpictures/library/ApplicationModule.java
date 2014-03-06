@@ -1,8 +1,5 @@
 package com.antew.redditinpictures.library;
 
-import android.accounts.AccountManager;
-import android.content.Context;
-import com.antew.redditinpictures.library.ui.ImageViewerFragment;
 import com.antew.redditinpictures.library.utils.MainThreadBus;
 import com.squareup.otto.Bus;
 import dagger.Module;
@@ -19,7 +16,7 @@ import javax.inject.Singleton;
 
         injects = {
             RedditInPicturesApplication.class,
-        }
+        }, library = true
 
     )
 public class ApplicationModule {
