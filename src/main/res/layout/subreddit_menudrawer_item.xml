@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:descendantFocusability="blocksDescendants"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
 
     <RelativeLayout
         android:layout_width="match_parent"

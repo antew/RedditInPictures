@@ -1,9 +1,6 @@
 package com.antew.redditinpictures.library.imgur;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
@@ -14,9 +11,10 @@ import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Picasso;
 import java.lang.ref.WeakReference;
 
-public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<Image> {
+public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
     private static final String mImgurImagePrefix = "http://i.imgur.com/";
-    private static final String mImgurImageSuffix = ".jpg";
+    // The S before the extension gets us a small image.
+    private static final String mImgurImageSuffix = "s.jpg";
 
     private String mImageUrl;
     private ImageView mImageView;
@@ -30,41 +28,55 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<Image> {
     }
 
     /**
+     * @throws Exception, captured on passed to onException() if present.
+     */
+    @Override protected void onPreExecute() throws Exception {
+        super.onPreExecute();
+        Picasso.with(mContext)
+            .load(R.drawable.loading_spinner_48)
+            .error(R.drawable.empty_photo)
+            .into(mImageView);
+    }
+
+    /**
      * Computes a result, or throws an exception if unable to do so.
      *
      * @return computed result
      * @throws Exception if unable to compute a result
      */
-    @Override public Image call() throws Exception {
+    @Override public String call() throws Exception {
         Ln.d("Resolving url: %s", mImageUrl);
-        return ImageResolver.resolve(mImageUrl);
+        Image imageAlbum = ImageResolver.resolve(mImageUrl);
+        if (imageAlbum instanceof ImgurAlbumType) {
+            return mImgurImagePrefix
+                + ((ImgurAlbumType) imageAlbum).getAlbum().getCover()
+                + mImgurImageSuffix;
+        }
+        return null;
     }
 
     /**
-     * @param image the result of {@link #call()}
+     * @param imageUrl the result of {@link #call()}
      * @throws Exception, captured on passed to onException() if present.
      */
-    @Override protected void onSuccess(Image image) throws Exception {
+    @Override protected void onSuccess(String imageUrl) throws Exception {
         if (mImageView != null) {
-            ResolveAlbumCoverWorkerTask albumCoverResolverWorkerTask = getAlbumCoverResolverTask(mImageView);
+            ResolveAlbumCoverWorkerTask albumCoverResolverWorkerTask =
+                getAlbumCoverResolverTask(mImageView);
             if (this == albumCoverResolverWorkerTask) {
-                if (image instanceof ImgurAlbumType) {
-                    ImgurAlbumApi.Album album = ((ImgurAlbumType) image).getAlbum();
-                    Picasso.with(mContext)
-                        .load(mImgurImagePrefix + album.getCover() + mImgurImageSuffix)
-                        .placeholder(R.drawable.loading_spinner_48)
-                        .error(R.drawable.empty_photo)
-                        .into(mImageView);
-                }
+                Picasso.with(mContext)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.loading_spinner_48)
+                    .error(R.drawable.empty_photo)
+                    .into(mImageView);
             }
         }
     }
 
-    public static class LoadingDrawable extends ColorDrawable {
+    public static class LoadingTaskHolder {
         private final WeakReference<ResolveAlbumCoverWorkerTask> mAlbumCoverResolverWorkerTask;
 
-        public LoadingDrawable(ResolveAlbumCoverWorkerTask bitmapDownloaderTask) {
-            super(Color.BLACK);
+        public LoadingTaskHolder(ResolveAlbumCoverWorkerTask bitmapDownloaderTask) {
             mAlbumCoverResolverWorkerTask =
                 new WeakReference<ResolveAlbumCoverWorkerTask>(bitmapDownloaderTask);
         }
@@ -75,7 +87,8 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<Image> {
     }
 
     public static boolean cancelPotentialDownload(String url, ImageView imageView) {
-        ResolveAlbumCoverWorkerTask albumCoverResolverWorkerTask = getAlbumCoverResolverTask(imageView);
+        ResolveAlbumCoverWorkerTask albumCoverResolverWorkerTask =
+            getAlbumCoverResolverTask(imageView);
 
         if (albumCoverResolverWorkerTask != null) {
             String bitmapUrl = albumCoverResolverWorkerTask.mImageUrl;
@@ -91,10 +104,10 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<Image> {
 
     public static ResolveAlbumCoverWorkerTask getAlbumCoverResolverTask(ImageView imageView) {
         if (imageView != null) {
-            Drawable drawable = imageView.getDrawable();
-            if (drawable instanceof LoadingDrawable) {
-                LoadingDrawable loadingDrawable = (LoadingDrawable)drawable;
-                return loadingDrawable.getAlbumCoverResolverTask();
+            Object tag = imageView.getTag();
+            if (tag instanceof LoadingTaskHolder) {
+                LoadingTaskHolder loadingTaskHolder = (LoadingTaskHolder) tag;
+                return loadingTaskHolder.getAlbumCoverResolverTask();
             }
         }
         return null;

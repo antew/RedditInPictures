@@ -18,7 +18,6 @@ package com.antew.redditinpictures.library.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Html;
@@ -31,10 +30,7 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.enums.Vote;
-import com.antew.redditinpictures.library.image.Image;
-import com.antew.redditinpictures.library.image.ImageResolver;
 import com.antew.redditinpictures.library.imgur.ResolveAlbumCoverWorkerTask;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
@@ -111,13 +107,14 @@ public class ImageListCursorAdapter extends CursorAdapter {
             if (postData.getDomain().equals("imgur.com")) {
                 // If the url is not an album but is just using a shortlink to an image append .jpg to the end and hope for the best.
                 if (mImgurNonAlbumPattern.matcher(url).matches()) {
-                    url += ".jpg";
+                    // The S before the extension gets us a small image.
+                    url += "s.jpg";
                     Ln.d("Updating Url To: %s", url);
                 } else if (mImgurAlbumPattern.matcher(url).matches()) {
                     if (ResolveAlbumCoverWorkerTask.cancelPotentialDownload(url, holder.imageView)) {
                         ResolveAlbumCoverWorkerTask task = new ResolveAlbumCoverWorkerTask(url, holder.imageView, mContext);
-                        ResolveAlbumCoverWorkerTask.LoadingDrawable loadingDrawable = new ResolveAlbumCoverWorkerTask.LoadingDrawable(task);
-                        holder.imageView.setImageDrawable(loadingDrawable);
+                        ResolveAlbumCoverWorkerTask.LoadingTaskHolder loadingTaskHolder = new ResolveAlbumCoverWorkerTask.LoadingTaskHolder(task);
+                        holder.imageView.setTag(loadingTaskHolder);
                         task.execute();
                     }
                     //Since this is an album, we don't want it to be attempted to be loaded.
