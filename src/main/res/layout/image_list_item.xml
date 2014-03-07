@@ -10,7 +10,6 @@
     android:descendantFocusability="blocksDescendants">
 
     <RelativeLayout
-        android:id="@+id/fragment_wrapper"
         android:layout_width="50dp"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"

@@ -96,7 +96,7 @@
             android:paddingBottom="3dp"
             android:paddingLeft="5dp"
             android:textColor="@color/white"
-            android:textSize="11sp" />
+            android:textSize="12sp" />
     </RelativeLayout>
 
 </RelativeLayout>
