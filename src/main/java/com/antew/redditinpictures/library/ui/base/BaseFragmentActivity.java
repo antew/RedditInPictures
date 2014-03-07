@@ -5,12 +5,16 @@ import android.os.Bundle;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.android.debug.hv.ViewServer;
-import com.antew.redditinpictures.pro.BuildConfig;;
+import com.antew.redditinpictures.library.Injector;
+import com.antew.redditinpictures.pro.BuildConfig;
+import com.squareup.otto.Bus;;import javax.inject.Inject;
 
 /**
  * Base activity for an activity which does not use fragments.
  */
 public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
+    @Inject
+    protected Bus mBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +23,15 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).addWindow(this);
         }
+
+        Injector.inject(this);
+        mBus.register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        mBus.unregister(this);
+        super.onPause();
     }
 
     @Override
