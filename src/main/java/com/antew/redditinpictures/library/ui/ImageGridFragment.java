@@ -20,6 +20,9 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
     private static final QueryCriteria mQueryCriteria =
         new QueryCriteria(RedditContract.Posts.GRIDVIEW_PROJECTION, RedditContract.Posts.DEFAULT_SORT);
 
+    //9 is a good number, it's not as great as 8 or as majestic as 42 but it is indeed the product of 3 3s which is okay...I guess.
+    private static final int POST_LOAD_OFFSET = 9;
+
     @InjectView(R.id.gridView)
     protected GridView mGridView;
 
@@ -59,7 +62,6 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
         return new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int scrollState) {
-                // Pause fetcher to ensure smoother scrolling when flinging
                 // TODO: Enable this with Picasso https://github.com/square/picasso/issues/248
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
                     //mImageFetcher.setPauseWork(true);
@@ -72,7 +74,7 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount,
                 int totalItemCount) {
                 // if we're are approaching the end of the listview, load more data
-                boolean lastItemIsVisible = (firstVisibleItem + visibleItemCount) >= totalItemCount - 5;
+                boolean lastItemIsVisible = (firstVisibleItem + visibleItemCount) >= totalItemCount - POST_LOAD_OFFSET;
                 if (!isRequestInProgress() && totalItemCount > 0 && lastItemIsVisible) {
                     Log.i(TAG, "Reached last visible item in GridView, fetching more posts");
                     fetchImagesFromReddit(false);

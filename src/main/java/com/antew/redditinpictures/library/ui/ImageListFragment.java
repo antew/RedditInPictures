@@ -17,6 +17,9 @@ public class ImageListFragment extends ImageFragment<ListView, ImageListCursorAd
             RedditContract.Posts.DEFAULT_SORT);
     AbsListView.OnScrollListener mListScrollListener;
 
+    //8 is a good number, the kind of number that you could say take home to your parents and not be worried about what they might think about it.
+    private static final int POST_LOAD_OFFSET = 8;
+
     @InjectView(R.id.image_list)
     protected ListView mImageListView;
 
@@ -48,7 +51,7 @@ public class ImageListFragment extends ImageFragment<ListView, ImageListCursorAd
                     int visibleItemCount, int totalItemCount) {
                     // if we're are approaching the bottom of the listview, load more data
                     boolean lastItemIsVisible =
-                        (firstVisibleItem + visibleItemCount) >= totalItemCount - 5;
+                        (firstVisibleItem + visibleItemCount) >= totalItemCount - POST_LOAD_OFFSET;
                     if (!isRequestInProgress() && totalItemCount > 0 && lastItemIsVisible) {
                         Log.i(TAG, "Reached last visible item in GridView, fetching more posts");
                         fetchImagesFromReddit(false);
