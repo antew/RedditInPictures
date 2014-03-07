@@ -4,6 +4,7 @@ import com.antew.redditinpictures.ui.ImageDetailActivityFree;
 import com.antew.redditinpictures.ui.ImageGridActivityFree;
 import com.antew.redditinpictures.ui.ImageGridFragmentFree;
 import com.antew.redditinpictures.ui.ImageListFragmentFree;
+import com.antew.redditinpictures.ui.ImgurAlbumActivityFree;
 import dagger.Module;
 
 /**
@@ -18,7 +19,8 @@ import dagger.Module;
             ImageGridFragmentFree.class,
             ImageListFragmentFree.class,
             ImageGridActivityFree.class,
-            ImageDetailActivityFree.class
+            ImageDetailActivityFree.class,
+            ImgurAlbumActivityFree.class
         }, library = true
     )
 public class ApplicationModuleFree {

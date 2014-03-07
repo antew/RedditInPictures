@@ -25,7 +25,6 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
         }
 
         Injector.inject(this);
-        mBus.register(this);
     }
 
     @Override
@@ -48,5 +47,6 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).setFocusedWindow(this);
         }
+        mBus.register(this);
     }
 }
