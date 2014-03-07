@@ -53,9 +53,6 @@ public class ImageListCursorAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
     private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
     private Pattern mImgurAlbumPattern = Pattern.compile("^https?://imgur.com/a/.*$");
-    private static final String mImgurImagePrefix = "http://i.imgur.com/";
-    private static final String mImgurImageSuffix = ".jpg";
-    private int VOTE_TAG = 10;
 
     /**
      * @param context The context
