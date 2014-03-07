@@ -291,9 +291,7 @@ public class ImageGridActivity extends BaseFragmentActivity
     }
 
     public Fragment getImageGridFragment() {
-        ImageGridFragment fragment =
-            (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(
-                ImageGridFragment.TAG);
+        ImageGridFragment fragment = (ImageGridFragment) getSupportFragmentManager().findFragmentByTag(ImageGridFragment.TAG);
         if (fragment == null) {
             fragment = getNewImageGridFragment();
         }
@@ -302,9 +300,7 @@ public class ImageGridActivity extends BaseFragmentActivity
     }
 
     public Fragment getImageListFragment() {
-        ImageListFragment fragment =
-            (ImageListFragment) getSupportFragmentManager().findFragmentByTag(
-                ImageListFragment.TAG);
+        ImageListFragment fragment = (ImageListFragment) getSupportFragmentManager().findFragmentByTag(ImageListFragment.TAG);
         if (fragment == null) {
             fragment = getNewImageListFragment();
         }
@@ -320,22 +316,11 @@ public class ImageGridActivity extends BaseFragmentActivity
         super.onPause();
     }
 
-    /**
-     * On some version of android the indeterminate progress bar will show when the feature is
-     * requested, so we make sure it is hidden here
-     */
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        setSupportProgressBarIndeterminateVisibility(false);
-    }
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the user is logged in, update the Logout menu item to "Log out <username>"
         if (RedditLoginInformation.isLoggedIn()) {
-            mLoginMenuItem.setTitle(
-                getString(R.string.log_out_) + RedditLoginInformation.getUsername());
+            mLoginMenuItem.setTitle(getString(R.string.log_out_) + RedditLoginInformation.getUsername());
             mLoginMenuItem.setIcon(R.drawable.ic_action_exit_dark);
         } else {
             mLoginMenuItem.setTitle(R.string.log_on);
