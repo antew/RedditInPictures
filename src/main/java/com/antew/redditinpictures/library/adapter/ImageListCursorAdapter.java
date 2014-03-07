@@ -33,8 +33,7 @@ import butterknife.InjectView;
 import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
-import com.antew.redditinpictures.library.image.ImgurAlbumType;
-import com.antew.redditinpictures.library.imgur.ImgurAlbumApi;
+import com.antew.redditinpictures.library.imgur.ResolveAlbumCoverWorkerTask;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
@@ -115,38 +114,14 @@ public class ImageListCursorAdapter extends CursorAdapter {
                     url += ".jpg";
                     Ln.d("Updating Url To: %s", url);
                 } else if (mImgurAlbumPattern.matcher(url).matches()) {
-                    final String finalUrl = url;
+                    if (ResolveAlbumCoverWorkerTask.cancelPotentialDownload(url, holder.imageView)) {
+                        ResolveAlbumCoverWorkerTask task = new ResolveAlbumCoverWorkerTask(url, holder.imageView, mContext);
+                        ResolveAlbumCoverWorkerTask.LoadingDrawable loadingDrawable = new ResolveAlbumCoverWorkerTask.LoadingDrawable(task);
+                        holder.imageView.setImageDrawable(loadingDrawable);
+                        task.execute();
+                    }
                     //Since this is an album, we don't want it to be attempted to be loaded.
                     url = null;
-
-                    // If we have an album without a Thumbnail, let's find that thing.
-                    // Try to resolve the album and display the cover.
-                    AsyncTask<String, Void, Image> mResolveAlbumTask = new AsyncTask<String, Void, Image>() {
-
-                        /**
-                         * Background processing.
-                         */
-                        @Override
-                        protected Image doInBackground(String... params) {
-                            Log.d(TAG, "doInBackground - starting work");
-
-                            Ln.d("Resolving url: %s", finalUrl);
-                            return ImageResolver.resolve(finalUrl);
-                        }
-
-                        @Override
-                        protected void onPostExecute(Image image) {
-                            if (image instanceof ImgurAlbumType) {
-                                ImgurAlbumApi.Album album = ((ImgurAlbumType) image).getAlbum();
-                                Picasso.with(mContext)
-                                    .load(mImgurImagePrefix + album.getCover() + mImgurImageSuffix)
-                                    .placeholder(R.drawable.loading_spinner_48)
-                                    .error(R.drawable.empty_photo)
-                                    .into(holder.imageView);
-                            }
-                        }
-                    };
-                    mResolveAlbumTask.execute(url);
                 }
             }
         }
