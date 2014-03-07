@@ -221,6 +221,7 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     //@formatter:off
 
     protected void setRequestInProgress(boolean inProgress) {
+        mRequestInProgress = inProgress;
         mBus.post(new ProgressChangedEvent(inProgress));
         if (inProgress) {
             mNoImages.setVisibility(View.GONE);
