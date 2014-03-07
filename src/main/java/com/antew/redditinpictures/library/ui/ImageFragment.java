@@ -228,6 +228,7 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     }
 
     protected void fetchImagesFromReddit(boolean replaceAll) {
+        setRequestInProgress(true);
         SherlockFragmentActivity activity = getSherlockActivity();
         mFullRefresh = replaceAll;
         //@formatter:off
@@ -294,11 +295,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
                 Log.i(TAG, "onLoadFinished POST_LOADER, total = " + cursor.getCount() + " rows");
                 mAdapter.swapCursor(cursor);
                 setRequestInProgress(false);
-
-                // This sets the correct first visible position if we're loading the fragment
-                // for the first time
-                int firstVisiblePos = ((ScrollPosReadable) getActivity()).getFirstVisiblePosition();
-                setFirstVisiblePosition(firstVisiblePos);
 
                 if (cursor.getCount() == 0) {
                     fetchImagesFromReddit(true);
