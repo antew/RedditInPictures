@@ -35,13 +35,13 @@ android {
     productFlavors {
         free {
             packageName "com.antew.redditinpictures"
-            versionCode 10
+            versionCode 11
             signingConfig signingConfigs.prod
         }
 
         pro {
             packageName "com.antew.redditinpictures.pro"
-            versionCode 7
+            versionCode 8
             signingConfig signingConfigs.prod
         }
     }
