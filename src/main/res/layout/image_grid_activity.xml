@@ -4,8 +4,19 @@
     android:background="@drawable/background_holo_dark"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
-    
-    <TextView
+
+  <fr.castorflex.android.smoothprogressbar.SmoothProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/top_progressbar"
+    android:layout_width="match_parent"
+    android:layout_height="2dp"
+    android:layout_marginTop="0dp"
+    android:indeterminate="true"
+    android:layout_alignParentTop="true"
+    app:spb_interpolator="spb_interpolator_acceleratedecelerate"
+    app:spb_sections_count="5" />
+
+  <TextView
         android:id="@+id/error_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

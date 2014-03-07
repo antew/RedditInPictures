@@ -22,6 +22,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -30,11 +31,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.antew.redditinpictures.library.adapter.SubredditMenuDrawerCursorAdapter;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment.LoginDialogListener;
@@ -42,6 +43,7 @@ import com.antew.redditinpictures.library.dialog.LogoutDialogFragment;
 import com.antew.redditinpictures.library.dialog.LogoutDialogFragment.LogoutDialogListener;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
+import com.antew.redditinpictures.library.event.ProgressChangedEvent;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.interfaces.ScrollPosReadable;
 import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
@@ -65,8 +67,17 @@ import com.antew.redditinpictures.pro.BuildConfig;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.antew.redditinpictures.sqlite.RedditDatabase;
-import java.util.ArrayList;
+import com.squareup.otto.Subscribe;
+
 import net.simonvt.menudrawer.MenuDrawer;
+
+import java.util.ArrayList;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+
+import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 
 public class ImageGridActivity extends BaseFragmentActivity
     implements LoginDialogListener, LogoutDialogListener, RedditDataProvider,
@@ -89,6 +100,9 @@ public class ImageGridActivity extends BaseFragmentActivity
     private SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     private ViewType mActiveViewType = ViewType.LIST;
     private int mFirstVisiblePos = 0;
+
+    @InjectView(R.id.top_progressbar)
+    protected SmoothProgressBar mProgressBar;
 
     private enum ViewType {LIST, GRID, VIEWPAGER}
 
@@ -206,12 +220,15 @@ public class ImageGridActivity extends BaseFragmentActivity
         if (BuildConfig.DEBUG) {
             Util.enableStrictMode();
         }
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         initializeActionBar();
 
+        LayoutInflater li = LayoutInflater.from(this);
+        View contentView = li.inflate(R.layout.image_grid_activity, null);
+        ButterKnife.inject(this, contentView);
+
         mSubredditDrawer = MenuDrawer.attach(this, MenuDrawer.Type.OVERLAY);
-        mSubredditDrawer.setContentView(R.layout.image_grid_activity);
+        mSubredditDrawer.setContentView(contentView);
         mSubredditDrawer.setMenuView(R.layout.subreddit_menudrawer);
         mSubredditDrawer.setSlideDrawable(R.drawable.ic_drawer);
         mSubredditDrawer.setDrawerIndicatorEnabled(true);
@@ -368,6 +385,7 @@ public class ImageGridActivity extends BaseFragmentActivity
         };
 
     private void loadSubreddit(String subredditName) {
+        setRequestInProgress(true);
         String title = subredditName;
         // If we don't have a subreddit, default to the Frontpage also.
         if (Strings.isEmpty(subredditName) || subredditName.equals(RedditUrl.REDDIT_FRONTPAGE)) {
@@ -665,6 +683,15 @@ public class ImageGridActivity extends BaseFragmentActivity
         if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
     }
 
+    @Subscribe
+    public void progressChanged(ProgressChangedEvent event) {
+        setRequestInProgress(event.isInProgress());
+    }
+
+    private void setRequestInProgress(boolean requestInProgress) {
+        animate(mProgressBar).setDuration(500).alpha(requestInProgress ? 100 : 0);
+    }
+
     @Override
     public void onFinishLoginDialog(String username, String password) {
         mUsername = username;
@@ -755,6 +782,7 @@ public class ImageGridActivity extends BaseFragmentActivity
                 break;
 
             case Consts.LOADER_SUBREDDITS:
+                setRequestInProgress(false);
                 mSubredditAdapter.swapCursor(cursor);
                 if (cursor != null) {
                     Log.i(TAG, "onLoadFinished LOADER_SUBREDDITS, " + cursor.getCount() + " rows");

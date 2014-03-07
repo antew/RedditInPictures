@@ -75,5 +75,6 @@ dependencies {
     compile "com.squareup.dagger:dagger:1.2.1"
     compile "com.squareup.dagger:dagger-compiler:1.2.1"
     compile 'com.squareup:otto:1.3.4'
+    compile 'com.github.castorflex.smoothprogressbar:library:0.3.3'
     freeCompile files('lib/admob-6.2.1.jar')
 }

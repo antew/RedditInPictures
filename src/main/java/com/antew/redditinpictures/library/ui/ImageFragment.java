@@ -28,6 +28,8 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.antew.redditinpictures.library.Injector;
+import com.antew.redditinpictures.library.event.ProgressChangedEvent;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.interfaces.ScrollPosReadable;
@@ -42,6 +44,9 @@ import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
 
 /**
  * Fragment with convenience methods for displaying images
@@ -60,12 +65,8 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     private boolean mRequestInProgress = false;
     private boolean mFullRefresh = true;
 
-    /**
-     * If we are currently fetching new images from Reddit.
-     * This is used to make sure we do not scroll the GridView
-     * back to the top when new iamges are loaded
-     */
-    private boolean mFetchingAdditionalImages;
+    @Inject
+    protected Bus mBus;
 
     @InjectView(R.id.no_images)
     protected TextView mNoImages;
@@ -129,7 +130,7 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        Injector.inject(this);
 
         // @formatter:off
         FragmentActivity activity = getActivity();
@@ -220,25 +221,14 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     //@formatter:off
 
     protected void setRequestInProgress(boolean inProgress) {
-        mRequestInProgress = inProgress;
-
-        final SherlockFragmentActivity activity = getSherlockActivity();
-        if (activity != null) {
-            activity.setSupportProgressBarIndeterminateVisibility(inProgress);
-        }
-
+        mBus.post(new ProgressChangedEvent(inProgress));
         if (inProgress) {
             mNoImages.setVisibility(View.GONE);
         }
     }
 
     protected void fetchImagesFromReddit(boolean replaceAll) {
-        if (!replaceAll) {
-            mFetchingAdditionalImages = true;
-        }
-
         SherlockFragmentActivity activity = getSherlockActivity();
-        if (activity != null) setRequestInProgress(true);
         mFullRefresh = replaceAll;
         //@formatter:off
         RedditService.getPosts(activity,
@@ -304,6 +294,11 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
                 Log.i(TAG, "onLoadFinished POST_LOADER, total = " + cursor.getCount() + " rows");
                 mAdapter.swapCursor(cursor);
                 setRequestInProgress(false);
+
+                // This sets the correct first visible position if we're loading the fragment
+                // for the first time
+                int firstVisiblePos = ((ScrollPosReadable) getActivity()).getFirstVisiblePosition();
+                setFirstVisiblePosition(firstVisiblePos);
 
                 if (cursor.getCount() == 0) {
                     fetchImagesFromReddit(true);
