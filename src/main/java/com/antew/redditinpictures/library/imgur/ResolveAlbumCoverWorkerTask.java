@@ -1,9 +1,6 @@
 package com.antew.redditinpictures.library.imgur;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
@@ -28,6 +25,17 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
         this.mImageUrl = mImageUrl;
         this.mImageView = mImageView;
         this.mContext = mContext;
+    }
+
+    /**
+     * @throws Exception, captured on passed to onException() if present.
+     */
+    @Override protected void onPreExecute() throws Exception {
+        super.onPreExecute();
+        Picasso.with(mContext)
+            .load(R.drawable.loading_spinner_48)
+            .error(R.drawable.empty_photo)
+            .into(mImageView);
     }
 
     /**
@@ -65,11 +73,10 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
         }
     }
 
-    public static class LoadingDrawable extends ColorDrawable {
+    public static class LoadingTaskHolder {
         private final WeakReference<ResolveAlbumCoverWorkerTask> mAlbumCoverResolverWorkerTask;
 
-        public LoadingDrawable(ResolveAlbumCoverWorkerTask bitmapDownloaderTask) {
-            super(Color.BLACK);
+        public LoadingTaskHolder(ResolveAlbumCoverWorkerTask bitmapDownloaderTask) {
             mAlbumCoverResolverWorkerTask =
                 new WeakReference<ResolveAlbumCoverWorkerTask>(bitmapDownloaderTask);
         }
@@ -97,10 +104,10 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
 
     public static ResolveAlbumCoverWorkerTask getAlbumCoverResolverTask(ImageView imageView) {
         if (imageView != null) {
-            Drawable drawable = imageView.getDrawable();
-            if (drawable instanceof LoadingDrawable) {
-                LoadingDrawable loadingDrawable = (LoadingDrawable) drawable;
-                return loadingDrawable.getAlbumCoverResolverTask();
+            Object tag = imageView.getTag();
+            if (tag instanceof LoadingTaskHolder) {
+                LoadingTaskHolder loadingTaskHolder = (LoadingTaskHolder) tag;
+                return loadingTaskHolder.getAlbumCoverResolverTask();
             }
         }
         return null;

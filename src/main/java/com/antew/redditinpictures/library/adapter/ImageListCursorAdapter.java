@@ -113,8 +113,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
                 } else if (mImgurAlbumPattern.matcher(url).matches()) {
                     if (ResolveAlbumCoverWorkerTask.cancelPotentialDownload(url, holder.imageView)) {
                         ResolveAlbumCoverWorkerTask task = new ResolveAlbumCoverWorkerTask(url, holder.imageView, mContext);
-                        ResolveAlbumCoverWorkerTask.LoadingDrawable loadingDrawable = new ResolveAlbumCoverWorkerTask.LoadingDrawable(task);
-                        holder.imageView.setImageDrawable(loadingDrawable);
+                        ResolveAlbumCoverWorkerTask.LoadingTaskHolder loadingTaskHolder = new ResolveAlbumCoverWorkerTask.LoadingTaskHolder(task);
+                        holder.imageView.setTag(loadingTaskHolder);
                         task.execute();
                     }
                     //Since this is an album, we don't want it to be attempted to be loaded.
