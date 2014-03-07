@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -246,7 +247,7 @@ public class ImageGridActivity extends BaseFragmentActivity
             }
         });
 
-        Button subredditSearch = (Button) findViewById(R.id.btn_search);
+        ImageButton subredditSearch = (ImageButton) findViewById(R.id.btn_search);
         subredditSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
