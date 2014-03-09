@@ -16,7 +16,7 @@
 ### Client-Side
 
 * [Android Query](https://code.google.com/p/android-query/)
-* [Touch Image View](https://github.com/MikeOrtiz/TouchImageView)
+
 * [Photo View](https://github.com/chrisbanes/PhotoView)
 
 ### APIs
