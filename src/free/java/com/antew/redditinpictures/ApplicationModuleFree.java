@@ -1,5 +1,6 @@
 package com.antew.redditinpictures;
 
+import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.ui.ImageDetailActivityFree;
 import com.antew.redditinpictures.ui.ImageGridActivityFree;
 import com.antew.redditinpictures.ui.ImageGridFragmentFree;
@@ -14,7 +15,7 @@ import dagger.Module;
 @Module
     (
         complete = false,
-
+        overrides = true,
         injects = {
             ImageGridFragmentFree.class,
             ImageListFragmentFree.class,

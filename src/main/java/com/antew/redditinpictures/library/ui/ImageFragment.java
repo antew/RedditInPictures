@@ -22,13 +22,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.antew.redditinpictures.library.Injector;
 import com.antew.redditinpictures.library.event.ProgressChangedEvent;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
@@ -38,6 +34,7 @@ import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.service.RequestCode;
+import com.antew.redditinpictures.library.ui.base.BaseFragment;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Util;
@@ -48,12 +45,15 @@ import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Fragment with convenience methods for displaying images
  * @param <T> The type of view the fragment is using, e.g. GridView, ListView
  * @param <V> The type of the cursor adapter backing the view
  */
-public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapter> extends SherlockFragment
+public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapter> extends BaseFragment
     implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, ScrollPosReadable {
     public static final  String TAG             = "ImageFragment";
     private static final String IMAGE_CACHE_DIR = "thumbs";
@@ -130,7 +130,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Injector.inject(this);
 
         // @formatter:off
         FragmentActivity activity = getActivity();
@@ -230,10 +229,9 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
 
     protected void fetchImagesFromReddit(boolean replaceAll) {
         setRequestInProgress(true);
-        SherlockFragmentActivity activity = getSherlockActivity();
         mFullRefresh = replaceAll;
         //@formatter:off
-        RedditService.getPosts(activity,
+        RedditService.getPosts(getActivity(),
                 mRedditDataProvider.getSubreddit(),
                 mRedditDataProvider.getAge(),
                 mRedditDataProvider.getCategory(),

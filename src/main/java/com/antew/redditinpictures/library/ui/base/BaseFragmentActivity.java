@@ -2,17 +2,28 @@ package com.antew.redditinpictures.library.ui.base;
 
 import android.os.Bundle;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.android.debug.hv.ViewServer;
-import com.antew.redditinpictures.library.Injector;
+import com.antew.redditinpictures.library.RedditInPicturesApplication;
+import com.antew.redditinpictures.library.modules.ActivityModule;
 import com.antew.redditinpictures.pro.BuildConfig;
-import com.squareup.otto.Bus;;import javax.inject.Inject;
+import com.squareup.otto.Bus;
+
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import dagger.ObjectGraph;
+
+;
 
 /**
  * Base activity for an activity which does not use fragments.
  */
 public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
+    private ObjectGraph activityGraph;
+
     @Inject
     protected Bus mBus;
 
@@ -24,7 +35,11 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
             ViewServer.get(this).addWindow(this);
         }
 
-        Injector.inject(this);
+        RedditInPicturesApplication application = (RedditInPicturesApplication) getApplication();
+        activityGraph = application.getApplicationGraph().plus(getModules().toArray());
+
+        // Inject ourselves so subclasses will have dependencies fulfilled when this method returns.
+        activityGraph.inject(this);
     }
 
     @Override
@@ -35,10 +50,13 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        activityGraph = null;
+
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).removeWindow(this);
         }
+
+        super.onDestroy();
     }
 
     @Override
@@ -48,5 +66,19 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
             ViewServer.get(this).setFocusedWindow(this);
         }
         mBus.register(this);
+    }
+
+    /**
+     * A list of modules to use for the individual activity graph. Subclasses can override this
+     * method to provide additional modules provided they call and include the modules returned by
+     * calling {@code super.getModules()}.
+     */
+    protected List<Object> getModules() {
+        return Arrays.<Object>asList(new ActivityModule(this));
+    }
+
+    /** Inject the supplied {@code object} using the activity-specific graph. */
+    public void inject(Object object) {
+        activityGraph.inject(object);
     }
 }
