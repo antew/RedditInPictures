@@ -14,13 +14,17 @@
 ## Technologies
 
 ### Client-Side
-
-* [Android Query](https://code.google.com/p/android-query/)
-
+* [Menu Drawer](https://github.com/SimonVT/android-menudrawer)
+* [ActionBarSherlock](https://github.com/JakeWharton/ActionBarSherlock)
+* [Nine Old Androids](https://github.com/JakeWharton/NineOldAndroids/)
+* [Picasso](https://github.com/square/picasso)
+* [Butterknife](https://github.com/JakeWharton/butterknife)
+* [Dagger](https://github.com/square/dagger/)
+* [Otto](https://github.com/square/otto)
+* [SmoothProgressBar](https://github.com/castorflex/SmoothProgressBar)
 * [Photo View](https://github.com/chrisbanes/PhotoView)
 
 ### APIs
-
 * [Imgur API](https://api.imgur.com/)
 * [flickr API](http://www.flickr.com/services/api/)
 
