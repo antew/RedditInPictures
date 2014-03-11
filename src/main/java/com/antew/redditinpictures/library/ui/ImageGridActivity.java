@@ -27,7 +27,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -101,6 +100,7 @@ public class ImageGridActivity extends BaseFragmentActivity
     private SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     private ViewType mActiveViewType = ViewType.LIST;
     private int mFirstVisiblePos = 0;
+    private boolean mLoginLoaderHasRun = true;
 
     @InjectView(R.id.top_progressbar)
     protected SmoothProgressBar mProgressBar;
@@ -702,11 +702,11 @@ public class ImageGridActivity extends BaseFragmentActivity
 
     @Override
     public void onFinishLogoutDialog() {
-        int rowsDeleted = getContentResolver().delete(RedditContract.Login.CONTENT_URI, null, null);
-        Log.i(TAG, "rows deleted = " + rowsDeleted);
-
         // Clear out the login data, Reddit API doesn't incorporate sessions into how it works so simply clearing out the cached data does the trick.
         RedditLoginInformation.setLoginData(null);
+        SetDefaultSubredditsTask defaultSubredditsTask = new SetDefaultSubredditsTask(true);
+        defaultSubredditsTask.execute();
+        loadSubreddit(RedditUrl.REDDIT_FRONTPAGE);
         invalidateOptionsMenu();
     }
 
@@ -730,8 +730,7 @@ public class ImageGridActivity extends BaseFragmentActivity
         Log.i(TAG, "onCreateLoader");
         switch (id) {
             case Consts.LOADER_LOGIN:
-                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null,
-                    RedditContract.Login.DEFAULT_SORT);
+                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
             case Consts.LOADER_SUBREDDITS:
                 String selection = null;
                 String[] selectionArgs = null;
@@ -757,26 +756,29 @@ public class ImageGridActivity extends BaseFragmentActivity
         switch (loader.getId()) {
             case Consts.LOADER_LOGIN:
                 if (cursor != null) {
-                    Log.i(TAG, "onLoadFinished LOADER_LOGIN, " + cursor.getCount() + " rows");
+                    Ln.i(TAG, "onLoadFinished LOADER_LOGIN, " + cursor.getCount() + " rows");
                     if (cursor.moveToFirst()) {
-                        mUsername =
-                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
-                        String cookie =
-                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
-                        String modhash =
-                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
+                        mUsername = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
+                        String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
+                        String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
                         Log.i(TAG, "Username = " + mUsername);
                         Log.i(TAG, "Cookie = " + cookie);
                         Log.i(TAG, "Modhash = " + modhash);
 
                         LoginData data = new LoginData(mUsername, modhash, cookie);
-                        RedditLoginInformation.setLoginData(data);
+                        if (!data.equals(RedditLoginInformation.getLoginData())) {
+                            RedditLoginInformation.setLoginData(data);
+
+                            if (mLoginLoaderHasRun) {
+                                loadSubreddit(RedditUrl.REDDIT_FRONTPAGE);
+                                mLoginLoaderHasRun = false;
+                            }
+                        }
 
                         hideProgressDialog();
                         invalidateOptionsMenu();
 
-                        SetDefaultSubredditsTask defaultSubredditsTask =
-                            new SetDefaultSubredditsTask();
+                        SetDefaultSubredditsTask defaultSubredditsTask = new SetDefaultSubredditsTask();
                         defaultSubredditsTask.execute();
                     }
                 }
