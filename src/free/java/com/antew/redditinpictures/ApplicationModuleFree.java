@@ -1,6 +1,7 @@
 package com.antew.redditinpictures;
 
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
+import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.ui.ImageDetailActivityFree;
 import com.antew.redditinpictures.ui.ImageGridActivityFree;
 import com.antew.redditinpictures.ui.ImageGridFragmentFree;
@@ -21,6 +22,7 @@ import dagger.Module;
             ImageListFragmentFree.class,
             ImageGridActivityFree.class,
             ImageDetailActivityFree.class,
+            ImageDetailFragment.class,
             ImgurAlbumActivityFree.class
         }, library = true
     )
