@@ -9,8 +9,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
+import android.util.DisplayMetrics;
 import android.view.inputmethod.InputMethodManager;
 
+import com.antew.redditinpictures.device.ScreenSize;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.annotations.ForApplication;
 import com.antew.redditinpictures.library.utils.MainThreadBus;
@@ -89,5 +91,12 @@ public class RootModule {
     @Provides @Singleton
     Bus provideOttoBus() {
         return new MainThreadBus(new Bus());
+    }
+
+    @Provides @Singleton
+    ScreenSize provideScreenSize(@ForApplication final Context context) {
+        final DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return new ScreenSize(displayMetrics.widthPixels, displayMetrics.heightPixels);
+
     }
 }

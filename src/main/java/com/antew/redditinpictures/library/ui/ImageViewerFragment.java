@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.actionbarsherlock.app.SherlockFragment;
+import com.antew.redditinpictures.device.ScreenSize;
 import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
@@ -37,12 +39,17 @@ import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.PostData;
+import com.antew.redditinpictures.library.ui.base.BaseFragment;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageUtil;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import javax.inject.Inject;
+
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 
@@ -51,7 +58,7 @@ import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
-public abstract class ImageViewerFragment extends SherlockFragment {
+public abstract class ImageViewerFragment extends BaseFragment {
     public static final String TAG = "ImageViewerFragment";
     protected static final String IMAGE_DATA_EXTRA = "extra_image_data";
     protected static final String IMAGE_ALBUM_EXTRA = "extra_image_album";
@@ -67,6 +74,9 @@ public abstract class ImageViewerFragment extends SherlockFragment {
     @InjectView(R.id.webview_stub) ViewStub mViewStub;
     @InjectView(R.id.tv_post_votes) TextView mPostVotes;
     @InjectView(R.id.tv_error_message) TextView mErrorMessage;
+
+    @Inject
+    ScreenSize mScreenSize;
 
     protected WebView mWebView;
     protected boolean mPauseWork = false;
@@ -323,7 +333,7 @@ public abstract class ImageViewerFragment extends SherlockFragment {
         } else {
             Picasso.with(getActivity())
                 .load(mResolvedImageUrl)
-                .resize(mImageView.getWidth(), mImageView.getHeight())
+                .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
                 .centerInside()
                 .into(mImageView, new Callback() {
                     @Override
