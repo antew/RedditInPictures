@@ -8,6 +8,7 @@
     <string name="app_name">Reddit In Pictures</string>
     <string name="are_you_sure_you_want_to_exit">Are you sure you want to exit?</string>
     <string name="are_you_sure_you_want_to_log_out">Are you sure you want to log out?</string>
+    <string name="are_you_sure_you_want_to_log_out_with_username">Are you sure you want to log out, %s?</string>
     <string name="cancel">Cancel</string>
     <string name="check_out_this_image">Check out this image</string>
     <string name="clear_cache_complete_toast">Caches have been cleared</string>
