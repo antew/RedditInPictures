@@ -579,7 +579,7 @@ public class ImageGridActivity extends BaseFragmentActivity
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
             loginFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGIN);
         } else {
-            DialogFragment logoutFragment = LogoutDialogFragment.newInstance();
+            DialogFragment logoutFragment = LogoutDialogFragment.newInstance(mUsername);
             logoutFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGOUT);
         }
     }
