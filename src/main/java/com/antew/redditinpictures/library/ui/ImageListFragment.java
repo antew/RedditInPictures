@@ -53,7 +53,7 @@ public class ImageListFragment extends ImageFragment<ListView, ImageListCursorAd
                     boolean lastItemIsVisible =
                         (firstVisibleItem + visibleItemCount) >= totalItemCount - POST_LOAD_OFFSET;
                     if (!isRequestInProgress() && totalItemCount > 0 && lastItemIsVisible) {
-                        Log.i(TAG, "Reached last visible item in GridView, fetching more posts");
+                        Log.i(TAG, "Reached last visible item in ListView, fetching more posts");
                         fetchImagesFromReddit(false);
                     }
                 }
