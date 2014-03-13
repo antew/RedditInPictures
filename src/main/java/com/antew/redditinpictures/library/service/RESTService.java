@@ -168,8 +168,8 @@ public class RESTService extends IntentService {
                 // at java.util.zip.GZIPInputStream.<init>(GZIPInputStream.java:96)
                 // at java.util.zip.GZIPInputStream.<init>(GZIPInputStream.java:81)
                 // at com.antew.redditinpictures.library.service.RESTService$GzipDecompressingEntity.getContent(RESTService.java:346)
-                // client.addRequestInterceptor(getGzipRequestInterceptor());
-                // client.addResponseInterceptor(getGzipResponseInterceptor());
+                client.addRequestInterceptor(getGzipRequestInterceptor());
+                client.addResponseInterceptor(getGzipResponseInterceptor());
 
                 if (cookie != null)
                     request.addHeader("Cookie", cookie);
