@@ -1,14 +1,13 @@
 package com.antew.redditinpictures.library.service;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.GZIPInputStream;
+import android.app.IntentService;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+
+import com.antew.redditinpictures.library.utils.Consts;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -32,14 +31,14 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
-import android.app.IntentService;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
-
-import com.antew.redditinpictures.library.utils.Consts;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 /**
  * This is based an article by Neil Goodman, I've added the EXTRA_REQUEST_CODE so that callers can
@@ -161,8 +160,16 @@ public class RESTService extends IntentService {
                 DefaultHttpClient client = new DefaultHttpClient();
 
                 // GZip requests
-                client.addRequestInterceptor(getGzipRequestInterceptor());
-                client.addResponseInterceptor(getGzipResponseInterceptor());
+                // antew on 3/12/2014 - Disabling GZIP for now, need to figure this CloseGuard error:
+                // 03-12 21:02:09.248    9674-9683/com.antew.redditinpictures.pro E/StrictMode﹕ A resource was acquired at attached stack trace but never released. See java.io.Closeable for information on avoiding resource leaks.
+                //         java.lang.Throwable: Explicit termination method 'end' not called
+                // at dalvik.system.CloseGuard.open(CloseGuard.java:184)
+                // at java.util.zip.Inflater.<init>(Inflater.java:82)
+                // at java.util.zip.GZIPInputStream.<init>(GZIPInputStream.java:96)
+                // at java.util.zip.GZIPInputStream.<init>(GZIPInputStream.java:81)
+                // at com.antew.redditinpictures.library.service.RESTService$GzipDecompressingEntity.getContent(RESTService.java:346)
+                // client.addRequestInterceptor(getGzipRequestInterceptor());
+                // client.addResponseInterceptor(getGzipResponseInterceptor());
 
                 if (cookie != null)
                     request.addHeader("Cookie", cookie);
@@ -211,7 +218,6 @@ public class RESTService extends IntentService {
         } finally {
             if (responseEntity != null)
                 try {
-                    
                     responseEntity.consumeContent();
                 } catch (IOException ignored) {
                 }
@@ -349,7 +355,7 @@ public class RESTService extends IntentService {
         public InputStream getContent() throws IOException, IllegalStateException {
             // the wrapped entity's getContent() decides about repeatability
             InputStream wrappedin = wrappedEntity.getContent();
-            return new GZIPInputStream(new BufferedInputStream(wrappedin));
+            return new GZIPInputStream(wrappedin);
         }
 
         @Override
