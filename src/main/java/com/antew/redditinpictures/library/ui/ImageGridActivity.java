@@ -234,6 +234,7 @@ public class ImageGridActivity extends BaseFragmentActivity
         mSubredditDrawer.setContentView(contentView);
         mSubredditDrawer.setMenuView(R.layout.subreddit_menudrawer);
         mSubredditDrawer.setSlideDrawable(R.drawable.ic_drawer);
+        mSubredditDrawer.setMenuSize(Util.dpToPx(this, 260));
         mSubredditDrawer.setDrawerIndicatorEnabled(true);
 
         mSubredditAdapter = getSubredditMenuAdapter();
