@@ -103,7 +103,12 @@ public class ImageCursorAdapter extends CursorAdapter {
         if (!thumbnail.trim().equals("") && !thumbnail.equals("default")) {
             url = thumbnail;
         }
-        Picasso.with(mContext).load(url).placeholder(R.drawable.empty_photo).error(R.drawable.empty_photo).into(imageView);
+        Picasso.with(mContext).load(url)
+               .placeholder(R.drawable.empty_photo)
+               .error(R.drawable.empty_photo)
+               .fit()
+               .centerCrop()
+               .into(imageView);
     }
 
     @Override

@@ -125,6 +125,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
                 .load(url)
                 .placeholder(R.drawable.loading_spinner_48)
                 .error(R.drawable.empty_photo)
+                .fit()
+                .centerCrop()
                 .into(holder.imageView);
         }
 
