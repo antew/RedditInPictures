@@ -68,6 +68,7 @@ import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.antew.redditinpictures.sqlite.RedditDatabase;
 import com.squareup.otto.Subscribe;
+import com.squareup.picasso.Picasso;
 
 import net.simonvt.menudrawer.MenuDrawer;
 
@@ -220,6 +221,7 @@ public class ImageGridActivity extends BaseFragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) {
             Util.enableStrictMode();
+            Picasso.with(this).setDebugging(true);
         }
         super.onCreate(savedInstanceState);
         initializeActionBar();
