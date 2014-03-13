@@ -50,7 +50,7 @@
 
     </RelativeLayout>
 
-    <uk.co.senab.photoview.PhotoView
+    <ImageView
         android:id="@+id/iv_image"
         android:layout_width="60dp"
         android:layout_height="60dp"
