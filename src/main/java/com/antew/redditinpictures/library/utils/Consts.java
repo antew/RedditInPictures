@@ -69,7 +69,7 @@ public class Consts {
     public static final String COMPACT_URL     = "/.compact";
     public static final String REDDIT_BASE_URL = "http://www.reddit.com";
 
-    public static final int POSTS_TO_FETCH = 50;
+    public static final int POSTS_TO_FETCH = 100;
 
     public static final float  IMAGE_CACHE_SIZE = 0.25f;
     public static final String JSON             = ".json";
