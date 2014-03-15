@@ -71,18 +71,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     @InjectView(R.id.no_images)
     protected TextView mNoImages;
 
-    private BroadcastReceiver mLoginComplete = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "Login request complete");
-            boolean successful = intent.getBooleanExtra(Consts.EXTRA_SUCCESS, false);
-            if (!successful) {
-                String errorMessage = intent.getStringExtra(Consts.EXTRA_ERROR_MESSAGE);
-                showLoginError(errorMessage);
-            }
-        }
-    };
-
     private BroadcastReceiver mSubredditSelected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -136,7 +124,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
         LocalBroadcastManager.getInstance(activity).registerReceiver(mRemoveNsfwImages, new IntentFilter(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
         LocalBroadcastManager.getInstance(activity).registerReceiver(mHttpRequestComplete, new IntentFilter(Consts.BROADCAST_HTTP_FINISHED));
         LocalBroadcastManager.getInstance(activity).registerReceiver(mSubredditSelected, new IntentFilter(Consts.BROADCAST_SUBREDDIT_SELECTED));
-        LocalBroadcastManager.getInstance(activity).registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
         // @formatter:on
 
         activity.getSupportLoaderManager().initLoader(Consts.LOADER_REDDIT, null, ImageFragment.this);
@@ -188,7 +175,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mRemoveNsfwImages);
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mHttpRequestComplete);
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mSubredditSelected);
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mLoginComplete);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN) @Override
@@ -213,11 +199,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     public Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
         return ImageDetailActivity.class;
     }
-
-    private void showLoginError(String errorMessage) {
-        Toast.makeText(getActivity(), getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT).show();
-    }
-    //@formatter:off
 
     protected void setRequestInProgress(boolean inProgress) {
         mRequestInProgress = inProgress;

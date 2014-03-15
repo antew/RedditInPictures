@@ -31,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
@@ -213,6 +214,12 @@ public class ImageGridActivity extends BaseFragmentActivity
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Login request complete");
             hideProgressDialog();
+            Log.i(TAG, "Login request complete");
+            boolean successful = intent.getBooleanExtra(Consts.EXTRA_SUCCESS, false);
+            if (!successful) {
+                String errorMessage = intent.getStringExtra(Consts.EXTRA_ERROR_MESSAGE);
+                Toast.makeText(ImageGridActivity.this, getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT).show();
+            }
         }
     };
     //@formatter:on
