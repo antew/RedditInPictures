@@ -214,7 +214,6 @@ public class ImageGridActivity extends BaseFragmentActivity
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Login request complete");
             hideProgressDialog();
-            Log.i(TAG, "Login request complete");
             boolean successful = intent.getBooleanExtra(Consts.EXTRA_SUCCESS, false);
             if (!successful) {
                 String errorMessage = intent.getStringExtra(Consts.EXTRA_ERROR_MESSAGE);
