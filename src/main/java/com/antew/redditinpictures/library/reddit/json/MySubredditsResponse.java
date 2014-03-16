@@ -77,8 +77,8 @@ public class MySubredditsResponse extends RedditResponseHandler {
 
     public enum DefaultSubreddit {
         FRONTPAGE("Frontpage", 99999),
-        ALL("All", 99998),
-        ANTEW_TESTING("antewtesting", 99997);
+        ALL("All", 99998);
+
         private final String displayName;
         private final int    priority;
 
