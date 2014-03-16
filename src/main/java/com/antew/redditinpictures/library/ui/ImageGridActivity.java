@@ -56,6 +56,7 @@ import com.antew.redditinpictures.library.reddit.MySubreddits;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.SubredditData;
+import com.antew.redditinpictures.library.reddit.json.MySubredditsResponse;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.utils.Consts;
@@ -383,7 +384,7 @@ public class ImageGridActivity extends BaseFragmentActivity
 
                 // TODO: Make this less hacky...
                 // Load the actual frontpage of reddit if selected
-                if (priority == MySubreddits.DefaultSubreddit.FRONTPAGE.getPriority()) {
+                if (priority == MySubredditsResponse.DefaultSubreddit.FRONTPAGE.getPriority()) {
                     mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
                 }
 
