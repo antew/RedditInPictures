@@ -1,24 +1,18 @@
 package com.antew.redditinpictures.library.reddit.json;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.logging.Log;
-import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.MySubreddits;
-import com.antew.redditinpictures.library.reddit.SubredditChildren;
 import com.antew.redditinpictures.library.reddit.SubredditData;
-import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
-import com.antew.redditinpictures.library.utils.Consts;
-import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.sqlite.RedditContract;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MySubredditsResponse extends RedditResponseHandler {
 
@@ -32,8 +26,9 @@ public class MySubredditsResponse extends RedditResponseHandler {
     @Override
     public void processHttpResponse(Context context) {
         ContentResolver resolver = context.getContentResolver();
-        
-        int userRowsDeleted = resolver.delete(RedditContract.Subreddits.CONTENT_URI, null, null);
+
+        // Don't wipe out the default subreddits
+        int userRowsDeleted = resolver.delete(RedditContract.Subreddits.CONTENT_URI, "isDefaultSubreddit = ?", new String[] { "0" });
         
         Log.i(TAG, "MySubreddits complete! = " + result.getJson());
         MySubreddits mySubreddits = JsonDeserializer.deserialize(result.getJson(), MySubreddits.class);
@@ -45,12 +40,24 @@ public class MySubredditsResponse extends RedditResponseHandler {
             return;
         }
 
-        // Get the subreddits, adding in the default subreddits ('Frontpage' and 'All')
-        ContentValues[] operations = mySubreddits.getContentValuesArray();
-        
-        int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, operations);
+        List<ContentValues> operations = new ArrayList<ContentValues>(100);
+        // Add in the default subreddits ('Frontpage' and 'All')
+        DefaultSubreddit[] defaultSubreddits = DefaultSubreddit.values();
+        for (DefaultSubreddit subreddit : defaultSubreddits) {
+            operations.add(mySubreddits.getContentValues(new SubredditData(subreddit.getDisplayName(), subreddit.getPriority())));
+        }
+
+        // Get the subreddits in an array
+        operations.addAll(Arrays.asList(mySubreddits.getContentValuesArray()));
+
+        int rowsInserted = resolver.bulkInsert(
+                RedditContract.Subreddits.CONTENT_URI,
+                operations.toArray(new ContentValues[operations.size()])
+        );
+
         Log.i(TAG, "Inserted " + rowsInserted + " rows");
         
+        /*
         ArrayList<String> subReddits = new ArrayList<String>();
 
         for (SubredditChildren c : mySubreddits.getData().getChildren()) {
@@ -65,6 +72,26 @@ public class MySubredditsResponse extends RedditResponseHandler {
         Intent intent = new Intent(Consts.BROADCAST_MY_SUBREDDITS);
         intent.putStringArrayListExtra(Consts.EXTRA_MY_SUBREDDITS, subReddits);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+        */
+    }
+
+    public enum DefaultSubreddit {
+        FRONTPAGE("Frontpage", 99999),
+        ALL("All", 99998),
+        ANTEW_TESTING("antewtesting", 99997);
+        private final String displayName;
+        private final int    priority;
+
+        DefaultSubreddit(String displayName, int priority) {
+            this.displayName = displayName;
+            this.priority = priority;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+        public int getPriority() { return priority; }
+
     }
     
 }

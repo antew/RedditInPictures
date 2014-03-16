@@ -67,14 +67,7 @@ public class MySubreddits implements ContentValuesArrayOperation {
     @Override
     public ContentValues[] getContentValuesArray() {
         int subredditCount = data.getChildren().size();
-        DefaultSubreddit[] defaultSubreddits = DefaultSubreddit.values();
-        int totalSubredditCount = subredditCount + defaultSubreddits.length;
-
-        List<ContentValues> operations = new ArrayList<ContentValues>(totalSubredditCount);
-
-        for (DefaultSubreddit subreddit : defaultSubreddits) {
-            operations.add(getContentValues(new SubredditData(subreddit.getDisplayName(), subreddit.getPriority())));
-        }
+        List<ContentValues> operations = new ArrayList<ContentValues>(subredditCount);
 
         for (SubredditChildren children : data.getChildren()) {
             operations.add(getContentValues(children.getData()));
@@ -83,22 +76,6 @@ public class MySubreddits implements ContentValuesArrayOperation {
         return operations.toArray(new ContentValues[operations.size()]);
     }
 
-    public enum DefaultSubreddit {
-        FRONTPAGE("Frontpage", 99999),
-        ALL("All", 99998);
-        private final String displayName;
-        private final int    priority;
 
-        DefaultSubreddit(String displayName, int priority) {
-            this.displayName = displayName;
-            this.priority = priority;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-        public int getPriority() { return priority; }
-
-    }
 
 }
