@@ -68,6 +68,7 @@ public class RedditContract {
         String NAME = "name";
         String PRIORITY = "priority";
         String USER_IS_SUBSCRIBER = "userIsSubscriber";
+        String DEFAULT_SUBREDDIT = "isDefaultSubreddit";
     }
 
     public interface PostColumns {
