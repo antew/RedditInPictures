@@ -1,22 +1,18 @@
 package com.antew.redditinpictures.library.ui.base;
 
 import android.os.Bundle;
-
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.android.debug.hv.ViewServer;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.modules.ActivityModule;
+import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.BuildConfig;
 import com.squareup.otto.Bus;
-
+import com.squareup.picasso.Picasso;
+import dagger.ObjectGraph;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.inject.Inject;
-
-import dagger.ObjectGraph;
-
-;
 
 /**
  * Base activity for an activity which does not use fragments.
@@ -33,6 +29,8 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
 
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).addWindow(this);
+            Util.enableStrictMode();
+            Picasso.with(this).setDebugging(true);
         }
 
         RedditInPicturesApplication application = (RedditInPicturesApplication) getApplication();

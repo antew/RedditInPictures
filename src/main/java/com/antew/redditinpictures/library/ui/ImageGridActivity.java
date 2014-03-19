@@ -226,10 +226,6 @@ public class ImageGridActivity extends BaseFragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) {
-            Util.enableStrictMode();
-            Picasso.with(this).setDebugging(true);
-        }
         super.onCreate(savedInstanceState);
         initializeActionBar();
 
