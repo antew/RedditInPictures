@@ -18,7 +18,8 @@
             android:hint="@string/search"
             android:id="@+id/et_subreddit_filter"
             android:layout_weight=".75"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:imeOptions="actionSearch"/>
 
         <ImageButton
             android:layout_width="wrap_content"
