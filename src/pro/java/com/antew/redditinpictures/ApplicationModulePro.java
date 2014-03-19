@@ -7,6 +7,7 @@ import com.antew.redditinpictures.library.ui.ImageGridFragment;
 import com.antew.redditinpictures.library.ui.ImageListFragment;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import com.antew.redditinpictures.library.ui.RedditFragmentActivity;
+import com.antew.redditinpictures.library.ui.RedditImageGridFragment;
 import com.antew.redditinpictures.library.ui.RedditImageListFragment;
 import dagger.Module;
 
@@ -16,7 +17,7 @@ import dagger.Module;
     injects = {
         ImageGridFragment.class, ImageListFragment.class, ImageGridActivity.class,
         ImageDetailActivity.class, ImageDetailFragment.class, ImgurAlbumActivity.class,
-        RedditFragmentActivity.class, RedditImageListFragment.class,
+        RedditFragmentActivity.class, RedditImageListFragment.class, RedditImageGridFragment.class,
     }, library = true
 )
 public class ApplicationModulePro {

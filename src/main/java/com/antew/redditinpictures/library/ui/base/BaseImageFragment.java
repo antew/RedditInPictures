@@ -166,7 +166,7 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
                 }
 
                 if (selectionArgsList != null && selectionArgsList.size() > 0) {
-                    selectionArgs = selectionArgsList.toArray(selectionArgs);
+                    selectionArgs = selectionArgsList.toArray(new String[] {});
                 }
 
                 return new CursorLoader(getActivity(), RedditContract.Posts.CONTENT_URI,  // uri
