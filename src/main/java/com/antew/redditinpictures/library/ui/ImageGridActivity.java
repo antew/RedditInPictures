@@ -108,7 +108,7 @@ public class ImageGridActivity extends BaseFragmentActivity
     @InjectView(R.id.top_progressbar)
     protected SmoothProgressBar mProgressBar;
 
-    private enum ViewType {LIST, GRID, VIEWPAGER}
+    private enum ViewType {LIST, GRID }
 
     private OnSubredditActionListener mSubredditActionListener = new OnSubredditActionListener() {
 
@@ -473,10 +473,6 @@ public class ImageGridActivity extends BaseFragmentActivity
             case GRID:
                 mActiveViewMenuItem.setIcon(R.drawable.ic_action_list_2_dark);
                 break;
-
-            case VIEWPAGER:
-
-                break;
         }
         return true;
     }
@@ -515,8 +511,6 @@ public class ImageGridActivity extends BaseFragmentActivity
                 oldFragmentTag = ImageGridFragment.TAG;
                 newFragmentTag = ImageListFragment.TAG;
                 newFragment = getImageListFragment();
-                break;
-            case VIEWPAGER:
                 break;
         }
 
