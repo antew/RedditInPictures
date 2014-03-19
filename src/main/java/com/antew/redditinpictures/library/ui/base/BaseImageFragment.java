@@ -21,11 +21,15 @@ import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Strings;
+import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.squareup.otto.Bus;
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
 
 /**
@@ -141,13 +145,28 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
         switch (id) {
             case Consts.LOADER_POSTS:
                 QueryCriteria queryCriteria = getPostsQueryCriteria();
-                // If the user doesn't want to see NSFW images, filter them out. Otherwise do nothing.
                 String selection = null;
+                List<String> selectionArgsList = new ArrayList<String>();
                 String[] selectionArgs = null;
 
+                // If we aren't on one of the default subreddits (Frontpage/All), filter the selection to only the subreddit we are concerned with.
+                if (!SubredditUtils.isDefaultSubreddit(mCurrentSubreddit)) {
+                    selection = RedditContract.PostColumns.SUBREDDIT + " = ?";
+                    selectionArgsList.add(mCurrentSubreddit);
+                }
+
+                // If the user doesn't want to see NSFW images, filter them out. Otherwise do nothing.
                 if (!SharedPreferencesHelper.getShowNsfwImages(getActivity())) {
-                    selection = RedditContract.PostColumns.OVER_18 + " = ?";
-                    selectionArgs = new String[] { "0" };
+                    if (Strings.isEmpty(selection)) {
+                        selection = RedditContract.PostColumns.OVER_18 + " = ?";
+                    } else {
+                        selection += " and " + RedditContract.PostColumns.OVER_18 + " = ?";
+                    }
+                    selectionArgsList.add("0");
+                }
+
+                if (selectionArgsList != null && selectionArgsList.size() > 0) {
+                    selectionArgs = selectionArgsList.toArray(selectionArgs);
                 }
 
                 return new CursorLoader(getActivity(), RedditContract.Posts.CONTENT_URI,  // uri

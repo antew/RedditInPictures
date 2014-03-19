@@ -9,8 +9,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.MySubreddits;
+import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.SubredditChildren;
 import com.antew.redditinpictures.library.reddit.SubredditData;
+import com.antew.redditinpictures.library.reddit.json.MySubredditsResponse;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
@@ -143,5 +145,18 @@ public class SubredditUtils {
         Intent intent = new Intent(Consts.BROADCAST_MY_SUBREDDITS);
         intent.putStringArrayListExtra(Consts.EXTRA_MY_SUBREDDITS, subReddits);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    public static boolean isDefaultSubreddit(String subreddit) {
+        if (subreddit.equals(RedditUrl.REDDIT_FRONTPAGE)) {
+            return true;
+        }
+
+        for (MySubredditsResponse.DefaultSubreddit defaultSubreddit : MySubredditsResponse.DefaultSubreddit.values()) {
+            if (defaultSubreddit.getDisplayName().equals(subreddit)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
