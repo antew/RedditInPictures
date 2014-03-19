@@ -27,9 +27,7 @@ import butterknife.InjectView;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.adapter.SubredditMenuDrawerCursorAdapter;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
-import com.antew.redditinpictures.library.enums.Age;
-import com.antew.redditinpictures.library.enums.Category;
-import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
+import com.antew.redditinpictures.library.event.LoadSubredditEvent;
 import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
@@ -47,7 +45,7 @@ import java.util.ArrayList;
 import net.simonvt.menudrawer.MenuDrawer;
 
 public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
-    implements RedditDataProvider, LoaderManager.LoaderCallbacks<Cursor> {
+    implements LoaderManager.LoaderCallbacks<Cursor> {
     protected MenuDrawer mMenuDrawer;
     protected SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     protected ArrayAdapter<String> mSubredditSearchResultsAdapter;
@@ -58,9 +56,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @InjectView(R.id.lv_subreddits)
     protected ListView mSubredditList;
 
-    protected Age mAge = Age.TODAY;
-    protected Category mCategory = Category.HOT;
-    protected String mCurrentSubreddit = RedditUrl.REDDIT_FRONTPAGE;
+    protected String mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
 
     private OnSubredditActionListener mSubredditActionListener = new OnSubredditActionListener() {
 
@@ -108,8 +104,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
              * @return Return true if you have consumed the action, else false.
              */
             @Override public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH
-                    && mSubredditFilter != null) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH && mSubredditFilter != null) {
                     searchForSubreddits(mSubredditFilter.getText().toString());
                 }
                 return false;
@@ -236,7 +231,9 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     private void initializeReceivers() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(mSubredditsSearch, new IntentFilter(Consts.BROADCAST_SUBREDDIT_SEARCH));
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(mSubredditsSearch,
+                new IntentFilter(Consts.BROADCAST_SUBREDDIT_SEARCH));
     }
 
     protected void addSubreddit(String subreddit) {
@@ -248,10 +245,11 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
     protected void loadSubreddit(String subreddit) {
         if (subreddit.equals("Frontpage")) {
-            mCurrentSubreddit = RedditUrl.REDDIT_FRONTPAGE;
+            mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
         } else {
-            mCurrentSubreddit = subreddit;
+            mSelectedSubreddit = subreddit;
         }
+        mBus.post(new LoadSubredditEvent(mSelectedSubreddit));
     }
 
     protected void filterSubreddits(String filterText) {
@@ -344,18 +342,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             return;
         }
         super.onBackPressed();
-    }
-
-    @Override public Age getAge() {
-        return mAge;
-    }
-
-    @Override public Category getCategory() {
-        return mCategory;
-    }
-
-    @Override public String getSubreddit() {
-        return mCurrentSubreddit;
     }
 
     /**
