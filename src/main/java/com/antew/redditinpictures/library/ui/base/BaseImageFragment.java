@@ -17,6 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
+import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
@@ -107,6 +108,9 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
         handleArguments();
         getActivity().getSupportLoaderManager().initLoader(Consts.LOADER_POSTS, null, this);
         fetchImagesFromReddit(true);
+        if (getActivity() instanceof ActionBarTitleChanger) {
+            ((ActionBarTitleChanger) getActivity()).setActionBarTitle(mCurrentSubreddit);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1) public void handleArguments() {

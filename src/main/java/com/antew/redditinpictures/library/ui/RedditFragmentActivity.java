@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
@@ -23,6 +22,7 @@ import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivityWithMenu;
 import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.otto.Subscribe;
@@ -68,8 +68,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.change_view:
-                mActiveViewType = mActiveViewType == ViewType.LIST ? ViewType.GRID : ViewType.LIST;
-                initializeActiveView();
+                changeViewType(mActiveViewType == ViewType.LIST ? ViewType.GRID : ViewType.LIST);
                 return true;
             case R.id.settings:
                 startPreferences();
@@ -162,7 +161,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
             loginFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGIN);
         } else {
-            DialogFragment logoutFragment = LogoutDialogFragment.newInstance(RedditLoginInformation.getUsername());
+            DialogFragment logoutFragment =
+                LogoutDialogFragment.newInstance(RedditLoginInformation.getUsername());
             logoutFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGOUT);
         }
     }
@@ -182,9 +182,28 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
         }
     }
 
+    private void changeViewType(ViewType viewType) {
+        if (viewType != null) {
+            mActiveViewType = viewType;
+            switch (mActiveViewType) {
+                case GRID:
+                    FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
+                    gridTrans.replace(R.id.content_fragment, getNewImageGridFragment());
+                    gridTrans.commit();
+                    break;
+                case LIST:
+                    FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
+                    listTrans.replace(R.id.content_fragment, getNewImageListFragment());
+                    listTrans.commit();
+                    break;
+            }
+        }
+    }
+
     public void startPreferences() {
         Intent intent = new Intent(this, RedditInPicturesPreferences.class);
-        intent.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES, SharedPreferencesHelper.getShowNsfwImages(this));
+        intent.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES,
+            SharedPreferencesHelper.getShowNsfwImages(this));
         startActivityForResult(intent, SETTINGS_REQUEST);
     }
 
@@ -214,11 +233,33 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
     }
 
     private void loadSubreddit(String subreddit, Category category, Age age) {
-        Fragment f = RedditImageListFragment.newInstance(mSelectedSubreddit, mCategory, mAge);
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction trans = fm.beginTransaction();
-        trans.replace(R.id.content_fragment, f);
-        trans.addToBackStack(subreddit + category.toString() + age.toString());
-        trans.commit();
+        if (Strings.notEmpty(subreddit)) {
+            mSelectedSubreddit = subreddit;
+        }
+
+        if (category != null) {
+            mCategory = category;
+        }
+
+        if (age != null) {
+            mAge = age;
+        }
+
+        switch (mActiveViewType) {
+            case GRID:
+                FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
+                gridTrans.replace(R.id.content_fragment, getNewImageGridFragment());
+                gridTrans.addToBackStack(null);
+                gridTrans.commit();
+                break;
+            case LIST:
+                FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
+                listTrans.replace(R.id.content_fragment, getNewImageListFragment());
+                listTrans.addToBackStack(null);
+                listTrans.commit();
+                break;
+        }
+
+        setActionBarTitle(mSelectedSubreddit);
     }
 }

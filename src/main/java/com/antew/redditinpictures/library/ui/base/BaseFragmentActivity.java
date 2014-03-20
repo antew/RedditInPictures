@@ -4,9 +4,13 @@ import android.os.Bundle;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.android.debug.hv.ViewServer;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
+import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
 import com.antew.redditinpictures.library.modules.ActivityModule;
+import com.antew.redditinpictures.library.reddit.RedditUrl;
+import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.BuildConfig;
+import com.antew.redditinpictures.pro.R;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Picasso;
 import dagger.ObjectGraph;
@@ -17,7 +21,8 @@ import javax.inject.Inject;
 /**
  * Base activity for an activity which does not use fragments.
  */
-public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
+public abstract class BaseFragmentActivity extends SherlockFragmentActivity implements
+    ActionBarTitleChanger {
     private ObjectGraph activityGraph;
 
     @Inject
@@ -79,4 +84,15 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
     public void inject(Object object) {
         activityGraph.inject(object);
     }
+
+    @Override public void setActionBarTitle(String title) {
+        if (Strings.isEmpty(title)) {
+            getSupportActionBar().setTitle(getString(R.string.app_name));
+        } else if (title.equals(RedditUrl.REDDIT_FRONTPAGE)) {
+            getSupportActionBar().setTitle(getString(R.string.frontpage));
+        } else {
+            getSupportActionBar().setTitle(title);
+        }
+    }
+
 }
