@@ -19,9 +19,11 @@ import com.antew.redditinpictures.library.event.LoadSubredditEvent;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
+import com.antew.redditinpictures.library.reddit.RedditSort;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivityWithMenu;
 import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
@@ -80,77 +82,31 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
                 handleLoginAndLogout();
                 return true;
             case R.id.category_hot:
-                mCategory = Category.HOT;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_new:
-                mCategory = Category.NEW;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_rising:
-                mCategory = Category.RISING;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_top_hour:
-                mCategory = Category.TOP;
-                mAge = Age.THIS_HOUR;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_top_today:
-                mCategory = Category.TOP;
-                mAge = Age.TODAY;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_top_week:
-                mCategory = Category.TOP;
-                mAge = Age.THIS_WEEK;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_top_month:
-                mCategory = Category.TOP;
-                mAge = Age.THIS_MONTH;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_top_year:
-                mCategory = Category.TOP;
-                mAge = Age.THIS_YEAR;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_top_all_time:
-                mCategory = Category.TOP;
-                mAge = Age.ALL_TIME;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_controversial_hour:
-                mCategory = Category.CONTROVERSIAL;
-                mAge = Age.THIS_HOUR;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_controversial_today:
-                mCategory = Category.CONTROVERSIAL;
-                mAge = Age.TODAY;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_controversial_week:
-                mCategory = Category.CONTROVERSIAL;
-                mAge = Age.THIS_WEEK;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_controversial_month:
-                mCategory = Category.CONTROVERSIAL;
-                mAge = Age.THIS_MONTH;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_controversial_year:
-                mCategory = Category.CONTROVERSIAL;
-                mAge = Age.THIS_YEAR;
-                loadSubreddit(mSelectedSubreddit);
-                return true;
             case R.id.category_controversial_all_time:
-                mCategory = Category.CONTROVERSIAL;
-                mAge = Age.ALL_TIME;
-                loadSubreddit(mSelectedSubreddit);
+                if (RedditSort.contains(item.getItemId())) {
+                    RedditSort.SortCriteria sortCriteria = RedditSort.get(item.getItemId());
+                    mAge = sortCriteria.getAge();
+                    mCategory = sortCriteria.getCategory();
+                    loadSubreddit(mSelectedSubreddit);
+                } else {
+                    Ln.e("Unable to get sorting criteria for menu item id: " + item.getItemId() + ", unable to load subreddit");
+                }
                 return true;
+
+
             default:
                 return super.onOptionsItemSelected(item);
         }
