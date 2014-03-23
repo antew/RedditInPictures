@@ -87,8 +87,8 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:autoLink="web"
-            android:text="Android-Query
-            \nhttp://code.google.com/p/android-query/"
+            android:text="MenuDrawer
+            \nhttps://github.com/SimonVT/android-menudrawer"
             android:textSize="12sp"
             android:textStyle="bold" />
         
