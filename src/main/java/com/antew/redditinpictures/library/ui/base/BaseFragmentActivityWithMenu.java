@@ -49,11 +49,8 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     protected MenuDrawer mMenuDrawer;
     protected SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     protected ArrayAdapter<String> mSubredditSearchResultsAdapter;
-    @InjectView(R.id.et_subreddit_filter)
     protected AutoCompleteTextView mSubredditFilter;
-    @InjectView(R.id.btn_search)
     protected ImageButton mSubredditSearch;
-    @InjectView(R.id.lv_subreddits)
     protected ListView mSubredditList;
 
     protected String mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
@@ -199,6 +196,8 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeMenuDrawer();
+        initializeSubredditFilter();
+        initializeSubredditList();
         initializeLoaders();
         initializeReceivers();
     }
@@ -212,16 +211,27 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     private void initializeSubredditFilter() {
-        mSubredditFilter.addTextChangedListener(mSubredditFilterWatcher);
-        mSubredditSearch.setOnClickListener(mSubredditSearchListener);
-        mSubredditFilter.setImeActionLabel(getString(R.string.go), KeyEvent.KEYCODE_ENTER);
-        mSubredditFilter.setOnEditorActionListener(mSubredditSearchEditorActionListener);
+        mSubredditFilter = (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
+
+        if (mSubredditFilter != null) {
+            mSubredditFilter.addTextChangedListener(mSubredditFilterWatcher);
+            mSubredditFilter.setImeActionLabel(getString(R.string.go), KeyEvent.KEYCODE_ENTER);
+            mSubredditFilter.setOnEditorActionListener(mSubredditSearchEditorActionListener);
+        }
+
+        mSubredditSearch = (ImageButton) findViewById(R.id.btn_search);
+        if (mSubredditSearch != null) {
+            mSubredditSearch.setOnClickListener(mSubredditSearchListener);
+        }
     }
 
     private void initializeSubredditList() {
         mSubredditAdapter = getSubredditMenuAdapter();
-        mSubredditList.setAdapter(mSubredditAdapter);
-        mSubredditList.setOnItemClickListener(mSubredditClickListener);
+        mSubredditList = (ListView) findViewById(R.id.lv_subreddits);
+        if (mSubredditList != null) {
+            mSubredditList.setAdapter(mSubredditAdapter);
+            mSubredditList.setOnItemClickListener(mSubredditClickListener);
+        }
     }
 
     private void initializeLoaders() {
@@ -328,8 +338,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @Override public void setContentView(int layoutResId) {
         mMenuDrawer.setContentView(layoutResId);
         ButterKnife.inject(this);
-        initializeSubredditFilter();
-        initializeSubredditList();
     }
 
     /**
