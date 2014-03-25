@@ -21,9 +21,11 @@ import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 import com.antew.redditinpictures.library.enums.ImageType;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;
+import com.antew.redditinpictures.library.image.ImgurGalleryType;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.PostData;
 
@@ -91,12 +93,20 @@ public class ImageDetailFragment extends ImageViewerFragment {
             Log.e(TAG, "Recieved null ImageContainer in loadImage(ImageContainer image)");
             return;
         }
-        
+
         if (ImageType.IMGUR_ALBUM.equals(image.getImageType())) {
+            mAlbum = ((ImgurAlbumType) image).getAlbum();
+        } else if (ImageType.IMGUR_GALLERY.equals(image.getImageType())) {
+            mAlbum = ((ImgurGalleryType) image).getAlbum();
+
+            if (mAlbum == null) {
+                super.loadImage(((ImgurGalleryType) image).getSingleImage());
+            }
+        }
+
+        if (mAlbum != null && mAlbum.getImages().size() > 1) {
             mBtnViewGallery.setVisibility(View.VISIBLE);
             mBtnViewGallery.setOnClickListener(getViewGalleryOnClickListener());
-
-            mAlbum = ((ImgurAlbumType) image).getAlbum();
         }
     }
 

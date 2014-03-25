@@ -25,11 +25,24 @@ public class ImgurGalleryType extends Image {
         mSimpleImgurGallery = resolve();
     }
 
+    public Image getSingleImage() {
+        //TODO: Make this less terrible...
+        if (mSimpleImgurGallery != null && mSimpleImgurGallery.getImgurImage() != null && mSimpleImgurGallery.getImgurImage().getLinks() != null) {
+            return new ImgurImageType(mSimpleImgurGallery.getImgurImage().getLinks().getOriginal());
+        }
+        return null;
+    }
+
+    public Album getAlbum() {
+        if (mSimpleImgurGallery != null) {
+            return mSimpleImgurGallery.getImgurAlbum();
+        }
+        return null;
+    }
+
     /**
      * Resolve an {@link SimpleImgurGallery} from the input URL
      * 
-     * @param url
-     *            The URL to resolve the Gallery from
      * @return An {@link SimpleImgurGallery} containing the {@link ImgurAlbumApi.Album} or
      *         {@link ImgurImageApi.ImgurImage}
      */
