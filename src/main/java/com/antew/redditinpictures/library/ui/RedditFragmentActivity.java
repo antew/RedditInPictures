@@ -200,6 +200,65 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
 
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.main, menu);
+
+        MenuItem item;
+        //@formatter:off
+        // Put a checkmark by the currently selected Category + Age combination
+        switch (mCategory) {
+            case CONTROVERSIAL:
+                switch (mAge)
+                {
+                    case ALL_TIME:  item = menu.findItem(R.id.category_controversial_all_time); item.setChecked(true); break;
+                    case THIS_HOUR: item = menu.findItem(R.id.category_controversial_hour)    ; item.setChecked(true); break;
+                    case THIS_MONTH:item = menu.findItem(R.id.category_controversial_month)   ; item.setChecked(true); break;
+                    case THIS_WEEK: item = menu.findItem(R.id.category_controversial_week)    ; item.setChecked(true); break;
+                    case THIS_YEAR: item = menu.findItem(R.id.category_controversial_year)    ; item.setChecked(true); break;
+                    case TODAY:     item = menu.findItem(R.id.category_controversial_today)   ; item.setChecked(true); break;
+                }
+                break;
+            case HOT:    menu.findItem(R.id.category_hot).setChecked(true)   ; break;
+            case NEW:    menu.findItem(R.id.category_new).setChecked(true)   ; break;
+            case RISING: menu.findItem(R.id.category_rising).setChecked(true); break;
+            case TOP:
+                switch (mAge)
+                {
+                    case ALL_TIME:  item = menu.findItem(R.id.category_top_all_time); item.setChecked(true); break;
+                    case THIS_HOUR: item = menu.findItem(R.id.category_top_hour)    ; item.setChecked(true); break;
+                    case THIS_MONTH:item = menu.findItem(R.id.category_top_month)   ; item.setChecked(true); break;
+                    case THIS_WEEK: item = menu.findItem(R.id.category_top_week)    ; item.setChecked(true); break;
+                    case THIS_YEAR: item = menu.findItem(R.id.category_top_year)    ; item.setChecked(true); break;
+                    case TODAY:     item = menu.findItem(R.id.category_top_today)   ; item.setChecked(true); break;
+                }
+                break;
+            default:
+                mCategory = Category.HOT;
+                mAge = Age.TODAY;
+                menu.findItem(R.id.category_hot).setChecked(true);
+                break;
+        }
+
+        MenuItem loginMenuItem = menu.findItem(R.id.login);
+        // If the user is logged in, update the Logout menu item to "Log out <username>"
+        if (RedditLoginInformation.isLoggedIn()) {
+            loginMenuItem.setTitle(getString(R.string.log_out_) + RedditLoginInformation.getUsername());
+            loginMenuItem.setIcon(R.drawable.ic_action_exit_dark);
+        } else {
+            loginMenuItem.setTitle(R.string.log_on);
+            loginMenuItem.setIcon(R.drawable.ic_action_key_dark);
+        }
+
+        MenuItem activeViewMenuItem = menu.findItem(R.id.change_view);
+        switch (mActiveViewType) {
+            case LIST:
+                activeViewMenuItem.setIcon(R.drawable.ic_action_tiles_small_dark);
+                break;
+            case GRID:
+                activeViewMenuItem.setIcon(R.drawable.ic_action_list_2_dark);
+                break;
+            default:
+                break;
+        }
+
         return true;
     }
 

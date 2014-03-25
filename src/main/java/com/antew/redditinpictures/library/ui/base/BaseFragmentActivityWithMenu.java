@@ -220,7 +220,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
     private void initializeSubredditList() {
         mSubredditAdapter = getSubredditMenuAdapter();
-        ListView mSubredditList = (ListView) findViewById(R.id.lv_subreddits);
         mSubredditList.setAdapter(mSubredditAdapter);
         mSubredditList.setOnItemClickListener(mSubredditClickListener);
     }
