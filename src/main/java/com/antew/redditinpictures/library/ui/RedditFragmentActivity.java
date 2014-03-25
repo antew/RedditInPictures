@@ -48,7 +48,7 @@ import com.squareup.otto.Subscribe;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
-    implements LoginDialogFragment.LoginDialogListener, LogoutDialogFragment.LogoutDialogListener {
+    implements LoginDialogFragment.LoginDialogListener, LogoutDialogFragment.LogoutDialogListener, LoaderManager.LoaderCallbacks<Cursor> {
     public static final int SETTINGS_REQUEST = 20;
     private ViewType mActiveViewType = ViewType.LIST;
     private String mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
@@ -339,19 +339,17 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle paramBundle) {
-        super.onCreateLoader(id, paramBundle);
         switch (id) {
             case Consts.LOADER_LOGIN:
                 return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null,
                     RedditContract.Login.DEFAULT_SORT);
+            default:
+                return super.onCreateLoader(id, paramBundle);
         }
-
-        return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        super.onLoadFinished(loader, cursor);
         switch (loader.getId()) {
             case Consts.LOADER_LOGIN:
                 if (cursor != null) {
@@ -378,6 +376,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                 }
                 break;
             default:
+                super.onLoadFinished(loader, cursor);
                 break;
         }
     }
