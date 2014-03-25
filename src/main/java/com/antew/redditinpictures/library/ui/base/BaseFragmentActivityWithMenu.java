@@ -199,7 +199,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeMenuDrawer();
-        initializeSubredditList();
         initializeLoaders();
         initializeReceivers();
     }
@@ -210,8 +209,9 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         mMenuDrawer.setSlideDrawable(R.drawable.ic_drawer);
         mMenuDrawer.setMenuSize(Util.dpToPx(this, 260));
         mMenuDrawer.setDrawerIndicatorEnabled(true);
+    }
 
-        ButterKnife.inject(this);
+    private void initializeSubredditFilter() {
         mSubredditFilter.addTextChangedListener(mSubredditFilterWatcher);
         mSubredditSearch.setOnClickListener(mSubredditSearchListener);
         mSubredditFilter.setImeActionLabel(getString(R.string.go), KeyEvent.KEYCODE_ENTER);
@@ -329,6 +329,8 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @Override public void setContentView(int layoutResId) {
         mMenuDrawer.setContentView(layoutResId);
         ButterKnife.inject(this);
+        initializeSubredditFilter();
+        initializeSubredditList();
     }
 
     /**

@@ -43,7 +43,6 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
 
     private enum ViewType {LIST, GRID}
 
-    @Optional
     @InjectView(R.id.top_progressbar)
     protected SmoothProgressBar mProgressBar;
 
