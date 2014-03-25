@@ -1,6 +1,8 @@
 package com.antew.redditinpictures.library.ui.base;
 
 import android.annotation.TargetApi;
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
+import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
@@ -110,6 +113,10 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
         fetchImagesFromReddit(true);
         if (getActivity() instanceof ActionBarTitleChanger) {
             ((ActionBarTitleChanger) getActivity()).setActionBarTitle(mCurrentSubreddit);
+        }
+
+        if (getAdapterView() != null) {
+            getAdapterView().setOnItemClickListener(this);
         }
     }
 
@@ -275,28 +282,32 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
      * @param position The position of the view in the adapter.
      * @param id The row id of the item that was clicked.
      */
-    @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        /*
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN) @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
-        i.putExtra(Consts.EXTRA_IMAGE, (int) position);
         Bundle b = new Bundle();
-        b.putString(Consts.EXTRA_AGE, mRedditDataProvider.getAge().name());
-        b.putString(Consts.EXTRA_CATEGORY, mRedditDataProvider.getCategory().name());
-        b.putString(Consts.EXTRA_SELECTED_SUBREDDIT, mRedditDataProvider.getSubreddit());
+        b.putString(Consts.EXTRA_SELECTED_SUBREDDIT, mCurrentSubreddit);
+        b.putString(Consts.EXTRA_CATEGORY, mCategory.name());
+        b.putString(Consts.EXTRA_AGE, mAge.name());
+        i.putExtra(Consts.EXTRA_IMAGE, position);
         i.putExtras(b);
 
         if (Util.hasJellyBean()) {
-            ActivityOptions options = ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
+            ActivityOptions options = ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(),
+                view.getHeight());
             getActivity().startActivity(i, options.toBundle());
         } else {
             startActivity(i);
-        }*/
+        }
     }
 
     protected void fetchImagesFromReddit(boolean replaceAll) {
         mFullRefresh = replaceAll;
         RedditService.getPosts(getActivity(), mCurrentSubreddit, mAge, mCategory, mAppendTo,
             mFullRefresh);
+    }
+
+    protected Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
+        return ImageDetailActivity.class;
     }
 
     protected abstract int getLayoutId();
