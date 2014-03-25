@@ -34,7 +34,7 @@ import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.service.RequestCode;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
@@ -116,13 +116,16 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
 
         // @formatter:off
         FragmentActivity activity = getActivity();
-        LocalBroadcastManager.getInstance(activity).registerReceiver(mRemoveNsfwImages, new IntentFilter(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
-        LocalBroadcastManager.getInstance(activity).registerReceiver(mHttpRequestComplete, new IntentFilter(Consts.BROADCAST_HTTP_FINISHED));
-        LocalBroadcastManager.getInstance(activity).registerReceiver(mSubredditSelected, new IntentFilter(Consts.BROADCAST_SUBREDDIT_SELECTED));
+        LocalBroadcastManager.getInstance(activity).registerReceiver(mRemoveNsfwImages, new IntentFilter(
+            Constants.BROADCAST_REMOVE_NSFW_IMAGES));
+        LocalBroadcastManager.getInstance(activity).registerReceiver(mHttpRequestComplete, new IntentFilter(
+            Constants.BROADCAST_HTTP_FINISHED));
+        LocalBroadcastManager.getInstance(activity).registerReceiver(mSubredditSelected, new IntentFilter(
+            Constants.BROADCAST_SUBREDDIT_SELECTED));
         // @formatter:on
 
-        activity.getSupportLoaderManager().initLoader(Consts.LOADER_REDDIT, null, ImageFragment.this);
-        activity.getSupportLoaderManager().initLoader(Consts.LOADER_POSTS, null, ImageFragment.this);
+        activity.getSupportLoaderManager().initLoader(Constants.LOADER_REDDIT, null, ImageFragment.this);
+        activity.getSupportLoaderManager().initLoader(Constants.LOADER_POSTS, null, ImageFragment.this);
 
         if (activity instanceof RedditDataProvider) {
             mRedditDataProvider = (RedditDataProvider) activity;
@@ -175,11 +178,11 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN) @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
-        i.putExtra(Consts.EXTRA_IMAGE, (int) position);
+        i.putExtra(Constants.EXTRA_IMAGE, (int) position);
         Bundle b = new Bundle();
-        b.putString(Consts.EXTRA_AGE, mRedditDataProvider.getAge().name());
-        b.putString(Consts.EXTRA_CATEGORY, mRedditDataProvider.getCategory().name());
-        b.putString(Consts.EXTRA_SELECTED_SUBREDDIT, mRedditDataProvider.getSubreddit());
+        b.putString(Constants.EXTRA_AGE, mRedditDataProvider.getAge().name());
+        b.putString(Constants.EXTRA_CATEGORY, mRedditDataProvider.getCategory().name());
+        b.putString(Constants.EXTRA_SELECTED_SUBREDDIT, mRedditDataProvider.getSubreddit());
         i.putExtras(b);
 
         if (Util.hasJellyBean()) {
@@ -210,8 +213,7 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
                 mRedditDataProvider.getSubreddit(),
                 mRedditDataProvider.getAge(),
                 mRedditDataProvider.getCategory(),
-                mAfter,
-                replaceAll);
+                mAfter);
         //@formatter:on
     }
 
@@ -220,7 +222,7 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
         Log.i(TAG, "onCreateLoader");
         switch (id) {
             //@formatter:off
-            case Consts.LOADER_REDDIT:
+            case Constants.LOADER_REDDIT:
                 return new CursorLoader(getActivity(),
                     RedditContract.RedditData.CONTENT_URI, // uri
                     null,                                  // projection
@@ -228,7 +230,7 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
                     null,                                  // selectionArgs[]
                     RedditContract.Posts.DEFAULT_SORT);    // sort
 
-            case Consts.LOADER_POSTS:
+            case Constants.LOADER_POSTS:
                 QueryCriteria queryCriteria = getPostsQueryCriteria();
                 // If the user doesn't want to see NSFW images, filter them out. Otherwise do nothing.
                 String selection = null;
@@ -258,14 +260,14 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
             Ln.e("Exiting onLoadFinished cUnable to move to first position on cursor: " + loader.getId());
         }
         switch (loader.getId()) {
-            case Consts.LOADER_REDDIT:
+            case Constants.LOADER_REDDIT:
                 Log.i(TAG, "onLoadFinished REDDIT_LOADER, " + cursor.getCount() + " rows");
                 if (cursor != null && cursor.moveToFirst()) {
                     mAfter = cursor.getString(cursor.getColumnIndex(RedditContract.RedditData.AFTER));
                 }
                 break;
 
-            case Consts.LOADER_POSTS:
+            case Constants.LOADER_POSTS:
                 Log.i(TAG, "onLoadFinished POST_LOADER, total = " + cursor.getCount() + " rows");
                 mAdapter.swapCursor(cursor);
                 setRequestInProgress(false);
@@ -291,10 +293,10 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     public void onLoaderReset(Loader<Cursor> cursor) {
         Log.i(TAG, "onLoaderReset");
         switch (cursor.getId()) {
-            case Consts.LOADER_REDDIT:
+            case Constants.LOADER_REDDIT:
                 break;
 
-            case Consts.LOADER_POSTS:
+            case Constants.LOADER_POSTS:
                 mAdapter.swapCursor(null);
                 break;
         }

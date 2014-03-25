@@ -8,7 +8,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.antew.redditinpictures.library.adapter.ImgurAlbumPagerAdapter;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.pro.R;
 import java.util.List;
@@ -68,9 +68,9 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
     @Override
     public void onFinishSaveImageDialog(String filename) {
         ImgurImage p = getAdapter().getImage(mPager.getCurrentItem());
-        Intent intent = new Intent(Consts.BROADCAST_DOWNLOAD_IMAGE);
-        intent.putExtra(Consts.EXTRA_IMAGE_HASH, p.getImage().getHash());
-        intent.putExtra(Consts.EXTRA_FILENAME, filename);
+        Intent intent = new Intent(Constants.BROADCAST_DOWNLOAD_IMAGE);
+        intent.putExtra(Constants.EXTRA_IMAGE_HASH, p.getImage().getHash());
+        intent.putExtra(Constants.EXTRA_FILENAME, filename);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
     }

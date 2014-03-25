@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Toast;
 import com.antew.redditinpictures.library.enums.ImageType;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;

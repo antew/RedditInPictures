@@ -11,7 +11,7 @@ import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
 import com.antew.redditinpictures.library.ui.base.BaseImageFragment;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
@@ -45,7 +45,7 @@ public class RedditImageGridFragment extends BaseImageFragment<GridView, ImageCu
                 boolean lastItemIsVisible =
                     (firstVisibleItem + visibleItemCount) >= totalItemCount - POST_LOAD_OFFSET;
                 if (!isRequestInProgress() && totalItemCount > 0 && lastItemIsVisible) {
-                    fetchImagesFromReddit(false);
+                    fetchAdditionalImagesFromReddit();
                 }
             }
         };
@@ -54,9 +54,9 @@ public class RedditImageGridFragment extends BaseImageFragment<GridView, ImageCu
         final Fragment f = new RedditImageGridFragment();
 
         final Bundle args = new Bundle();
-        args.putString(Consts.EXTRA_SELECTED_SUBREDDIT, subreddit);
-        args.putString(Consts.EXTRA_CATEGORY, category.toString());
-        args.putString(Consts.EXTRA_AGE, age.toString());
+        args.putString(Constants.EXTRA_SELECTED_SUBREDDIT, subreddit);
+        args.putString(Constants.EXTRA_CATEGORY, category.toString());
+        args.putString(Constants.EXTRA_AGE, age.toString());
         f.setArguments(args);
 
         return f;

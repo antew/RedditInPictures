@@ -8,7 +8,7 @@ import com.antew.redditinpictures.library.imgur.ImgurApiCache;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -58,7 +58,7 @@ public class ImgurAlbumType extends Image {
         ImgurAlbumApi album = null;
         Gson gson = new Gson();
         String json = null;
-        String newUrl = URL_IMGUR_ALBUM_API + hash + Consts.JSON;
+        String newUrl = URL_IMGUR_ALBUM_API + hash + Constants.JSON;
 
         if (ImgurApiCache.getInstance().containsImgurAlbum(hash)) {
             Log.i(TAG, "cache - resolveImgurAlbumFromHash - " + hash + " found in cache");

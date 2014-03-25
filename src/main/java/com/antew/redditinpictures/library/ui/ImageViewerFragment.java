@@ -36,7 +36,7 @@ import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
@@ -155,10 +155,10 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
         LocalBroadcastManager.getInstance(act)
             .registerReceiver(mScoreUpdateReceiver,
-                new IntentFilter(Consts.BROADCAST_UPDATE_SCORE));
+                new IntentFilter(Constants.BROADCAST_UPDATE_SCORE));
         LocalBroadcastManager.getInstance(act)
             .registerReceiver(mToggleFullscreenIntent,
-                new IntentFilter(Consts.BROADCAST_TOGGLE_FULLSCREEN));
+                new IntentFilter(Constants.BROADCAST_TOGGLE_FULLSCREEN));
 
         // Set up on our tap listener for the PhotoView which we use to toggle between fullscreen
         // and windowed mode
@@ -191,8 +191,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
             @Override
             public void onPhotoTap(View view, float x, float y) {
-                Intent intent = new Intent(Consts.BROADCAST_TOGGLE_FULLSCREEN);
-                intent.putExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE,
+                Intent intent = new Intent(Constants.BROADCAST_TOGGLE_FULLSCREEN);
+                intent.putExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE,
                     mSystemUiStateProvider.isSystemUiVisible());
                 LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
             }
@@ -287,8 +287,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
                     case MotionEvent.ACTION_UP:
                         if (!mCancelClick) {
 
-                            Intent intent = new Intent(Consts.BROADCAST_TOGGLE_FULLSCREEN);
-                            intent.putExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE,
+                            Intent intent = new Intent(Constants.BROADCAST_TOGGLE_FULLSCREEN);
+                            intent.putExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE,
                                 mSystemUiStateProvider.isSystemUiVisible());
                             LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
                         }
@@ -351,7 +351,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
     }
 
     public String getHtmlForImageDisplay(String imageUrl) {
-        return Consts.WEBVIEW_IMAGE_HTML_BEGIN + imageUrl + Consts.WEBVIEW_IMAGE_HTML_END;
+        return Constants.WEBVIEW_IMAGE_HTML_BEGIN + imageUrl + Constants.WEBVIEW_IMAGE_HTML_END;
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB) public void initializeWebView(WebView webview) {
@@ -377,14 +377,14 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra(Consts.EXTRA_PERMALINK) &&
-                intent.hasExtra(Consts.EXTRA_SCORE) &&
+            if (intent.hasExtra(Constants.EXTRA_PERMALINK) &&
+                intent.hasExtra(Constants.EXTRA_SCORE) &&
                 mImage != null &&
-                mImage.getPermalink().equals(intent.getStringExtra(Consts.EXTRA_PERMALINK))) {
+                mImage.getPermalink().equals(intent.getStringExtra(Constants.EXTRA_PERMALINK))) {
 
                 if (mPostVotes != null) {
-                    Log.i(TAG, "Updating score to " + intent.getIntExtra(Consts.EXTRA_SCORE, 0));
-                    mPostVotes.setText("" + intent.getIntExtra(Consts.EXTRA_SCORE, 0));
+                    Log.i(TAG, "Updating score to " + intent.getIntExtra(Constants.EXTRA_SCORE, 0));
+                    mPostVotes.setText("" + intent.getIntExtra(Constants.EXTRA_SCORE, 0));
                 }
             }
         }
@@ -395,7 +395,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean isSystemUiVisible =
-                intent.getBooleanExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
+                intent.getBooleanExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
             if (isSystemUiVisible) {
                 hidePostDetails();
             } else {

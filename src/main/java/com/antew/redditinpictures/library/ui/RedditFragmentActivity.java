@@ -1,7 +1,6 @@
 package com.antew.redditinpictures.library.ui;
 
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -33,10 +32,9 @@ import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.LoginData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditSort;
-import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivityWithMenu;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
@@ -51,15 +49,11 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     implements LoginDialogFragment.LoginDialogListener, LogoutDialogFragment.LogoutDialogListener, LoaderManager.LoaderCallbacks<Cursor> {
     public static final int SETTINGS_REQUEST = 20;
     private ViewType mActiveViewType = ViewType.LIST;
-    private String mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
-    private Category mCategory = Category.HOT;
-    private Age mAge = Age.TODAY;
 
     private enum ViewType {LIST, GRID}
 
     @InjectView(R.id.top_progressbar)
     protected SmoothProgressBar mProgressBar;
-    protected ProgressDialog mProgressDialog;
 
     private BroadcastReceiver mLoginComplete = new BroadcastReceiver() {
         @Override
@@ -79,12 +73,12 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     private void initalizeReceivers() {
         LocalBroadcastManager.getInstance(this)
-            .registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
+            .registerReceiver(mLoginComplete, new IntentFilter(Constants.BROADCAST_LOGIN_COMPLETE));
     }
 
     private void initializeLoaders() {
         LoaderManager loaderManager = getSupportLoaderManager();
-        loaderManager.initLoader(Consts.LOADER_LOGIN, null, this);
+        loaderManager.initLoader(Constants.LOADER_LOGIN, null, this);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
@@ -92,18 +86,18 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         if (savedInstanceState != null) {
             if (Util.hasHoneycombMR1()) {
                 mActiveViewType = ViewType.valueOf(
-                    savedInstanceState.getString(Consts.ACTIVE_VIEW, ViewType.LIST.toString()));
-                mSelectedSubreddit = savedInstanceState.getString(Consts.EXTRA_SELECTED_SUBREDDIT,
-                    RedditUrl.REDDIT_FRONTPAGE);
+                    savedInstanceState.getString(Constants.ACTIVE_VIEW, ViewType.LIST.toString()));
+                mSelectedSubreddit = savedInstanceState.getString(Constants.EXTRA_SELECTED_SUBREDDIT,
+                    Constants.REDDIT_FRONTPAGE);
             } else {
-                if (savedInstanceState.containsKey(Consts.ACTIVE_VIEW)) {
+                if (savedInstanceState.containsKey(Constants.ACTIVE_VIEW)) {
                     mActiveViewType =
-                        ViewType.valueOf(savedInstanceState.getString(Consts.ACTIVE_VIEW));
+                        ViewType.valueOf(savedInstanceState.getString(Constants.ACTIVE_VIEW));
                 }
 
-                if (savedInstanceState.containsKey(Consts.EXTRA_SELECTED_SUBREDDIT)) {
+                if (savedInstanceState.containsKey(Constants.EXTRA_SELECTED_SUBREDDIT)) {
                     mSelectedSubreddit =
-                        savedInstanceState.getString(Consts.EXTRA_SELECTED_SUBREDDIT);
+                        savedInstanceState.getString(Constants.EXTRA_SELECTED_SUBREDDIT);
                 }
             }
         }
@@ -118,7 +112,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                 startPreferences();
                 return true;
             case R.id.refresh_all:
-                loadSubreddit(mSelectedSubreddit);
+                requestInProgress(null);
+                forceRefreshCurrentSubreddit();
                 return true;
             case R.id.login:
                 handleLoginAndLogout();
@@ -168,11 +163,11 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     public void handleLoginAndLogout() {
         if (!RedditLoginInformation.isLoggedIn()) {
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGIN);
+            loginFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGIN);
         } else {
             DialogFragment logoutFragment =
                 LogoutDialogFragment.newInstance(RedditLoginInformation.getUsername());
-            logoutFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGOUT);
+            logoutFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGOUT);
         }
     }
 
@@ -213,7 +208,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     public void startPreferences() {
         Intent intent = new Intent(this, RedditInPicturesPreferences.class);
-        intent.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES,
+        intent.putExtra(Constants.EXTRA_SHOW_NSFW_IMAGES,
             SharedPreferencesHelper.getShowNsfwImages(this));
         startActivityForResult(intent, SETTINGS_REQUEST);
     }
@@ -340,7 +335,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle paramBundle) {
         switch (id) {
-            case Consts.LOADER_LOGIN:
+            case Constants.LOADER_LOGIN:
                 return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null,
                     RedditContract.Login.DEFAULT_SORT);
             default:
@@ -351,7 +346,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         switch (loader.getId()) {
-            case Consts.LOADER_LOGIN:
+            case Constants.LOADER_LOGIN:
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
                         String username =
@@ -400,9 +395,9 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     private void handleLoginComplete(Intent intent) {
         requestCompleted(null);
-        boolean successful = intent.getBooleanExtra(Consts.EXTRA_SUCCESS, false);
+        boolean successful = intent.getBooleanExtra(Constants.EXTRA_SUCCESS, false);
         if (!successful) {
-            String errorMessage = intent.getStringExtra(Consts.EXTRA_ERROR_MESSAGE);
+            String errorMessage = intent.getStringExtra(Constants.EXTRA_ERROR_MESSAGE);
             Toast.makeText(this, getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT)
                 .show();
         }

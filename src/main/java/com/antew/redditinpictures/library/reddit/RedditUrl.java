@@ -20,6 +20,7 @@ import android.os.Parcelable;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Util;
 
 public class RedditUrl implements Parcelable {
@@ -34,7 +35,6 @@ public class RedditUrl implements Parcelable {
     private static final String BEFORE           = "before=%s";
     private static final String JSON             = ".json";
     private static final String PARAM_SEPARATOR  = "&";
-    public static final String  REDDIT_FRONTPAGE = "REDDIT_FRONTPAGE";
 
     public final String         subreddit;
     public final Age            age;
@@ -67,7 +67,7 @@ public class RedditUrl implements Parcelable {
     public String getUrl() {
 
         StringBuffer url = new StringBuffer();
-        if (subreddit.equals(REDDIT_FRONTPAGE)) {
+        if (subreddit.equals(Constants.REDDIT_FRONTPAGE)) {
             url.append(REDDIT_URL);
             url.append(URL_SEPARATOR);
         } else {

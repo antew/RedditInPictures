@@ -35,7 +35,7 @@ import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.ImageGridActivity;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.pro.R;
@@ -207,8 +207,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
             return;
         }
 
-        Intent intent = new Intent(Consts.BROADCAST_UPDATE_SCORE);
-        intent.putExtra(Consts.EXTRA_PERMALINK, p.getPermalink());
+        Intent intent = new Intent(Constants.BROADCAST_UPDATE_SCORE);
+        intent.putExtra(Constants.EXTRA_PERMALINK, p.getPermalink());
 
         Ln.d("Vote is: %s", p.getVote());
         Ln.d("Vote Button is: %s", whichVoteButton);
@@ -276,7 +276,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
         }
 
         // Broadcast the intent to update the score in the ImageDetailFragment
-        intent.putExtra(Consts.EXTRA_SCORE, p.getScore());
+        intent.putExtra(Constants.EXTRA_SCORE, p.getScore());
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 

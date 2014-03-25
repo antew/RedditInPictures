@@ -8,7 +8,7 @@ import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
@@ -113,9 +113,9 @@ public class PostData implements Parcelable, ContentValuesOperation {
     //@formatter:on
 
     public String getFullPermalink(boolean useMobileInterface) {
-        String url = Consts.REDDIT_BASE_URL + permalink;
+        String url = Constants.REDDIT_BASE_URL + permalink;
         if (useMobileInterface)
-            url += Consts.COMPACT_URL;
+            url += Constants.COMPACT_URL;
 
         return url;
     }

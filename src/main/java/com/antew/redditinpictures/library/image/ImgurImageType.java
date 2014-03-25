@@ -7,7 +7,7 @@ import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -53,7 +53,7 @@ public class ImgurImageType extends Image {
         ImgurImageApi imgurImageApi = null;
         ImgurImage imgurImage = null;
 
-        String apiUrl = URL_IMGUR_IMAGE_API + hash + Consts.JSON;
+        String apiUrl = URL_IMGUR_IMAGE_API + hash + Constants.JSON;
         if (ImgurApiCache.getInstance().containsImgurImage(hash)) {
             Log.i(TAG, "cache - resolveImgurImageFromHash - " + hash + " found in cache");
             imgurImageApi = ImgurApiCache.getInstance().getImgurImage(hash);

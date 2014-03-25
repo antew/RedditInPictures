@@ -31,9 +31,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
-import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.pro.R;
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ import java.util.List;
 public class SubredditManagerApi11Plus extends SubredditManager {
 
     public static final String   TAG                = SubredditManagerApi11Plus.class.getSimpleName();
-    private String               mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
+    private String               mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
     private MenuItem             mResetToDefaultSubreddits;
     private MenuItem             mResyncWithReddit;
 
@@ -53,8 +52,8 @@ public class SubredditManagerApi11Plus extends SubredditManager {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if (getIntent().hasExtra(Consts.EXTRA_SELECTED_SUBREDDIT))
-            mSelectedSubreddit = getIntent().getStringExtra(Consts.EXTRA_SELECTED_SUBREDDIT);
+        if (getIntent().hasExtra(Constants.EXTRA_SELECTED_SUBREDDIT))
+            mSelectedSubreddit = getIntent().getStringExtra(Constants.EXTRA_SELECTED_SUBREDDIT);
 
         setListAdapter(getSubredditsFromSharedPreferences());
 
@@ -106,7 +105,7 @@ public class SubredditManagerApi11Plus extends SubredditManager {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Intent i = new Intent();
-        i.putExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT, getAdapter().getItem(position));
+        i.putExtra(Constants.EXTRA_NEWLY_SELECTED_SUBREDDIT, getAdapter().getItem(position));
         setResult(RESULT_OK, i);
         finish();
     }
@@ -277,7 +276,7 @@ public class SubredditManagerApi11Plus extends SubredditManager {
     public void onBackPressed() {
 
         Intent i = new Intent();
-        i.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
+        i.putExtra(Constants.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
         setResult(RESULT_OK, i);
         super.onBackPressed();
     }

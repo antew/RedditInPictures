@@ -34,9 +34,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
-import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.pro.R;
 import java.util.ArrayList;
@@ -54,15 +53,15 @@ public class SubredditManager extends SherlockListActivity {
     public static final String   ARRAY_NAME         = "subreddits";
     private ActionMode           mMode;
     private ArrayAdapter<String> mAdapter;
-    private String               mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
+    private String               mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
     private MenuItem             mResetToDefaultSubreddits;
     private MenuItem             mResyncWithReddit;
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getIntent().hasExtra(Consts.EXTRA_SELECTED_SUBREDDIT))
-            mSelectedSubreddit = getIntent().getStringExtra(Consts.EXTRA_SELECTED_SUBREDDIT);
+        if (getIntent().hasExtra(Constants.EXTRA_SELECTED_SUBREDDIT))
+            mSelectedSubreddit = getIntent().getStringExtra(Constants.EXTRA_SELECTED_SUBREDDIT);
 
         List<String> subreddits = SharedPreferencesHelper.loadArray(PREFS_NAME, ARRAY_NAME, SubredditManager.this);
 
@@ -83,7 +82,8 @@ public class SubredditManager extends SherlockListActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(
+            Constants.BROADCAST_MY_SUBREDDITS));
 
     }
 
@@ -93,7 +93,7 @@ public class SubredditManager extends SherlockListActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Received mySubreddits callback");
-            ArrayList<String> subreddits = intent.getStringArrayListExtra(Consts.EXTRA_MY_SUBREDDITS);
+            ArrayList<String> subreddits = intent.getStringArrayListExtra(Constants.EXTRA_MY_SUBREDDITS);
             
             if (subreddits != null && subreddits.size() > 0) {
                 setListAdapter(subreddits);
@@ -154,7 +154,7 @@ public class SubredditManager extends SherlockListActivity {
             createAddSubredditAlertDialog();
         } else if (itemId == android.R.id.home) {
             Intent i = new Intent();
-            i.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
+            i.putExtra(Constants.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
             setResult(RESULT_OK, i);
             finish();
         } else if (itemId == R.id.resync_subreddits) {
@@ -270,7 +270,7 @@ public class SubredditManager extends SherlockListActivity {
     public void onBackPressed() {
 
         Intent i = new Intent();
-        i.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
+        i.putExtra(Constants.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
         setResult(RESULT_OK, i);
         super.onBackPressed();
     }

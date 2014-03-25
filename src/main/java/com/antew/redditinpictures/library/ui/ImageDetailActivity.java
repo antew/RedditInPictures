@@ -39,7 +39,7 @@ import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
@@ -65,8 +65,8 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         super.onCreate(savedInstanceState);
         displayVote();
 
-        getSupportLoaderManager().initLoader(Consts.LOADER_REDDIT, null, this);
-        getSupportLoaderManager().initLoader(Consts.LOADER_POSTS, null, this);
+        getSupportLoaderManager().initLoader(Constants.LOADER_REDDIT, null, this);
+        getSupportLoaderManager().initLoader(Constants.LOADER_POSTS, null, this);
         // Put the current page / total pages text in the ActionBar
         updateDisplay(mPager.getCurrentItem());
 
@@ -83,16 +83,16 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     public void getExtras() {
         Intent i = getIntent();
 
-        if (i.hasExtra(Consts.EXTRA_AGE))
-            mAge = Age.valueOf(i.getStringExtra(Consts.EXTRA_AGE));
+        if (i.hasExtra(Constants.EXTRA_AGE))
+            mAge = Age.valueOf(i.getStringExtra(Constants.EXTRA_AGE));
 
-        if (i.hasExtra(Consts.EXTRA_CATEGORY))
-            mCategory = Category.valueOf(i.getStringExtra(Consts.EXTRA_CATEGORY));
+        if (i.hasExtra(Constants.EXTRA_CATEGORY))
+            mCategory = Category.valueOf(i.getStringExtra(Constants.EXTRA_CATEGORY));
 
-        if (i.hasExtra(Consts.EXTRA_SELECTED_SUBREDDIT))
-            mSubreddit = i.getStringExtra(Consts.EXTRA_SELECTED_SUBREDDIT);
+        if (i.hasExtra(Constants.EXTRA_SELECTED_SUBREDDIT))
+            mSubreddit = i.getStringExtra(Constants.EXTRA_SELECTED_SUBREDDIT);
 
-        mRequestedPage = getIntent().getIntExtra(Consts.EXTRA_IMAGE, -1);
+        mRequestedPage = getIntent().getIntExtra(Constants.EXTRA_IMAGE, -1);
 
         Log.i(TAG, "getExtras() - Age = " + mAge.name() + ", Category = " + mCategory.name() + ", Subreddit = " + mSubreddit);
     }
@@ -165,7 +165,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(Consts.EXTRA_REDDIT_URL, mRedditUrl);
+        outState.putParcelable(Constants.EXTRA_REDDIT_URL, mRedditUrl);
         super.onSaveInstanceState(outState);
     }
 
@@ -173,8 +173,8 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        if (savedInstanceState.containsKey(Consts.EXTRA_REDDIT_URL))
-            mRedditUrl = savedInstanceState.getParcelable(Consts.EXTRA_REDDIT_URL);
+        if (savedInstanceState.containsKey(Constants.EXTRA_REDDIT_URL))
+            mRedditUrl = savedInstanceState.getParcelable(Constants.EXTRA_REDDIT_URL);
     }
 
     /**
@@ -205,8 +205,8 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
             return;
         }
 
-        Intent intent = new Intent(Consts.BROADCAST_UPDATE_SCORE);
-        intent.putExtra(Consts.EXTRA_PERMALINK, p.getPermalink());
+        Intent intent = new Intent(Constants.BROADCAST_UPDATE_SCORE);
+        intent.putExtra(Constants.EXTRA_PERMALINK, p.getPermalink());
 
         switch (whichVoteButton) {
             case DOWN:
@@ -255,7 +255,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         }
 
         // Broadcast the intent to update the score in the ImageDetailFragment
-        intent.putExtra(Consts.EXTRA_SCORE, p.getScore());
+        intent.putExtra(Constants.EXTRA_SCORE, p.getScore());
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -332,9 +332,9 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     @Override
     public void onFinishSaveImageDialog(String filename) {
         PostData p = getAdapter().getPost(mPager.getCurrentItem());
-        Intent intent = new Intent(Consts.BROADCAST_DOWNLOAD_IMAGE);
-        intent.putExtra(Consts.EXTRA_PERMALINK, p.getPermalink());
-        intent.putExtra(Consts.EXTRA_FILENAME, filename);
+        Intent intent = new Intent(Constants.BROADCAST_DOWNLOAD_IMAGE);
+        intent.putExtra(Constants.EXTRA_PERMALINK, p.getPermalink());
+        intent.putExtra(Constants.EXTRA_FILENAME, filename);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
     }
@@ -347,7 +347,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         if (!isRequestInProgress() && mAdapter.getCount() > 0) {
             Log.i(TAG, "reachedLastPage() - Loading more images");
             setRequestInProgress(true);
-            RedditService.getPosts(this, mSubreddit, mAge, mCategory, mAfter, false);
+            RedditService.getPosts(this, mSubreddit, mAge, mCategory, mAfter);
         }
     }
 
@@ -364,10 +364,10 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
         Log.i(TAG, "onCreateLoader");
         switch (id) {
-            case Consts.LOADER_REDDIT:
+            case Constants.LOADER_REDDIT:
                 return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, null, null, null, RedditContract.RedditData.DEFAULT_SORT);
 
-            case Consts.LOADER_POSTS:
+            case Constants.LOADER_POSTS:
                 return new CursorLoader(this, RedditContract.Posts.CONTENT_URI, null, null, null, RedditContract.Posts.DEFAULT_SORT);
         }
 
@@ -378,7 +378,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         Log.i(TAG, "onLoadFinished");
         switch (loader.getId()) {
-            case Consts.LOADER_REDDIT:
+            case Constants.LOADER_REDDIT:
                 Log.i(TAG, "onLoadFinished REDDIT_LOADER, cursor has " + cursor.getCount() + " rows");
                 Log.i(TAG, "After column = " + cursor.getColumnIndex(RedditContract.RedditData.AFTER));
                 Log.i(TAG, "Before column = " + cursor.getColumnIndex(RedditContract.RedditData.BEFORE));
@@ -389,7 +389,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                 }
                 break;
 
-            case Consts.LOADER_POSTS:
+            case Constants.LOADER_POSTS:
                 Log.i(TAG, "onLoadFinished POST_LOADER, cursor has " + cursor.getCount() + " rows");
                 setRequestInProgress(false);
                 getAdapter().swapCursor(cursor);

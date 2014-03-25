@@ -11,7 +11,6 @@ import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.MySubreddits;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
-import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.SubredditChildren;
 import com.antew.redditinpictures.library.reddit.SubredditData;
 import com.antew.redditinpictures.library.reddit.json.MySubredditsResponse;
@@ -81,8 +80,8 @@ public class SubredditUtils {
         Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
         SharedPreferencesHelper.saveArray(subReddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, context);
 
-        Intent intent = new Intent(Consts.BROADCAST_MY_SUBREDDITS);
-        intent.putStringArrayListExtra(Consts.EXTRA_MY_SUBREDDITS, subReddits);
+        Intent intent = new Intent(Constants.BROADCAST_MY_SUBREDDITS);
+        intent.putStringArrayListExtra(Constants.EXTRA_MY_SUBREDDITS, subReddits);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
@@ -145,13 +144,13 @@ public class SubredditUtils {
         Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
         SharedPreferencesHelper.saveArray(subReddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, context);
 
-        Intent intent = new Intent(Consts.BROADCAST_MY_SUBREDDITS);
-        intent.putStringArrayListExtra(Consts.EXTRA_MY_SUBREDDITS, subReddits);
+        Intent intent = new Intent(Constants.BROADCAST_MY_SUBREDDITS);
+        intent.putStringArrayListExtra(Constants.EXTRA_MY_SUBREDDITS, subReddits);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     public static boolean isDefaultSubreddit(String subreddit) {
-        if (subreddit.equals(RedditUrl.REDDIT_FRONTPAGE)) {
+        if (subreddit.equals(Constants.REDDIT_FRONTPAGE)) {
             return true;
         }
 

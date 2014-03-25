@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.reddit.SubredditsSearch;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
 import java.util.ArrayList;
 
@@ -28,8 +28,8 @@ public class SubredditsSearchResponse extends RedditResponseHandler {
             return;
         }
 
-        Intent intent = new Intent(Consts.BROADCAST_SUBREDDIT_SEARCH);
-        intent.putStringArrayListExtra(Consts.EXTRA_SUBREDDIT_NAMES, (ArrayList<String>) subredditsSearch.getNames());
+        Intent intent = new Intent(Constants.BROADCAST_SUBREDDIT_SEARCH);
+        intent.putStringArrayListExtra(Constants.EXTRA_SUBREDDIT_NAMES, (ArrayList<String>) subredditsSearch.getNames());
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
     

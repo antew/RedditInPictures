@@ -53,12 +53,11 @@ import com.antew.redditinpictures.library.preferences.RedditInPicturesPreference
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.LoginData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
-import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.SubredditData;
 import com.antew.redditinpictures.library.reddit.json.MySubredditsResponse;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.SafeAsyncTask;
 import com.antew.redditinpictures.library.utils.Strings;
@@ -109,7 +108,7 @@ public class ImageGridActivity extends BaseFragmentActivity
             switch (action) {
                 case View:
                     if (subredditData.getDisplay_name().equals("Frontpage")) {
-                        mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
+                        mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
                     } else {
                         mSelectedSubreddit = subredditData.getDisplay_name();
                     }
@@ -147,10 +146,10 @@ public class ImageGridActivity extends BaseFragmentActivity
     private BroadcastReceiver mSubredditsSearch = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra(Consts.EXTRA_SUBREDDIT_NAMES)) {
+            if (intent.hasExtra(Constants.EXTRA_SUBREDDIT_NAMES)) {
                 Ln.d("Got Back Subreddit Search Result");
                 final ArrayList<String> subredditNames =
-                    intent.getStringArrayListExtra(Consts.EXTRA_SUBREDDIT_NAMES);
+                    intent.getStringArrayListExtra(Constants.EXTRA_SUBREDDIT_NAMES);
                 AutoCompleteTextView mSubredditFilter =
                     (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
                 if (mSubredditFilter != null) {
@@ -207,9 +206,9 @@ public class ImageGridActivity extends BaseFragmentActivity
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Login request complete");
             hideProgressDialog();
-            boolean successful = intent.getBooleanExtra(Consts.EXTRA_SUCCESS, false);
+            boolean successful = intent.getBooleanExtra(Constants.EXTRA_SUCCESS, false);
             if (!successful) {
-                String errorMessage = intent.getStringExtra(Consts.EXTRA_ERROR_MESSAGE);
+                String errorMessage = intent.getStringExtra(Constants.EXTRA_ERROR_MESSAGE);
                 Toast.makeText(ImageGridActivity.this, getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT).show();
             }
         }
@@ -252,8 +251,8 @@ public class ImageGridActivity extends BaseFragmentActivity
 
                 LoaderManager loaderManager = getSupportLoaderManager();
                 Bundle filterBundle = new Bundle();
-                filterBundle.putString(Consts.EXTRA_QUERY, s.toString());
-                loaderManager.restartLoader(Consts.LOADER_SUBREDDITS, filterBundle, ImageGridActivity.this);
+                filterBundle.putString(Constants.EXTRA_QUERY, s.toString());
+                loaderManager.restartLoader(Constants.LOADER_SUBREDDITS, filterBundle, ImageGridActivity.this);
             }
 
             @Override
@@ -278,21 +277,24 @@ public class ImageGridActivity extends BaseFragmentActivity
         loadSharedPreferences();
 
         // Whether we are in grid or list view
-        if (savedInstanceState != null && savedInstanceState.containsKey(Consts.ACTIVE_VIEW)) {
-            mActiveViewType = ViewType.valueOf(savedInstanceState.getString(Consts.ACTIVE_VIEW));
+        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.ACTIVE_VIEW)) {
+            mActiveViewType = ViewType.valueOf(savedInstanceState.getString(Constants.ACTIVE_VIEW));
         }
         changeActiveViewType(mActiveViewType);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Consts.BROADCAST_MY_SUBREDDITS));
-        LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
-        LocalBroadcastManager.getInstance(this).registerReceiver(mSubredditsSearch, new IntentFilter(Consts.BROADCAST_SUBREDDIT_SEARCH));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(
+            Constants.BROADCAST_MY_SUBREDDITS));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(
+            Constants.BROADCAST_LOGIN_COMPLETE));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSubredditsSearch, new IntentFilter(
+            Constants.BROADCAST_SUBREDDIT_SEARCH));
         initializeLoaders();
     }
 
     private void initializeLoaders() {
         LoaderManager loaderManager = getSupportLoaderManager();
-        loaderManager.initLoader(Consts.LOADER_LOGIN, null, this);
-        loaderManager.initLoader(Consts.LOADER_SUBREDDITS, null, this);
+        loaderManager.initLoader(Constants.LOADER_LOGIN, null, this);
+        loaderManager.initLoader(Constants.LOADER_SUBREDDITS, null, this);
     }
 
     private void initializeActionBar() {
@@ -373,7 +375,7 @@ public class ImageGridActivity extends BaseFragmentActivity
                 // TODO: Make this less hacky...
                 // Load the actual frontpage of reddit if selected
                 if (priority == MySubredditsResponse.DefaultSubreddit.FRONTPAGE.getPriority()) {
-                    mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
+                    mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
                 }
 
                 mSubredditDrawer.setActiveView(view, position);
@@ -387,23 +389,23 @@ public class ImageGridActivity extends BaseFragmentActivity
         setRequestInProgress(true);
         String title = subredditName;
         // If we don't have a subreddit, default to the Frontpage also.
-        if (Strings.isEmpty(subredditName) || subredditName.equals(RedditUrl.REDDIT_FRONTPAGE)) {
+        if (Strings.isEmpty(subredditName) || subredditName.equals(Constants.REDDIT_FRONTPAGE)) {
             title = "Frontpage";
         }
 
-        Intent intent = new Intent(Consts.BROADCAST_SUBREDDIT_SELECTED);
+        Intent intent = new Intent(Constants.BROADCAST_SUBREDDIT_SELECTED);
         getSupportActionBar().setTitle(title);
-        intent.putExtra(Consts.EXTRA_SELECTED_SUBREDDIT, subredditName);
-        intent.putExtra(Consts.EXTRA_AGE, mAge.name());
-        intent.putExtra(Consts.EXTRA_CATEGORY, mCategory.name());
+        intent.putExtra(Constants.EXTRA_SELECTED_SUBREDDIT, subredditName);
+        intent.putExtra(Constants.EXTRA_AGE, mAge.name());
+        intent.putExtra(Constants.EXTRA_CATEGORY, mCategory.name());
         LocalBroadcastManager.getInstance(ImageGridActivity.this).sendBroadcast(intent);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        //        outState.putInt(Consts.EXTRA_NAV_POSITION, getSupportActionBar().getSelectedNavigationIndex());
-        outState.putString(Consts.EXTRA_SELECTED_SUBREDDIT, getSubreddit());
-        outState.putString(Consts.ACTIVE_VIEW, mActiveViewType.name());
+        //        outState.putInt(Constants.EXTRA_NAV_POSITION, getSupportActionBar().getSelectedNavigationIndex());
+        outState.putString(Constants.EXTRA_SELECTED_SUBREDDIT, getSubreddit());
+        outState.putString(Constants.ACTIVE_VIEW, mActiveViewType.name());
         super.onSaveInstanceState(outState);
     }
 
@@ -467,7 +469,7 @@ public class ImageGridActivity extends BaseFragmentActivity
 
     public void startPreferences() {
         Intent intent = new Intent(ImageGridActivity.this, getPreferencesClass());
-        intent.putExtra(Consts.EXTRA_SHOW_NSFW_IMAGES, mShowNsfwImages);
+        intent.putExtra(Constants.EXTRA_SHOW_NSFW_IMAGES, mShowNsfwImages);
         startActivityForResult(intent, SETTINGS_REQUEST);
     }
 
@@ -569,10 +571,10 @@ public class ImageGridActivity extends BaseFragmentActivity
     public void handleLoginAndLogout() {
         if (!RedditLoginInformation.isLoggedIn()) {
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGIN);
+            loginFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGIN);
         } else {
             DialogFragment logoutFragment = LogoutDialogFragment.newInstance(mUsername);
-            logoutFragment.show(getSupportFragmentManager(), Consts.DIALOG_LOGOUT);
+            logoutFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGOUT);
         }
     }
 
@@ -599,25 +601,25 @@ public class ImageGridActivity extends BaseFragmentActivity
 
             // If the user tapped an item in the subreddit list, select that subreddit and load the
             // new images
-            if (data.hasExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT)) {
+            if (data.hasExtra(Constants.EXTRA_NEWLY_SELECTED_SUBREDDIT)) {
                 boolean mFirstCall = false;
                 int pos = getSubredditPosition(
-                    data.getStringExtra(Consts.EXTRA_NEWLY_SELECTED_SUBREDDIT));
+                    data.getStringExtra(Constants.EXTRA_NEWLY_SELECTED_SUBREDDIT));
                 //                onNavigationItemSelected(pos, 0);
                 return;
             }
             // If the user didn't choose a subreddit (meaning we are returned the subreddit they
             // were previously viewing), select it in the list, if it doesn't exist any longer we
             // default to the Front page.
-            String subredditName = data.getStringExtra(Consts.EXTRA_SELECTED_SUBREDDIT);
+            String subredditName = data.getStringExtra(Constants.EXTRA_SELECTED_SUBREDDIT);
             if (subredditExistsInNavigation(subredditName)) {
                 selectSubredditInNavigation(subredditName);
             } else {
                 // Select the Reddit Front Page
-                // onNavigationItemSelected(Consts.POSITION_FRONTPAGE, 0);
+                // onNavigationItemSelected(Constants.POSITION_FRONTPAGE, 0);
             }
         } else if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK) {
-            if (data.getBooleanExtra(Consts.EXTRA_SHOW_NSFW_IMAGES_CHANGED, false)) {
+            if (data.getBooleanExtra(Constants.EXTRA_SHOW_NSFW_IMAGES_CHANGED, false)) {
                 mShowNsfwImages = SharedPreferencesHelper.getShowNsfwImages(this);
 
                 // If we're removing NSFW images we can modify the adapter in place, otherwise we
@@ -625,7 +627,7 @@ public class ImageGridActivity extends BaseFragmentActivity
                 if (mShowNsfwImages) {
                     //                    onNavigationItemSelected(getSupportActionBar().getSelectedNavigationIndex(), 0);
                 } else {
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Consts.BROADCAST_REMOVE_NSFW_IMAGES));
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(Constants.BROADCAST_REMOVE_NSFW_IMAGES));
                 }
             }
         }
@@ -693,7 +695,7 @@ public class ImageGridActivity extends BaseFragmentActivity
         RedditLoginInformation.setLoginData(null);
         SetDefaultSubredditsTask defaultSubredditsTask = new SetDefaultSubredditsTask(true);
         defaultSubredditsTask.execute();
-        loadSubreddit(RedditUrl.REDDIT_FRONTPAGE);
+        loadSubreddit(Constants.REDDIT_FRONTPAGE);
         invalidateOptionsMenu();
     }
 
@@ -716,14 +718,14 @@ public class ImageGridActivity extends BaseFragmentActivity
     public Loader<Cursor> onCreateLoader(int id, Bundle paramBundle) {
         Log.i(TAG, "onCreateLoader");
         switch (id) {
-            case Consts.LOADER_LOGIN:
+            case Constants.LOADER_LOGIN:
                 return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
-            case Consts.LOADER_SUBREDDITS:
+            case Constants.LOADER_SUBREDDITS:
                 String selection = null;
                 String[] selectionArgs = null;
 
-                if (paramBundle != null && paramBundle.containsKey(Consts.EXTRA_QUERY)) {
-                    String query = paramBundle.getString(Consts.EXTRA_QUERY);
+                if (paramBundle != null && paramBundle.containsKey(Constants.EXTRA_QUERY)) {
+                    String query = paramBundle.getString(Constants.EXTRA_QUERY);
 
                     if (Strings.notEmpty(query)) {
                         selection = RedditContract.SubredditColumns.DISPLAY_NAME + " LIKE ?";
@@ -741,7 +743,7 @@ public class ImageGridActivity extends BaseFragmentActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         switch (loader.getId()) {
-            case Consts.LOADER_LOGIN:
+            case Constants.LOADER_LOGIN:
                 if (cursor != null) {
                     Ln.i(TAG, "onLoadFinished LOADER_LOGIN, " + cursor.getCount() + " rows");
                     if (cursor.moveToFirst()) {
@@ -757,7 +759,7 @@ public class ImageGridActivity extends BaseFragmentActivity
                             RedditLoginInformation.setLoginData(data);
 
                             if (mLoginLoaderHasRun) {
-                                loadSubreddit(RedditUrl.REDDIT_FRONTPAGE);
+                                loadSubreddit(Constants.REDDIT_FRONTPAGE);
                                 mLoginLoaderHasRun = false;
                             }
                         }
@@ -771,7 +773,7 @@ public class ImageGridActivity extends BaseFragmentActivity
                 }
                 break;
 
-            case Consts.LOADER_SUBREDDITS:
+            case Constants.LOADER_SUBREDDITS:
                 setRequestInProgress(false);
                 mSubredditAdapter.swapCursor(cursor);
                 if (cursor != null) {
@@ -787,7 +789,7 @@ public class ImageGridActivity extends BaseFragmentActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
-            case Consts.LOADER_SUBREDDITS:
+            case Constants.LOADER_SUBREDDITS:
                 mSubredditAdapter.swapCursor(null);
                 break;
         }

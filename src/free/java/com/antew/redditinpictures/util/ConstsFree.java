@@ -3,9 +3,9 @@ package com.antew.redditinpictures.util;
 import android.content.Context;
 import android.content.res.TypedArray;
 
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 
-public class ConstsFree extends Consts {
+public class ConstsFree extends Constants {
     public static final String ADMOB_ID            = "a14fd4522953241";
     public static final String DIALOG_UPGRADE      = "Upgrade";
     public static final String MARKET_INTENT       = "market://details?id=";

@@ -28,7 +28,7 @@ import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveIma
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.library.widgets.CustomViewPager;
 import com.antew.redditinpictures.pro.BuildConfig;
@@ -115,7 +115,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * Set the current item based on the extra passed in to this activity
      */
     private void moveViewPagerToSelectedIndex() {
-        final int extraCurrentItem = getIntent().getIntExtra(Consts.EXTRA_IMAGE, -1);
+        final int extraCurrentItem = getIntent().getIntExtra(Constants.EXTRA_IMAGE, -1);
         if (extraCurrentItem != -1) {
             mPager.setCurrentItem(extraCurrentItem);
         }
@@ -125,7 +125,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * Register BroadcastReceivers with the LocalBroadcastManager
      */
     private void registerLocalBroadcastReceivers() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(mToggleFullscreenReceiver, new IntentFilter(Consts.BROADCAST_TOGGLE_FULLSCREEN));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mToggleFullscreenReceiver, new IntentFilter(
+            Constants.BROADCAST_TOGGLE_FULLSCREEN));
     }
     
     /**
@@ -297,7 +298,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.i(TAG, "onSaveInstanceState");
-        outState.putParcelableArrayList(Consts.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
+        outState.putParcelableArrayList(Constants.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
         super.onSaveInstanceState(outState);
     }
 
@@ -305,8 +306,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         Log.i(TAG, "onRestoreInstanceState");
         super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState.containsKey(Consts.EXTRA_ENTRIES))
-            mImages = savedInstanceState.getParcelableArrayList(Consts.EXTRA_ENTRIES);
+        if (savedInstanceState.containsKey(Constants.EXTRA_ENTRIES))
+            mImages = savedInstanceState.getParcelableArrayList(Constants.EXTRA_ENTRIES);
     }
 
     /**
@@ -356,7 +357,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     public void handleSaveImage() {
         SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(getFilenameForSave());
-        saveImageDialog.show(getSupportFragmentManager(), Consts.DIALOG_GET_FILENAME);
+        saveImageDialog.show(getSupportFragmentManager(), Constants.DIALOG_GET_FILENAME);
     }
     
     /**
@@ -423,7 +424,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            boolean isSystemUiVisible = intent.getBooleanExtra(Consts.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
+            boolean isSystemUiVisible = intent.getBooleanExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
             if (mPager != null) {
                 if (isSystemUiVisible)
                     goFullscreen();

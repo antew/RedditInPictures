@@ -6,7 +6,7 @@ import com.android.debug.hv.ViewServer;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
 import com.antew.redditinpictures.library.modules.ActivityModule;
-import com.antew.redditinpictures.library.reddit.RedditUrl;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.BuildConfig;
@@ -88,7 +88,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
     @Override public void setActionBarTitle(String title) {
         if (Strings.isEmpty(title)) {
             getSupportActionBar().setTitle(getString(R.string.app_name));
-        } else if (title.equals(RedditUrl.REDDIT_FRONTPAGE)) {
+        } else if (title.equals(Constants.REDDIT_FRONTPAGE)) {
             getSupportActionBar().setTitle(getString(R.string.frontpage));
         } else {
             getSupportActionBar().setTitle(title);

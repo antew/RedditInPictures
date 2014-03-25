@@ -12,7 +12,7 @@ import com.antew.redditinpictures.library.imgur.SimpleImgurGallery;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 
 public class ImgurGalleryType extends Image {
     public static final String  TAG                   = ImgurGalleryType.class.getSimpleName();
@@ -90,7 +90,7 @@ public class ImgurGalleryType extends Image {
         ImgurAlbumApi album = null;
         ImgurImage image = null;
         ImgurApiCache cache = ImgurApiCache.getInstance();
-        String newUrl = URL_IMGUR_GALLERY_API + hash + Consts.JSON;
+        String newUrl = URL_IMGUR_GALLERY_API + hash + Constants.JSON;
 
         if (cache.containsImgurGallery(hash)) {
             Log.d(TAG, "cache - getImgurGalleryFromHash - " + hash + " found in cache");

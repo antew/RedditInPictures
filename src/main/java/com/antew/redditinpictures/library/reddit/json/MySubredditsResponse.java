@@ -7,6 +7,7 @@ import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.MySubreddits;
 import com.antew.redditinpictures.library.reddit.SubredditData;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,15 +68,15 @@ public class MySubredditsResponse extends RedditResponseHandler {
         Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
         SharedPreferencesHelper.saveArray(subReddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, context);
 
-        Intent intent = new Intent(Consts.BROADCAST_MY_SUBREDDITS);
-        intent.putStringArrayListExtra(Consts.EXTRA_MY_SUBREDDITS, subReddits);
+        Intent intent = new Intent(Constants.BROADCAST_MY_SUBREDDITS);
+        intent.putStringArrayListExtra(Constants.EXTRA_MY_SUBREDDITS, subReddits);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         */
     }
 
     public enum DefaultSubreddit {
-        FRONTPAGE("Frontpage", 99999),
-        ALL("All", 99998);
+        FRONTPAGE(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME, 99999),
+        ALL(Constants.REDDIT_ALL_DISPLAY_NAME, 99998);
 
         private final String displayName;
         private final int    priority;

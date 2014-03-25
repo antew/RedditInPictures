@@ -8,7 +8,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditLoginResponse;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 
@@ -42,14 +42,14 @@ public class LoginResponse extends RedditResponseHandler {
         }
         
         ContentValues loginValues = response.getContentValues();
-        Intent loginNotify = new Intent(Consts.BROADCAST_LOGIN_COMPLETE);
-        loginNotify.putExtra(Consts.EXTRA_USERNAME, username);
+        Intent loginNotify = new Intent(Constants.BROADCAST_LOGIN_COMPLETE);
+        loginNotify.putExtra(Constants.EXTRA_USERNAME, username);
         if (loginValues.getAsBoolean(RedditContract.Login.SUCCESS)) {
-            loginNotify.putExtra(Consts.EXTRA_SUCCESS, true);
+            loginNotify.putExtra(Constants.EXTRA_SUCCESS, true);
             resolver.insert(RedditContract.Login.CONTENT_URI, loginValues);
         } else {
-            loginNotify.putExtra(Consts.EXTRA_SUCCESS, false);
-            loginNotify.putExtra(Consts.EXTRA_ERROR_MESSAGE, loginValues.getAsString(RedditContract.Login.ERROR_MESSAGE));
+            loginNotify.putExtra(Constants.EXTRA_SUCCESS, false);
+            loginNotify.putExtra(Constants.EXTRA_ERROR_MESSAGE, loginValues.getAsString(RedditContract.Login.ERROR_MESSAGE));
         }
         
         LocalBroadcastManager.getInstance(context).sendBroadcast(loginNotify);

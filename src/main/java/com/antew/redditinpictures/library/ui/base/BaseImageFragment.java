@@ -23,12 +23,11 @@ import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
-import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
-import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
@@ -56,7 +55,7 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
     private boolean mFullRefresh = true;
     private boolean mRequestInProgress;
 
-    private String mCurrentSubreddit = RedditUrl.REDDIT_FRONTPAGE;
+    private String mCurrentSubreddit = Constants.REDDIT_FRONTPAGE;
     private Category mCategory = Category.HOT;
     private Age mAge = Age.TODAY;
 
@@ -112,8 +111,8 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         handleArguments();
-        getActivity().getSupportLoaderManager().initLoader(Consts.LOADER_POSTS, null, this);
-        fetchImagesFromReddit(true);
+        getActivity().getSupportLoaderManager().initLoader(Constants.LOADER_POSTS, null, this);
+        //forceFetchImagesFromReddit();
         if (getActivity() instanceof ActionBarTitleChanger) {
             ((ActionBarTitleChanger) getActivity()).setActionBarTitle(mCurrentSubreddit);
         }
@@ -127,22 +126,22 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
         Bundle arguments = getArguments();
         if (arguments != null) {
             if (Util.hasHoneycombMR1()) {
-                mCurrentSubreddit = arguments.getString(Consts.EXTRA_SELECTED_SUBREDDIT,
-                    RedditUrl.REDDIT_FRONTPAGE);
+                mCurrentSubreddit = arguments.getString(Constants.EXTRA_SELECTED_SUBREDDIT,
+                    Constants.REDDIT_FRONTPAGE);
                 mCategory = Category.valueOf(
-                    arguments.getString(Consts.EXTRA_CATEGORY, Category.HOT.toString()));
-                mAge = Age.valueOf(arguments.getString(Consts.EXTRA_AGE, Age.TODAY.toString()));
+                    arguments.getString(Constants.EXTRA_CATEGORY, Category.HOT.toString()));
+                mAge = Age.valueOf(arguments.getString(Constants.EXTRA_AGE, Age.TODAY.toString()));
             } else {
-                if (arguments.containsKey(Consts.EXTRA_SELECTED_SUBREDDIT)) {
-                    mCurrentSubreddit = arguments.getString(Consts.EXTRA_SELECTED_SUBREDDIT);
+                if (arguments.containsKey(Constants.EXTRA_SELECTED_SUBREDDIT)) {
+                    mCurrentSubreddit = arguments.getString(Constants.EXTRA_SELECTED_SUBREDDIT);
                 }
 
-                if (arguments.containsKey(Consts.EXTRA_CATEGORY)) {
-                    mCategory = Category.valueOf(arguments.getString(Consts.EXTRA_CATEGORY));
+                if (arguments.containsKey(Constants.EXTRA_CATEGORY)) {
+                    mCategory = Category.valueOf(arguments.getString(Constants.EXTRA_CATEGORY));
                 }
 
-                if (arguments.containsKey(Consts.EXTRA_AGE)) {
-                    mAge = Age.valueOf(arguments.getString(Consts.EXTRA_CATEGORY));
+                if (arguments.containsKey(Constants.EXTRA_AGE)) {
+                    mAge = Age.valueOf(arguments.getString(Constants.EXTRA_CATEGORY));
                 }
             }
         }
@@ -157,14 +156,31 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
      */
     @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
-            case Consts.LOADER_POSTS:
+            case Constants.LOADER_POSTS:
                 QueryCriteria queryCriteria = getPostsQueryCriteria();
                 String selection = null;
-                List<String> selectionArgsList = new ArrayList<String>();
                 String[] selectionArgs = null;
+                List<String> selectionArgsList = new ArrayList<String>();
 
-                // If we aren't on one of the default subreddits (Frontpage/All), filter the selection to only the subreddit we are concerned with.
-                if (!SubredditUtils.isDefaultSubreddit(mCurrentSubreddit)) {
+                // If we have an aggregate subreddit we want to return relevant things.
+                if (mCurrentSubreddit.equals(Constants.REDDIT_FRONTPAGE) || mCurrentSubreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME) || mCurrentSubreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
+                    selection = null;
+                    selectionArgs = null;
+                } else if (mCurrentSubreddit.contains("+")) {
+                    // Poor mans checking for multis. If we have a multi, we want to handle all of them appropriately.
+                    String[] subredditArray = mCurrentSubreddit.split("\\+");
+
+                    for (String item : subredditArray) {
+                        if (selection == null) {
+                            selection = RedditContract.PostColumns.SUBREDDIT + " in (?";
+                        } else {
+                            selection += ",?";
+                        }
+                        selectionArgsList.add(item);
+                    }
+                    // Close the in statement.
+                    selection += ")";
+                } else {
                     selection = RedditContract.PostColumns.SUBREDDIT + " = ?";
                     selectionArgsList.add(mCurrentSubreddit);
                 }
@@ -182,6 +198,8 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
                 if (selectionArgsList != null && selectionArgsList.size() > 0) {
                     selectionArgs = selectionArgsList.toArray(new String[] {});
                 }
+
+                Ln.d("Retrieveing Posts For %s %s", selection, selectionArgs.toString());
 
                 return new CursorLoader(getActivity(), RedditContract.Posts.CONTENT_URI,  // uri
                     queryCriteria.getProjection(),     // projection
@@ -234,22 +252,17 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
      */
     @Override public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
-            case Consts.LOADER_POSTS:
+            case Constants.LOADER_POSTS:
                 mAdapter.swapCursor(data);
 
                 if (data.getCount() == 0) {
-                    fetchImagesFromReddit(true);
                     mNoImages.setVisibility(View.VISIBLE);
-                } else if (mNoImages.getVisibility() == View.VISIBLE) {
-                    mNoImages.setVisibility(View.GONE);
+                } else {
+                    if (mNoImages.getVisibility() == View.VISIBLE) {
+                        mNoImages.setVisibility(View.GONE);
+                    }
+                    productRequestCompletedEvent();
                 }
-
-                // If a full refresh was initiated, scroll to the top.
-                if (mFullRefresh) {
-                    getAdapterView().setSelection(0);
-                    mFullRefresh = false;
-                }
-                productRequestCompletedEvent();
                 break;
             default:
                 break;
@@ -265,7 +278,7 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
      */
     @Override public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
-            case Consts.LOADER_POSTS:
+            case Constants.LOADER_POSTS:
                 productRequestCompletedEvent();
                 mAdapter.swapCursor(null);
                 break;
@@ -290,10 +303,10 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN) @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
         Bundle b = new Bundle();
-        b.putString(Consts.EXTRA_SELECTED_SUBREDDIT, mCurrentSubreddit);
-        b.putString(Consts.EXTRA_CATEGORY, mCategory.name());
-        b.putString(Consts.EXTRA_AGE, mAge.name());
-        i.putExtra(Consts.EXTRA_IMAGE, position);
+        b.putString(Constants.EXTRA_SELECTED_SUBREDDIT, mCurrentSubreddit);
+        b.putString(Constants.EXTRA_CATEGORY, mCategory.name());
+        b.putString(Constants.EXTRA_AGE, mAge.name());
+        i.putExtra(Constants.EXTRA_IMAGE, position);
         i.putExtras(b);
 
         if (Util.hasJellyBean()) {
@@ -314,11 +327,14 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
         mBus.post(new RequestCompletedEvent());
     }
 
-    protected void fetchImagesFromReddit(boolean replaceAll) {
+    protected void forceFetchImagesFromReddit() {
         produceRequestInProgressEvent();
-        mFullRefresh = replaceAll;
-        RedditService.getPosts(getActivity(), mCurrentSubreddit, mAge, mCategory, mAppendTo,
-            mFullRefresh);
+        RedditService.forceRefreshSubreddit(getActivity(), mCurrentSubreddit, mAge, mCategory);
+    }
+
+    protected void fetchAdditionalImagesFromReddit() {
+        produceRequestInProgressEvent();
+        RedditService.getPosts(getActivity(), mCurrentSubreddit, mAge, mCategory, mAppendTo);
     }
 
     protected Class<? extends ImageDetailActivity> getImageDetailActivityClass() {

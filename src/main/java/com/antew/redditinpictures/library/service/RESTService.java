@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.library.utils.Constants;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -96,7 +96,7 @@ public class RESTService extends IntentService {
         Bundle passThrough = extras.getBundle(EXTRA_PASS_THROUGH);
 
         HttpEntity responseEntity = null;
-        Intent result = new Intent(Consts.BROADCAST_HTTP_FINISHED);
+        Intent result = new Intent(Constants.BROADCAST_HTTP_FINISHED);
         result.putExtra(EXTRA_PASS_THROUGH, passThrough);
         Bundle resultData = new Bundle();
 
