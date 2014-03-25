@@ -5,7 +5,7 @@
         android:id="@+id/change_view"
         android:icon="@drawable/ic_action_list_2_dark"
         android:showAsAction="always"
-        android:title="Switch View"/>
+        android:title="@string/view_as_list"/>
     
     <item android:id="@+id/sort_subreddits" android:icon="@drawable/ic_action_sort_1_dark" android:showAsAction="always" android:title="Sort">
         <menu>

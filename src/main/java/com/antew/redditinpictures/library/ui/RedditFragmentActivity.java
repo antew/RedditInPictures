@@ -199,11 +199,13 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                     FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
                     gridTrans.replace(R.id.content_fragment, getNewImageGridFragment());
                     gridTrans.commit();
+                    invalidateOptionsMenu();
                     break;
                 case LIST:
                     FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
                     listTrans.replace(R.id.content_fragment, getNewImageListFragment());
                     listTrans.commit();
+                    invalidateOptionsMenu();
                     break;
             }
         }
@@ -322,9 +324,11 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         switch (mActiveViewType) {
             case LIST:
                 activeViewMenuItem.setIcon(R.drawable.ic_action_tiles_small_dark);
+                activeViewMenuItem.setTitle(R.string.view_as_grid);
                 break;
             case GRID:
                 activeViewMenuItem.setIcon(R.drawable.ic_action_list_2_dark);
+                activeViewMenuItem.setTitle(R.string.view_as_list);
                 break;
             default:
                 break;
