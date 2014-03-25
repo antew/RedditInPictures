@@ -47,8 +47,8 @@ import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.squareup.otto.Subscribe;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
-public class RedditFragmentActivity extends BaseFragmentActivityWithMenu implements
-    LoginDialogFragment.LoginDialogListener, LogoutDialogFragment.LogoutDialogListener {
+public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
+    implements LoginDialogFragment.LoginDialogListener, LogoutDialogFragment.LogoutDialogListener {
     public static final int SETTINGS_REQUEST = 20;
     private ViewType mActiveViewType = ViewType.LIST;
     private String mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
@@ -78,7 +78,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
     }
 
     private void initalizeReceivers() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
     }
 
     private void initializeLoaders() {
@@ -217,16 +218,12 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
 
     @Subscribe
     public void requestInProgress(RequestInProgressEvent event) {
-        ViewPropertyAnimator.animate(mProgressBar)
-            .setDuration(500)
-            .alpha(100);
+        ViewPropertyAnimator.animate(mProgressBar).setDuration(500).alpha(100);
     }
 
     @Subscribe
     public void requestCompleted(RequestCompletedEvent event) {
-        ViewPropertyAnimator.animate(mProgressBar)
-            .setDuration(500)
-            .alpha(0);
+        ViewPropertyAnimator.animate(mProgressBar).setDuration(500).alpha(0);
     }
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -236,32 +233,71 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
         inflater.inflate(R.menu.main, menu);
 
         MenuItem item;
-        //@formatter:off
         // Put a checkmark by the currently selected Category + Age combination
         switch (mCategory) {
             case CONTROVERSIAL:
-                switch (mAge)
-                {
-                    case ALL_TIME:  item = menu.findItem(R.id.category_controversial_all_time); item.setChecked(true); break;
-                    case THIS_HOUR: item = menu.findItem(R.id.category_controversial_hour)    ; item.setChecked(true); break;
-                    case THIS_MONTH:item = menu.findItem(R.id.category_controversial_month)   ; item.setChecked(true); break;
-                    case THIS_WEEK: item = menu.findItem(R.id.category_controversial_week)    ; item.setChecked(true); break;
-                    case THIS_YEAR: item = menu.findItem(R.id.category_controversial_year)    ; item.setChecked(true); break;
-                    case TODAY:     item = menu.findItem(R.id.category_controversial_today)   ; item.setChecked(true); break;
+                switch (mAge) {
+                    case ALL_TIME:
+                        item = menu.findItem(R.id.category_controversial_all_time);
+                        item.setChecked(true);
+                        break;
+                    case THIS_HOUR:
+                        item = menu.findItem(R.id.category_controversial_hour);
+                        item.setChecked(true);
+                        break;
+                    case THIS_MONTH:
+                        item = menu.findItem(R.id.category_controversial_month);
+                        item.setChecked(true);
+                        break;
+                    case THIS_WEEK:
+                        item = menu.findItem(R.id.category_controversial_week);
+                        item.setChecked(true);
+                        break;
+                    case THIS_YEAR:
+                        item = menu.findItem(R.id.category_controversial_year);
+                        item.setChecked(true);
+                        break;
+                    case TODAY:
+                        item = menu.findItem(R.id.category_controversial_today);
+                        item.setChecked(true);
+                        break;
                 }
                 break;
-            case HOT:    menu.findItem(R.id.category_hot).setChecked(true)   ; break;
-            case NEW:    menu.findItem(R.id.category_new).setChecked(true)   ; break;
-            case RISING: menu.findItem(R.id.category_rising).setChecked(true); break;
+            case HOT:
+                menu.findItem(R.id.category_hot).setChecked(true);
+                break;
+            case NEW:
+                menu.findItem(R.id.category_new).setChecked(true);
+                break;
+            case RISING:
+                menu.findItem(R.id.category_rising).setChecked(true);
+                break;
             case TOP:
-                switch (mAge)
-                {
-                    case ALL_TIME:  item = menu.findItem(R.id.category_top_all_time); item.setChecked(true); break;
-                    case THIS_HOUR: item = menu.findItem(R.id.category_top_hour)    ; item.setChecked(true); break;
-                    case THIS_MONTH:item = menu.findItem(R.id.category_top_month)   ; item.setChecked(true); break;
-                    case THIS_WEEK: item = menu.findItem(R.id.category_top_week)    ; item.setChecked(true); break;
-                    case THIS_YEAR: item = menu.findItem(R.id.category_top_year)    ; item.setChecked(true); break;
-                    case TODAY:     item = menu.findItem(R.id.category_top_today)   ; item.setChecked(true); break;
+                switch (mAge) {
+                    case ALL_TIME:
+                        item = menu.findItem(R.id.category_top_all_time);
+                        item.setChecked(true);
+                        break;
+                    case THIS_HOUR:
+                        item = menu.findItem(R.id.category_top_hour);
+                        item.setChecked(true);
+                        break;
+                    case THIS_MONTH:
+                        item = menu.findItem(R.id.category_top_month);
+                        item.setChecked(true);
+                        break;
+                    case THIS_WEEK:
+                        item = menu.findItem(R.id.category_top_week);
+                        item.setChecked(true);
+                        break;
+                    case THIS_YEAR:
+                        item = menu.findItem(R.id.category_top_year);
+                        item.setChecked(true);
+                        break;
+                    case TODAY:
+                        item = menu.findItem(R.id.category_top_today);
+                        item.setChecked(true);
+                        break;
                 }
                 break;
             default:
@@ -274,7 +310,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
         MenuItem loginMenuItem = menu.findItem(R.id.login);
         // If the user is logged in, update the Logout menu item to "Log out <username>"
         if (RedditLoginInformation.isLoggedIn()) {
-            loginMenuItem.setTitle(getString(R.string.log_out_) + RedditLoginInformation.getUsername());
+            loginMenuItem.setTitle(
+                getString(R.string.log_out_) + RedditLoginInformation.getUsername());
             loginMenuItem.setIcon(R.drawable.ic_action_exit_dark);
         } else {
             loginMenuItem.setTitle(R.string.log_on);
@@ -301,7 +338,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
         super.onCreateLoader(id, paramBundle);
         switch (id) {
             case Consts.LOADER_LOGIN:
-                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
+                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null,
+                    RedditContract.Login.DEFAULT_SORT);
         }
 
         return null;
@@ -314,9 +352,12 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
             case Consts.LOADER_LOGIN:
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
-                        String username = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
-                        String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
-                        String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
+                        String username =
+                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
+                        String cookie =
+                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
+                        String modhash =
+                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
 
                         LoginData data = new LoginData(username, modhash, cookie);
                         if (!data.equals(RedditLoginInformation.getLoginData())) {
@@ -326,7 +367,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
                         requestCompleted(null);
                         invalidateOptionsMenu();
 
-                        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this);
+                        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask =
+                            new SubredditUtils.SetDefaultSubredditsTask(this);
                         defaultSubredditsTask.execute();
                     }
                 }
@@ -347,7 +389,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
     public void onFinishLogoutDialog() {
         // Clear out the login data, Reddit API doesn't incorporate sessions into how it works so simply clearing out the cached data does the trick.
         RedditLoginInformation.setLoginData(null);
-        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this, true);
+        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask =
+            new SubredditUtils.SetDefaultSubredditsTask(this, true);
         defaultSubredditsTask.execute();
         invalidateOptionsMenu();
     }
@@ -357,7 +400,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
         boolean successful = intent.getBooleanExtra(Consts.EXTRA_SUCCESS, false);
         if (!successful) {
             String errorMessage = intent.getStringExtra(Consts.EXTRA_ERROR_MESSAGE);
-            Toast.makeText(this, getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT)
+                .show();
         }
     }
 
