@@ -40,6 +40,7 @@ import com.antew.redditinpictures.library.ui.base.BaseFragmentActivityWithMenu;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
+import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
@@ -325,8 +326,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
                         hideProgressDialog();
                         invalidateOptionsMenu();
 
-                        //SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this);
-                        //defaultSubredditsTask.execute();
+                        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this);
+                        defaultSubredditsTask.execute();
                     }
                 }
                 break;
@@ -346,8 +347,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
     public void onFinishLogoutDialog() {
         // Clear out the login data, Reddit API doesn't incorporate sessions into how it works so simply clearing out the cached data does the trick.
         RedditLoginInformation.setLoginData(null);
-        //SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this, true);
-        //defaultSubredditsTask.execute();
+        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this, true);
+        defaultSubredditsTask.execute();
         invalidateOptionsMenu();
     }
 
