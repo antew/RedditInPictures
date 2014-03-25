@@ -1,12 +1,21 @@
 package com.antew.redditinpictures.library.ui;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 import butterknife.InjectView;
 import butterknife.Optional;
@@ -19,22 +28,27 @@ import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.event.LoadSubredditEvent;
 import com.antew.redditinpictures.library.event.ProgressChangedEvent;
+import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
+import com.antew.redditinpictures.library.reddit.LoginData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditSort;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivityWithMenu;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
+import com.antew.redditinpictures.sqlite.RedditContract;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.squareup.otto.Subscribe;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
-public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
+public class RedditFragmentActivity extends BaseFragmentActivityWithMenu implements
+    LoginDialogFragment.LoginDialogListener, LogoutDialogFragment.LogoutDialogListener {
     public static final int SETTINGS_REQUEST = 20;
     private ViewType mActiveViewType = ViewType.LIST;
     private String mSelectedSubreddit = RedditUrl.REDDIT_FRONTPAGE;
@@ -45,12 +59,31 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
 
     @InjectView(R.id.top_progressbar)
     protected SmoothProgressBar mProgressBar;
+    protected ProgressDialog mProgressDialog;
+
+    private BroadcastReceiver mLoginComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            handleLoginComplete(intent);
+        }
+    };
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reddit_fragment_activity);
         restoreInstanceState(savedInstanceState);
         initializeActiveView();
+        initalizeReceivers();
+        initializeLoaders();
+    }
+
+    private void initalizeReceivers() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Consts.BROADCAST_LOGIN_COMPLETE));
+    }
+
+    private void initializeLoaders() {
+        LoaderManager loaderManager = getSupportLoaderManager();
+        loaderManager.initLoader(Consts.LOADER_LOGIN, null, this);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
@@ -260,6 +293,79 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
         }
 
         return true;
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle paramBundle) {
+        super.onCreateLoader(id, paramBundle);
+        switch (id) {
+            case Consts.LOADER_LOGIN:
+                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
+        }
+
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        super.onLoadFinished(loader, cursor);
+        switch (loader.getId()) {
+            case Consts.LOADER_LOGIN:
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        String username = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
+                        String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
+                        String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
+
+                        LoginData data = new LoginData(username, modhash, cookie);
+                        if (!data.equals(RedditLoginInformation.getLoginData())) {
+                            RedditLoginInformation.setLoginData(data);
+                        }
+
+                        hideProgressDialog();
+                        invalidateOptionsMenu();
+
+                        //SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this);
+                        //defaultSubredditsTask.execute();
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onFinishLoginDialog(String username, String password) {
+        showProgressDialog(getString(R.string.log_on), getString(R.string.logging_on));
+        RedditService.login(this, username, password);
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onFinishLogoutDialog() {
+        // Clear out the login data, Reddit API doesn't incorporate sessions into how it works so simply clearing out the cached data does the trick.
+        RedditLoginInformation.setLoginData(null);
+        //SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this, true);
+        //defaultSubredditsTask.execute();
+        invalidateOptionsMenu();
+    }
+
+    private void showProgressDialog(String title, String message) {
+        mProgressDialog = ProgressDialog.show(this, title, message, true, false);
+    }
+
+    private void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
+    }
+
+    private void handleLoginComplete(Intent intent) {
+        hideProgressDialog();
+        boolean successful = intent.getBooleanExtra(Consts.EXTRA_SUCCESS, false);
+        if (!successful) {
+            String errorMessage = intent.getStringExtra(Consts.EXTRA_ERROR_MESSAGE);
+            Toast.makeText(this, getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public Fragment getNewImageGridFragment() {
