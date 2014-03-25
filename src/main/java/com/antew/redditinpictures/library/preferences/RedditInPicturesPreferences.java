@@ -22,13 +22,12 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.pro.R;
 
 /**
  * Preferences screen used for Pre-Honeycomb, this can be subclassed to add additional preferences.

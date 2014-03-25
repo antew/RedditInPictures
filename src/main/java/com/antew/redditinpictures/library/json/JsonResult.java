@@ -2,7 +2,6 @@ package com.antew.redditinpictures.library.json;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.service.RequestCode;
 

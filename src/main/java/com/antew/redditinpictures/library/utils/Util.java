@@ -24,7 +24,6 @@ import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 
 public class Util {

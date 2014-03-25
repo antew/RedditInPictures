@@ -3,10 +3,11 @@ package com.antew.redditinpictures.library.reddit.json;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.antew.redditinpictures.pro.BuildConfig;;
 import com.antew.redditinpictures.library.json.JsonResult;
 import com.antew.redditinpictures.library.service.RedditService;
+import com.antew.redditinpictures.pro.BuildConfig;
+
+;
 
 public class RedditResult extends JsonResult {
     private boolean mReplaceAll;

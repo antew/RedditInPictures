@@ -16,7 +16,6 @@
 package com.antew.redditinpictures.library.reddit;
 
 import android.content.ContentValues;
-
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.google.gson.annotations.SerializedName;

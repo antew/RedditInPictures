@@ -3,9 +3,7 @@ package com.antew.redditinpictures.library;
 import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
-
 import com.antew.redditinpictures.Modules;
-
 import dagger.ObjectGraph;
 
 public class RedditInPicturesApplication extends Application {

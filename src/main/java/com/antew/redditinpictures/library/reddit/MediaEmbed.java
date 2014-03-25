@@ -2,7 +2,6 @@ package com.antew.redditinpictures.library.reddit;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import com.antew.redditinpictures.library.utils.Util;
 
 public class MediaEmbed implements Parcelable {

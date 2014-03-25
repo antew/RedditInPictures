@@ -15,19 +15,17 @@
  */
 package com.antew.redditinpictures.library.reddit;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
 import com.antew.redditinpictures.library.interfaces.RedditPostFilter;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.sqlite.RedditContract;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RedditApi implements Parcelable, ContentValuesOperation, RedditPostFilter<PostData> {
     private String        kind;

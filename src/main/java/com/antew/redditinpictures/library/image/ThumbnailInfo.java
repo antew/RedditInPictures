@@ -1,7 +1,6 @@
 package com.antew.redditinpictures.library.image;
 
 import android.content.res.Resources;
-
 import com.antew.redditinpictures.pro.R;
 
 public class ThumbnailInfo {

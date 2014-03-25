@@ -11,17 +11,14 @@ import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.view.inputmethod.InputMethodManager;
-
 import com.antew.redditinpictures.device.ScreenSize;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.annotations.ForApplication;
 import com.antew.redditinpictures.library.utils.MainThreadBus;
 import com.squareup.otto.Bus;
-
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
+import javax.inject.Singleton;
 
 /**
  * Module for all Android related provisions

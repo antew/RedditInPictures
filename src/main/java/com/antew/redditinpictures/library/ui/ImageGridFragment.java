@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.adapter.ImageCursorAdapter;
 import com.antew.redditinpictures.library.logging.Log;

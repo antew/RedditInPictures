@@ -15,7 +15,9 @@
  */
 package com.antew.redditinpictures.library.logging;
 
-import com.antew.redditinpictures.pro.BuildConfig;;
+import com.antew.redditinpictures.pro.BuildConfig;
+
+;
 
 /**
  * Utility class for Logging, wrapps the standard android {@link android.util.Log} class

@@ -6,7 +6,6 @@ import android.graphics.Movie;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.view.View;
-
 import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;

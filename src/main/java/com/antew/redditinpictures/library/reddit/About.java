@@ -15,9 +15,7 @@
  */
 package com.antew.redditinpictures.library.reddit;
 
-
 import android.content.ContentValues;
-
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class About {

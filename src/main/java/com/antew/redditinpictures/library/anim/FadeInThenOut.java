@@ -16,7 +16,6 @@
 package com.antew.redditinpictures.library.anim;
 
 import android.view.View;
-
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.Animator.AnimatorListener;
 import com.nineoldandroids.view.ViewHelper;

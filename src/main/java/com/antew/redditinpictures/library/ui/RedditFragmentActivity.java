@@ -18,7 +18,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 import butterknife.InjectView;
-import butterknife.Optional;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -27,8 +26,8 @@ import com.antew.redditinpictures.library.dialog.LogoutDialogFragment;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.event.LoadSubredditEvent;
-import com.antew.redditinpictures.library.event.ProgressChangedEvent;
-import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.LoginData;
@@ -217,16 +216,17 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
     }
 
     @Subscribe
-    public void progressChanged(ProgressChangedEvent event) {
-        if (event != null) {
-            ViewPropertyAnimator.animate(mProgressBar)
-                .setDuration(500)
-                .alpha(event.isInProgress() ? 100 : 0);
-        } else {
-            ViewPropertyAnimator.animate(mProgressBar)
-                .setDuration(500)
-                .alpha(0);
-        }
+    public void requestInProgress(RequestInProgressEvent event) {
+        ViewPropertyAnimator.animate(mProgressBar)
+            .setDuration(500)
+            .alpha(100);
+    }
+
+    @Subscribe
+    public void requestCompleted(RequestCompletedEvent event) {
+        ViewPropertyAnimator.animate(mProgressBar)
+            .setDuration(500)
+            .alpha(0);
     }
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -323,7 +323,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
                             RedditLoginInformation.setLoginData(data);
                         }
 
-                        hideProgressDialog();
+                        requestCompleted(null);
                         invalidateOptionsMenu();
 
                         SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this);
@@ -338,7 +338,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
 
     @Override
     public void onFinishLoginDialog(String username, String password) {
-        showProgressDialog(getString(R.string.log_on), getString(R.string.logging_on));
+        requestInProgress(null);
         RedditService.login(this, username, password);
         invalidateOptionsMenu();
     }
@@ -352,16 +352,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu impleme
         invalidateOptionsMenu();
     }
 
-    private void showProgressDialog(String title, String message) {
-        mProgressDialog = ProgressDialog.show(this, title, message, true, false);
-    }
-
-    private void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
-    }
-
     private void handleLoginComplete(Intent intent) {
-        hideProgressDialog();
+        requestCompleted(null);
         boolean successful = intent.getBooleanExtra(Consts.EXTRA_SUCCESS, false);
         if (!successful) {
             String errorMessage = intent.getStringExtra(Consts.EXTRA_ERROR_MESSAGE);

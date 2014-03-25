@@ -15,9 +15,8 @@
  */
 package com.antew.redditinpictures.library.imageapi;
 
-import java.util.List;
-
 import com.antew.redditinpictures.library.logging.Log;
+import java.util.List;
 
 /**
  * This class is used by Gson to parse JSON from Flickr into POJOs

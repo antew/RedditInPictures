@@ -17,7 +17,6 @@ package com.antew.redditinpictures.library.imgur;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.utils.Util;
 

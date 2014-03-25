@@ -32,7 +32,8 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -44,7 +45,6 @@ import com.antew.redditinpictures.library.dialog.LogoutDialogFragment;
 import com.antew.redditinpictures.library.dialog.LogoutDialogFragment.LogoutDialogListener;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
-import com.antew.redditinpictures.library.event.ProgressChangedEvent;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.interfaces.ScrollPosReadable;
 import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
@@ -52,7 +52,6 @@ import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.LoginData;
-import com.antew.redditinpictures.library.reddit.MySubreddits;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.SubredditData;
@@ -69,16 +68,9 @@ import com.antew.redditinpictures.pro.BuildConfig;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.antew.redditinpictures.sqlite.RedditDatabase;
-import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Picasso;
-
-import net.simonvt.menudrawer.MenuDrawer;
-
-import java.util.ArrayList;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import java.util.ArrayList;
+import net.simonvt.menudrawer.MenuDrawer;
 
 import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 
@@ -682,11 +674,6 @@ public class ImageGridActivity extends BaseFragmentActivity
 
     private void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
-    }
-
-    @Subscribe
-    public void progressChanged(ProgressChangedEvent event) {
-        setRequestInProgress(event.isInProgress());
     }
 
     private void setRequestInProgress(boolean requestInProgress) {

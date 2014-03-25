@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.LocalBroadcastManager;
-
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.MySubreddits;
@@ -20,7 +19,6 @@ import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.subredditmanager.SubredditManager;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
-
 import com.antew.redditinpictures.sqlite.RedditDatabase;
 import java.io.BufferedReader;
 import java.io.IOException;

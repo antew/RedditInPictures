@@ -33,9 +33,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-
-import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.utils.ImageUtil;
+import com.antew.redditinpictures.pro.R;
 
 public class SaveImageDialogFragment extends DialogFragment implements OnEditorActionListener, TextWatcher {
     public static final String FILENAME = "";

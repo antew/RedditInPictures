@@ -3,13 +3,11 @@ package com.antew.redditinpictures.library.reddit.json;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.MySubreddits;
 import com.antew.redditinpictures.library.reddit.SubredditData;
 import com.antew.redditinpictures.sqlite.RedditContract;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

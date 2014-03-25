@@ -1,6 +1,5 @@
 package com.antew.redditinpictures.library.ui;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -12,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -21,7 +19,6 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.webkit.WebSettings;
-import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -30,7 +27,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import com.actionbarsherlock.app.SherlockFragment;
 import com.antew.redditinpictures.device.ScreenSize;
 import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.image.Image;
@@ -42,14 +38,11 @@ import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.library.utils.ImageUtil;
-import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-
 import javax.inject.Inject;
-
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 

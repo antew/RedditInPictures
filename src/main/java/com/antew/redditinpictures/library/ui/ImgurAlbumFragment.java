@@ -23,7 +23,6 @@ import com.antew.redditinpictures.library.imgur.ImgurImageApi.Image;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.ImageUtil;
-import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Picasso;
 
 /**

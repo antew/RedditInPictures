@@ -15,14 +15,12 @@
  */
 package com.antew.redditinpictures.library.adapter;
 
-import java.util.List;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.ui.ImgurAlbumFragment;
+import java.util.List;
 
 /**
  * The main adapter that backs the ViewPager. A subclass of FragmentStatePagerAdapter as there

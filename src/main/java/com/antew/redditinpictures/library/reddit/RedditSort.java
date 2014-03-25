@@ -3,7 +3,6 @@ package com.antew.redditinpictures.library.reddit;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.pro.R;
-
 import java.util.HashMap;
 import java.util.Map;
 

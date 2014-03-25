@@ -25,10 +25,9 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-
-import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.library.utils.Consts;
+import com.antew.redditinpictures.pro.R;
 
 /**
  * Preferences for Honeycomb and later, this can be subclassed to add additional Preferences. For an

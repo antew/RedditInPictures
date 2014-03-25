@@ -21,11 +21,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
-import android.widget.Toast;
-
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.antew.redditinpictures.library.event.ProgressChangedEvent;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.interfaces.ScrollPosReadable;
@@ -42,11 +41,7 @@ import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.squareup.otto.Bus;
-
 import javax.inject.Inject;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * Fragment with convenience methods for displaying images
@@ -202,7 +197,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
 
     protected void setRequestInProgress(boolean inProgress) {
         mRequestInProgress = inProgress;
-        mBus.post(new ProgressChangedEvent(inProgress));
         if (inProgress) {
             mNoImages.setVisibility(View.GONE);
         }

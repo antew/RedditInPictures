@@ -1,17 +1,14 @@
 package com.antew.redditinpictures.library.modules;
 
 import android.content.Context;
-
 import com.antew.redditinpictures.library.annotations.ForActivity;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
-
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
+import javax.inject.Singleton;
 
 /**
  * This module represents objects which exist only for the scope of a single activity. We can

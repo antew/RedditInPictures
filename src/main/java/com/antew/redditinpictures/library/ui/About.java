@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
-
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.ui.base.BaseActivity;
 import com.antew.redditinpictures.library.utils.Util;

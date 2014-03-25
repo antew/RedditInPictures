@@ -1,13 +1,11 @@
 package com.antew.redditinpictures.library.utils;
 
+import android.annotation.SuppressLint;
+import android.os.Environment;
+import com.antew.redditinpictures.library.logging.Log;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import android.annotation.SuppressLint;
-import android.os.Environment;
-
-import com.antew.redditinpictures.library.logging.Log;
 
 public class DiskUtil {
 

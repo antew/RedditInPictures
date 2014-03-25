@@ -19,7 +19,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
-import com.antew.redditinpictures.library.event.ProgressChangedEvent;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
@@ -248,7 +249,7 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
                     getAdapterView().setSelection(0);
                     mFullRefresh = false;
                 }
-                setRequestInProgress(false);
+                productRequestCompletedEvent();
                 break;
             default:
                 break;
@@ -265,7 +266,7 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
     @Override public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
             case Consts.LOADER_POSTS:
-                setRequestInProgress(false);
+                productRequestCompletedEvent();
                 mAdapter.swapCursor(null);
                 break;
             default:
@@ -304,16 +305,17 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
         }
     }
 
-    protected void setRequestInProgress(boolean inProgress) {
-        mRequestInProgress = inProgress;
-        mBus.post(new ProgressChangedEvent(inProgress));
-        if (inProgress) {
-            mNoImages.setVisibility(View.GONE);
-        }
+    protected void produceRequestInProgressEvent() {
+        mBus.post(new RequestInProgressEvent());
+        mNoImages.setVisibility(View.GONE);
+    }
+
+    protected void productRequestCompletedEvent() {
+        mBus.post(new RequestCompletedEvent());
     }
 
     protected void fetchImagesFromReddit(boolean replaceAll) {
-        setRequestInProgress(true);
+        produceRequestInProgressEvent();
         mFullRefresh = replaceAll;
         RedditService.getPosts(getActivity(), mCurrentSubreddit, mAge, mCategory, mAppendTo,
             mFullRefresh);

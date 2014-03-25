@@ -1,7 +1,6 @@
 package com.antew.redditinpictures.library.reddit.json;
 
 import android.content.Context;
-
 import com.antew.redditinpictures.library.logging.Log;
 
 public class VoteResponse extends RedditResponseHandler {
