@@ -26,9 +26,6 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
     @InjectView(R.id.gridView)
     protected GridView mGridView;
 
-    @InjectView(R.id.progress)
-    protected ProgressBar mProgress;
-
     /**
      * Empty constructor as per the Fragment documentation
      */
@@ -47,15 +44,6 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
         gridView.setOnItemClickListener(this);
         gridView.setOnScrollListener(getGridViewOnScrollListener());
         gridView.getViewTreeObserver().addOnGlobalLayoutListener(getGridGlobalLayoutListener(gridView));
-    }
-
-    @Override protected void setRequestInProgress(boolean inProgress) {
-        super.setRequestInProgress(inProgress);
-        if (inProgress) {
-            mProgress.setVisibility(View.VISIBLE);
-        } else {
-            mProgress.setVisibility(View.GONE);
-        }
     }
 
     private AbsListView.OnScrollListener getGridViewOnScrollListener() {

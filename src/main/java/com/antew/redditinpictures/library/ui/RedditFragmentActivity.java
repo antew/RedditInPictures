@@ -8,6 +8,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
+import butterknife.InjectView;
+import butterknife.Optional;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -16,6 +18,7 @@ import com.antew.redditinpictures.library.dialog.LogoutDialogFragment;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.event.LoadSubredditEvent;
+import com.antew.redditinpictures.library.event.ProgressChangedEvent;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
@@ -27,7 +30,9 @@ import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
+import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.squareup.otto.Subscribe;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
     public static final int SETTINGS_REQUEST = 20;
@@ -37,6 +42,10 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
     private Age mAge = Age.TODAY;
 
     private enum ViewType {LIST, GRID}
+
+    @Optional
+    @InjectView(R.id.top_progressbar)
+    protected SmoothProgressBar mProgressBar;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +90,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
             case R.id.login:
                 handleLoginAndLogout();
                 return true;
+            // fall through
             case R.id.category_hot:
             case R.id.category_new:
             case R.id.category_rising:
@@ -101,12 +111,22 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
                     mAge = sortCriteria.getAge();
                     mCategory = sortCriteria.getCategory();
                     loadSubreddit(mSelectedSubreddit);
+                    return true;
                 } else {
-                    Ln.e("Unable to get sorting criteria for menu item id: " + item.getItemId() + ", unable to load subreddit");
+                    Ln.e("Unable to get sorting criteria for menu item id: "
+                        + item.getItemId()
+                        + ", unable to load subreddit");
+
+                    // Fallback to the normal Hot category.
+                    RedditSort.SortCriteria sortCriteria = RedditSort.get(R.id.category_hot);
+                    if (sortCriteria != null) {
+                        mAge = sortCriteria.getAge();
+                        mCategory = sortCriteria.getCategory();
+                        loadSubreddit(mSelectedSubreddit);
+                        return true;
+                    }
                 }
-                return true;
-
-
+                return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -163,6 +183,19 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
         startActivityForResult(intent, SETTINGS_REQUEST);
     }
 
+    @Subscribe
+    public void progressChanged(ProgressChangedEvent event) {
+        if (event != null) {
+            ViewPropertyAnimator.animate(mProgressBar)
+                .setDuration(500)
+                .alpha(event.isInProgress() ? 100 : 0);
+        } else {
+            ViewPropertyAnimator.animate(mProgressBar)
+                .setDuration(500)
+                .alpha(0);
+        }
+    }
+
     @Override public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
@@ -184,7 +217,6 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu {
         if (event != null) {
             mSelectedSubreddit = event.getSubreddit();
             loadSubreddit(mSelectedSubreddit, mCategory, mAge);
-            Toast.makeText(this, "Loading: " + event.getSubreddit(), Toast.LENGTH_LONG).show();
         }
     }
 

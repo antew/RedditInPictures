@@ -2,17 +2,23 @@ package com.antew.redditinpictures.library.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.adapter.ImageListCursorAdapter;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
+import com.antew.redditinpictures.library.event.ProgressChangedEvent;
 import com.antew.redditinpictures.library.ui.base.BaseImageFragment;
 import com.antew.redditinpictures.library.utils.Consts;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
+import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.squareup.otto.Subscribe;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class RedditImageListFragment extends BaseImageFragment<ListView, ImageListCursorAdapter> {
     //8 is a good number, the kind of number that you could say take home to your parents and not be worried about what they might think about it.
@@ -35,7 +41,7 @@ public class RedditImageListFragment extends BaseImageFragment<ListView, ImageLi
             // if we're are approaching the bottom of the listview, load more data
             boolean lastItemIsVisible =
                 (firstVisibleItem + visibleItemCount) >= totalItemCount - POST_LOAD_OFFSET;
-            if (totalItemCount > 0 && lastItemIsVisible) {
+            if (!isRequestInProgress() && totalItemCount > 0 && lastItemIsVisible) {
                 fetchImagesFromReddit(false);
             }
         }

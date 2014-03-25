@@ -19,6 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
+import com.antew.redditinpictures.library.event.ProgressChangedEvent;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
@@ -52,6 +53,7 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
     protected TextView mNoImages;
     private String mAppendTo;
     private boolean mFullRefresh = true;
+    private boolean mRequestInProgress;
 
     private String mCurrentSubreddit = RedditUrl.REDDIT_FRONTPAGE;
     private Category mCategory = Category.HOT;
@@ -246,6 +248,7 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
                     getAdapterView().setSelection(0);
                     mFullRefresh = false;
                 }
+                setRequestInProgress(false);
                 break;
             default:
                 break;
@@ -262,6 +265,7 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
     @Override public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
             case Consts.LOADER_POSTS:
+                setRequestInProgress(false);
                 mAdapter.swapCursor(null);
                 break;
             default:
@@ -300,7 +304,16 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
         }
     }
 
+    protected void setRequestInProgress(boolean inProgress) {
+        mRequestInProgress = inProgress;
+        mBus.post(new ProgressChangedEvent(inProgress));
+        if (inProgress) {
+            mNoImages.setVisibility(View.GONE);
+        }
+    }
+
     protected void fetchImagesFromReddit(boolean replaceAll) {
+        setRequestInProgress(true);
         mFullRefresh = replaceAll;
         RedditService.getPosts(getActivity(), mCurrentSubreddit, mAge, mCategory, mAppendTo,
             mFullRefresh);
@@ -308,6 +321,10 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
 
     protected Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
         return ImageDetailActivity.class;
+    }
+
+    protected boolean isRequestInProgress() {
+        return mRequestInProgress;
     }
 
     protected abstract int getLayoutId();
