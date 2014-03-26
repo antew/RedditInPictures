@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -26,6 +27,8 @@ import butterknife.ButterKnife;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.adapter.SubredditMenuDrawerCursorAdapter;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
+import com.antew.redditinpictures.library.dialog.LogoutDialogFragment;
+import com.antew.redditinpictures.library.dialog.SetDefaultSubredditsDialogFragment;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.event.LoadSubredditEvent;
@@ -38,6 +41,7 @@ import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
+import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
@@ -45,7 +49,8 @@ import java.util.ArrayList;
 import net.simonvt.menudrawer.MenuDrawer;
 
 public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
-    implements LoaderManager.LoaderCallbacks<Cursor> {
+    implements LoaderManager.LoaderCallbacks<Cursor>,
+    SetDefaultSubredditsDialogFragment.SetDefaultSubredditsDialogListener {
     protected MenuDrawer mMenuDrawer;
     protected SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     protected ArrayAdapter<String> mSubredditSearchResultsAdapter;
@@ -105,6 +110,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     private View.OnClickListener mRefreshSubredditsListener = new View.OnClickListener() {
         @Override public void onClick(View v) {
             // Pulldown subreddits if logged in. If not logged in, confirm that they want to reset to default subreddits.
+            handleRefreshSubreddits();
         }
     };
 
@@ -223,6 +229,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         initializeSubredditList();
         initializeLoaders();
         initializeReceivers();
+        initializeSubredditMenu();
     }
 
     private void initializeMenuDrawer() {
@@ -259,13 +266,32 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
     private void initializeSubredditMenu() {
         mAddSubreddit = (ImageButton) findViewById(R.id.ib_add);
-        mAddSubreddit.setOnClickListener(mAddSubredditListener);
+        if (mAddSubreddit != null) {
+            mAddSubreddit.setOnClickListener(mAddSubredditListener);
+        }
 
         mSortSubreddits = (ImageButton) findViewById(R.id.ib_sort);
-        mSortSubreddits.setOnClickListener(mSortSubredditsListener);
+        if (mSortSubreddits != null) {
+            mSortSubreddits.setOnClickListener(mSortSubredditsListener);
+        }
 
         mRefreshSubreddits = (ImageButton) findViewById(R.id.ib_refresh);
-        mRefreshSubreddits.setOnClickListener(mRefreshSubredditsListener);
+        if (mRefreshSubreddits != null) {
+            mRefreshSubreddits.setOnClickListener(mRefreshSubredditsListener);
+        }
+    }
+
+    private void handleRefreshSubreddits() {
+        if (RedditLoginInformation.isLoggedIn()) {
+            // Since the user is logged in we can just run the task to update their subreddits.
+            SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask =
+                new SubredditUtils.SetDefaultSubredditsTask(this, true);
+            defaultSubredditsTask.execute();
+        } else {
+            // If they aren't logged in, we want to make sure that they understand this will set the subreddits back to default.
+            SetDefaultSubredditsDialogFragment fragment = SetDefaultSubredditsDialogFragment.newInstance();
+            fragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_DEFAULT_SUBREDDITS);
+        }
     }
 
     private void initializeLoaders() {
@@ -480,5 +506,11 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
                 mSubredditAdapter.swapCursor(null);
                 break;
         }
+    }
+
+    @Override public void onSetDefaultSubreddits() {
+        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask =
+            new SubredditUtils.SetDefaultSubredditsTask(this, true);
+        defaultSubredditsTask.execute();
     }
 }

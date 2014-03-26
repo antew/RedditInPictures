@@ -191,7 +191,7 @@ public class SubredditManager extends SherlockListActivity {
     }
 
     private void createResetSubredditsAlertDialog() {
-        new AlertDialog.Builder(SubredditManager.this).setTitle(R.string.reset).setMessage(R.string.reset_to_default_subreddits_)
+        new AlertDialog.Builder(SubredditManager.this).setTitle(R.string.reset).setMessage(R.string.reset_to_default_subreddits)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         resetToDefaultSubreddits();

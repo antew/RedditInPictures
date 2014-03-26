@@ -16,19 +16,29 @@
 package com.antew.redditinpictures.library.utils;
 
 public class Constants {
+    public static final String PACKAGE_PREFIX = "com.antew.redditinpictures";
     public static final int POSITION_FRONTPAGE = 0;
 
+    public static class Extra {
+        private static final String EXTRA_PREFIX = PACKAGE_PREFIX + ".extra.";
+        public static final String EXTRA_TITLE = EXTRA_PREFIX + "title";
+    }
+
+    public static class Dialog {
+        public static final String DIALOG_DEFAULT_SUBREDDITS = "defaultSubreddits";
+    }
+
     public static class Reddit {
-        public static final String  USER_AGENT               = "Reddit In Pictures Android by /u/antew";
-        public static final String REDDIT_LOGIN_URL         = "https://ssl.reddit.com/api/login/";
-        public static final String REDDIT_SUBSCRIBE_URL     = "http://www.reddit.com/api/subscribe";
-        public static final String REDDIT_VOTE_URL          = "http://www.reddit.com/api/vote";
-        public static final String REDDIT_ABOUT_URL         = "http://www.reddit.com/r/%s/about.json";
+        public static final String USER_AGENT = "Reddit In Pictures Android by /u/antew";
+        public static final String REDDIT_LOGIN_URL = "https://ssl.reddit.com/api/login/";
+        public static final String REDDIT_SUBSCRIBE_URL = "http://www.reddit.com/api/subscribe";
+        public static final String REDDIT_VOTE_URL = "http://www.reddit.com/api/vote";
+        public static final String REDDIT_ABOUT_URL = "http://www.reddit.com/r/%s/about.json";
         public static final String REDDIT_SEARCH_SUBREDDITS_URL = "http://www.reddit.com/api/search_reddit_names.json";
-        public static final String  REDDIT_SESSION           = "reddit_session";
+        public static final String REDDIT_SESSION = "reddit_session";
         public static final String REDDIT_MY_SUBREDDITS_URL = "http://www.reddit.com/reddits/mine/subscriber.json";
-        public static final String  COMPACT_URL              = "/.compact";
-        public static final String  REDDIT_BASE_URL          = "http://www.reddit.com";
+        public static final String COMPACT_URL = "/.compact";
+        public static final String REDDIT_BASE_URL = "http://www.reddit.com";
     }
 
     // Constants for extras
