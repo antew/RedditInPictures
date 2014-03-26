@@ -112,9 +112,9 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         handleArguments(getArguments());
-        getActivity().getSupportLoaderManager().initLoader(Constants.LOADER_REDDIT, null, this);
-        getActivity().getSupportLoaderManager().initLoader(Constants.LOADER_POSTS, getArguments(), this);
-        //forceFetchImagesFromReddit();
+        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_REDDIT, null, this);
+        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_POSTS, null, this);
+        forceFetchImagesFromReddit();
         if (getActivity() instanceof ActionBarTitleChanger) {
             ((ActionBarTitleChanger) getActivity()).setActionBarTitle(mCurrentSubreddit);
         }
@@ -165,7 +165,6 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
                     null,                                  // selectionArgs[]
                     RedditContract.Posts.DEFAULT_SORT);    // sort
             case Constants.LOADER_POSTS:
-                handleArguments(args);
                 QueryCriteria queryCriteria = getPostsQueryCriteria();
                 String selection = null;
                 String[] selectionArgs = null;
