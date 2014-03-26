@@ -172,7 +172,7 @@ public class RESTService extends IntentService {
                     request.addHeader("Cookie", cookie);
 
                 if (userAgent != null)
-                    request.addHeader("User-Agent", RedditService.USER_AGENT);
+                    request.addHeader("User-Agent", Constants.Reddit.USER_AGENT);
 
                 // Let's send some useful debug information so we can monitor things
                 // in LogCat.

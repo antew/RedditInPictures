@@ -24,18 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RedditService extends RESTService {
-    private static final String TAG                      = RedditService.class.getName();
-    public static final String  USER_AGENT               = "Reddit In Pictures Android by /u/antew";
-    private static final String REDDIT_LOGIN_URL         = "https://ssl.reddit.com/api/login/";
-    private static final String REDDIT_SUBSCRIBE_URL     = "http://www.reddit.com/api/subscribe";
-    private static final String REDDIT_VOTE_URL          = "http://www.reddit.com/api/vote";
-    private static final String REDDIT_ABOUT_URL         = "http://www.reddit.com/r/%s/about.json";
-    private static final String REDDIT_SEARCH_SUBREDDITS_URL = "http://www.reddit.com/api/search_reddit_names.json";
-    public static final String  REDDIT_SESSION           = "reddit_session";
-    private static final String REDDIT_MY_SUBREDDITS_URL = "http://www.reddit.com/reddits/mine/subscriber.json";
-    public static final String  COMPACT_URL              = "/.compact";
-    public static final String  REDDIT_BASE_URL          = "http://www.reddit.com";
-
     private static ForceRefreshSubredditTask mForceRefreshSubredditTask;
 
     @Override
@@ -45,7 +33,7 @@ public class RedditService extends RESTService {
         RedditResult redditResult = new RedditResult(result);
 
         if (redditResult.getHttpStatusCode() != 200 || redditResult.getJson() == null) {
-            Log.i(TAG, "onRequestComplete - error retrieving data, status code was " + redditResult.getHttpStatusCode());
+            Ln.i("onRequestComplete - error retrieving data, status code was %d", redditResult.getHttpStatusCode());
             return;
         }
 
@@ -54,10 +42,10 @@ public class RedditService extends RESTService {
     }
 
     private static Intent getIntentBasics(Intent intent) {
-        intent.putExtra(EXTRA_USER_AGENT, USER_AGENT);
+        intent.putExtra(EXTRA_USER_AGENT, Constants.Reddit.USER_AGENT);
 
         if (RedditLoginInformation.isLoggedIn())
-            intent.putExtra(EXTRA_COOKIE, REDDIT_SESSION + "=" + RedditLoginInformation.getCookie());
+            intent.putExtra(EXTRA_COOKIE, Constants.Reddit.REDDIT_SESSION + "=" + RedditLoginInformation.getCookie());
 
         return intent;
     }
@@ -125,7 +113,7 @@ public class RedditService extends RESTService {
     public static void vote(Context context, String name, Vote vote) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
-        intent.setData(Uri.parse(REDDIT_VOTE_URL));
+        intent.setData(Uri.parse(Constants.Reddit.REDDIT_VOTE_URL));
         intent.putExtra(EXTRA_HTTP_VERB, POST);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.VOTE);
 
@@ -140,7 +128,7 @@ public class RedditService extends RESTService {
     }
 
     public static void login(Context context, String username, String password) {
-        String url = REDDIT_LOGIN_URL + username;
+        String url = Constants.Reddit.REDDIT_LOGIN_URL + username;
 
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
@@ -165,7 +153,7 @@ public class RedditService extends RESTService {
     public static void getMySubreddits(Context context) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
-        intent.setData(Uri.parse(REDDIT_MY_SUBREDDITS_URL));
+        intent.setData(Uri.parse(Constants.Reddit.REDDIT_MY_SUBREDDITS_URL));
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.MY_SUBREDDITS);
         intent.putExtra(EXTRA_HTTP_VERB, GET);
 
@@ -176,7 +164,7 @@ public class RedditService extends RESTService {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.ABOUT_SUBREDDIT);
-        intent.setData(Uri.parse(String.format(REDDIT_ABOUT_URL, subreddit)));
+        intent.setData(Uri.parse(String.format(Constants.Reddit.REDDIT_ABOUT_URL, subreddit)));
 
         context.startService(intent);
     }
@@ -193,7 +181,7 @@ public class RedditService extends RESTService {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.SUBSCRIBE);
-        intent.setData(Uri.parse(REDDIT_SUBSCRIBE_URL));
+        intent.setData(Uri.parse(Constants.Reddit.REDDIT_SUBSCRIBE_URL));
         intent.putExtra(EXTRA_HTTP_VERB, POST);
 
         Bundle bundle = new Bundle();
@@ -209,7 +197,7 @@ public class RedditService extends RESTService {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.SEARCH_SUBREDDITS);
-        String url = REDDIT_SEARCH_SUBREDDITS_URL + "?query=" + query + "&include_over_18=" + (searchNsfw == true ? "true" : "false");
+        String url = Constants.Reddit.REDDIT_SEARCH_SUBREDDITS_URL + "?query=" + query + "&include_over_18=" + (searchNsfw == true ? "true" : "false");
         intent.setData(Uri.parse(url));
         intent.putExtra(EXTRA_HTTP_VERB, POST);
 
