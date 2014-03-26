@@ -41,10 +41,8 @@ public class RedditImageGridFragment extends BaseImageFragment<GridView, ImageCu
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem,
                 int visibleItemCount, int totalItemCount) {
-                // if we're are approaching the end of the listview, load more data
-                boolean lastItemIsVisible =
-                    (firstVisibleItem + visibleItemCount) >= totalItemCount - POST_LOAD_OFFSET;
-                if (!isRequestInProgress() && totalItemCount > 0 && lastItemIsVisible) {
+                // if we're are approaching the bottom of the gridview, load more data
+                if (firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET && totalItemCount > 0) {
                     fetchAdditionalImagesFromReddit();
                 }
             }

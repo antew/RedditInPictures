@@ -10,6 +10,7 @@ import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.ui.base.BaseImageFragment;
 import com.antew.redditinpictures.library.utils.Constants;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
@@ -32,10 +33,8 @@ public class RedditImageListFragment extends BaseImageFragment<ListView, ImageLi
         @Override
         public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount,
             int totalItemCount) {
-            // if we're are approaching the bottom of the listview, load more data
-            boolean lastItemIsVisible =
-                (firstVisibleItem + visibleItemCount) >= totalItemCount - POST_LOAD_OFFSET;
-            if (!isRequestInProgress() && totalItemCount > 0 && lastItemIsVisible) {
+            // if we're are approaching the bottom of the listview, load more data.
+            if (firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET && totalItemCount > 0) {
                 fetchAdditionalImagesFromReddit();
             }
         }
