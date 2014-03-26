@@ -52,6 +52,9 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     protected AutoCompleteTextView mSubredditFilter;
     protected ImageButton mSubredditSearch;
     protected ListView mSubredditList;
+    protected ImageButton mAddSubreddit;
+    protected ImageButton mSortSubreddits;
+    protected ImageButton mRefreshSubreddits;
 
     protected String mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
     protected Category mCategory = Category.HOT;
@@ -84,6 +87,24 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             if (mSubredditFilter != null) {
                 searchForSubreddits(mSubredditFilter.getText().toString());
             }
+        }
+    };
+
+    private View.OnClickListener mAddSubredditListener = new View.OnClickListener() {
+        @Override public void onClick(View v) {
+            // Show dialog to search for a subreddit and add one.
+        }
+    };
+
+    private View.OnClickListener mSortSubredditsListener = new View.OnClickListener() {
+        @Override public void onClick(View v) {
+            // Switch between alpha/usage sorting.
+        }
+    };
+
+    private View.OnClickListener mRefreshSubredditsListener = new View.OnClickListener() {
+        @Override public void onClick(View v) {
+            // Pulldown subreddits if logged in. If not logged in, confirm that they want to reset to default subreddits.
         }
     };
 
@@ -234,6 +255,17 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             mSubredditList.setAdapter(mSubredditAdapter);
             mSubredditList.setOnItemClickListener(mSubredditClickListener);
         }
+    }
+
+    private void initializeSubredditMenu() {
+        mAddSubreddit = (ImageButton) findViewById(R.id.ib_add);
+        mAddSubreddit.setOnClickListener(mAddSubredditListener);
+
+        mSortSubreddits = (ImageButton) findViewById(R.id.ib_sort);
+        mSortSubreddits.setOnClickListener(mSortSubredditsListener);
+
+        mRefreshSubreddits = (ImageButton) findViewById(R.id.ib_refresh);
+        mRefreshSubreddits.setOnClickListener(mRefreshSubredditsListener);
     }
 
     private void initializeLoaders() {
