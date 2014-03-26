@@ -69,6 +69,9 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         initializeActiveView();
         initalizeReceivers();
         initializeLoaders();
+
+        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this);
+        defaultSubredditsTask.execute();
     }
 
     private void initalizeReceivers() {

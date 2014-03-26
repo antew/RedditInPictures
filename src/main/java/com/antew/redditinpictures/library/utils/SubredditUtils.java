@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class SubredditUtils {
     public static void setDefaultSubreddits(Context context) {
@@ -67,22 +68,16 @@ public class SubredditUtils {
 
         ContentValues[] operations = mySubreddits.getContentValuesArray();
 
-        int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, operations);
-        Ln.d("Inserted %d subreddits", rowsInserted);
-
-        ArrayList<String> subReddits = new ArrayList<String>();
-
-        for (SubredditChildren c : mySubreddits.getData().getChildren()) {
-            SubredditData data = c.getData();
-            subReddits.add(data.getDisplay_name());
+        List<ContentValues> defaultSubredditOperations = new ArrayList<ContentValues>();
+        MySubredditsResponse.DefaultSubreddit[] defaultSubreddits = MySubredditsResponse.DefaultSubreddit.values();
+        for (MySubredditsResponse.DefaultSubreddit subreddit : defaultSubreddits) {
+            defaultSubredditOperations.add(mySubreddits.getContentValues(new SubredditData(subreddit.getDisplayName(), subreddit.getPriority())));
         }
 
-        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
-        SharedPreferencesHelper.saveArray(subReddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, context);
-
-        Intent intent = new Intent(Constants.BROADCAST_MY_SUBREDDITS);
-        intent.putStringArrayListExtra(Constants.EXTRA_MY_SUBREDDITS, subReddits);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+        int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, operations);
+        Ln.d("Inserted %d subreddits", rowsInserted);
+        int defaultRowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, defaultSubredditOperations.toArray(new ContentValues[] {}));
+        Ln.d("Inserted %d default subreddits", defaultRowsInserted);
     }
 
     public static void mergeDefaultSubreddits(Context context) {
