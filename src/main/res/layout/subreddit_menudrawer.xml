@@ -18,7 +18,7 @@
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:hint="@string/search"
             android:id="@+id/et_subreddit_filter"
-            android:layout_weight=".75"
+            android:layout_weight=".85"
             android:singleLine="true"
             android:imeOptions="actionSearch"/>
 
@@ -27,8 +27,7 @@
             android:layout_height="match_parent"
             android:id="@+id/btn_search"
             android:background="@android:color/transparent"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:layout_weight=".15"
             android:src="@drawable/ic_action_search_dark"/>
     </LinearLayout>
 
@@ -37,38 +36,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ll_menudrawer_menu"
-        android:layout_alignParentBottom="true"
-        android:background="#000">
+        android:layout_alignParentBottom="true">
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/ib_add"
-            android:background="@android:color/transparent"
-            android:layout_weight=".25"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:src="@drawable/ic_action_add_dark"/>
+            android:src="@drawable/ic_action_add_dark"
+            style="@style/SubredditMenuDrawerMenuItem"/>
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/ib_sort"
-            android:background="@android:color/transparent"
-            android:layout_weight=".25"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:src="@drawable/ic_action_sort_1_dark"/>
+            android:src="@drawable/ic_action_sort_1_dark"
+            style="@style/SubredditMenuDrawerMenuItem"/>
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/ib_refresh"
-            android:background="@android:color/transparent"
-            android:layout_weight=".25"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:src="@drawable/ic_action_reload_dark"/>
+            android:src="@drawable/ic_action_reload_dark"
+            style="@style/SubredditMenuDrawerMenuItem"/>
 
     </LinearLayout>
 

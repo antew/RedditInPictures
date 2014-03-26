@@ -30,4 +30,6 @@
     <dimen name="text_size_medium">18sp</dimen>
     <dimen name="text_size_large">22sp</dimen>
 
+    <dimen name="subreddit_menu_padding">5dp</dimen>
+
 </resources>

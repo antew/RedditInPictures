@@ -29,6 +29,15 @@
         <item name="android:src">@drawable/ic_action_overflow_dark</item>
     </style>
 
+    <style name="SubredditMenuDrawerMenu">
+        <item name="android:background">@android:color/black</item>
+    </style>
 
+    <style name="SubredditMenuDrawerMenuItem">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:layout_weight">.25</item>
+        <item name="android:paddingTop">@dimen/subreddit_menu_padding</item>
+        <item name="android:paddingBottom">@dimen/subreddit_menu_padding</item>
+    </style>
 
 </resources>
