@@ -23,13 +23,14 @@ import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 
 /**
- * The main adapter that backs the ViewPager. A subclass of FragmentStatePagerAdapter as there could
+ * The main adapter that backs the ViewPager. A subclass of FragmentStatePagerAdapter as there
+ * could
  * be a large number of items in the ViewPager and we don't want to retain them all in memory at
  * once but create/destroy them on the fly.
  */
 public class CursorPagerAdapter extends FixedFragmentStatePagerAdapter {
     public static final String TAG = CursorPagerAdapter.class.getSimpleName();
-    private Cursor             mCursor;
+    private Cursor mCursor;
 
     public CursorPagerAdapter(FragmentManager fm, Cursor cursor) {
         super(fm);
@@ -38,15 +39,13 @@ public class CursorPagerAdapter extends FixedFragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        if (mCursor == null)
-            return 0;
+        if (mCursor == null) return 0;
 
         return mCursor.getCount();
     }
 
     public void swapCursor(Cursor newCursor) {
-        if (mCursor == newCursor)
-            return;
+        if (mCursor == newCursor) return;
 
         mCursor = newCursor;
         notifyDataSetChanged();
@@ -55,7 +54,7 @@ public class CursorPagerAdapter extends FixedFragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (mCursor != null && mCursor.moveToPosition(position)) {
-            return getImageDetailFragment(new PostData(mCursor));
+            return getImageDetailFragment(PostData.fromListViewProjection(mCursor));
         }
 
         return null;
@@ -63,14 +62,13 @@ public class CursorPagerAdapter extends FixedFragmentStatePagerAdapter {
 
     /**
      * The PostData at the input position
-     * 
-     * @param position
-     *            The position
+     *
+     * @param position The position
      * @return PostData at the input position
      */
     public PostData getPost(int position) {
         if (mCursor != null && mCursor.moveToPosition(position)) {
-            return new PostData(mCursor);
+            return PostData.fromListViewProjection(mCursor);
         }
 
         return null;
@@ -78,13 +76,11 @@ public class CursorPagerAdapter extends FixedFragmentStatePagerAdapter {
 
     /**
      * Returns an {@link ImageDetailFragment} for the input {@link PostData} object
-     * 
-     * @param p
-     *            The {@link PostData} object to pass to the new {@link ImageDetailFragment}
+     *
+     * @param p The {@link PostData} object to pass to the new {@link ImageDetailFragment}
      * @return A new {@link ImageDetailFragment} for the input {@link PostData}
      */
     public Fragment getImageDetailFragment(PostData p) {
         return ImageDetailFragment.newInstance(p);
     }
-
 }

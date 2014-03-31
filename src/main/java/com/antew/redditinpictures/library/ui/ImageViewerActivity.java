@@ -40,7 +40,6 @@ import java.util.List;
 
 public abstract class ImageViewerActivity extends BaseFragmentActivity implements SaveImageDialogListener, SystemUiStateProvider {
 
-    public static final String           TAG             = "ImageViewerActivity";
     private static final String          IMAGE_CACHE_DIR = "images";
 
     /**
@@ -81,7 +80,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
         if (BuildConfig.DEBUG) {
             Util.enableStrictMode();
         }
@@ -186,7 +184,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * 
      */
     public void initializeAdapter() {
-        Log.i(TAG, "initializeAdapter");
         mAdapter = getPagerAdapter();
         mPager = (CustomViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
@@ -278,33 +275,28 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @Override
     public void onResume() {
-        Log.i(TAG, "onResume");
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        Log.i(TAG, "onPause");
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        Log.i(TAG, "onDestroy");
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mToggleFullscreenReceiver);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Log.i(TAG, "onSaveInstanceState");
         outState.putParcelableArrayList(Constants.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        Log.i(TAG, "onRestoreInstanceState");
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState.containsKey(Constants.EXTRA_ENTRIES))
             mImages = savedInstanceState.getParcelableArrayList(Constants.EXTRA_ENTRIES);
@@ -370,7 +362,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "onCreateOptionsMenu");
         super.onCreateOptionsMenu(menu);
         getSupportMenuInflater().inflate(R.menu.base_imageviewer_menu, menu);
         return true;
@@ -390,7 +381,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB) public void goFullscreen() {
-        Log.i(TAG, "goFullscreen");
         if (Util.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         } else {
@@ -399,7 +389,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB) public void exitFullscreen() {
-        Log.i(TAG, "exitFullscreen");
         if (Util.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         } else {

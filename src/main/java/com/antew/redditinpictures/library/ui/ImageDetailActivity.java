@@ -40,13 +40,15 @@ import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Constants;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.StringUtil;
+import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageDetailActivity extends ImageViewerActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    public static final String TAG        = "ImageDetailActivity";
     protected MenuItem         mUpvoteMenuItem;
     protected MenuItem         mDownvoteMenuItem;
     protected RedditUrl        mRedditUrl;
@@ -69,7 +71,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         getSupportLoaderManager().initLoader(Constants.LOADER_POSTS, null, this);
         // Put the current page / total pages text in the ActionBar
         updateDisplay(mPager.getCurrentItem());
-
     }
 
     private CursorPagerAdapter getAdapter() {
@@ -94,7 +95,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
         mRequestedPage = getIntent().getIntExtra(Constants.EXTRA_IMAGE, -1);
 
-        Log.i(TAG, "getExtras() - Age = " + mAge.name() + ", Category = " + mCategory.name() + ", Subreddit = " + mSubreddit);
+        Ln.d("Got Extras: Age %s Category %s Subreddit %s", mAge, mCategory, mSubreddit);
     }
 
     /**
@@ -115,7 +116,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
     @Override
     public void onResume() {
-        Log.i(TAG, "onResume");
         super.onResume();
         displayVote();
     }
@@ -296,7 +296,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
     public void displayVote(Vote vote) {
         if (mUpvoteMenuItem == null || mDownvoteMenuItem == null) {
-            Log.i(TAG, "mUpvoteMenuItem or mDownvoteMenuItem null, not updating vote, vote was = " + vote.name());
             return;
         }
 
@@ -343,9 +342,8 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     public void reachedLastPage() {
         super.reachedLastPage();
 
-        Log.i(TAG, "reachedLastPage()");
         if (!isRequestInProgress() && mAdapter.getCount() > 0) {
-            Log.i(TAG, "reachedLastPage() - Loading more images");
+            Ln.d("Reached last page, loading more images");
             setRequestInProgress(true);
             RedditService.getPosts(this, mSubreddit, mAge, mCategory, mAfter);
         }
@@ -362,13 +360,59 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
-        Log.i(TAG, "onCreateLoader");
         switch (id) {
             case Constants.LOADER_REDDIT:
                 return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, null, null, null, RedditContract.RedditData.DEFAULT_SORT);
 
             case Constants.LOADER_POSTS:
-                return new CursorLoader(this, RedditContract.Posts.CONTENT_URI, null, null, null, RedditContract.Posts.DEFAULT_SORT);
+                String selection = null;
+                String[] selectionArgs = null;
+                List<String> selectionArgsList = new ArrayList<String>();
+
+                // If we have an aggregate subreddit we want to return relevant things.
+                if (mSubreddit.equals(Constants.REDDIT_FRONTPAGE) || mSubreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME) || mSubreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
+                    selection = null;
+                    selectionArgs = null;
+                } else if (mSubreddit.contains("+")) {
+                    // Poor mans checking for multis. If we have a multi, we want to handle all of them appropriately.
+                    String[] subredditArray = mSubreddit.split("\\+");
+
+                    for (String item : subredditArray) {
+                        if (selection == null) {
+                            selection = RedditContract.PostColumns.SUBREDDIT + " in (?";
+                        } else {
+                            selection += ",?";
+                        }
+                        selectionArgsList.add(item);
+                    }
+                    // Close the in statement.
+                    selection += ")";
+                } else {
+                    selection = RedditContract.PostColumns.SUBREDDIT + " = ?";
+                    selectionArgsList.add(mSubreddit);
+                }
+
+                // If the user doesn't want to see NSFW images, filter them out. Otherwise do nothing.
+                if (!SharedPreferencesHelper.getShowNsfwImages(this)) {
+                    if (Strings.isEmpty(selection)) {
+                        selection = RedditContract.PostColumns.OVER_18 + " = ?";
+                    } else {
+                        selection += " and " + RedditContract.PostColumns.OVER_18 + " = ?";
+                    }
+                    selectionArgsList.add("0");
+                }
+
+                if (selectionArgsList != null && selectionArgsList.size() > 0) {
+                    selectionArgs = selectionArgsList.toArray(new String[] {});
+                }
+
+                Ln.d("Retrieveing Posts For %s %s", selection, selectionArgs.toString());
+
+                return new CursorLoader(this, RedditContract.Posts.CONTENT_URI,  // uri
+                    RedditContract.Posts.LISTVIEW_PROJECTION, // projection
+                    selection,                                // selection
+                    selectionArgs,                            // selectionArgs[]
+                    RedditContract.Posts.DEFAULT_SORT);       // sort
         }
 
         return null;
@@ -376,13 +420,8 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        Log.i(TAG, "onLoadFinished");
         switch (loader.getId()) {
             case Constants.LOADER_REDDIT:
-                Log.i(TAG, "onLoadFinished REDDIT_LOADER, cursor has " + cursor.getCount() + " rows");
-                Log.i(TAG, "After column = " + cursor.getColumnIndex(RedditContract.RedditData.AFTER));
-                Log.i(TAG, "Before column = " + cursor.getColumnIndex(RedditContract.RedditData.BEFORE));
-
                 if (cursor != null && cursor.moveToFirst()) {
                     mAfter = cursor.getString(cursor.getColumnIndex(RedditContract.RedditData.AFTER));
                     mBefore = cursor.getString(cursor.getColumnIndex(RedditContract.RedditData.BEFORE));
@@ -390,7 +429,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                 break;
 
             case Constants.LOADER_POSTS:
-                Log.i(TAG, "onLoadFinished POST_LOADER, cursor has " + cursor.getCount() + " rows");
                 setRequestInProgress(false);
                 getAdapter().swapCursor(cursor);
                 
@@ -408,7 +446,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursor) {
-        Log.i(TAG, "onLoaderReset");
         getAdapter().swapCursor(null);
     }
 
