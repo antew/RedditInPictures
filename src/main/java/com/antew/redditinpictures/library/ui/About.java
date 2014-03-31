@@ -1,17 +1,29 @@
 package com.antew.redditinpictures.library.ui;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.TextView;
+import butterknife.InjectView;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.ui.base.BaseActivity;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
+import com.squareup.picasso.Picasso;
+import java.util.Calendar;
 
 public class About extends BaseActivity {
-    private ImageView mImageView;
+    @InjectView(R.id.tv_version)
+    protected TextView mVersion;
+    @InjectView(R.id.tv_copyright)
+    protected TextView mCopyright;
+    @InjectView(R.id.about_image)
+    protected ImageView mImageView;
     private static final int MAX_TRIES = 4;
 
     @Override
@@ -20,11 +32,21 @@ public class About extends BaseActivity {
         setContentView(R.layout.about);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        mImageView = (ImageView) findViewById(R.id.about_image);
         int size = Util.dpToPx(this, 100);
-        mImageView.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.market_icon, size, size));
+        Picasso.with(this).load(R.drawable.market_icon).resize(size, size).placeholder(R.drawable.loading_spinner_76).error(R.drawable.empty_photo).into(mImageView);
 
+        String version = getString(R.string.version_);
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            if (packageInfo != null) {
+                version += packageInfo.versionCode;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Ln.e(e, "Failed to get Package Info");
+        }
+
+        mVersion.setText(version);
+        mCopyright.setText(getString(R.string.copyright_) + Calendar.getInstance().get(Calendar.YEAR));
     }
 
     @Override
@@ -38,45 +60,4 @@ public class About extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
-
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(res, resId, options);
-
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        Bitmap b = null;
-        int i = 0;
-        while (b == null && i < MAX_TRIES) {
-            try {
-                b = BitmapFactory.decodeResource(res, resId, options); 
-            } catch (OutOfMemoryError e) {
-                options.inSampleSize *= 2;
-            }
-            i++;
-        }
-        
-        return b;
-    }
-
-    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-            if (width > height) {
-                inSampleSize = Math.round((float) height / (float) reqHeight);
-            } else {
-                inSampleSize = Math.round((float) width / (float) reqWidth);
-            }
-        }
-        return inSampleSize;
-    }
 }

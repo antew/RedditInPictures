@@ -1,6 +1,7 @@
 package com.antew.redditinpictures.library.ui.base;
 
 import android.os.Bundle;
+import butterknife.ButterKnife;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.android.debug.hv.ViewServer;
 import com.antew.redditinpictures.library.utils.Util;
@@ -37,5 +38,10 @@ public abstract class BaseActivity extends SherlockActivity {
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).setFocusedWindow(this);
         }
+    }
+
+    @Override public void setContentView(int layoutResId) {
+        super.setContentView(layoutResId);
+        ButterKnife.inject(this);
     }
 }

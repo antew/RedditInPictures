@@ -1,149 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_holo_dark" >
+    android:background="@drawable/background_holo_dark">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/about_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:text="Reddit In Pictures"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:text="@string/app_name"
+            style="@style/AboutHeader"/>
+
+        <View
+            style="@style/AboutDivider"/>
 
         <ImageView
             android:id="@+id/about_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="5dp"
-            android:layout_toRightOf="@id/about_title"
-            android:contentDescription="Reddit In Pictures icon" />
-
-        <TextView
-            android:id="@+id/about_version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/about_title"
+            android:src="@drawable/empty_photo"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:text="Version 2.0"
-            android:textSize="20sp" />
+            android:contentDescription="@string/app_name"/>
 
         <TextView
-            android:id="@+id/about_copyright"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/about_version"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:text="Copyright 2012"
-            android:textSize="20sp" />
+            android:id="@+id/tv_version"
+            style="@style/AboutSubHeader"/>
 
         <TextView
-            android:id="@+id/about_link"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/about_copyright"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
+            android:id="@+id/tv_copyright"
+            style="@style/AboutSubHeader"/>
+
+        <TextView
+            android:text="http://www.antew.com"
             android:autoLink="web"
-            android:text="http://antew.com"
-            android:textSize="20sp" />
+            style="@style/AboutSubHeader"/>
 
         <TextView
-            android:id="@+id/about_thanks_to"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/about_link"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="20dp"
-            android:text="Credits"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:text="@string/open_source_licenses"
+            style="@style/AboutHeader"/>
 
         <View
-            android:id="@+id/about_divider1"
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/about_thanks_to"
-            android:layout_margin="10dp"
-            android:background="#777777" />
-        
+            style="@style/AboutDivider"/>
+
         <TextView
-            android:id="@+id/about_thanks1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/about_divider1"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:autoLink="web"
-            android:text="MenuDrawer
-            \nhttps://github.com/SimonVT/android-menudrawer"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-        
+            style="@style/AboutCreditHeader"
+            android:text="MenuDrawer"/>
         <TextView
-            android:id="@+id/about_thanks2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/about_thanks1"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:autoLink="web"
-            android:text="PhotoView
-            \nhttps://github.com/chrisbanes/PhotoView"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-        
+            style="@style/AboutCreditSubHeader"
+            android:text="A slide-out menu implementation, which allows users to navigate between views in your app. Available at: https://github.com/SimonVT/android-menudrawer"/>
+
         <TextView
-            android:id="@+id/about_thanks3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/about_thanks2"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:autoLink="web"
-            android:text="Images
-            \nReddit Alien Vector image - MakoSanders
-            \nhttp://makosanders.deviantart.com/
-            \n\nSunset Cruise - ecstaticist
-            \nhttp://www.flickr.com/photos/ecstaticist/2812682461/
-            \n\nRacing Stars - ANdrew Stawarz
-            \nhttp://www.flickr.com/photos/stawarz/2981086612/
-            \n\nMy Tree At Dusk - Joiseyshowaa
-            \nhttp://www.flickr.com/photos/joiseyshowaa/1400175456/
-            \n\nAutumn is on its way - AmUnivers
-            \nhttp://www.flickr.com/photos/amunivers/239455430/
-            \n\nGrey skies over Matsumoto - EugeniusD80
-            \nhttp://www.flickr.com/photos/zhzheka/701816373/
-            \n\nThe Green Ascent - vsz
-            \nhttp://www.flickr.com/photos/vs/29582361/
-            \n\nThe Tree - helmet13
-            \nhttp://www.flickr.com/photos/22281745@N04/2149169348/
-            \n\nSee Harness - DCCXLIX
-            \nhttp://www.flickr.com/photos/dccxlix/399948328/
-            \n\nQ - Darny
-            \nhttp://www.flickr.com/photos/darn/539225017/
-            \n\nColorful Joy - robokow
-            \nhttp://www.flickr.com/photos/robino/463790976/
-            \n\nNexus Above Erskine Lake - drp
-            \nhttp://www.flickr.com/photos/drp/43707772/in/photostream/"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-        
-        
-        
-        
-    </RelativeLayout>
+            style="@style/AboutCreditHeader"
+            android:text="PhotoView"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="Implementation of ImageView for Android that supports zooming, by various touch gestures. Available at: https://github.com/chrisbanes/PhotoView"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Gson"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="Gson is a Java library that can be used to convert Java Objects into their JSON representation. It can also be used to convert a JSON string to an equivalent Java object. Gson can work with arbitrary Java objects including pre-existing objects that you do not have source-code of. Available at: https://code.google.com/p/google-gson/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="ActionBarSherlock"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="Action bar implementation which uses the native action bar on Android 4.0+ and a custom implementation on pre-4.0 through a single API and theme. Available at: https://github.com/JakeWharton/ActionBarSherlock"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="ButterKnife"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="View &quot;injection&quot; library for Android. Available at: https://github.com/JakeWharton/butterknife"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Picasso"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="A powerful image downloading and caching library for Android. Available at: https://github.com/square/picasso"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="NineOldAndroids"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="Android library for using the Honeycomb animation API on all versions of the platform back to 1.0! Available at: https://github.com/JakeWharton/NineOldAndroids/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Dagger"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="A fast dependency injector for Android and Java. Available at: https://github.com/square/dagger"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Otto"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="An enhanced Guava-based event bus with emphasis on Android support. Available at: https://github.com/square/otto"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Smooth Progress Bar"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="A small Android library allowing you to have a smooth and customizable horizontal indeterminate ProgressBar. Available at: https://github.com/castorflex/SmoothProgressBar"/>
+
+        <TextView
+            android:text="@string/media_credits"
+            style="@style/AboutHeader"/>
+
+        <View
+            style="@style/AboutDivider"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Reddit Alien Vector Image"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By MakoSanders, available at: http://makosanders.deviantart.com/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Sunset Cruise"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By ecstaticist, available at: http://www.flickr.com/photos/ecstaticist/2812682461/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Racing Stars"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By Andrew Stawarz, available at: http://www.flickr.com/photos/stawarz/2981086612/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="My Tree At Dusk"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By Joiseyshowaa, avilable at: http://www.flickr.com/photos/joiseyshowaa/1400175456/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Autumn Is On Its Way"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By AmUnivers, available at: http://www.flickr.com/photos/amunivers/239455430/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Grey Skies Over Matsumoto"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By EugeniusD80, available at: http://www.flickr.com/photos/zhzheka/701816373/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="The Green Ascent"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By vsz, available at: http://www.flickr.com/photos/vs/29582361/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="The Tree"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By helmet13, available at: http://www.flickr.com/photos/22281745@N04/2149169348/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="See Harness"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By DCCXLIX, available at: http://www.flickr.com/photos/dccxlix/399948328/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Q"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By Darny, available at: http://www.flickr.com/photos/darn/539225017/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Colorful Joy"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By robokow, available at: http://www.flickr.com/photos/robino/463790976/"/>
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="Nexus Above Erskine Lake"/>
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="By drp, available at: http://www.flickr.com/photos/drp/43707772/in/photostream/"/>
+
+    </LinearLayout>
 
 </ScrollView>
