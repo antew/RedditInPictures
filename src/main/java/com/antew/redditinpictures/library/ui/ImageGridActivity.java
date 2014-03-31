@@ -261,16 +261,6 @@ public class ImageGridActivity extends BaseFragmentActivity
             }
         });
 
-        ImageButton subredditSearch = (ImageButton) findViewById(R.id.btn_search);
-        subredditSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RedditService.searchSubreddits(ImageGridActivity.this,
-                    mSubredditFilter.getText().toString(),
-                    SharedPreferencesHelper.getShowNsfwImages(ImageGridActivity.this));
-            }
-        });
-
         SetDefaultSubredditsTask defaultSubredditsTask = new SetDefaultSubredditsTask();
         defaultSubredditsTask.execute();
 

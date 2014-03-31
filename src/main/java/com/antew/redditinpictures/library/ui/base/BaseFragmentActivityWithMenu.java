@@ -1,62 +1,51 @@
 package com.antew.redditinpictures.library.ui.base;
 
-import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.adapter.SubredditMenuDrawerCursorAdapter;
+import com.antew.redditinpictures.library.dialog.AddSubredditDialogFragment;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.SetDefaultSubredditsDialogFragment;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.event.LoadSubredditEvent;
 import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
-import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.SubredditData;
 import com.antew.redditinpictures.library.reddit.json.MySubredditsResponse;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.utils.Constants;
-import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
-import java.util.ArrayList;
 import net.simonvt.menudrawer.MenuDrawer;
 
 public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     implements LoaderManager.LoaderCallbacks<Cursor>,
-    SetDefaultSubredditsDialogFragment.SetDefaultSubredditsDialogListener {
+    SetDefaultSubredditsDialogFragment.SetDefaultSubredditsDialogListener,
+    AddSubredditDialogFragment.AddSubredditDialogListener {
     protected MenuDrawer mMenuDrawer;
     protected SubredditMenuDrawerCursorAdapter mSubredditAdapter;
-    protected ArrayAdapter<String> mSubredditSearchResultsAdapter;
     @InjectView(R.id.et_subreddit_filter)
-    protected AutoCompleteTextView mSubredditFilter;
-    @InjectView(R.id.btn_search)
-    protected ImageButton mSubredditSearch;
+    protected EditText mSubredditFilter;
+    @InjectView(R.id.b_clear)
+    protected ImageButton mClearSubredditFilter;
     @InjectView(R.id.lv_subreddits)
     protected ListView mSubredditList;
     @InjectView(R.id.ib_add)
@@ -92,17 +81,17 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         }
     };
 
-    private View.OnClickListener mSubredditSearchListener = new View.OnClickListener() {
+    private View.OnClickListener mAddSubredditListener = new View.OnClickListener() {
         @Override public void onClick(View v) {
-            if (mSubredditFilter != null) {
-                searchForSubreddits(mSubredditFilter.getText().toString());
-            }
+            AddSubredditDialogFragment.newInstance().show(getSupportFragmentManager(), Constants.Dialog.DIALOG_ADD_SUBREDDIT);
         }
     };
 
-    private View.OnClickListener mAddSubredditListener = new View.OnClickListener() {
+    private View.OnClickListener mClearSubredditFilterListener = new View.OnClickListener() {
         @Override public void onClick(View v) {
-            // Show dialog to search for a subreddit and add one.
+            if (mSubredditFilter != null) {
+                mSubredditFilter.setText(null);
+            }
         }
     };
 
@@ -118,44 +107,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             handleRefreshSubreddits();
         }
     };
-
-    private TextView.OnEditorActionListener mSubredditSearchEditorActionListener =
-        new TextView.OnEditorActionListener() {
-
-            /**
-             * Called when an action is being performed.
-             *
-             * @param v The view that was clicked.
-             * @param actionId Identifier of the action.  This will be either the
-             * identifier you supplied, or {@link android.view.inputmethod.EditorInfo#IME_NULL
-             * EditorInfo.IME_NULL} if being called due to the enter key
-             * being pressed.
-             * @param event If triggered by an enter key, this is the event;
-             * otherwise, this is null.
-             * @return Return true if you have consumed the action, else false.
-             */
-            @Override public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH && mSubredditFilter != null) {
-                    searchForSubreddits(mSubredditFilter.getText().toString());
-                }
-                return false;
-            }
-        };
-
-    private AdapterView.OnItemClickListener mSubredditSearchResponseListener =
-        new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mSubredditSearchResultsAdapter != null) {
-                    addSubreddit(mSubredditSearchResultsAdapter.getItem(position));
-                }
-
-                mMenuDrawer.setActiveView(view, position);
-                mSubredditAdapter.setActivePosition(position);
-                closeMenuDrawerIfNeeded();
-            }
-        };
 
     private TextWatcher mSubredditFilterWatcher = new TextWatcher() {
         @Override
@@ -201,21 +152,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             }
         };
 
-    private BroadcastReceiver mSubredditsSearch = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra(Constants.EXTRA_SUBREDDIT_NAMES)) {
-                Ln.d("Got Back Subreddit Search Result");
-                final ArrayList<String> subredditNames =
-                    intent.getStringArrayListExtra(Constants.EXTRA_SUBREDDIT_NAMES);
-
-                if (subredditNames != null) {
-                    handleSubredditSearchResults(subredditNames);
-                }
-            }
-        }
-    };
-
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -231,7 +167,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         initializeSubredditFilter();
         initializeSubredditList();
         initializeLoaders();
-        initializeReceivers();
         initializeSubredditMenu();
     }
 
@@ -246,12 +181,10 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     private void initializeSubredditFilter() {
         if (mSubredditFilter != null) {
             mSubredditFilter.addTextChangedListener(mSubredditFilterWatcher);
-            mSubredditFilter.setImeActionLabel(getString(R.string.go), KeyEvent.KEYCODE_ENTER);
-            mSubredditFilter.setOnEditorActionListener(mSubredditSearchEditorActionListener);
         }
 
-        if (mSubredditSearch != null) {
-            mSubredditSearch.setOnClickListener(mSubredditSearchListener);
+        if (mClearSubredditFilter != null) {
+            mClearSubredditFilter.setOnClickListener(mClearSubredditFilterListener);
         }
     }
 
@@ -295,19 +228,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         loaderManager.initLoader(Constants.LOADER_SUBREDDITS, null, this);
     }
 
-    private void initializeReceivers() {
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(mSubredditsSearch,
-                new IntentFilter(Constants.BROADCAST_SUBREDDIT_SEARCH));
-    }
-
-    protected void addSubreddit(String subreddit) {
-        if (Strings.notEmpty(subreddit)) {
-            RedditService.aboutSubreddit(this, subreddit);
-            loadSubreddit(subreddit);
-        }
-    }
-
     protected void forceRefreshCurrentSubreddit() {
         RedditService.forceRefreshSubreddit(this, mSelectedSubreddit, mAge, mCategory);
     }
@@ -326,24 +246,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         Bundle filterBundle = new Bundle();
         filterBundle.putString(Constants.EXTRA_QUERY, filterText);
         loaderManager.restartLoader(Constants.LOADER_SUBREDDITS, filterBundle, this);
-    }
-
-    protected void searchForSubreddits(String queryText) {
-        if (Strings.notEmpty(queryText)) {
-            RedditService.searchSubreddits(this, queryText,
-                SharedPreferencesHelper.getShowNsfwImages(this));
-        }
-    }
-
-    private void handleSubredditSearchResults(ArrayList<String> subredditNameList) {
-        if (mSubredditFilter != null && subredditNameList != null && subredditNameList.size() > 0) {
-            mSubredditSearchResultsAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line,
-                    subredditNameList);
-            mSubredditFilter.setAdapter(mSubredditSearchResultsAdapter);
-            mSubredditFilter.showDropDown();
-            mSubredditFilter.setOnItemClickListener(mSubredditSearchResponseListener);
-        }
     }
 
     protected void subscribeToSubreddit(String subredditName) {
@@ -510,5 +412,13 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask =
             new SubredditUtils.SetDefaultSubredditsTask(this, true);
         defaultSubredditsTask.execute();
+    }
+
+    @Override public void onAddSubreddit(String subreddit) {
+        if (Strings.notEmpty(subreddit)) {
+            RedditService.aboutSubreddit(this, subreddit);
+            loadSubreddit(subreddit);
+            closeMenuDrawerIfNeeded();
+        }
     }
 }

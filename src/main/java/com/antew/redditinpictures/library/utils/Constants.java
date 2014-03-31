@@ -26,6 +26,7 @@ public class Constants {
 
     public static class Dialog {
         public static final String DIALOG_DEFAULT_SUBREDDITS = "defaultSubreddits";
+        public static final String DIALOG_ADD_SUBREDDIT = "addSubreddit";
     }
 
     public static class Reddit {

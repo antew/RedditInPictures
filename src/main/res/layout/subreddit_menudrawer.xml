@@ -6,30 +6,29 @@
     android:focusableInTouchMode="true"
     android:background="@drawable/background_menudrawer">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/ll_menudrawer_search"
-        android:layout_alignParentTop="true">
+        android:id="@+id/fl_subreddit_filter">
 
-        <AutoCompleteTextView
-            android:layout_width="wrap_content"
+        <EditText
+            android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
-            android:hint="@string/search"
+            android:hint="@string/filter_subreddits"
             android:id="@+id/et_subreddit_filter"
-            android:layout_weight=".85"
-            android:singleLine="true"
-            android:imeOptions="actionSearch"/>
+            android:singleLine="true"/>
 
         <ImageButton
+            android:id="@+id/b_clear"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/btn_search"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="right|center_vertical"
             android:background="@android:color/transparent"
-            android:layout_weight=".15"
-            android:src="@drawable/ic_action_search_dark"/>
-    </LinearLayout>
+            android:src="@drawable/ic_action_cancel_dark"
+            android:padding="5dp"/>
+
+    </FrameLayout>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -66,7 +65,7 @@
         android:listSelector="@drawable/photogrid_list_selector"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/ll_menudrawer_search"
+        android:layout_below="@id/fl_subreddit_filter"
         android:layout_above="@id/ll_menudrawer_menu"/>
 
 </RelativeLayout>

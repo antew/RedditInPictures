@@ -3,7 +3,6 @@
     <string name="_0_of_">"0 of "</string>
     <string name="_of_">" of "</string>
     <string name="about_reddit_in_pictures">About Reddit In Pictures</string>
-    <string name="add_subreddit">Add Subreddit</string>
     <string name="all">All</string>
     <string name="app_name">Reddit In Pictures</string>
     <string name="are_you_sure_you_want_to_exit">Are you sure you want to exit?</string>
@@ -88,6 +87,9 @@
     <string name="save">Save</string>
     <string name="go">Go</string>
     <string name="info">Info</string>
+    <string name="subreddit">Subreddit</string>
+    <string name="add_subreddit">Add Subreddit</string>
+    <string name="filter_subreddits">Filter Subreddits</string>
     <!-- End Single Word/Phrase Resources -->
 
     <!-- Shared Preferences Keys -->
