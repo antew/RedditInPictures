@@ -76,6 +76,7 @@
 
     <!-- Single Word/Phrase Resources -->
     <string name="view">View</string>
+    <string name="view_subreddit">View Subreddit</string>
     <string name="subscribe">Subscribe</string>
     <string name="unsubscribe">Unsubscribe</string>
     <string name="nsfw">NSFW</string>
@@ -90,6 +91,13 @@
     <string name="subreddit">Subreddit</string>
     <string name="add_subreddit">Add Subreddit</string>
     <string name="filter_subreddits">Filter Subreddits</string>
+    <string name="view_as_list">View As List</string>
+    <string name="view_as_grid">View As Grid</string>
+    <string name="sort_by_popularity">Sort By Popularity</string>
+    <string name="reset_subreddits">Reset Subreddits</string>
+    <string name="clear">Clear</string>
+    <string name="search">Search</string>
+    <string name="open_menu">Open Menu</string>
     <!-- End Single Word/Phrase Resources -->
 
     <!-- Shared Preferences Keys -->
@@ -101,10 +109,4 @@
 
     <!-- Default Subreddits, grabbed image subreddits from the top 125 subreddits by activity -->
     <string name="default_subreddits_multi">pics+funny+gaming+aww+AdviceAnimals+EarthPorn+gifs+woahdude+mildlyinteresting+lifehacks+reactiongifs+photoshopbattles+FoodPorn+wheredidthesodago+HistoryPorn+cats+fffffffuuuuuuuuuuuu+standupshots+thewalkingdead+doctorwho+comics+QuotesPorn+carporn+SpacePorn</string>
-    <string name="search">Search</string>
-
-    <string name="view_as_list">View As List</string>
-    <string name="view_as_grid">View As Grid</string>
-
-
 </resources>

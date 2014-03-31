@@ -6,15 +6,18 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
+import butterknife.OnLongClick;
 import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.SubredditData;
+import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.ViewUtils;
 import com.antew.redditinpictures.pro.R;
 
@@ -73,12 +76,8 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
             holder.more.setVisibility(View.GONE);
             holder.back.setVisibility(View.GONE);
         } else {
+            // Even though the view is visible by default since this could be recycled, we need to make sure to make it visible if it wasn't before.
             holder.more.setVisibility(View.VISIBLE);
-            holder.more.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    ViewUtils.toggleVisibility(holder.back);
-                }
-            });
 
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
@@ -159,18 +158,36 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
         this.mActivePosition = activePosition;
     }
 
-    static class ViewHolder {
+    protected class ViewHolder {
         @InjectView(R.id.tv_subreddit) TextView subreddit;
         @InjectView(R.id.ib_more) ImageButton more;
         @InjectView(R.id.back) LinearLayout back;
-        @InjectView(R.id.b_view) Button view;
-        @InjectView(R.id.b_subscribe) Button subscribe;
-        @InjectView(R.id.b_unsubscribe) Button unsubscribe;
-        @InjectView(R.id.b_info) Button info;
-        @InjectView(R.id.b_delete) Button delete;
+        @InjectView(R.id.ib_view) ImageButton view;
+        @InjectView(R.id.ib_subscribe) ImageButton subscribe;
+        @InjectView(R.id.ib_unsubscribe) ImageButton unsubscribe;
+        @InjectView(R.id.ib_info) ImageButton info;
+        @InjectView(R.id.ib_delete) ImageButton delete;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);
+        }
+
+        @OnClick(R.id.ib_more)
+        protected void onMore() {
+            ViewUtils.toggleVisibility(back);
+        }
+
+        @OnLongClick({R.id.ib_more, R.id.ib_view, R.id.ib_subscribe, R.id.ib_unsubscribe, R.id.ib_info, R.id.ib_delete})
+        protected boolean onLongClickMenuOption(View view) {
+            if (view != null) {
+                String description = Strings.toString(view.getContentDescription());
+                if (Strings.notEmpty(description)) {
+                    Toast.makeText(mContext, description, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

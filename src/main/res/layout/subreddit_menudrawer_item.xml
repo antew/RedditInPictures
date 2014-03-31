@@ -20,7 +20,8 @@
             android:id="@+id/ib_more"
             android:layout_alignParentRight="true"
             android:padding="5dp"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/open_menu"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -47,59 +48,64 @@
         android:visibility="gone"
         android:background="#1A1A1A">
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/b_view"
-            android:drawableTop="@drawable/ic_action_picture_dark"
-            android:text="@string/view"
+            android:id="@+id/ib_view"
+            android:src="@drawable/ic_action_picture_dark"
+            android:contentDescription="@string/view_subreddit"
             android:background="@android:color/transparent"
             android:layout_weight=".25"
-            android:textSize="@dimen/text_size_micro"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:gravity="center"/>
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/b_subscribe"
-            android:drawableTop="@drawable/ic_action_tick_dark"
-            android:text="@string/subscribe"
+            android:id="@+id/ib_subscribe"
+            android:src="@drawable/ic_action_tick_dark"
+            android:contentDescription="@string/subscribe"
             android:background="@android:color/transparent"
             android:layout_weight=".25"
-            android:textSize="@dimen/text_size_micro"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:gravity="center"/>
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/b_unsubscribe"
-            android:drawableTop="@drawable/ic_action_cancel_dark"
-            android:text="@string/unsubscribe"
+            android:id="@+id/ib_unsubscribe"
+            android:src="@drawable/ic_action_cancel_dark"
+            android:contentDescription="@string/unsubscribe"
             android:background="@android:color/transparent"
             android:layout_weight=".25"
-            android:textSize="@dimen/text_size_micro"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:gravity="center"/>
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/b_info"
-            android:drawableTop="@drawable/ic_action_info_dark"
-            android:text="@string/info"
+            android:id="@+id/ib_info"
+            android:src="@drawable/ic_action_info_dark"
+            android:contentDescription="@string/info"
             android:background="@android:color/transparent"
             android:layout_weight=".25"
-            android:textSize="@dimen/text_size_micro"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:gravity="center"/>
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/b_delete"
-            android:drawableTop="@drawable/ic_action_trash_dark"
-            android:text="@string/delete"
+            android:id="@+id/ib_delete"
+            android:src="@drawable/ic_action_trash_dark"
+            android:contentDescription="@string/delete"
             android:background="@android:color/transparent"
             android:layout_weight=".25"
-            android:textSize="@dimen/text_size_micro"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:gravity="center"/>
     </LinearLayout>
 

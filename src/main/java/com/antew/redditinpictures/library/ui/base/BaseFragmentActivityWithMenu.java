@@ -13,8 +13,11 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
+import butterknife.OnLongClick;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.adapter.SubredditMenuDrawerCursorAdapter;
 import com.antew.redditinpictures.library.dialog.AddSubredditDialogFragment;
@@ -44,7 +47,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     protected SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     @InjectView(R.id.et_subreddit_filter)
     protected EditText mSubredditFilter;
-    @InjectView(R.id.b_clear)
+    @InjectView(R.id.ib_clear)
     protected ImageButton mClearSubredditFilter;
     @InjectView(R.id.lv_subreddits)
     protected ListView mSubredditList;
@@ -81,32 +84,49 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         }
     };
 
-    private View.OnClickListener mAddSubredditListener = new View.OnClickListener() {
-        @Override public void onClick(View v) {
+    @OnClick(R.id.ib_add)
+    protected void onAddSubreddit() {
             AddSubredditDialogFragment.newInstance().show(getSupportFragmentManager(), Constants.Dialog.DIALOG_ADD_SUBREDDIT);
-        }
-    };
+    }
 
-    private View.OnClickListener mClearSubredditFilterListener = new View.OnClickListener() {
-        @Override public void onClick(View v) {
-            if (mSubredditFilter != null) {
-                mSubredditFilter.setText(null);
+    @OnLongClick({R.id.ib_add, R.id.ib_sort, R.id.ib_refresh, R.id.ib_clear})
+    protected boolean onLongClickMenuOption(View view) {
+        if (view != null) {
+            String description = Strings.toString(view.getContentDescription());;
+            if (Strings.notEmpty(description)) {
+                Toast.makeText(this, description, Toast.LENGTH_SHORT).show();
+                return true;
             }
         }
-    };
 
-    private View.OnClickListener mSortSubredditsListener = new View.OnClickListener() {
-        @Override public void onClick(View v) {
+        return false;
+    }
+
+    @OnClick(R.id.ib_clear)
+    protected void onClearSubredditFilter() {
+        if (mSubredditFilter != null) {
+            mSubredditFilter.setText(null);
+        }
+    }
+
+    @OnClick(R.id.ib_sort)
+    protected void onSortSubreddits() {
             // Switch between alpha/usage sorting.
-        }
-    };
+    }
 
-    private View.OnClickListener mRefreshSubredditsListener = new View.OnClickListener() {
-        @Override public void onClick(View v) {
-            // Pulldown subreddits if logged in. If not logged in, confirm that they want to reset to default subreddits.
-            handleRefreshSubreddits();
+    @OnClick(R.id.ib_refresh)
+    protected void onRefreshSubreddits() {
+        if (RedditLoginInformation.isLoggedIn()) {
+            // Since the user is logged in we can just run the task to update their subreddits.
+            SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask =
+                new SubredditUtils.SetDefaultSubredditsTask(this, true);
+            defaultSubredditsTask.execute();
+        } else {
+            // If they aren't logged in, we want to make sure that they understand this will set the subreddits back to default.
+            SetDefaultSubredditsDialogFragment fragment = SetDefaultSubredditsDialogFragment.newInstance();
+            fragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_DEFAULT_SUBREDDITS);
         }
-    };
+    }
 
     private TextWatcher mSubredditFilterWatcher = new TextWatcher() {
         @Override
@@ -167,24 +187,18 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         initializeSubredditFilter();
         initializeSubredditList();
         initializeLoaders();
-        initializeSubredditMenu();
     }
 
     private void initializeMenuDrawer() {
         mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.Type.OVERLAY);
         mMenuDrawer.setMenuView(R.layout.subreddit_menudrawer);
         mMenuDrawer.setSlideDrawable(R.drawable.ic_drawer);
-        mMenuDrawer.setMenuSize(Util.dpToPx(this, 260));
         mMenuDrawer.setDrawerIndicatorEnabled(true);
     }
 
     private void initializeSubredditFilter() {
         if (mSubredditFilter != null) {
             mSubredditFilter.addTextChangedListener(mSubredditFilterWatcher);
-        }
-
-        if (mClearSubredditFilter != null) {
-            mClearSubredditFilter.setOnClickListener(mClearSubredditFilterListener);
         }
     }
 
@@ -193,33 +207,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         if (mSubredditList != null) {
             mSubredditList.setAdapter(mSubredditAdapter);
             mSubredditList.setOnItemClickListener(mSubredditClickListener);
-        }
-    }
-
-    private void initializeSubredditMenu() {
-        if (mAddSubreddit != null) {
-            mAddSubreddit.setOnClickListener(mAddSubredditListener);
-        }
-
-        if (mSortSubreddits != null) {
-            mSortSubreddits.setOnClickListener(mSortSubredditsListener);
-        }
-
-        if (mRefreshSubreddits != null) {
-            mRefreshSubreddits.setOnClickListener(mRefreshSubredditsListener);
-        }
-    }
-
-    private void handleRefreshSubreddits() {
-        if (RedditLoginInformation.isLoggedIn()) {
-            // Since the user is logged in we can just run the task to update their subreddits.
-            SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask =
-                new SubredditUtils.SetDefaultSubredditsTask(this, true);
-            defaultSubredditsTask.execute();
-        } else {
-            // If they aren't logged in, we want to make sure that they understand this will set the subreddits back to default.
-            SetDefaultSubredditsDialogFragment fragment = SetDefaultSubredditsDialogFragment.newInstance();
-            fragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_DEFAULT_SUBREDDITS);
         }
     }
 
