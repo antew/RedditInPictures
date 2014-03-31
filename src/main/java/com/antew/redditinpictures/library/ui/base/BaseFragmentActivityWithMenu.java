@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.adapter.SubredditMenuDrawerCursorAdapter;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
@@ -52,11 +53,17 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     protected MenuDrawer mMenuDrawer;
     protected SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     protected ArrayAdapter<String> mSubredditSearchResultsAdapter;
+    @InjectView(R.id.et_subreddit_filter)
     protected AutoCompleteTextView mSubredditFilter;
+    @InjectView(R.id.btn_search)
     protected ImageButton mSubredditSearch;
+    @InjectView(R.id.lv_subreddits)
     protected ListView mSubredditList;
+    @InjectView(R.id.ib_add)
     protected ImageButton mAddSubreddit;
+    @InjectView(R.id.ib_sort)
     protected ImageButton mSortSubreddits;
+    @InjectView(R.id.ib_refresh)
     protected ImageButton mRefreshSubreddits;
 
     protected String mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
@@ -220,9 +227,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initializeMenuDrawer();
+    private void setupMenuDrawer() {
         initializeSubredditFilter();
         initializeSubredditList();
         initializeLoaders();
@@ -239,15 +244,12 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     private void initializeSubredditFilter() {
-        mSubredditFilter = (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
-
         if (mSubredditFilter != null) {
             mSubredditFilter.addTextChangedListener(mSubredditFilterWatcher);
             mSubredditFilter.setImeActionLabel(getString(R.string.go), KeyEvent.KEYCODE_ENTER);
             mSubredditFilter.setOnEditorActionListener(mSubredditSearchEditorActionListener);
         }
 
-        mSubredditSearch = (ImageButton) findViewById(R.id.btn_search);
         if (mSubredditSearch != null) {
             mSubredditSearch.setOnClickListener(mSubredditSearchListener);
         }
@@ -255,7 +257,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
     private void initializeSubredditList() {
         mSubredditAdapter = getSubredditMenuAdapter();
-        mSubredditList = (ListView) findViewById(R.id.lv_subreddits);
         if (mSubredditList != null) {
             mSubredditList.setAdapter(mSubredditAdapter);
             mSubredditList.setOnItemClickListener(mSubredditClickListener);
@@ -263,17 +264,14 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     private void initializeSubredditMenu() {
-        mAddSubreddit = (ImageButton) findViewById(R.id.ib_add);
         if (mAddSubreddit != null) {
             mAddSubreddit.setOnClickListener(mAddSubredditListener);
         }
 
-        mSortSubreddits = (ImageButton) findViewById(R.id.ib_sort);
         if (mSortSubreddits != null) {
             mSortSubreddits.setOnClickListener(mSortSubredditsListener);
         }
 
-        mRefreshSubreddits = (ImageButton) findViewById(R.id.ib_refresh);
         if (mRefreshSubreddits != null) {
             mRefreshSubreddits.setOnClickListener(mRefreshSubredditsListener);
         }
@@ -398,8 +396,10 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     @Override public void setContentView(int layoutResId) {
+        initializeMenuDrawer();
         mMenuDrawer.setContentView(layoutResId);
         ButterKnife.inject(this);
+        setupMenuDrawer();
     }
 
     /**

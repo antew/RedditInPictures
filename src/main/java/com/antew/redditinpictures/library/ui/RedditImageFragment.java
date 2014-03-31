@@ -1,4 +1,4 @@
-package com.antew.redditinpictures.library.ui.base;
+package com.antew.redditinpictures.library.ui;
 
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
@@ -26,6 +26,7 @@ import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
+import com.antew.redditinpictures.library.ui.base.BaseFragment;
 import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
@@ -44,7 +45,7 @@ import javax.inject.Inject;
  * @param <T> The type of view the fragment is using, e.g. GridView, ListView
  * @param <V> The type of the cursor adapter backing the view
  */
-public abstract class BaseImageFragment<T extends AdapterView, V extends CursorAdapter>
+public abstract class RedditImageFragment<T extends AdapterView, V extends CursorAdapter>
     extends BaseFragment
     implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     protected V mAdapter;
@@ -80,7 +81,9 @@ public abstract class BaseImageFragment<T extends AdapterView, V extends CursorA
         setRetainInstance(true);
 
         // Initialize the adapter to null, the adapter will be populated in onLoadFinished
-        mAdapter = getNewAdapter();
+        if (mAdapter == null) {
+            mAdapter = getNewAdapter();
+        }
     }
 
     /**
