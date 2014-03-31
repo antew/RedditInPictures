@@ -2,9 +2,6 @@ package com.antew.redditinpictures.library.ui;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,7 +21,6 @@ public class About extends BaseActivity {
     protected TextView mCopyright;
     @InjectView(R.id.about_image)
     protected ImageView mImageView;
-    private static final int MAX_TRIES = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +28,15 @@ public class About extends BaseActivity {
         setContentView(R.layout.about);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         int size = Util.dpToPx(this, 100);
-        Picasso.with(this).load(R.drawable.market_icon).resize(size, size).placeholder(R.drawable.loading_spinner_76).error(R.drawable.empty_photo).into(mImageView);
+
+        Picasso.with(this)
+            .load(R.drawable.market_icon)
+            .resize(size, size)
+            .placeholder(R.drawable.loading_spinner_76)
+            .error(R.drawable.empty_photo)
+            .into(mImageView);
 
         String version = getString(R.string.version_);
         try {
@@ -46,7 +49,8 @@ public class About extends BaseActivity {
         }
 
         mVersion.setText(version);
-        mCopyright.setText(getString(R.string.copyright_) + Calendar.getInstance().get(Calendar.YEAR));
+        mCopyright.setText(
+            getString(R.string.copyright_) + Calendar.getInstance().get(Calendar.YEAR));
     }
 
     @Override
@@ -59,5 +63,4 @@ public class About extends BaseActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 }

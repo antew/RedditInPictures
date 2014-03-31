@@ -26,7 +26,6 @@ import com.antew.redditinpictures.library.anim.FadeInThenOut;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Util;
