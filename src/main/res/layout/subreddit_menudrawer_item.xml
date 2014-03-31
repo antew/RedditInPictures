@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:descendantFocusability="blocksDescendants"
     android:paddingTop="5dp"
-    android:paddingBottom="5dp">
+    android:paddingBottom="5dp"
+    android:animateLayoutChanges="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
