@@ -115,8 +115,6 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         handleArguments(getArguments());
-        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_REDDIT, null, this);
-        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_POSTS, null, this);
         forceFetchImagesFromReddit();
         if (getActivity() instanceof ActionBarTitleChanger) {
             ((ActionBarTitleChanger) getActivity()).setActionBarTitle(mCurrentSubreddit);
@@ -334,6 +332,29 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
         } else {
             startActivity(i);
         }
+    }
+
+    /**
+     * Called when the Fragment is no longer resumed.  This is generally
+     * tied to {@link android.app.Activity#onPause() Activity.onPause} of the containing
+     * Activity's lifecycle.
+     */
+    @Override public void onPause() {
+        super.onPause();
+        getActivity().getSupportLoaderManager().destroyLoader(Constants.LOADER_REDDIT);
+        getActivity().getSupportLoaderManager().destroyLoader(Constants.LOADER_POSTS);
+    }
+
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * This is generally
+     * tied to {@link android.app.Activity#onResume() Activity.onResume} of the containing
+     * Activity's lifecycle.
+     */
+    @Override public void onResume() {
+        super.onResume();
+        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_REDDIT, null, this);
+        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_POSTS, null, this);
     }
 
     protected void produceRequestInProgressEvent() {
