@@ -24,10 +24,14 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.GridView;
 import android.widget.ImageView;
+import com.antew.redditinpictures.library.imgur.ResolveAlbumCoverWorkerTask;
 import com.antew.redditinpictures.library.ui.ImageGridFragment;
+import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.squareup.picasso.Picasso;
+import java.util.regex.Pattern;
 
 /**
  * This is used as the backing adapter for the {@link GridView} in {@link ImageGridFragment}
@@ -40,6 +44,8 @@ public class ImageCursorAdapter extends CursorAdapter {
     private int                   mItemHeight = 0;
     private int                   mNumColumns = 0;
     private GridView.LayoutParams mImageViewLayoutParams;
+    private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
+    private Pattern mImgurAlbumPattern = Pattern.compile("^https?://imgur.com/a/.*$");
 
     /**
      * 
@@ -98,17 +104,42 @@ public class ImageCursorAdapter extends CursorAdapter {
 
         String url = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.URL));
         String thumbnail = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.THUMBNAIL));
+        String domain = cursor.getString(cursor.getColumnIndex(RedditContract.PostColumns.DOMAIN));
+
         // If we have a thumbnail from Reddit use that, otherwise use the full URL
         // Reddit will send 'default' for one of the default alien icons, which we want to avoid using
-        if (!thumbnail.trim().equals("") && !thumbnail.equals("default")) {
+        if (Strings.notEmpty(thumbnail) && !thumbnail.equals("default")) {
             url = thumbnail;
+        } else {
+            // If the url is not pointing directly to the image. (Normally at i.imgur.com not imgur.com)
+            if (domain.equals("imgur.com")) {
+                // If the url is not an album but is just using a shortlink to an image append .jpg to the end and hope for the best.
+                if (mImgurNonAlbumPattern.matcher(url).matches()) {
+                    // The S before the extension gets us a small image.
+                    url += "s.jpg";
+                    Ln.d("Updating Url To: %s", url);
+                } else if (mImgurAlbumPattern.matcher(url).matches()) {
+                    if (ResolveAlbumCoverWorkerTask.cancelPotentialDownload(url, imageView)) {
+                        ResolveAlbumCoverWorkerTask task = new ResolveAlbumCoverWorkerTask(url, imageView, mContext);
+                        ResolveAlbumCoverWorkerTask.LoadingTaskHolder loadingTaskHolder = new ResolveAlbumCoverWorkerTask.LoadingTaskHolder(task);
+                        imageView.setTag(loadingTaskHolder);
+                        task.execute();
+                    }
+                    //Since this is an album, we don't want it to be attempted to be loaded.
+                    url = null;
+                }
+            }
         }
-        Picasso.with(mContext).load(url)
-               .placeholder(R.drawable.empty_photo)
-               .error(R.drawable.empty_photo)
-               .fit()
-               .centerCrop()
-               .into(imageView);
+
+        if (Strings.notEmpty(url)) {
+            Picasso.with(mContext)
+                .load(url)
+                .placeholder(R.drawable.loading_spinner_76)
+                .error(R.drawable.empty_photo)
+                .fit()
+                .centerCrop()
+                .into(imageView);
+        }
     }
 
     @Override
