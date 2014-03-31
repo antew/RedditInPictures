@@ -8,14 +8,12 @@ import butterknife.InjectView;
 import com.antew.redditinpictures.library.adapter.ImageListCursorAdapter;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
-import com.antew.redditinpictures.library.ui.base.BaseImageFragment;
 import com.antew.redditinpictures.library.utils.Constants;
-import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
-public class RedditImageListFragment extends BaseImageFragment<ListView, ImageListCursorAdapter> {
+public class RedditImageListFragment extends RedditImageFragment<ListView, ImageListCursorAdapter> {
     //8 is a good number, the kind of number that you could say take home to your parents and not be worried about what they might think about it.
     private static final int POST_LOAD_OFFSET = 8;
     @InjectView(R.id.image_list)
