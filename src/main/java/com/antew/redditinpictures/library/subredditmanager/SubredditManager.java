@@ -43,25 +43,45 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 
  * Activity for managing subreddits shown in the spinner.
- * 
  */
 public class SubredditManager extends SherlockListActivity {
-    public static final String   TAG                = SubredditManager.class.getSimpleName();
-    public static final String   PREFS_NAME         = "reddit_in_pictures";
-    public static final String   ARRAY_NAME         = "subreddits";
+    public static final String TAG        = SubredditManager.class.getSimpleName();
+    //@formatter:off
+    private BroadcastReceiver   mMySubreddits = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "Received mySubreddits callback");
+            ArrayList<String> subreddits = intent.getStringArrayListExtra(Constants.EXTRA_MY_SUBREDDITS);
+
+            if (subreddits != null && subreddits.size() > 0) {
+                setListAdapter(subreddits);
+            } else {
+                StringBuilder errorMessage = new StringBuilder("Something went wrong on 'my subreddits' callback");
+                if (subreddits == null)
+                    errorMessage.append(", subreddits object was null");
+                else
+                    errorMessage.append(", subreddits object had " + subreddits.size() + " items.");
+
+                Log.e("MySubreddits", errorMessage.toString());
+            }
+        }
+    };
+    public static final String PREFS_NAME = "reddit_in_pictures";
+    public static final String ARRAY_NAME = "subreddits";
     private ActionMode           mMode;
     private ArrayAdapter<String> mAdapter;
-    private String               mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
-    private MenuItem             mResetToDefaultSubreddits;
-    private MenuItem             mResyncWithReddit;
+    private String mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
+    private MenuItem mResetToDefaultSubreddits;
+    private MenuItem mResyncWithReddit;
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getIntent().hasExtra(Constants.EXTRA_SELECTED_SUBREDDIT))
+        if (getIntent().hasExtra(Constants.EXTRA_SELECTED_SUBREDDIT)) {
             mSelectedSubreddit = getIntent().getStringExtra(Constants.EXTRA_SELECTED_SUBREDDIT);
+        }
 
         List<String> subreddits = SharedPreferencesHelper.loadArray(PREFS_NAME, ARRAY_NAME, SubredditManager.this);
 
@@ -75,48 +95,46 @@ public class SubredditManager extends SherlockListActivity {
         Collections.sort(subreddits, StringUtil.getCaseInsensitiveComparator());
 
         setListAdapter(subreddits);
-        
+
         final ListView listView = getListView();
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listView.setItemsCanFocus(false);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(
-            Constants.BROADCAST_MY_SUBREDDITS));
-
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Constants.BROADCAST_MY_SUBREDDITS));
     }
-
-    //@formatter:off
-    private BroadcastReceiver   mMySubreddits = new BroadcastReceiver() {
-        
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "Received mySubreddits callback");
-            ArrayList<String> subreddits = intent.getStringArrayListExtra(Constants.EXTRA_MY_SUBREDDITS);
-            
-            if (subreddits != null && subreddits.size() > 0) {
-                setListAdapter(subreddits);
-            } else {
-                StringBuilder errorMessage = new StringBuilder("Something went wrong on 'my subreddits' callback");
-                if (subreddits == null)
-                    errorMessage.append(", subreddits object was null");
-                else
-                    errorMessage.append(", subreddits object had " + subreddits.size() + " items.");
-                
-                Log.e("MySubreddits", errorMessage.toString());
-            }
-        }
-    };
     //@formatter:on
-
-    public void resyncSubredditsWithReddit() {
-        RedditService.getMySubreddits(SubredditManager.this);
-    }
 
     public void setListAdapter(List<String> subreddits) {
         mAdapter = new ArrayAdapter<String>(this, getListLayoutId(), subreddits);
         setListAdapter(mAdapter);
+    }
+
+    public int getListLayoutId() {
+        return android.R.layout.simple_list_item_multiple_choice;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent i = new Intent();
+        i.putExtra(Constants.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
+        setResult(RESULT_OK, i);
+        super.onBackPressed();
+    }
+
+    public void clearActionMode() {
+        if (mMode != null) {
+            mMode.finish();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        SharedPreferencesHelper.saveArray(getReddits(), PREFS_NAME, ARRAY_NAME, SubredditManager.this);
+        LocalBroadcastManager.getInstance(SubredditManager.this).unregisterReceiver(mMySubreddits);
+        super.onPause();
     }
 
     @Override
@@ -162,8 +180,9 @@ public class SubredditManager extends SherlockListActivity {
         } else if (itemId == R.id.delete_subreddits) {
             final ListView listView = getListView();
             final SparseBooleanArray checkedItems = listView.getCheckedItemPositions();
-            if (checkedItems == null)
+            if (checkedItems == null) {
                 return true;
+            }
             List<String> itemsToRemove = new ArrayList<String>();
             final int checkedItemsCount = checkedItems.size();
             for (int j = 0; j < checkedItemsCount; j++) {
@@ -172,7 +191,6 @@ public class SubredditManager extends SherlockListActivity {
                     final String currentItem = (String) listView.getItemAtPosition(position);
                     itemsToRemove.add(currentItem);
                     listView.setItemChecked(position, false);
-
                 }
             }
             for (String subreddit : itemsToRemove) {
@@ -190,22 +208,9 @@ public class SubredditManager extends SherlockListActivity {
         return true;
     }
 
-    private void createResetSubredditsAlertDialog() {
-        new AlertDialog.Builder(SubredditManager.this).setTitle(R.string.reset).setMessage(R.string.reset_to_default_subreddits)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        resetToDefaultSubreddits();
-                    }
-                }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        // Do nothing.
-                    }
-                }).show();
-    }
-
     public void createAddSubredditAlertDialog() {//@formatter:off
         final EditText input = new EditText(SubredditManager.this);
-        
+
         new AlertDialog.Builder(SubredditManager.this)
                        .setTitle(R.string.add_subreddit)
                        .setMessage(R.string.enter_the_subreddit)
@@ -213,13 +218,13 @@ public class SubredditManager extends SherlockListActivity {
                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 String subreddit = input.getText().toString();
-                                
+
                                 if (subreddit.length() > 0) {
                                     mAdapter.add(subreddit);
                                     mAdapter.sort(StringUtil.getCaseInsensitiveComparator());
                                     mAdapter.notifyDataSetChanged();
                                 }
-                                
+
                                 if (RedditLoginInformation.isLoggedIn()) {
                                     RedditService.subscribe(SubredditManager.this, subreddit);
                                 }
@@ -231,6 +236,26 @@ public class SubredditManager extends SherlockListActivity {
                        }).show();
 
     } //@formatter:on
+
+    public void resyncSubredditsWithReddit() {
+        RedditService.getMySubreddits(SubredditManager.this);
+    }
+
+    private void createResetSubredditsAlertDialog() {
+        new AlertDialog.Builder(SubredditManager.this).setTitle(R.string.reset)
+                                                      .setMessage(R.string.reset_to_default_subreddits)
+                                                      .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                                          public void onClick(DialogInterface dialog, int whichButton) {
+                                                              resetToDefaultSubreddits();
+                                                          }
+                                                      })
+                                                      .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                                          public void onClick(DialogInterface dialog, int whichButton) {
+                                                              // Do nothing.
+                                                          }
+                                                      })
+                                                      .show();
+    }
 
     public void resetToDefaultSubreddits() {
         List<String> subreddits = new ArrayList<String>();
@@ -244,11 +269,6 @@ public class SubredditManager extends SherlockListActivity {
 
         setListAdapter(subreddits);
         SharedPreferencesHelper.saveArray(getReddits(), PREFS_NAME, ARRAY_NAME, SubredditManager.this);
-
-    }
-    
-    public int getListLayoutId() {
-        return android.R.layout.simple_list_item_multiple_choice;
     }
 
     public List<String> getReddits() {
@@ -261,29 +281,7 @@ public class SubredditManager extends SherlockListActivity {
         return returnList;
     }
 
-    public void clearActionMode() {
-        if (mMode != null)
-            mMode.finish();
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        Intent i = new Intent();
-        i.putExtra(Constants.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
-        setResult(RESULT_OK, i);
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onPause() {
-        SharedPreferencesHelper.saveArray(getReddits(), PREFS_NAME, ARRAY_NAME, SubredditManager.this);
-        LocalBroadcastManager.getInstance(SubredditManager.this).unregisterReceiver(mMySubreddits);
-        super.onPause();
-    }
-    
     public ArrayAdapter<String> getAdapter() {
         return (ArrayAdapter<String>) getListAdapter();
     }
-
 }

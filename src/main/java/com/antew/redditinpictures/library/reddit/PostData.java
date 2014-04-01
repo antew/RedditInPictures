@@ -51,24 +51,27 @@ public class PostData implements Parcelable, ContentValuesOperation {
      * Leaving media commented out for now. On some subreddits it seems to return an object, but on
      * others it returns a string. Here is an example of it returning a string from the "funny"
      * subreddit.
-     *
+     * <p/>
      * { "data" : { "approved_by" : null, "author" : "AlejandroTheGreat", "author_flair_css_class" :
      * null, "author_flair_text" : null, "banned_by" : null, "clicked" : false, "created" :
      * 1246982492.0, "created_utc" : 1246982492.0, "domain" : "youtube.com", "downs" : 925, "edited"
      * : false, "hidden" : false, "id" : "8yzvh", "is_self" : false, "likes" : null,
      * "link_flair_css_class" : null, "link_flair_text" : null, "media" :
-     * "<object width=\"480\" height=\"295\"><param name=\"movie\" value=\"http://www.youtube-nocookie.com/v/5YGc4zOqozo\"></param><param name=\"wmode\" value=\"transparent\"></param><embed src=\"http://www.youtube-nocookie.com/v/5YGc4zOqozo\" type=\"application/x-shockwave-flash\" wmode=\"transparent\" width=\"480\" height=\"295\"></embed></object>"
+     * "<object width=\"480\" height=\"295\"><param name=\"movie\" value=\"http://www.youtube-nocookie.com/v/5YGc4zOqozo\"></param><param
+     * name=\"wmode\" value=\"transparent\"></param><embed src=\"http://www.youtube-nocookie.com/v/5YGc4zOqozo\"
+     * type=\"application/x-shockwave-flash\" wmode=\"transparent\" width=\"480\" height=\"295\"></embed></object>"
      * , "media_embed" : { }, "name" : "t3_8yzvh", "num_comments" : 850, "num_reports" : null,
      * "over_18" : false, "permalink" :
      * "/r/funny/comments/8yzvh/musician_witnesses_united_airlines_baggage/" , "saved" : false,
      * "score" : 4137, "selftext" : "", "selftext_html" : null, "subreddit" : "funny",
      * "subreddit_id" : "t5_2qh33", "thumbnail" : "", "title" :
-     * "Musician witnesses United Airlines baggage handlers throwing his guitar. Guitar is wrecked. United won't help. Singer writes a song and makes a video \"United Breaks Guitars.\""
+     * "Musician witnesses United Airlines baggage handlers throwing his guitar. Guitar is wrecked. United won't help. Singer writes a song
+     * and makes a video \"United Breaks Guitars.\""
      * , "ups" : 5062, "url" : "http://www.youtube.com/watch?v=5YGc4zOqozo" }, "kind" : "t3" }
      */
     // Media media;
-    int        num_reports;
-    int        ups;
+    int num_reports;
+    int ups;
 
     //@formatter:off
     public String getDomain()                 { return domain; }
@@ -114,8 +117,9 @@ public class PostData implements Parcelable, ContentValuesOperation {
 
     public String getFullPermalink(boolean useMobileInterface) {
         String url = Constants.REDDIT_BASE_URL + permalink;
-        if (useMobileInterface)
+        if (useMobileInterface) {
             url += Constants.COMPACT_URL;
+        }
 
         return url;
     }
@@ -173,45 +177,9 @@ public class PostData implements Parcelable, ContentValuesOperation {
         super();
     }
 
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(domain);
-        dest.writeString(banned_by);
-        dest.writeParcelable(media_embed, flags);
-        dest.writeString(subreddit);
-        dest.writeString(selftext_html);
-        dest.writeString(selftext);
-        dest.writeString(likes.name());
-        dest.writeByte(Util.parcelBoolean(saved));
-        dest.writeString(id);
-        dest.writeByte(Util.parcelBoolean(clicked));
-        dest.writeString(title);
-        dest.writeInt(num_comments);
-        dest.writeInt(score);
-        dest.writeString(approved_by);
-        dest.writeByte(Util.parcelBoolean(over_18));
-        dest.writeByte(Util.parcelBoolean(hidden));
-        dest.writeString(thumbnail);
-        dest.writeString(subreddit_id);
-        dest.writeString(author_flair_css_class);
-        dest.writeInt(downs);
-        dest.writeByte(Util.parcelBoolean(is_self));
-        dest.writeString(permalink);
-        dest.writeString(name);
-        dest.writeLong(created);
-        dest.writeString(url);
-        dest.writeString(author_flair_text);
-        dest.writeString(author);
-        dest.writeLong(created_utc);
-        dest.writeString(link_flair_text);
-        dest.writeString(decoded_url);
-        dest.writeParcelable(image, flags);
-        dest.writeParcelable(album, flags);
-    }
+
+
 
     //@formatter:off
     public static final Parcelable.Creator<PostData> CREATOR
@@ -258,11 +226,77 @@ public class PostData implements Parcelable, ContentValuesOperation {
     public void setAuthor(String author)                                 { this.author = author; }
     public void setCreated_utc(long created_utc)                         { this.created_utc = created_utc; }
     public void setLink_flair_text(String link_flair_text)               { this.link_flair_text = link_flair_text; }
-    public void setDecoded_url(String decoded_url)                       { this.decoded_url = decoded_url; }
-    public void setImage(ImgurImage image)                               { this.image = image; }
-    public void setNum_reports(int num_reports)                          { this.num_reports = num_reports; }
-    public void setUps(int ups)                                          { this.ups = ups; }
+
+    public String getFullPermalink(boolean useMobileInterface) {
+        String url = Constants.REDDIT_BASE_URL + permalink;
+        if (useMobileInterface) {
+            url += Constants.COMPACT_URL;
+        }
+
+        return url;
+    }
+
+    public int describeContents() {
+        return 0;
+    }    public void setNum_reports(int num_reports)                          { this.num_reports = num_reports; }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(domain);
+        dest.writeString(banned_by);
+        dest.writeParcelable(media_embed, flags);
+        dest.writeString(subreddit);
+        dest.writeString(selftext_html);
+        dest.writeString(selftext);
+        dest.writeString(likes.name());
+        dest.writeByte(Util.parcelBoolean(saved));
+        dest.writeString(id);
+        dest.writeByte(Util.parcelBoolean(clicked));
+        dest.writeString(title);
+        dest.writeInt(num_comments);
+        dest.writeInt(score);
+        dest.writeString(approved_by);
+        dest.writeByte(Util.parcelBoolean(over_18));
+        dest.writeByte(Util.parcelBoolean(hidden));
+        dest.writeString(thumbnail);
+        dest.writeString(subreddit_id);
+        dest.writeString(author_flair_css_class);
+        dest.writeInt(downs);
+        dest.writeByte(Util.parcelBoolean(is_self));
+        dest.writeString(permalink);
+        dest.writeString(name);
+        dest.writeLong(created);
+        dest.writeString(url);
+        dest.writeString(author_flair_text);
+        dest.writeString(author);
+        dest.writeLong(created_utc);
+        dest.writeString(link_flair_text);
+        dest.writeString(decoded_url);
+        dest.writeParcelable(image, flags);
+        dest.writeParcelable(album, flags);
+    }    public void setUps(int ups)                                          { this.ups = ups; }
     //@formatter:on
+
+    public void setDecoded_url(String decoded_url)                       { this.decoded_url = decoded_url; }
+
+    public void setImage(ImgurImage image)                               { this.image = image; }    public static PostData fromListViewProjection(Cursor cursor) {
+        PostData postData = new PostData();
+        //@formatter:off
+        postData.selftext     = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT));
+        postData.title        = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
+        postData.score        = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.SCORE));
+        postData.thumbnail    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL));
+        postData.url          = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
+        postData.num_comments = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.COMMENTS));
+        postData.subreddit    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));
+        postData.domain       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
+        postData.author       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR));
+        postData.likes        = Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE)));
+        postData.name         = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME));
+        postData.over_18      = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1;
+        //@formatter:off
+        return postData;
+    }
 
     @Override
     public ContentValues getContentValues() {
@@ -298,28 +332,7 @@ public class PostData implements Parcelable, ContentValuesOperation {
         values.put(RedditContract.PostColumns.LOADED_AT, System.currentTimeMillis());
 
         return values;
-    }
-
-    public static PostData fromListViewProjection(Cursor cursor) {
-        PostData postData = new PostData();
-        //@formatter:off
-        postData.selftext     = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT));
-        postData.title        = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
-        postData.score        = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.SCORE));
-        postData.thumbnail    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL));
-        postData.url          = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
-        postData.num_comments = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.COMMENTS));
-        postData.subreddit    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));
-        postData.domain       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
-        postData.author       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR));
-        postData.likes        = Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE)));
-        postData.name         = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME));
-        postData.over_18      = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1;
-        //@formatter:off
-        return postData;
-    }
-
-    public PostData(Cursor cursor) {
+    }    public PostData(Cursor cursor) {
         //@formatter:off
         domain                = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
         banned_by             = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.BANNED_BY));

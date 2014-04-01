@@ -24,10 +24,13 @@ public abstract class Converters {
     /**
      * Converts a byte array into a BitmapDrawable, using the provided options.
      *
-     * @param image   The byte array representing the image.
-     * @param opts    The decoding options to use, or null if you'd like to use predefined
-     *                options (scaling will be not active).
-     * @param context The Context for getting the Resources.
+     * @param image
+     *     The byte array representing the image.
+     * @param opts
+     *     The decoding options to use, or null if you'd like to use predefined
+     *     options (scaling will be not active).
+     * @param context
+     *     The Context for getting the Resources.
      *
      * @return The initialized BitmapDrawable.
      */
@@ -45,9 +48,11 @@ public abstract class Converters {
     /**
      * Converts a byte array into a Bitmap, using the provided options.
      *
-     * @param image The byte array representing the image.
-     * @param opts  The decoding options to use, or null if you'd like to use predefined
-     *              options (scaling will be not active).
+     * @param image
+     *     The byte array representing the image.
+     * @param opts
+     *     The decoding options to use, or null if you'd like to use predefined
+     *     options (scaling will be not active).
      *
      * @return The initialized BitmapDrawable.
      */
@@ -61,9 +66,23 @@ public abstract class Converters {
     }
 
     /**
+     * Converts a Drawable into a byte array.
+     *
+     * @param image
+     *     The Drawable to convertLa Drawable da convertire.
+     *
+     * @return The byte array representing the Drawable (compressed in PNG).
+     */
+    public static byte[] drawableToByteArray(Drawable image) {
+        Bitmap bitmap = ((BitmapDrawable) image).getBitmap();
+        return bitmapToByteArray(bitmap);
+    }
+
+    /**
      * Covnerts a Bitmap into a byte array.
      *
-     * @param image The Bitmap to convert.
+     * @param image
+     *     The Bitmap to convert.
      *
      * @return The byte array representing the Bitmap (compressed in PNG).
      */
@@ -74,23 +93,13 @@ public abstract class Converters {
     }
 
     /**
-     * Converts a Drawable into a byte array.
-     *
-     * @param image The Drawable to convertLa Drawable da convertire.
-     *
-     * @return The byte array representing the Drawable (compressed in PNG).
-     */
-    public static byte[] drawableToByteArray(Drawable image) {
-        Bitmap bitmap = ((BitmapDrawable) image).getBitmap();
-        return bitmapToByteArray(bitmap);
-    }
-
-    /**
      * Gets an asset from a provided AssetManager and its name in the directory and returns a
      * byte array representing the object content.
      *
-     * @param assetManager An {@link AssetManager}.
-     * @param asset        String of the file name.
+     * @param assetManager
+     *     An {@link AssetManager}.
+     * @param asset
+     *     String of the file name.
      *
      * @return byte[] representing the object content.
      */
@@ -106,23 +115,21 @@ public abstract class Converters {
                 outStream.write(b);
             }
             image = outStream.toByteArray();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Log.v(TAG, "Error while reading asset to byte array: " + asset, e);
             image = null;
-        }
-        finally {
+        } finally {
             if (is != null) {
                 try {
                     is.close();
+                } catch (IOException ignored) {
                 }
-                catch (IOException ignored) { }
             }
 
             try {
                 outStream.close();
+            } catch (IOException ignored) {
             }
-            catch (IOException ignored) { }
         }
 
         return image;

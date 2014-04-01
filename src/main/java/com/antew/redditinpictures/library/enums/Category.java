@@ -12,14 +12,6 @@ public enum Category {
         this.simpleName = simpleName;
     }
 
-    public String getName() {
-        return this.name;
-    
-    }
-    public String getSimpleName() {
-        return this.simpleName;
-    }
-
     public static Category fromString(String name) {
 
         if (name != null) {
@@ -31,6 +23,15 @@ public enum Category {
         }
 
         return null;
+    }
+
+    public String getName() {
+        return this.name;
+
+    }
+
+    public String getSimpleName() {
+        return this.simpleName;
     }
 
     //@formatter:on

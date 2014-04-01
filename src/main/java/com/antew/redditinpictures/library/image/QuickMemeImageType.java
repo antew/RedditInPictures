@@ -4,10 +4,10 @@ import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.enums.ImageType;
 
 public class QuickMemeImageType extends Image {
-    private static final String TAG = QuickMemeImageType.class.getSimpleName();
+    private static final String TAG           = QuickMemeImageType.class.getSimpleName();
     private static final String QUICKMEME_URL = "http://i.qkme.me/%s.jpg";
-    private static final String URL_REGEX = "^http://(?:(?:www.)?quickmeme.com/meme|qkme.me|i.qkme.me)/([\\w]+)/?";
-    
+    private static final String URL_REGEX     = "^http://(?:(?:www.)?quickmeme.com/meme|qkme.me|i.qkme.me)/([\\w]+)/?";
+
     public QuickMemeImageType(java.lang.String url) {
         super(url);
     }
@@ -16,11 +16,11 @@ public class QuickMemeImageType extends Image {
     public String getSize(ImageSize size) {
         String hash = getHash();
         String decodedUrl = null;
-        
+
         if (hash != null) {
             decodedUrl = String.format(QUICKMEME_URL, hash);
         }
-        
+
         return decodedUrl;
     }
 
@@ -33,5 +33,4 @@ public class QuickMemeImageType extends Image {
     public String getRegexForUrlMatching() {
         return URL_REGEX;
     }
-
 }

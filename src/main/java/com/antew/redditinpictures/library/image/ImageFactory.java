@@ -7,7 +7,7 @@ public class ImageFactory {
 
     public static Image getImage(String url) {
         Image image = null;
-        
+
         ImageType imageType = ImageUtil.getImageType(url);
         switch (imageType) {
             case IMGUR_IMAGE:
@@ -54,9 +54,8 @@ public class ImageFactory {
                 break;
             default:
                 break;
-            
         }
-        
+
         return image;
     }
 }

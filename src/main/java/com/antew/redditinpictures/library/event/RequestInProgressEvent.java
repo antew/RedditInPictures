@@ -1,4 +1,3 @@
 package com.antew.redditinpictures.library.event;
 
-public class RequestInProgressEvent {
-}
+public class RequestInProgressEvent {}

@@ -32,13 +32,19 @@ import com.antew.redditinpictures.library.reddit.PostData;
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
 public class ImageDetailFragment extends ImageViewerFragment {
-    public static final String    TAG               = ImageDetailFragment.class.getSimpleName();
+    public static final String TAG = ImageDetailFragment.class.getSimpleName();
+
+    /**
+     * Empty constructor as per the Fragment documentation
+     */
+    public ImageDetailFragment() {}
 
     /**
      * Factory method to generate a new instance of the fragment given an image number.
-     * 
+     *
      * @param image
-     *            The post to load
+     *     The post to load
+     *
      * @return A new instance of ImageDetailFragment with imageNum extras
      */
     public static ImageDetailFragment newInstance(PostData image) {
@@ -52,11 +58,6 @@ public class ImageDetailFragment extends ImageViewerFragment {
     }
 
     /**
-     * Empty constructor as per the Fragment documentation
-     */
-    public ImageDetailFragment() {}
-
-    /**
      * Populate image using a url from extras, use the convenience factory method
      * {@link ImageDetailFragment#newInstance(com.antew.redditinpictures.library.reddit.PostData)} to create this fragment.
      */
@@ -65,15 +66,14 @@ public class ImageDetailFragment extends ImageViewerFragment {
         super.onCreate(savedInstanceState);
         loadExtras();
     }
-    
+
     public void loadExtras() {
         mImage = getArguments() != null ? (PostData) getArguments().getParcelable(IMAGE_DATA_EXTRA) : null;
     }
 
     @Override
-    protected void resolveImage() {
-        mResolveImageTask = new ResolveImageTask();
-        mResolveImageTask.execute(mImage.getUrl());
+    protected boolean shouldShowPostInformation() {
+        return true;
     }
 
     public void populatePostData(View v) {
@@ -81,7 +81,14 @@ public class ImageDetailFragment extends ImageViewerFragment {
         mPostVotes.setText("" + mImage.getScore());
         String titleText = mImage.getTitle() + " <font color='#BEBEBE'>(" + mImage.getDomain() + ")</font>";
         mPostTitle.setText(Html.fromHtml(titleText));
-        mPostInformation.setText(mImage.getSubreddit() + separator + mImage.getNum_comments() + " comments" + separator + mImage.getAuthor());
+        mPostInformation.setText(
+            mImage.getSubreddit() + separator + mImage.getNum_comments() + " comments" + separator + mImage.getAuthor());
+    }
+
+    @Override
+    protected void resolveImage() {
+        mResolveImageTask = new ResolveImageTask();
+        mResolveImageTask.execute(mImage.getUrl());
     }
 
     @Override
@@ -121,13 +128,8 @@ public class ImageDetailFragment extends ImageViewerFragment {
             }
         };
     }
-    
+
     public Class<? extends ImgurAlbumActivity> getImgurAlbumActivity() {
         return ImgurAlbumActivity.class;
-    }
-
-    @Override
-    protected boolean shouldShowPostInformation() {
-        return true;
     }
 }

@@ -32,25 +32,25 @@ import java.util.List;
 
 @SuppressLint("CommitPrefEdits")
 public class SharedPreferencesHelper {
-    private static final String COOKIE                   = "cookie";
-    private static final String MOD_HASH                 = "modHash";
-    private static final String USERNAME                 = "username";
-    public static final String  GLOBAL_PREFS_NAME        = "reddit_in_pictures_prefs";
-    public static final String  ENABLE_HW_ACCEL          = "enableHwAccel";
-    public static final String  AGE                      = "age";
-    public static final String  CATEGORY                 = "category";
+    public static final  String GLOBAL_PREFS_NAME = "reddit_in_pictures_prefs";
+    public static final  String ENABLE_HW_ACCEL   = "enableHwAccel";
+    public static final  String AGE               = "age";
+    public static final  String CATEGORY          = "category";
+    private static final String COOKIE            = "cookie";
+    private static final String MOD_HASH          = "modHash";
+    private static final String USERNAME          = "username";
 
     /**
      * Save an array to {@link SharedPreferences}
-     * 
+     *
      * @param array
-     *            The array of strings to save
+     *     The array of strings to save
      * @param prefsName
-     *            The name of the preferences file
+     *     The name of the preferences file
      * @param arrayName
-     *            The name to save the array as
+     *     The name to save the array as
      * @param context
-     *            The context
+     *     The context
      */
     public static void saveArray(List<String> array, String prefsName, String arrayName, Context context) {
         SharedPreferences prefs = context.getSharedPreferences(prefsName, 0);
@@ -68,40 +68,31 @@ public class SharedPreferencesHelper {
     }
 
     /**
-     * Load an array of Strings from {@link SharedPreferences}
-     * 
-     * @param prefsName
-     *            The name of the preferences file
-     * @param arrayName
-     *            The name of the array
-     * @param context
-     *            The context
-     * @return An {@link ArrayList} of strings containing the data loaded from
-     *         {@link SharedPreferences}
+     * Commit the preferences asynchronously in Gingerbread and later, otherwise we have to do it
+     * synchronously
+     *
+     * @param editor
      */
-    public static List<String> loadArray(String prefsName, String arrayName, Context context) {
-        List<String> returnList = new ArrayList<String>();
-        SharedPreferences prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE);
-
-        int size = prefs.getInt(arrayName + "_size", 0);
-
-        for (int i = 0; i < size; i++)
-            returnList.add(prefs.getString(arrayName + "_" + i, null));
-
-        return returnList;
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+    public static void save(SharedPreferences.Editor editor) {
+        if (Util.hasGingerbread()) {
+            editor.apply();
+        } else {
+            editor.commit();
+        }
     }
 
     /**
      * Add a single item to the array saved in {@link SharedPreferences}
-     * 
+     *
      * @param valueToAdd
-     *            The String to add
+     *     The String to add
      * @param prefsName
-     *            The preferences file name
+     *     The preferences file name
      * @param arrayName
-     *            The name of the array
+     *     The name of the array
      * @param context
-     *            The context
+     *     The context
      */
     public static void addToArray(String valueToAdd, String prefsName, String arrayName, Context context) {
         List<String> array = loadArray(prefsName, arrayName, context);
@@ -123,7 +114,7 @@ public class SharedPreferencesHelper {
 
     /**
      * Save the Reddit login information to preferences
-     * 
+     *
      * @param username
      *            The username
      * @param modHash
@@ -148,15 +139,41 @@ public class SharedPreferencesHelper {
     // }
 
     /**
+     * Load an array of Strings from {@link SharedPreferences}
+     *
+     * @param prefsName
+     *     The name of the preferences file
+     * @param arrayName
+     *     The name of the array
+     * @param context
+     *     The context
+     *
+     * @return An {@link ArrayList} of strings containing the data loaded from
+     * {@link SharedPreferences}
+     */
+    public static List<String> loadArray(String prefsName, String arrayName, Context context) {
+        List<String> returnList = new ArrayList<String>();
+        SharedPreferences prefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE);
+
+        int size = prefs.getInt(arrayName + "_size", 0);
+
+        for (int i = 0; i < size; i++) {
+            returnList.add(prefs.getString(arrayName + "_" + i, null));
+        }
+
+        return returnList;
+    }
+
+    /**
      * Save the selected Age and Category to preferences. Used to save/restore the selected
      * Category/Age combination from {@link ImageGridActivity}
-     * 
+     *
      * @param age
-     *            The age
+     *     The age
      * @param category
-     *            The category
+     *     The category
      * @param context
-     *            The context
+     *     The context
      */
     public static void saveCategorySelectionLoginInformation(Age age, Category category, Context context) {
         SharedPreferences prefs = context.getSharedPreferences(GLOBAL_PREFS_NAME, 0);
@@ -166,20 +183,6 @@ public class SharedPreferencesHelper {
         editor.putString(CATEGORY, category.name());
 
         save(editor);
-    }
-
-    /**
-     * Commit the preferences asynchronously in Gingerbread and later, otherwise we have to do it
-     * synchronously
-     * 
-     * @param editor
-     */
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public static void save(SharedPreferences.Editor editor) {
-        if (Util.hasGingerbread())
-            editor.apply();
-        else
-            editor.commit();
     }
 
     // public static LoginData getLoginData(Context context) {
@@ -204,7 +207,7 @@ public class SharedPreferencesHelper {
 
     /**
      * Remove the saved login information
-     * 
+     *
      * @param context
      *            The context
      * @return True if the removal is successful
@@ -217,9 +220,10 @@ public class SharedPreferencesHelper {
     /**
      * This is currently unused, I envisioned that it would be used to allow the user to toggle HW
      * acceleration on/off
-     * 
+     *
      * @param context
-     *            The context
+     *     The context
+     *
      * @return True if the hardware acceleration should be enabled
      */
     public static boolean getEnableHwAccel(Context context) {
@@ -228,20 +232,23 @@ public class SharedPreferencesHelper {
 
     /**
      * Whether the Reddit mobile interface should be used when launching links.
-     * 
+     *
      * @param context
-     *            The context
+     *     The context
+     *
      * @return Returns true if Reddit links should be launched to the mobile site
      */
     public static boolean getUseMobileInterface(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.pref_use_mobile_interface), true);
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(context.getString(R.string.pref_use_mobile_interface), true);
     }
 
     /**
      * Whether NSFW images should be shown
-     * 
+     *
      * @param context
-     *            The context
+     *     The context
+     *
      * @return True if NSFW images should be shown
      */
     public static boolean getShowNsfwImages(Context context) {
@@ -250,9 +257,10 @@ public class SharedPreferencesHelper {
 
     /**
      * The saved {@link RedditUrl#Age}
-     * 
+     *
      * @param context
-     *            The context
+     *     The context
+     *
      * @return The saved {@link RedditUrl#Age}
      */
     public static Age getAge(Context context) {
@@ -261,9 +269,10 @@ public class SharedPreferencesHelper {
 
     /**
      * The saved {@link RedditUrl#Category}
-     * 
+     *
      * @param context
-     *            The context
+     *     The context
+     *
      * @return The saved {@link RedditUrl#Category}
      */
     public static Category getCategory(Context context) {

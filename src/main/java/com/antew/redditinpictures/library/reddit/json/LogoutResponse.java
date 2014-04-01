@@ -11,7 +11,6 @@ public class LogoutResponse extends RedditResponseHandler {
     @Override
     public void processHttpResponse(Context context) {
         // TODO Auto-generated method stub
-        
-    }
 
+    }
 }

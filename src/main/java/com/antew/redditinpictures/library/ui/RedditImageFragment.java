@@ -40,39 +40,40 @@ import javax.inject.Inject;
 /**
  * Fragment with convenience methods for displaying images
  *
- * @param <T> The type of view the fragment is using, e.g. GridView, ListView
- * @param <V> The type of the cursor adapter backing the view
+ * @param <T>
+ *     The type of view the fragment is using, e.g. GridView, ListView
+ * @param <V>
+ *     The type of the cursor adapter backing the view
  */
-public abstract class RedditImageFragment<T extends AdapterView, V extends CursorAdapter>
-    extends BaseFragment
+public abstract class RedditImageFragment<T extends AdapterView, V extends CursorAdapter> extends BaseFragment
     implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
-    protected V mAdapter;
+    protected V        mAdapter;
     @Inject
-    protected Bus mBus;
+    protected Bus      mBus;
     @InjectView(R.id.no_images)
     protected TextView mNoImages;
-    private String mAfter;
-    private boolean mFullRefresh = true;
     protected boolean mRequestInProgress;
-
-    private String mCurrentSubreddit = Constants.REDDIT_FRONTPAGE;
-    private Category mCategory = Category.HOT;
-    private Age mAge = Age.TODAY;
+    private   String   mAfter;
+    private boolean mFullRefresh = true;
+    private String   mCurrentSubreddit = Constants.REDDIT_FRONTPAGE;
+    private Category mCategory         = Category.HOT;
+    private Age      mAge              = Age.TODAY;
 
     /**
      * Called to do initial creation of a fragment.  This is called after
      * {@link #onAttach(android.app.Activity)} and before
      * {@link #onCreateView(android.view.LayoutInflater, android.view.ViewGroup,
      * android.os.Bundle)}.
-     *
+     * <p/>
      * <p>Note that this can be called while the fragment's activity is
      * still in the process of being created.  As such, you can not rely
      * on things like the activity's content view hierarchy being initialized
      * at this point.  If you want to do work once the activity itself is
      * created, see {@link #onActivityCreated(android.os.Bundle)}.
      *
-     * @param savedInstanceState If the fragment is being re-created from
-     * a previous saved state, this is the state.
+     * @param savedInstanceState
+     *     If the fragment is being re-created from
+     *     a previous saved state, this is the state.
      */
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,26 +90,56 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
      * This is optional, and non-graphical fragments can return null (which
      * is the default implementation).  This will be called between
      * {@link #onCreate(android.os.Bundle)} and {@link #onActivityCreated(android.os.Bundle)}.
-     *
+     * <p/>
      * <p>If you return a View from here, you will later be called in
      * {@link #onDestroyView} when the view is being released.
      *
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     * @param inflater
+     *     The LayoutInflater object that can be used to inflate
+     *     any views in the fragment,
+     * @param container
+     *     If non-null, this is the parent view that the fragment's
+     *     UI should be attached to.  The fragment should not add the view itself,
+     *     but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState
+     *     If non-null, this fragment is being re-constructed
+     *     from a previous saved state as given here.
+     *
      * @return Return the View for the fragment's UI, or null.
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-        Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(getLayoutId(), container, false);
         ButterKnife.inject(this, v);
         return v;
     }
+
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * This is generally
+     * tied to {@link android.app.Activity#onResume() Activity.onResume} of the containing
+     * Activity's lifecycle.
+     */
+    @Override public void onResume() {
+        super.onResume();
+        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_REDDIT, null, this);
+        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_POSTS, null, this);
+    }
+
+    /**
+     * Called when the Fragment is no longer resumed.  This is generally
+     * tied to {@link android.app.Activity#onPause() Activity.onPause} of the containing
+     * Activity's lifecycle.
+     */
+    @Override public void onPause() {
+        super.onPause();
+        getActivity().getSupportLoaderManager().destroyLoader(Constants.LOADER_REDDIT);
+        getActivity().getSupportLoaderManager().destroyLoader(Constants.LOADER_POSTS);
+    }
+
+    protected abstract int getLayoutId();
+
+    protected abstract V getNewAdapter();
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -126,10 +157,8 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1) public void handleArguments(Bundle arguments) {
         if (arguments != null) {
             if (Util.hasHoneycombMR1()) {
-                mCurrentSubreddit = arguments.getString(Constants.EXTRA_SELECTED_SUBREDDIT,
-                    Constants.REDDIT_FRONTPAGE);
-                mCategory = Category.valueOf(
-                    arguments.getString(Constants.EXTRA_CATEGORY, Category.HOT.toString()));
+                mCurrentSubreddit = arguments.getString(Constants.EXTRA_SELECTED_SUBREDDIT, Constants.REDDIT_FRONTPAGE);
+                mCategory = Category.valueOf(arguments.getString(Constants.EXTRA_CATEGORY, Category.HOT.toString()));
                 mAge = Age.valueOf(arguments.getString(Constants.EXTRA_AGE, Age.TODAY.toString()));
             } else {
                 if (arguments.containsKey(Constants.EXTRA_SELECTED_SUBREDDIT)) {
@@ -147,22 +176,37 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
         }
     }
 
+    protected void forceFetchImagesFromReddit() {
+        produceRequestInProgressEvent();
+        RedditService.forceRefreshSubreddit(getActivity(), mCurrentSubreddit, mAge, mCategory);
+    }
+
+    protected abstract T getAdapterView();
+
+    protected void produceRequestInProgressEvent() {
+        mRequestInProgress = true;
+        mBus.post(new RequestInProgressEvent());
+        mNoImages.setVisibility(View.GONE);
+    }
+
     /**
      * Instantiate and return a new Loader for the given ID.
      *
-     * @param id The ID whose loader is to be created.
-     * @param args Any arguments supplied by the caller.
+     * @param id
+     *     The ID whose loader is to be created.
+     * @param args
+     *     Any arguments supplied by the caller.
+     *
      * @return Return a new Loader instance that is ready to start loading.
      */
     @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case Constants.LOADER_REDDIT:
-                return new CursorLoader(getActivity(),
-                    RedditContract.RedditData.CONTENT_URI, // uri
-                    null,                                  // projection
-                    null,                                  // selection
-                    null,                                  // selectionArgs[]
-                    RedditContract.Posts.DEFAULT_SORT);    // sort
+                return new CursorLoader(getActivity(), RedditContract.RedditData.CONTENT_URI, // uri
+                                        null,                                  // projection
+                                        null,                                  // selection
+                                        null,                                  // selectionArgs[]
+                                        RedditContract.Posts.DEFAULT_SORT);    // sort
             case Constants.LOADER_POSTS:
                 QueryCriteria queryCriteria = getPostsQueryCriteria();
                 String selection = null;
@@ -170,7 +214,8 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
                 List<String> selectionArgsList = new ArrayList<String>();
 
                 // If we have an aggregate subreddit we want to return relevant things.
-                if (mCurrentSubreddit.equals(Constants.REDDIT_FRONTPAGE) || mCurrentSubreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME) || mCurrentSubreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
+                if (mCurrentSubreddit.equals(Constants.REDDIT_FRONTPAGE) || mCurrentSubreddit.equals(
+                    Constants.REDDIT_FRONTPAGE_DISPLAY_NAME) || mCurrentSubreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
                     selection = null;
                     selectionArgs = null;
                 } else if (mCurrentSubreddit.contains("+")) {
@@ -203,16 +248,16 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
                 }
 
                 if (selectionArgsList != null && selectionArgsList.size() > 0) {
-                    selectionArgs = selectionArgsList.toArray(new String[] {});
+                    selectionArgs = selectionArgsList.toArray(new String[] { });
                 }
 
                 Ln.d("Retrieveing Posts For %s %s", selection, selectionArgs.toString());
 
                 return new CursorLoader(getActivity(), RedditContract.Posts.CONTENT_URI,  // uri
-                    queryCriteria.getProjection(),     // projection
-                    selection,                         // selection
-                    selectionArgs,                     // selectionArgs[]
-                    queryCriteria.getSort());          // sort
+                                        queryCriteria.getProjection(),     // projection
+                                        selection,                         // selection
+                                        selectionArgs,                     // selectionArgs[]
+                                        queryCriteria.getSort());          // sort
             default:
                 return null;
         }
@@ -224,14 +269,14 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
      * transactions while in this call, since it can happen after an
      * activity's state is saved.  See {@link android.support.v4.app.FragmentManager#beginTransaction()
      * FragmentManager.openTransaction()} for further discussion on this.
-     *
+     * <p/>
      * <p>This function is guaranteed to be called prior to the release of
      * the last data that was supplied for this Loader.  At this point
      * you should remove all use of the old data (since it will be released
      * soon), but should not do your own release of the data since its Loader
      * owns it and will take care of that.  The Loader will take care of
      * management of its data so you don't have to.  In particular:
-     *
+     * <p/>
      * <ul>
      * <li> <p>The Loader will monitor for changes to the data, and report
      * them to you through new calls here.  You should not monitor the
@@ -254,8 +299,10 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
      * method so that the old Cursor is not closed.
      * </ul>
      *
-     * @param loader The Loader that has finished.
-     * @param data The data generated by the Loader.
+     * @param loader
+     *     The Loader that has finished.
+     * @param data
+     *     The data generated by the Loader.
      */
     @Override public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
@@ -286,7 +333,8 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
      * making its data unavailable.  The application should at this point
      * remove any references it has to the Loader's data.
      *
-     * @param loader The Loader that is being reset.
+     * @param loader
+     *     The Loader that is being reset.
      */
     @Override public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
@@ -301,18 +349,29 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
         }
     }
 
+    protected void productRequestCompletedEvent() {
+        mRequestInProgress = false;
+        mBus.post(new RequestCompletedEvent());
+    }
+
+    protected abstract QueryCriteria getPostsQueryCriteria();
+
     /**
      * Callback method to be invoked when an item in this AdapterView has
      * been clicked.
-     * <p>
+     * <p/>
      * Implementers can call getItemAtPosition(position) if they need
      * to access the data associated with the selected item.
      *
-     * @param parent The AdapterView where the click happened.
-     * @param view The view within the AdapterView that was clicked (this
-     * will be a view provided by the adapter)
-     * @param position The position of the view in the adapter.
-     * @param id The row id of the item that was clicked.
+     * @param parent
+     *     The AdapterView where the click happened.
+     * @param view
+     *     The view within the AdapterView that was clicked (this
+     *     will be a view provided by the adapter)
+     * @param position
+     *     The position of the view in the adapter.
+     * @param id
+     *     The row id of the item that was clicked.
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN) @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
@@ -324,51 +383,15 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
         i.putExtras(b);
 
         if (Util.hasJellyBean()) {
-            ActivityOptions options = ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(),
-                view.getHeight());
+            ActivityOptions options = ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
             getActivity().startActivity(i, options.toBundle());
         } else {
             startActivity(i);
         }
     }
 
-    /**
-     * Called when the Fragment is no longer resumed.  This is generally
-     * tied to {@link android.app.Activity#onPause() Activity.onPause} of the containing
-     * Activity's lifecycle.
-     */
-    @Override public void onPause() {
-        super.onPause();
-        getActivity().getSupportLoaderManager().destroyLoader(Constants.LOADER_REDDIT);
-        getActivity().getSupportLoaderManager().destroyLoader(Constants.LOADER_POSTS);
-    }
-
-    /**
-     * Called when the fragment is visible to the user and actively running.
-     * This is generally
-     * tied to {@link android.app.Activity#onResume() Activity.onResume} of the containing
-     * Activity's lifecycle.
-     */
-    @Override public void onResume() {
-        super.onResume();
-        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_REDDIT, null, this);
-        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_POSTS, null, this);
-    }
-
-    protected void produceRequestInProgressEvent() {
-        mRequestInProgress = true;
-        mBus.post(new RequestInProgressEvent());
-        mNoImages.setVisibility(View.GONE);
-    }
-
-    protected void productRequestCompletedEvent() {
-        mRequestInProgress = false;
-        mBus.post(new RequestCompletedEvent());
-    }
-
-    protected void forceFetchImagesFromReddit() {
-        produceRequestInProgressEvent();
-        RedditService.forceRefreshSubreddit(getActivity(), mCurrentSubreddit, mAge, mCategory);
+    protected Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
+        return ImageDetailActivity.class;
     }
 
     protected void fetchAdditionalImagesFromReddit() {
@@ -377,16 +400,4 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
             RedditService.getPosts(getActivity(), mCurrentSubreddit, mAge, mCategory, mAfter);
         }
     }
-
-    protected Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
-        return ImageDetailActivity.class;
-    }
-
-    protected abstract int getLayoutId();
-
-    protected abstract T getAdapterView();
-
-    protected abstract V getNewAdapter();
-
-    protected abstract QueryCriteria getPostsQueryCriteria();
 }

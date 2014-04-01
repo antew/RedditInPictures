@@ -23,44 +23,60 @@ import java.util.List;
 
 /**
  * This class is used by Gson to parse the Imgur Album API into POJOs
- * @see <a href="http://api.imgur.com/2/album/T2GDa.json">Example</a>
- * @author Antew
  *
+ * @author Antew
+ * @see <a href="http://api.imgur.com/2/album/T2GDa.json">Example</a>
  */
 public class ImgurAlbumApi {
+    private Album album;
+
     public Album getAlbum() {
         return album;
     }
 
-    private Album album;
-
     public static class Album implements Parcelable {
-        
-        private String   title;
-        private String   description;
-        private String   cover;
-        private String   layout;
+
+        //@formatter:off
+        public static final Parcelable.Creator<Album> CREATOR
+            = new Parcelable.Creator<Album>() {
+
+            @Override
+            public Album createFromParcel(Parcel source) {
+                return new Album(source);
+            }
+
+            public Album[] newArray(int size) {
+                return new Album[size];
+            };
+
+        };
         List<ImgurImage> images;
-        
+        private String title;
+        private String description;
+        private String cover;
+        private String layout;
+
         public Album(Parcel source) {
             title = source.readString();
             description = source.readString();
             cover = source.readString();
             layout = source.readString();
             images = new ArrayList<ImgurImage>();
-            source.readList(images,ImgurImage.class.getClassLoader());
-                    
+            source.readList(images, ImgurImage.class.getClassLoader());
         }
 
         //@formatter:off
         public String getTitle()            { return title; }
+
         public String getDescription()      { return description; }
+
         public String getCover()            { return cover; }
+
         public String getLayout()           { return layout; }
-        public List<ImgurImage> getImages() { return images; }
         //@formatter:on
 
-        
+        public List<ImgurImage> getImages() { return images; }
+
         @Override
         public int describeContents() {
             return 0;
@@ -74,21 +90,6 @@ public class ImgurAlbumApi {
             dest.writeString(layout);
             dest.writeList(images);
         }
-        
-        //@formatter:off
-        public static final Parcelable.Creator<Album> CREATOR
-            = new Parcelable.Creator<Album>() {
-            
-            @Override
-            public Album createFromParcel(Parcel source) {
-                return new Album(source);
-            }
-            
-            public Album[] newArray(int size) {
-                return new Album[size];
-            };
-            
-        };
         //@formatter:on
     }
 }

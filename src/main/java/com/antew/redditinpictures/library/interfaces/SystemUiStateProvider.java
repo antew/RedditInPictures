@@ -20,9 +20,8 @@ import com.antew.redditinpictures.library.ui.ImageViewerFragment;
 /**
  * Used by {@link ImageViewerFragment} and subclasses to determine whether we are in fullscreen or
  * windowed mode
- * 
+ *
  * @author Antew
- * 
  */
 public interface SystemUiStateProvider {
     public boolean isSystemUiVisible();

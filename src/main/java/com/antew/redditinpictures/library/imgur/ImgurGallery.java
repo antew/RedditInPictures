@@ -22,22 +22,21 @@ import java.util.List;
 
 /**
  * Class used by Gson to parse Imgur gallery JSON
- * @see <a href="http://imgur.com/gallery/T2GDa.json">example</a>
- * @author Antew
  *
+ * @author Antew
+ * @see <a href="http://imgur.com/gallery/T2GDa.json">example</a>
  */
 public class ImgurGallery implements Parcelable {
-    private Data data;
+    private Data    data;
     private boolean success;
-    private int status;
-    
+    private int     status;
+
     //@formatter:off
     public Data getData()      { return data; }
     public boolean isSuccess() { return success; }
     public int getStatus()     { return status; }
     //@formatter:on
 
-    
     public ImgurGallery(Parcel source) {
         data = source.readParcelable(Data.class.getClassLoader());
         success = source.readByte() == 1;
@@ -55,7 +54,7 @@ public class ImgurGallery implements Parcelable {
         dest.writeByte(Util.parcelBoolean(success));
         dest.writeInt(status);
     }
-    
+
     //@formatter:off
     public static final Parcelable.Creator<ImgurGallery> CREATOR
         = new Parcelable.Creator<ImgurGallery>() {
@@ -73,22 +72,34 @@ public class ImgurGallery implements Parcelable {
     
     
     public static class Data implements Parcelable {
+        //@formatter:off
+        public static final Parcelable.Creator<Data> CREATOR
+            = new Parcelable.Creator<Data>() {
+
+            @Override
+            public Data createFromParcel(Parcel source) {
+                return new Data(source);
+            }
+
+            public Data[] newArray(int size) {
+                return new Data[size];
+            };
+
+        };
         private GalleryImage image;
         private List<Caption> captions;
-        
-        //@formatter:off
-        public GalleryImage getImage()          { return image; }
-        public List<Caption> getCaptions()      { return captions; }
-        public Caption getCaption(int position) { return captions.get(position); }
-        //@formatter:on
-
-        
         public Data(Parcel source) {
             image = source.readParcelable(GalleryImage.class.getClassLoader());
             source.readList(captions, Caption.class.getClassLoader());
         }
 
-        @Override
+        //@formatter:off
+        public GalleryImage getImage()          { return image; }
+        //@formatter:on
+
+        public List<Caption> getCaptions()      { return captions; }
+
+        public Caption getCaption(int position) { return captions.get(position); }        @Override
         public int describeContents() {
             return 0;
         }
@@ -98,24 +109,25 @@ public class ImgurGallery implements Parcelable {
             dest.writeParcelable(image, 0);
             dest.writeList(captions);
         }
-        
-        //@formatter:off
-        public static final Parcelable.Creator<Data> CREATOR
-            = new Parcelable.Creator<Data>() {
-            
-            @Override
-            public Data createFromParcel(Parcel source) {
-                return new Data(source);
-            }
-            
-            public Data[] newArray(int size) {
-                return new Data[size];
-            };
-            
-        };
+
+
     }
     
     public static class GalleryImage implements Parcelable {
+        //@formatter:off
+        public static final Parcelable.Creator<GalleryImage> CREATOR
+            = new Parcelable.Creator<GalleryImage>() {
+
+            @Override
+            public GalleryImage createFromParcel(Parcel source) {
+                return new GalleryImage(source);
+            }
+
+            public GalleryImage[] newArray(int size) {
+                return new GalleryImage[size];
+            };
+
+        };
         private String hash;
         private String account_url;
         private String title;
@@ -138,35 +150,7 @@ public class ImgurGallery implements Parcelable {
         private String bandwidth;
         private String timestamp;
         private String hot_datetime;
-        private List<AlbumImages> images;
-        
-        
-        //@formatter:off
-        public String getHash()              { return hash; }
-        public String getAccountUrl()        { return account_url; }
-        public String getTitle()             { return title; }
-        public int getScore()                { return score; }
-        public int getStartingScore()        { return starting_score; }
-        public float getVirality()           { return virality; }
-        public int getSize()                 { return size; }
-        public long getViews()               { return views; }
-        public boolean isHot()               { return is_hot; }
-        public boolean isAlbum()             { return is_album; }
-        public String getAlbumCover()        { return album_cover; }
-        public String getMimetype()          { return mimetype; }
-        public String getExt()               { return ext; }
-        public int getWidth()                { return width; }
-        public int getHeight()               { return height; }
-        public int getUps()                  { return ups; }
-        public int getDowns()                { return downs; }
-        public int getPoints()               { return points; }
-        public String getReddit()            { return reddit; }
-        public String getBandwidth()         { return bandwidth; }
-        public String getTimestamp()         { return timestamp; }
-        public String getHotDatetime()       { return hot_datetime; }
-        public List<AlbumImages> getImages() { return images; }
-        //@formatter:off
-
+privateList<AlbumImages> images;
         public GalleryImage(Parcel source) {
             hash = source.readString();
             account_url = source.readString();
@@ -193,7 +177,54 @@ public class ImgurGallery implements Parcelable {
             source.readList(images, AlbumImages.class.getClassLoader());
         }
 
-        @Override
+
+//@formatter:off
+        public String getHash()              { return hash; }
+
+public String getAccountUrl()        { return account_url; }
+
+public String getTitle()             { return title; }
+
+public int getScore()                { return score; }
+
+public int getStartingScore()        { return starting_score; }
+
+public float getVirality()           { return virality; }
+
+public int getSize()                 { return size; }
+
+public long getViews()               { return views; }
+
+public boolean isHot()               { return is_hot; }
+
+public boolean isAlbum()             { return is_album; }
+
+public String getAlbumCover()        { return album_cover; }
+
+public String getMimetype()          { return mimetype; }
+
+public String getExt()               { return ext; }
+
+public int getWidth()                { return width; }
+
+public int getHeight()               { return height; }
+
+public int getUps()                  { return ups; }
+
+public int getDowns()                { return downs; }
+
+public int getPoints()               { return points; }
+
+public String getReddit()            { return reddit; }
+
+public String getBandwidth()         { return bandwidth; }
+
+public String getTimestamp()         { return timestamp; }
+        //@formatter:off
+
+        public String getHotDatetime()       { return hot_datetime; }
+         public List<AlbumImages> getImages() { return images; }
+       @Override
         public int describeContents() {
             return 0;
         }
@@ -225,57 +256,43 @@ public class ImgurGallery implements Parcelable {
             dest.writeList(images);
         }
         
-        //@formatter:off
-        public static final Parcelable.Creator<GalleryImage> CREATOR
-            = new Parcelable.Creator<GalleryImage>() {
-            
+         //@formatter:on
+    }
+
+    public static class Caption implements Parcelable {
+        private long    id;
+     public static final Parcelable.Creator<Caption> CREATOR
+            = new Parcelable.Creator<Caption>() {
+
             @Override
-            public GalleryImage createFromParcel(Parcel source) {
-                return new GalleryImage(source);
+            public Caption createFromParcel(Parcel source) {
+                return new Caption(source);
             }
-            
-            public GalleryImage[] newArray(int size) {
-                return new GalleryImage[size];
+
+            public Caption[] newArray(int size) {
+                return new Caption[size];
             };
-            
+
         };
         //@formatter:on
     }
-    
-    public static class Caption implements Parcelable {
-        private long id;
-        private String hash;
-        private String caption;
-        private String author;
-        private long author_id;
-        private int ups;
-        private int downs;
-        private float best_score;
-        private int points;
-        private String datetime;
-        private long parent_id;
-        private boolean deleted;
-        private boolean on_album;
-        private String album_cover;
+
+     private String  hash;
+
+     private String  caption;         private String  author;
+d       private long    author_i ;
+        private int     ups;
+        private int     downs;
+ r      private float   best_sco e;
+        private int     points;
+;       private String  datetimed
+        private long    parent_i
+;
+        private boolean deleted;;        private boolean on_albumv
+        private String  album_co  er;
 
         //@formatter:off
-        public long getId()           { return id; }
-        public String getHash()       { return hash; }
-        public String getCaption()    { return caption; }
-        public String getAuthor()     { return author; }
-        public long getAuthorId()     { return author_id; }
-        public int getUps()           { return ups; }
-        public int getDowns()         { return downs; }
-        public float getBest_score()  { return best_score; }
-        public int getPoints()        { return points; }
-        public String getDatetime()   { return datetime; }
-        public long getParentId()     { return parent_id; }
-        public boolean isDeleted()    { return deleted; }
-        public boolean isOnAlbum()    { return on_album; }
-        public String getAlbumCover() { return album_cover; }
-        //@formatter:off
-        
-        public Caption(Parcel source) {
+       rce) {
             id = source.readLong();
             hash = source.readString();
             caption = source.readString();
@@ -293,7 +310,37 @@ public class ImgurGallery implements Parcelable {
         }
 
         @Override
-        public int describeContents() {
+        publi(
+public long getId()           { return id; }
+        public String getHash() )
+     { return hash; }
+        public String getCaption)
+)    { return caption; }
+        public String getAuthor(
+     { return author; }
+        public long getAuthorId(
+     { return author_id; }
+        public int getUps()     r
+     { return ups; }
+        public int getDowns()
+     { return downs; }
+        public float getBest_scoe
+e()  { return best_score; }
+        public int getPoints()  )
+     { return points; }
+        public String getDatetim(
+()   { return datetime; }
+        public long getParentId((
+     { return parent_id; }
+        public boolean isDeletedv
+)    { return deleted; }
+        public boolean isOnAlbum
+        public Caption(Parcel sou
+)    { return on_album; }
+        public String getAlbumCoc
+er() { return album_cover; }
+        //@formatter:off
+       int describeContents() {
             return 0;
         }
 
@@ -316,41 +363,43 @@ public class ImgurGallery implements Parcelable {
         }
         
         //@formatter:off
-        public static final Parcelable.Creator<Caption> CREATOR
-            = new Parcelable.Creator<Caption>() {
-            
+           public static class AlbumImages implements Parcelable {
+        private int              public static final Parcelable.Creator<AlbumImages> CREATOR
+            = new Parcelable.Creator<AlbumImages>() {
+
             @Override
-            public Caption createFromParcel(Parcel source) {
-                return new Caption(source);
+            public AlbumImages createFromParcel(Parcel source) {
+                return new AlbumImages(source);
             }
-            
-            public Caption[] newArray(int size) {
-                return new Caption[size];
+
+            public AlbumImages[] newArray(int size) {
+                return new AlbumImages[size];
             };
-            
+
         };
         //@formatter:on
     }
-    
-    public static class AlbumImages implements Parcelable {
-        private int count;
-        private List<ImgurGalleryImage> galleryImages;
-        
-        public int getCount() {
-            return count;
-        }
 
-        public List<ImgurGalleryImage> getGalleryImages() {
-            return galleryImages;
-        }
+ y       count;
+        private List<ImgurGaller
+ Image> galleryImages;
 
-        public AlbumImages(Parcel source) {
+        public int getCount() {yI source) {
             count = source.readInt();
             source.readList(galleryImages, GalleryImage.class.getClassLoader());
         }
 
         @Override
-        public int describeContents() {
+        publiel
+           return count;
+        }
+
+        public List<ImgurGallerc
+mage> getGalleryImages() {
+            return galleryImages;
+        }
+
+        public AlbumImages(Parcint describeContents() {
             return 0;
         }
 
@@ -359,36 +408,36 @@ public class ImgurGallery implements Parcelable {
             dest.writeInt(count);
             dest.writeList(galleryImages);
         }
-        
+
         //@formatter:off
-        public static final Parcelable.Creator<AlbumImages> CREATOR
-            = new Parcelable.Creator<AlbumImages>() {
-            
+           public static class ImgurGalleryImage implements Parcelable {
+        private String  hash;
+   public static final Parcelable.Creator<ImgurGalleryImage> CREATOR
+            = new Parcelable.Creator<ImgurGalleryImage>() {
+
             @Override
-            public AlbumImages createFromParcel(Parcel source) {
-                return new AlbumImages(source);
+            public ImgurGalleryImage createFromParcel(Parcel source) {
+                return new ImgurGalleryImage(source);
             }
-            
-            public AlbumImages[] newArray(int size) {
-                return new AlbumImages[size];
+
+            public ImgurGalleryImage[] newArray(int size) {
+                return new ImgurGalleryImage[size];
             };
-            
+
         };
         //@formatter:on
     }
-    
-    public static class ImgurGalleryImage implements Parcelable {
-        private String  hash;
-        private String  title;
-        private String  description;
+}
+      private String  title;
+ i      private String  descript on;
         private int     width;
         private int     height;
         private int     size;
         private String  ext;
-        private boolean animated;
-        private String  datetime;
+   ;    private boolean animated;
+        private String  datetimee(
 
-        public ImgurGalleryImage(Parcel source) {
+        public ImgurGalleryImag  Parcel source) {
             hash = source.readString();
             title = source.readString();
             description = source.readString();
@@ -401,19 +450,28 @@ public class ImgurGallery implements Parcelable {
         }
 
         //@formatter:off
-        public String getHash()         { return hash; }
-        public String getTitle()        { return title; }
-        public String getDescription()  { return description; }
-        public int getWidth()           { return width; }
-        public int getHeight()          { return height; }
-        public int getSize()            { return size; }
-        public String getExtension()    { return ext; }
-        public boolean isAnimated()     { return animated; }
-        public String getDatetime()     { return datetime; }
+
+public String getHash()         { return hash; }
+        public String getTitle()t
+       { return title; }
+        public String getDescrip
+ion()  { return description; }
+        public int getWidth()
+       { return width; }
+        public int getHeight()
+       { return height; }
+        public int getSize()    o
+       { return size; }
+        public String getExtensid
+n()    { return ext; }
+        public boolean isAnimatee
+()     { return animated; }
+        public String getDatetim @Override
+        public
+()     { return datetime; }
         //@formatter:on
 
-        @Override
-        public int describeContents() {
+       int describeContents() {
             return 0;
         }
 
@@ -429,21 +487,5 @@ public class ImgurGallery implements Parcelable {
             dest.writeByte(Util.parcelBoolean(animated));
             dest.writeString(datetime);
         }
-        
+
         //@formatter:off
-        public static final Parcelable.Creator<ImgurGalleryImage> CREATOR
-            = new Parcelable.Creator<ImgurGalleryImage>() {
-            
-            @Override
-            public ImgurGalleryImage createFromParcel(Parcel source) {
-                return new ImgurGalleryImage(source);
-            }
-            
-            public ImgurGalleryImage[] newArray(int size) {
-                return new ImgurGalleryImage[size];
-            };
-            
-        };
-        //@formatter:on
-    }
-}

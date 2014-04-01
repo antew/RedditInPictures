@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class RedditSort {
     private static Map<Integer, SortCriteria> menuItemSorts = new HashMap<Integer, SortCriteria>();
+
     // @formatter:off
     static {
         menuItemSorts.put(R.id.category_hot                   , new SortCriteria(Category.HOT));
@@ -38,7 +39,7 @@ public class RedditSort {
 
     public static class SortCriteria {
 
-        private final Age age;
+        private final Age      age;
         private final Category category;
 
         public SortCriteria(Category category) {

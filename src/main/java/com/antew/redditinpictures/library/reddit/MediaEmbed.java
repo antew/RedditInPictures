@@ -5,6 +5,17 @@ import android.os.Parcelable;
 import com.antew.redditinpictures.library.utils.Util;
 
 public class MediaEmbed implements Parcelable {
+    //@formatter:off
+    public static final Parcelable.Creator<MediaEmbed> CREATOR
+        = new Parcelable.Creator<MediaEmbed>() {
+                 public MediaEmbed createFromParcel(Parcel in) {
+                     return new MediaEmbed(in);
+                 }
+
+                 public MediaEmbed[] newArray(int size) {
+                     return new MediaEmbed[size];
+                 }
+             };
     private String  content;
     private int     width;
     private int     height;
@@ -29,17 +40,5 @@ public class MediaEmbed implements Parcelable {
         dest.writeInt(height);
         dest.writeByte(Util.parcelBoolean(scrolling));
     }
-
-    //@formatter:off
-    public static final Parcelable.Creator<MediaEmbed> CREATOR 
-        = new Parcelable.Creator<MediaEmbed>() {
-                 public MediaEmbed createFromParcel(Parcel in) {
-                     return new MediaEmbed(in);
-                 }
-
-                 public MediaEmbed[] newArray(int size) {
-                     return new MediaEmbed[size];
-                 }
-             };
     //@formatter:on
 }

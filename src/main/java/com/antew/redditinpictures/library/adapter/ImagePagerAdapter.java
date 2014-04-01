@@ -30,37 +30,44 @@ import java.util.List;
  */
 public class ImagePagerAdapter extends FixedFragmentStatePagerAdapter {
     protected List<PostData> mImages;
-    
+
     public ImagePagerAdapter(FragmentManager fm, List<PostData> images) {
         super(fm);
-        this.mImages = images; 
+        this.mImages = images;
     }
 
     @Override
     public int getCount() {
-        if (mImages == null)
+        if (mImages == null) {
             return 0;
-        
+        }
+
         return mImages.size();
     }
 
     /**
      * The PostData at the input position
-     * @param position The position
+     *
+     * @param position
+     *     The position
+     *
      * @return PostData at the input position
      */
     public PostData getPost(int position) {
-        if (mImages == null)
+        if (mImages == null) {
             return null;
-        else if (position < 0 || position > mImages.size())
+        } else if (position < 0 || position > mImages.size()) {
             throw new IndexOutOfBoundsException();
+        }
 
         return mImages.get(position);
     }
-    
+
     /**
      * Adds PostData objects to the Adapter, also calls {@link BaseAdapter#notifyDataSetChanged()}
-     * @param posts The posts to add
+     *
+     * @param posts
+     *     The posts to add
      */
     public void addPosts(List<PostData> posts) {
         if (mImages != null) {
@@ -68,18 +75,21 @@ public class ImagePagerAdapter extends FixedFragmentStatePagerAdapter {
             notifyDataSetChanged();
         }
     }
+
     @Override
     public Fragment getItem(int position) {
         return getImageDetailFragment(mImages.get(position));
     }
-    
+
     /**
      * Returns an {@link ImageDetailFragment} for the input {@link PostData} object
-     * @param p The {@link PostData} object to pass to the new {@link ImageDetailFragment}
+     *
+     * @param p
+     *     The {@link PostData} object to pass to the new {@link ImageDetailFragment}
+     *
      * @return A new {@link ImageDetailFragment} for the input {@link PostData}
      */
     public Fragment getImageDetailFragment(PostData p) {
         return ImageDetailFragment.newInstance(p);
     }
-    
 }

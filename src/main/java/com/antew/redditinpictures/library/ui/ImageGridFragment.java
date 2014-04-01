@@ -16,8 +16,8 @@ import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapter> {
     public static final  String        TAG            = "ImageGridFragment";
-    private static final QueryCriteria mQueryCriteria =
-        new QueryCriteria(RedditContract.Posts.GRIDVIEW_PROJECTION, RedditContract.Posts.DEFAULT_SORT);
+    private static final QueryCriteria mQueryCriteria = new QueryCriteria(RedditContract.Posts.GRIDVIEW_PROJECTION,
+                                                                          RedditContract.Posts.DEFAULT_SORT);
 
     //9 is a good number, it's not as great as 8 or as majestic as 42 but it is indeed the product of 3 3s which is okay...I guess.
     private static final int POST_LOAD_OFFSET = 9;
@@ -58,8 +58,7 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
             }
 
             @Override
-            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount,
-                int totalItemCount) {
+            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 // if we're are approaching the end of the listview, load more data
                 boolean lastItemIsVisible = (firstVisibleItem + visibleItemCount) >= totalItemCount - POST_LOAD_OFFSET;
                 if (!isRequestInProgress() && totalItemCount > 0 && lastItemIsVisible) {
@@ -83,8 +82,7 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
             @Override
             public void onGlobalLayout() {
                 if (mAdapter.getNumColumns() == 0) {
-                    final int numColumns = (int) Math.floor(
-                        gridView.getWidth() / (mThumbnailInfo.getSize() + mThumbnailInfo.getSpacing()));
+                    final int numColumns = (int) Math.floor(gridView.getWidth() / (mThumbnailInfo.getSize() + mThumbnailInfo.getSpacing()));
                     if (numColumns > 0) {
                         final int columnWidth = (gridView.getWidth() / numColumns) - mThumbnailInfo.getSpacing();
                         mAdapter.setNumColumns(numColumns);
@@ -95,9 +93,15 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
         };
     }
 
+    public Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
+        return ImageDetailActivity.class;
+    }
+
     @Override
     public int getFirstVisiblePosition() {
-        if (mGridView == null) return 0;
+        if (mGridView == null) {
+            return 0;
+        }
 
         return mGridView.getFirstVisiblePosition();
     }
@@ -113,10 +117,6 @@ public class ImageGridFragment extends ImageFragment<GridView, ImageCursorAdapte
 
     @Override protected ImageCursorAdapter getNewAdapter() {
         return new ImageCursorAdapter(getActivity());
-    }
-
-    public Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
-        return ImageDetailActivity.class;
     }
 
     @Override protected GridView getAdapterView() {

@@ -32,9 +32,8 @@ import com.antew.redditinpictures.pro.R;
 /**
  * Preferences screen used for Pre-Honeycomb, this can be subclassed to add additional preferences.
  * See For an example see RedditInPicturesPreferencesFree in the RedditInPictures-Free project
- * 
+ *
  * @author Antew
- * 
  */
 public class RedditInPicturesPreferences extends SherlockPreferenceActivity implements OnSharedPreferenceChangeListener {
     public static final String TAG = RedditInPicturesPreferences.class.getSimpleName();
@@ -48,8 +47,7 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
      * This uses the deprecated addPreferencesFromResource because fragment preferences aren't part
      * of the support library
      */
-    @SuppressWarnings("deprecation")
-    @Override
+    @SuppressWarnings("deprecation") @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -61,7 +59,8 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
         addPreferencesFromResource(R.xml.preferences);
         useMobileInterface = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_use_mobile_interface));
         showNsfwImages = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_show_nsfw_images));
-        loadHighQualityThumbs = (CheckBoxPreference) getPreferenceScreen().findPreference(getString(R.string.pref_load_high_quality_thumbnails));
+        loadHighQualityThumbs = (CheckBoxPreference) getPreferenceScreen().findPreference(
+            getString(R.string.pref_load_high_quality_thumbnails));
 
         getPreferenceScreen().findPreference(getString(R.string.pref_about)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
@@ -78,28 +77,12 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(R.string.reddit_in_pictures);
         actionBar.setDisplayHomeAsUpEnabled(true);
-
     }
 
     @Override
     protected void onResume() {
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-        super.onPause();
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        String showNsfwImagesKey = getString(R.string.pref_show_nsfw_images);
-        if (key.equals(showNsfwImagesKey)) {
-            showNsfwImagesNewValue = sharedPreferences.getBoolean(showNsfwImagesKey, false);
-        }
-
     }
 
     /**
@@ -111,6 +94,12 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
         i.putExtra(Constants.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
         setResult(RESULT_OK, i);
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onPause() {
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
     }
 
     @Override
@@ -126,4 +115,11 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
         return true;
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        String showNsfwImagesKey = getString(R.string.pref_show_nsfw_images);
+        if (key.equals(showNsfwImagesKey)) {
+            showNsfwImagesNewValue = sharedPreferences.getBoolean(showNsfwImagesKey, false);
+        }
+    }
 }

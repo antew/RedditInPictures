@@ -40,21 +40,19 @@ public class SaveImageDialogFragment extends DialogFragment implements OnEditorA
     public static final String FILENAME = "";
     private EditText filename;
 
-    public interface SaveImageDialogListener {
-        void onFinishSaveImageDialog(String filename);
-    }
-
     // Empty constructor required for DialogFragment
-    public SaveImageDialogFragment() {};
+    public SaveImageDialogFragment() {}
 
     public static SaveImageDialogFragment newInstance(String defaultFilename) {
         SaveImageDialogFragment frag = new SaveImageDialogFragment();
         Bundle b = new Bundle();
         b.putString(FILENAME, defaultFilename);
         frag.setArguments(b);
-        
+
         return frag;
     }
+
+    ;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -71,7 +69,7 @@ public class SaveImageDialogFragment extends DialogFragment implements OnEditorA
         filename.setOnEditorActionListener(this);
         filename.requestFocus();
         //@formatter:off
-        final AlertDialog dialog 
+        final AlertDialog dialog
                 = new AlertDialog.Builder(getActivity())
                                  .setView(dialogView)
                                  .setTitle(R.string.save_image)
@@ -92,6 +90,7 @@ public class SaveImageDialogFragment extends DialogFragment implements OnEditorA
      * We have to override setOnShowListener here (min API level 8) in order to validate
      * the inputs before closing the dialog. Just overriding setPositiveButton closes the
      * automatically when the button is pressed
+     *
      * @return The onShowListener for the AlertDialog
      */
     private OnShowListener getDialogOnShowListener() {
@@ -108,9 +107,34 @@ public class SaveImageDialogFragment extends DialogFragment implements OnEditorA
                         saveImage();
                     }
                 });
-
             }
         };
+    }
+
+    /**
+     * Perform the callback, provided {@link #hasErrors()} returns false
+     */
+    private void saveImage() {
+        if (!hasErrors()) {
+            SaveImageDialogListener activity = (SaveImageDialogListener) getActivity();
+            activity.onFinishSaveImageDialog(filename.getText().toString());
+            this.dismiss();
+        }
+    }
+
+    /**
+     * Returns true if the filename passes validation.
+     *
+     * @return True if the filename is valid, false if the the filename is invalid.
+     */
+    private boolean hasErrors() {
+        boolean hasErrors = false;
+        if (filename.getText().length() == 0) {
+            filename.setError("Enter a filename", ImageUtil.getErrorDrawable(getActivity()));
+            hasErrors = true;
+        }
+
+        return hasErrors;
     }
 
     /**
@@ -125,32 +149,6 @@ public class SaveImageDialogFragment extends DialogFragment implements OnEditorA
         return false;
     }
 
-    /**
-     * Returns true if the filename passes validation.
-     * 
-     * @return True if the filename is valid, false if the the filename is invalid.
-     */
-    private boolean hasErrors() {
-        boolean hasErrors = false;
-        if (filename.getText().length() == 0) {
-            filename.setError("Enter a filename", ImageUtil.getErrorDrawable(getActivity()));
-            hasErrors = true;
-        }
-
-        return hasErrors;
-    }
-
-    /**
-     * Perform the callback, provided {@link #hasErrors()} returns false
-     */
-    private void saveImage() {
-        if (!hasErrors()) {
-            SaveImageDialogListener activity = (SaveImageDialogListener) getActivity();
-            activity.onFinishSaveImageDialog(filename.getText().toString());
-            this.dismiss();
-        }
-    }
-
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -163,7 +161,12 @@ public class SaveImageDialogFragment extends DialogFragment implements OnEditorA
      */
     @Override
     public void afterTextChanged(Editable s) {
-        if (filename.getText().length() > 0 && filename.getError() != null)
+        if (filename.getText().length() > 0 && filename.getError() != null) {
             filename.setError(null);
+        }
+    }
+
+    public interface SaveImageDialogListener {
+        void onFinishSaveImageDialog(String filename);
     }
 }

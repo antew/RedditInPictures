@@ -39,27 +39,26 @@ import com.antew.redditinpictures.sqlite.RedditContract;
 import net.simonvt.menudrawer.MenuDrawer;
 
 public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
-    implements LoaderManager.LoaderCallbacks<Cursor>,
-    SetDefaultSubredditsDialogFragment.SetDefaultSubredditsDialogListener,
-    AddSubredditDialogFragment.AddSubredditDialogListener {
-    protected MenuDrawer mMenuDrawer;
+    implements LoaderManager.LoaderCallbacks<Cursor>, SetDefaultSubredditsDialogFragment.SetDefaultSubredditsDialogListener,
+               AddSubredditDialogFragment.AddSubredditDialogListener {
+    protected MenuDrawer                       mMenuDrawer;
     protected SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     @InjectView(R.id.et_subreddit_filter)
-    protected EditText mSubredditFilter;
+    protected EditText                         mSubredditFilter;
     @InjectView(R.id.ib_clear)
-    protected ImageButton mClearSubredditFilter;
+    protected ImageButton                      mClearSubredditFilter;
     @InjectView(R.id.lv_subreddits)
-    protected ListView mSubredditList;
+    protected ListView                         mSubredditList;
     @InjectView(R.id.ib_add)
-    protected ImageButton mAddSubreddit;
+    protected ImageButton                      mAddSubreddit;
     @InjectView(R.id.ib_sort)
-    protected ImageButton mSortSubreddits;
+    protected ImageButton                      mSortSubreddits;
     @InjectView(R.id.ib_refresh)
-    protected ImageButton mRefreshSubreddits;
+    protected ImageButton                      mRefreshSubreddits;
 
-    protected String mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
-    protected Category mCategory = Category.HOT;
-    protected Age mAge = Age.TODAY;
+    protected String   mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
+    protected Category mCategory          = Category.HOT;
+    protected Age      mAge               = Age.TODAY;
 
     private OnSubredditActionListener mSubredditActionListener = new OnSubredditActionListener() {
 
@@ -82,51 +81,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             }
         }
     };
-
-    @OnClick(R.id.ib_add)
-    protected void onAddSubreddit() {
-            AddSubredditDialogFragment.newInstance().show(getSupportFragmentManager(), Constants.Dialog.DIALOG_ADD_SUBREDDIT);
-    }
-
-    @OnLongClick({R.id.ib_add, R.id.ib_sort, R.id.ib_refresh, R.id.ib_clear})
-    protected boolean onLongClickMenuOption(View view) {
-        if (view != null) {
-            String description = Strings.toString(view.getContentDescription());;
-            if (Strings.notEmpty(description)) {
-                Toast.makeText(this, description, Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @OnClick(R.id.ib_clear)
-    protected void onClearSubredditFilter() {
-        if (mSubredditFilter != null) {
-            mSubredditFilter.setText(null);
-        }
-    }
-
-    @OnClick(R.id.ib_sort)
-    protected void onSortSubreddits() {
-            // Switch between alpha/usage sorting.
-    }
-
-    @OnClick(R.id.ib_refresh)
-    protected void onRefreshSubreddits() {
-        if (RedditLoginInformation.isLoggedIn()) {
-            // Since the user is logged in we can just run the task to update their subreddits.
-            SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask =
-                new SubredditUtils.SetDefaultSubredditsTask(this, true);
-            defaultSubredditsTask.execute();
-        } else {
-            // If they aren't logged in, we want to make sure that they understand this will set the subreddits back to default.
-            SetDefaultSubredditsDialogFragment fragment = SetDefaultSubredditsDialogFragment.newInstance();
-            fragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_DEFAULT_SUBREDDITS);
-        }
-    }
-
     private TextWatcher mSubredditFilterWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -147,29 +101,69 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             return;
         }
     };
+    private AdapterView.OnItemClickListener mSubredditClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+            String subredditName = cursor.getString(cursor.getColumnIndex(RedditContract.SubredditColumns.DISPLAY_NAME));
+            int priority = cursor.getInt(cursor.getColumnIndex(RedditContract.SubredditColumns.PRIORITY));
 
-    private AdapterView.OnItemClickListener mSubredditClickListener =
-        new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-                String subredditName = cursor.getString(
-                    cursor.getColumnIndex(RedditContract.SubredditColumns.DISPLAY_NAME));
-                int priority =
-                    cursor.getInt(cursor.getColumnIndex(RedditContract.SubredditColumns.PRIORITY));
-
-                // TODO: Make this less hacky...
-                // Load the actual frontpage of reddit if selected
-                if (priority == MySubredditsResponse.DefaultSubreddit.FRONTPAGE.getPriority()) {
-                    subredditName = Constants.REDDIT_FRONTPAGE;
-                }
-
-                mMenuDrawer.setActiveView(view, position);
-                mSubredditAdapter.setActivePosition(position);
-                mMenuDrawer.closeMenu(true);
-                loadSubreddit(subredditName);
+            // TODO: Make this less hacky...
+            // Load the actual frontpage of reddit if selected
+            if (priority == MySubredditsResponse.DefaultSubreddit.FRONTPAGE.getPriority()) {
+                subredditName = Constants.REDDIT_FRONTPAGE;
             }
-        };
+
+            mMenuDrawer.setActiveView(view, position);
+            mSubredditAdapter.setActivePosition(position);
+            mMenuDrawer.closeMenu(true);
+            loadSubreddit(subredditName);
+        }
+    };
+
+    @OnClick(R.id.ib_add)
+    protected void onAddSubreddit() {
+        AddSubredditDialogFragment.newInstance().show(getSupportFragmentManager(), Constants.Dialog.DIALOG_ADD_SUBREDDIT);
+    }
+
+    @OnLongClick({ R.id.ib_add, R.id.ib_sort, R.id.ib_refresh, R.id.ib_clear })
+    protected boolean onLongClickMenuOption(View view) {
+        if (view != null) {
+            String description = Strings.toString(view.getContentDescription());
+            ;
+            if (Strings.notEmpty(description)) {
+                Toast.makeText(this, description, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @OnClick(R.id.ib_clear)
+    protected void onClearSubredditFilter() {
+        if (mSubredditFilter != null) {
+            mSubredditFilter.setText(null);
+        }
+    }
+
+    @OnClick(R.id.ib_sort)
+    protected void onSortSubreddits() {
+        // Switch between alpha/usage sorting.
+    }
+
+    @OnClick(R.id.ib_refresh)
+    protected void onRefreshSubreddits() {
+        if (RedditLoginInformation.isLoggedIn()) {
+            // Since the user is logged in we can just run the task to update their subreddits.
+            SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this, true);
+            defaultSubredditsTask.execute();
+        } else {
+            // If they aren't logged in, we want to make sure that they understand this will set the subreddits back to default.
+            SetDefaultSubredditsDialogFragment fragment = SetDefaultSubredditsDialogFragment.newInstance();
+            fragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_DEFAULT_SUBREDDITS);
+        }
+    }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -182,10 +176,11 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupMenuDrawer() {
-        initializeSubredditFilter();
-        initializeSubredditList();
-        initializeLoaders();
+    @Override public void setContentView(int layoutResId) {
+        initializeMenuDrawer();
+        mMenuDrawer.setContentView(layoutResId);
+        ButterKnife.inject(this);
+        setupMenuDrawer();
     }
 
     private void initializeMenuDrawer() {
@@ -193,6 +188,12 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         mMenuDrawer.setMenuView(R.layout.subreddit_menudrawer);
         mMenuDrawer.setSlideDrawable(R.drawable.ic_drawer);
         mMenuDrawer.setDrawerIndicatorEnabled(true);
+    }
+
+    private void setupMenuDrawer() {
+        initializeSubredditFilter();
+        initializeSubredditList();
+        initializeLoaders();
     }
 
     private void initializeSubredditFilter() {
@@ -214,17 +215,16 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         loaderManager.initLoader(Constants.LOADER_SUBREDDITS, null, this);
     }
 
-    protected void forceRefreshCurrentSubreddit() {
-        RedditService.forceRefreshSubreddit(this, mSelectedSubreddit, mAge, mCategory);
+    private SubredditMenuDrawerCursorAdapter getSubredditMenuAdapter() {
+        if (mSubredditAdapter == null) {
+            mSubredditAdapter = new SubredditMenuDrawerCursorAdapter(this, mSubredditActionListener);
+        }
+
+        return mSubredditAdapter;
     }
 
-    protected void loadSubreddit(String subreddit) {
-        if (subreddit.equals("Frontpage")) {
-            mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
-        } else {
-            mSelectedSubreddit = subreddit;
-        }
-        mBus.post(new LoadSubredditEvent(mSelectedSubreddit));
+    protected void forceRefreshCurrentSubreddit() {
+        RedditService.forceRefreshSubreddit(this, mSelectedSubreddit, mAge, mCategory);
     }
 
     protected void filterSubreddits(String filterText) {
@@ -242,14 +242,6 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         }
     }
 
-    protected void unsubscribeToSubreddit(String subredditName) {
-        if (!RedditLoginInformation.isLoggedIn()) {
-            showLogin();
-        } else {
-            RedditService.unsubscribe(this, subredditName);
-        }
-    }
-
     protected void showLogin() {
         // Only needs to be shown if they aren't currently logged in.
         if (!RedditLoginInformation.isLoggedIn()) {
@@ -258,9 +250,11 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         }
     }
 
-    protected void closeMenuDrawerIfNeeded() {
-        if (mMenuDrawer != null && mMenuDrawer.isMenuVisible()) {
-            mMenuDrawer.closeMenu();
+    protected void unsubscribeToSubreddit(String subredditName) {
+        if (!RedditLoginInformation.isLoggedIn()) {
+            showLogin();
+        } else {
+            RedditService.unsubscribe(this, subredditName);
         }
     }
 
@@ -270,24 +264,8 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             RedditService.unsubscribe(this, subredditName);
         }
         ContentResolver resolver = getContentResolver();
-        resolver.delete(RedditContract.Subreddits.CONTENT_URI,
-            RedditContract.SubredditColumns.NAME + " = ?", new String[] { subredditName });
-    }
-
-    private SubredditMenuDrawerCursorAdapter getSubredditMenuAdapter() {
-        if (mSubredditAdapter == null) {
-            mSubredditAdapter =
-                new SubredditMenuDrawerCursorAdapter(this, mSubredditActionListener);
-        }
-
-        return mSubredditAdapter;
-    }
-
-    @Override public void setContentView(int layoutResId) {
-        initializeMenuDrawer();
-        mMenuDrawer.setContentView(layoutResId);
-        ButterKnife.inject(this);
-        setupMenuDrawer();
+        resolver.delete(RedditContract.Subreddits.CONTENT_URI, RedditContract.SubredditColumns.NAME + " = ?",
+                        new String[] { subredditName });
     }
 
     /**
@@ -306,8 +284,11 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     /**
      * Instantiate and return a new Loader for the given ID.
      *
-     * @param id The ID whose loader is to be created.
-     * @param args Any arguments supplied by the caller.
+     * @param id
+     *     The ID whose loader is to be created.
+     * @param args
+     *     Any arguments supplied by the caller.
+     *
      * @return Return a new Loader instance that is ready to start loading.
      */
     @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -324,9 +305,8 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
                         selectionArgs = new String[] { "%" + query + "%" };
                     }
                 }
-                return new CursorLoader(this, RedditContract.Subreddits.CONTENT_URI,
-                    RedditContract.Subreddits.SUBREDDITS_PROJECTION, selection, selectionArgs,
-                    RedditContract.Subreddits.DEFAULT_SORT);
+                return new CursorLoader(this, RedditContract.Subreddits.CONTENT_URI, RedditContract.Subreddits.SUBREDDITS_PROJECTION,
+                                        selection, selectionArgs, RedditContract.Subreddits.DEFAULT_SORT);
         }
 
         return null;
@@ -338,14 +318,14 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
      * transactions while in this call, since it can happen after an
      * activity's state is saved.  See {@link android.support.v4.app.FragmentManager#beginTransaction()
      * FragmentManager.openTransaction()} for further discussion on this.
-     *
+     * <p/>
      * <p>This function is guaranteed to be called prior to the release of
      * the last data that was supplied for this Loader.  At this point
      * you should remove all use of the old data (since it will be released
      * soon), but should not do your own release of the data since its Loader
      * owns it and will take care of that.  The Loader will take care of
      * management of its data so you don't have to.  In particular:
-     *
+     * <p/>
      * <ul>
      * <li> <p>The Loader will monitor for changes to the data, and report
      * them to you through new calls here.  You should not monitor the
@@ -368,8 +348,10 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
      * method so that the old Cursor is not closed.
      * </ul>
      *
-     * @param loader The Loader that has finished.
-     * @param data The data generated by the Loader.
+     * @param loader
+     *     The Loader that has finished.
+     * @param data
+     *     The data generated by the Loader.
      */
     @Override public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
@@ -384,7 +366,8 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
      * making its data unavailable.  The application should at this point
      * remove any references it has to the Loader's data.
      *
-     * @param loader The Loader that is being reset.
+     * @param loader
+     *     The Loader that is being reset.
      */
     @Override public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
@@ -395,8 +378,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     @Override public void onSetDefaultSubreddits() {
-        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask =
-            new SubredditUtils.SetDefaultSubredditsTask(this, true);
+        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this, true);
         defaultSubredditsTask.execute();
     }
 
@@ -405,6 +387,21 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             RedditService.aboutSubreddit(this, subreddit);
             loadSubreddit(subreddit);
             closeMenuDrawerIfNeeded();
+        }
+    }
+
+    protected void loadSubreddit(String subreddit) {
+        if (subreddit.equals("Frontpage")) {
+            mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
+        } else {
+            mSelectedSubreddit = subreddit;
+        }
+        mBus.post(new LoadSubredditEvent(mSelectedSubreddit));
+    }
+
+    protected void closeMenuDrawerIfNeeded() {
+        if (mMenuDrawer != null && mMenuDrawer.isMenuVisible()) {
+            mMenuDrawer.closeMenu();
         }
     }
 }

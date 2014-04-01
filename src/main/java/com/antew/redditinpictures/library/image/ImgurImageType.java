@@ -12,34 +12,36 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class ImgurImageType extends Image {
-    public static final String TAG = ImgurImage.class.getSimpleName();
-    private static final String URL_IMGUR_IMAGE_API   = "http://api.imgur.com/2/image/";
-    private static final String URL_REGEX = "imgur.com/(?:gallery/)?([A-Za-z0-9]+)";
-    private ImgurImage mImgurImage = null;
-    
+    public static final  String     TAG                 = ImgurImage.class.getSimpleName();
+    private static final String     URL_IMGUR_IMAGE_API = "http://api.imgur.com/2/image/";
+    private static final String     URL_REGEX           = "imgur.com/(?:gallery/)?([A-Za-z0-9]+)";
+    private              ImgurImage mImgurImage         = null;
+
     public ImgurImageType(String url) {
         super(url);
         mImgurImage = resolve();
     }
-    
+
     /**
      * Resolve the imgur image for the input URL
-     * 
+     *
      * @param url
-     *            The URL to resolve an image from
+     *     The URL to resolve an image from
+     *
      * @return An {@link ImageContainer} containing the ImgurImage
      */
     private ImgurImage resolve() {
         ImgurImage imgurImage = resolveImgurImageFromHash(getHash());
-        
+
         return imgurImage;
     }
 
     /**
      * Resolve an {@link ImgurImage} from an Imgur hash
-     * 
+     *
      * @param hash
-     *            The hash to resolve an image from (e.g. u9PWV)
+     *     The hash to resolve an image from (e.g. u9PWV)
+     *
      * @return An {@link ImgurImage} representing the image
      */
     public static ImgurImage resolveImgurImageFromHash(String hash) {
@@ -47,7 +49,7 @@ public class ImgurImageType extends Image {
             Log.e(TAG, "Received null hash in resolveImgurImageFromHash");
             return null;
         }
-        
+
         Gson gson = new Gson();
         String json = null;
         ImgurImageApi imgurImageApi = null;
@@ -62,36 +64,39 @@ public class ImgurImageType extends Image {
             try {
                 json = SynchronousNetworkApi.downloadUrl(apiUrl);
 
-                if (json == null)
+                if (json == null) {
                     return null;
+                }
 
                 imgurImageApi = gson.fromJson(json, ImgurImageApi.class);
                 ImgurApiCache.getInstance().addImgurImage(hash, imgurImageApi);
-                
             } catch (JsonSyntaxException e) {
                 Log.e(TAG, "resolveImgurImageFromHash", e);
             }
         }
 
-        if (imgurImageApi != null)
+        if (imgurImageApi != null) {
             imgurImage = imgurImageApi.getImage();
-        
+        }
+
         return imgurImage;
     }
 
     @Override
     public String getSize(ImageSize size) {
         assert size != null : "ImageSize must not be null";
-        
-        if (mImgurImage == null)
+
+        if (mImgurImage == null) {
             mImgurImage = resolve();
-        
+        }
+
         String decodedUrl = null;
-        
-        if (mImgurImage != null)
+
+        if (mImgurImage != null) {
             decodedUrl = mImgurImage.getSize(size);
-        
-        return decodedUrl; 
+        }
+
+        return decodedUrl;
     }
 
     @Override
@@ -103,5 +108,4 @@ public class ImgurImageType extends Image {
     public String getRegexForUrlMatching() {
         return URL_REGEX;
     }
-
 }

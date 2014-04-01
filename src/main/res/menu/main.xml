@@ -1,33 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/change_view"
         android:icon="@drawable/ic_action_list_2_dark"
         android:showAsAction="always"
-        android:title="@string/view_as_list"/>
-    
-    <item android:id="@+id/sort_subreddits" android:icon="@drawable/ic_action_sort_1_dark" android:showAsAction="always" android:title="Sort">
+        android:title="@string/view_as_list" />
+
+    <item
+        android:id="@+id/sort_subreddits"
+        android:icon="@drawable/ic_action_sort_1_dark"
+        android:showAsAction="always"
+        android:title="Sort">
         <menu>
-            <group android:id="@+id/categories" android:checkableBehavior="single">
-                <item android:id="@+id/category_hot"                     android:title="Hot" /> 
-                <item android:id="@+id/category_new"                     android:title="New"/> 
-                <item android:id="@+id/category_rising"                  android:title="Rising"/> 
-                <item android:id="@+id/category_top_hour"                android:title="Top: Hour"/> 
-                <item android:id="@+id/category_top_today"               android:title="Top: Today"/> 
-                <item android:id="@+id/category_top_week"                android:title="Top: Week"/> 
-                <item android:id="@+id/category_top_month"               android:title="Top: Month"/> 
-                <item android:id="@+id/category_top_year"                android:title="Top: Year"/> 
-                <item android:id="@+id/category_top_all_time"            android:title="Top: All Time"/> 
-                <item android:id="@+id/category_controversial_hour"      android:title="Controversial: Hour"/> 
-                <item android:id="@+id/category_controversial_today"     android:title="Controversial: Today"/> 
-                <item android:id="@+id/category_controversial_week"      android:title="Controversial: Week"/> 
-                <item android:id="@+id/category_controversial_month"     android:title="Controversial: Month"/> 
-                <item android:id="@+id/category_controversial_year"      android:title="Controversial: Year"/> 
-                <item android:id="@+id/category_controversial_all_time"  android:title="Controversial: All Time"/> 
+            <group
+                android:id="@+id/categories"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/category_hot"
+                    android:title="Hot" />
+                <item
+                    android:id="@+id/category_new"
+                    android:title="New" />
+                <item
+                    android:id="@+id/category_rising"
+                    android:title="Rising" />
+                <item
+                    android:id="@+id/category_top_hour"
+                    android:title="Top: Hour" />
+                <item
+                    android:id="@+id/category_top_today"
+                    android:title="Top: Today" />
+                <item
+                    android:id="@+id/category_top_week"
+                    android:title="Top: Week" />
+                <item
+                    android:id="@+id/category_top_month"
+                    android:title="Top: Month" />
+                <item
+                    android:id="@+id/category_top_year"
+                    android:title="Top: Year" />
+                <item
+                    android:id="@+id/category_top_all_time"
+                    android:title="Top: All Time" />
+                <item
+                    android:id="@+id/category_controversial_hour"
+                    android:title="Controversial: Hour" />
+                <item
+                    android:id="@+id/category_controversial_today"
+                    android:title="Controversial: Today" />
+                <item
+                    android:id="@+id/category_controversial_week"
+                    android:title="Controversial: Week" />
+                <item
+                    android:id="@+id/category_controversial_month"
+                    android:title="Controversial: Month" />
+                <item
+                    android:id="@+id/category_controversial_year"
+                    android:title="Controversial: Year" />
+                <item
+                    android:id="@+id/category_controversial_all_time"
+                    android:title="Controversial: All Time" />
             </group>
         </menu>
-        
+
     </item>
 
     <item

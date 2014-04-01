@@ -21,9 +21,9 @@ public class DiskUtil {
             Method getPublicDir = Environment.class.getMethod("getExternalStoragePublicDirectory", new Class[] { String.class });
             getPublicDir.invoke(null, Environment.DIRECTORY_PICTURES);
             picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-
         } catch (NoSuchMethodException e) {
-            picturesDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "redditinpictures" + File.separator);
+            picturesDirectory = new File(
+                Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "redditinpictures" + File.separator);
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "getExternalStoragePublicDirectory", e);
         } catch (IllegalAccessException e) {
@@ -32,8 +32,9 @@ public class DiskUtil {
             Log.e(TAG, "getExternalStoragePublicDirectory", e);
         }
 
-        if (picturesDirectory != null)
+        if (picturesDirectory != null) {
             picturesDirectory.mkdirs();
+        }
 
         return picturesDirectory;
     }

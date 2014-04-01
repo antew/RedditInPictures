@@ -4,6 +4,22 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Oembed implements Parcelable {
+    //@formatter:off
+    public static final Parcelable.Creator<Oembed> CREATOR
+        = new Parcelable.Creator<Oembed>() {
+
+            @Override
+            public Oembed createFromParcel(Parcel source) {
+                return new Oembed(source);
+            }
+
+            @Override
+            public Oembed[] newArray(int size) {
+                return new Oembed[size];
+            }
+
+
+    };
     private String provider_url;
     private String description;
     private String title;
@@ -19,8 +35,7 @@ public class Oembed implements Parcelable {
     private String type;
     private int    thumbnail_height;
     private String author_url;
-    
-    
+
     public Oembed(Parcel source) {
         provider_url = source.readString();
         description = source.readString();
@@ -38,11 +53,12 @@ public class Oembed implements Parcelable {
         thumbnail_height = source.readInt();
         author_url = source.readString();
     }
-    
+
     @Override
     public int describeContents() {
         return 0;
     }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(provider_url);
@@ -61,22 +77,5 @@ public class Oembed implements Parcelable {
         dest.writeInt(thumbnail_height);
         dest.writeString(url);
     }
-    
-  //@formatter:off
-    public static final Parcelable.Creator<Oembed> CREATOR
-        = new Parcelable.Creator<Oembed>() {
-
-            @Override
-            public Oembed createFromParcel(Parcel source) {
-                return new Oembed(source);
-            }
-
-            @Override
-            public Oembed[] newArray(int size) {
-                return new Oembed[size];
-            }
-            
-        
-    };
     //@formatter:on
 }

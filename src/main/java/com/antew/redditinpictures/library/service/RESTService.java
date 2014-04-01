@@ -40,32 +40,29 @@ import org.apache.http.util.EntityUtils;
 /**
  * This is based an article by Neil Goodman, I've added the EXTRA_REQUEST_CODE so that callers can
  * have multiple request types
- * 
+ *
  * @author Neil Goodman
  * @see <a
- *      href="http://neilgoodman.net/2012/01/01/modern-techniques-for-implementing-rest-clients-on-android-4-0-and-below-part-2/">The
- *      article</a>
+ * href="http://neilgoodman.net/2012/01/01/modern-techniques-for-implementing-rest-clients-on-android-4-0-and-below-part-2/">The
+ * article</a>
  */
 public class RESTService extends IntentService {
-    private static final String TAG                = RESTService.class.getSimpleName();
-
-    public static final int     GET                = 0x1;
-    public static final int     POST               = 0x2;
-    public static final int     PUT                = 0x3;
-    public static final int     DELETE             = 0x4;
-
-    public static final String  EXTRA_BUNDLE       = "EXTRA_BUNDLE";
-    public static final String  EXTRA_HTTP_VERB    = "EXTRA_HTTP_VERB";
-    public static final String  EXTRA_PARAMS       = "EXTRA_PARAMS";
-    public static final String  EXTRA_COOKIE       = "EXTRA_COOKIE";
-    public static final String  EXTRA_REPLACE_ALL  = "EXTRA_REPLACE_ALL";
-    public static final String  EXTRA_REQUEST_CODE = "EXTRA_REQUEST_CODE";
-    public static final String  EXTRA_RESULT       = "EXTRA_RESULT";
-    public static final String  EXTRA_STATUS_CODE  = "EXTRA_STATUS_CODE";
-    public static final String  EXTRA_USER_AGENT   = "EXTRA_USER_AGENT";
-    public static final String  EXTRA_PASS_THROUGH = "EXTRA_PASS_THROUGH";
-
-    public static final String  REST_RESULT        = "REST_RESULT";
+    public static final int GET    = 0x1;
+    public static final int POST   = 0x2;
+    public static final int PUT    = 0x3;
+    public static final int DELETE = 0x4;
+    public static final String EXTRA_BUNDLE       = "EXTRA_BUNDLE";
+    public static final String EXTRA_HTTP_VERB    = "EXTRA_HTTP_VERB";
+    public static final String EXTRA_PARAMS       = "EXTRA_PARAMS";
+    public static final String EXTRA_COOKIE       = "EXTRA_COOKIE";
+    public static final String EXTRA_REPLACE_ALL  = "EXTRA_REPLACE_ALL";
+    public static final String EXTRA_REQUEST_CODE = "EXTRA_REQUEST_CODE";
+    public static final String EXTRA_RESULT       = "EXTRA_RESULT";
+    public static final String EXTRA_STATUS_CODE  = "EXTRA_STATUS_CODE";
+    public static final String EXTRA_USER_AGENT   = "EXTRA_USER_AGENT";
+    public static final String EXTRA_PASS_THROUGH = "EXTRA_PASS_THROUGH";
+    public static final String REST_RESULT = "REST_RESULT";
+    private static final String TAG = RESTService.class.getSimpleName();
 
     public RESTService() {
         super(TAG);
@@ -112,13 +109,13 @@ public class RESTService extends IntentService {
                     request = new HttpGet();
                     attachUriWithQuery(request, action, params);
                 }
-                    break;
+                break;
 
                 case DELETE: {
                     request = new HttpDelete();
                     attachUriWithQuery(request, action, params);
                 }
-                    break;
+                break;
 
                 case POST: {
                     request = new HttpPost();
@@ -136,7 +133,7 @@ public class RESTService extends IntentService {
                         postRequest.setEntity(formEntity);
                     }
                 }
-                    break;
+                break;
 
                 case PUT: {
                     request = new HttpPut();
@@ -150,7 +147,7 @@ public class RESTService extends IntentService {
                         putRequest.setEntity(formEntity);
                     }
                 }
-                    break;
+                break;
             }
 
             if (request != null) {
@@ -168,11 +165,13 @@ public class RESTService extends IntentService {
                 client.addRequestInterceptor(getGzipRequestInterceptor());
                 client.addResponseInterceptor(getGzipResponseInterceptor());
 
-                if (cookie != null)
+                if (cookie != null) {
                     request.addHeader("Cookie", cookie);
+                }
 
-                if (userAgent != null)
+                if (userAgent != null) {
                     request.addHeader("User-Agent", Constants.Reddit.USER_AGENT);
+                }
 
                 // Let's send some useful debug information so we can monitor things
                 // in LogCat.
@@ -195,7 +194,6 @@ public class RESTService extends IntentService {
                     result.putExtra(EXTRA_BUNDLE, resultData);
 
                     onRequestComplete(result);
-
                 } else {
                     onRequestFailed(result, statusCode);
                 }
@@ -213,24 +211,13 @@ public class RESTService extends IntentService {
             Log.e(TAG, "There was a problem when sending the request.", e);
             onRequestFailed(result, 0);
         } finally {
-            if (responseEntity != null)
+            if (responseEntity != null) {
                 try {
                     responseEntity.consumeContent();
                 } catch (IOException ignored) {
                 }
+            }
         }
-    }
-
-    public void onRequestFailed(Intent result, int statusCode) {
-        Bundle args = new Bundle();
-        args.putInt(EXTRA_STATUS_CODE, statusCode);
-        result.putExtra(EXTRA_BUNDLE, args);
-
-        onRequestComplete(result);
-    }
-
-    public void onRequestComplete(Intent result) {
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(result);
     }
 
     private static void attachUriWithQuery(HttpRequestBase request, Uri uri, Bundle params) {
@@ -255,24 +242,6 @@ public class RESTService extends IntentService {
         }
     }
 
-    private static String verbToString(int verb) {
-        switch (verb) {
-            case GET:
-                return "GET";
-
-            case POST:
-                return "POST";
-
-            case PUT:
-                return "PUT";
-
-            case DELETE:
-                return "DELETE";
-        }
-
-        return "";
-    }
-
     private static List<BasicNameValuePair> paramsToList(Bundle params) {
         ArrayList<BasicNameValuePair> formList = new ArrayList<BasicNameValuePair>(params.size());
 
@@ -282,8 +251,9 @@ public class RESTService extends IntentService {
             // We can only put Strings in a form entity, so we call the toString()
             // method to enforce. We also probably don't need to check for null here
             // but we do anyway because Bundle.get() can return null.
-            if (value != null)
+            if (value != null) {
                 formList.add(new BasicNameValuePair(key, value.toString()));
+            }
         }
 
         return formList;
@@ -291,11 +261,12 @@ public class RESTService extends IntentService {
 
     /**
      * From apache examples
-     * 
-     * @see <a
-     *      href="http://hc.apache.org/httpcomponents-client-ga/httpclient/examples/org/apache/http/examples/client/ClientGZipContentCompression.java">Apache
-     *      examples</a>
+     *
      * @return
+     *
+     * @see <a
+     * href="http://hc.apache.org/httpcomponents-client-ga/httpclient/examples/org/apache/http/examples/client/ClientGZipContentCompression.java">Apache
+     * examples</a>
      */
     private HttpRequestInterceptor getGzipRequestInterceptor() {
         return new HttpRequestInterceptor() {
@@ -310,11 +281,12 @@ public class RESTService extends IntentService {
 
     /**
      * From apache examples
-     * 
-     * @see <a
-     *      href="http://hc.apache.org/httpcomponents-client-ga/httpclient/examples/org/apache/http/examples/client/ClientGZipContentCompression.java">Apache
-     *      examples</a>
+     *
      * @return
+     *
+     * @see <a
+     * href="http://hc.apache.org/httpcomponents-client-ga/httpclient/examples/org/apache/http/examples/client/ClientGZipContentCompression.java">Apache
+     * examples</a>
      */
     private HttpResponseInterceptor getGzipResponseInterceptor() {
         return new HttpResponseInterceptor() {
@@ -337,15 +309,50 @@ public class RESTService extends IntentService {
         };
     }
 
+    private static String verbToString(int verb) {
+        switch (verb) {
+            case GET:
+                return "GET";
+
+            case POST:
+                return "POST";
+
+            case PUT:
+                return "PUT";
+
+            case DELETE:
+                return "DELETE";
+        }
+
+        return "";
+    }
+
+    public void onRequestComplete(Intent result) {
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(result);
+    }
+
+    public void onRequestFailed(Intent result, int statusCode) {
+        Bundle args = new Bundle();
+        args.putInt(EXTRA_STATUS_CODE, statusCode);
+        result.putExtra(EXTRA_BUNDLE, args);
+
+        onRequestComplete(result);
+    }
+
     /**
      * @see <a
-     *      href="http://svn.apache.org/repos/asf/httpcomponents/httpcore/branches/4.2.x/httpcore-contrib/src/main/java/org/apache/http/contrib/compress/GzipDecompressingEntity.java">Apache
-     *      project</a>
-     * 
+     * href="http://svn.apache.org/repos/asf/httpcomponents/httpcore/branches/4.2.x/httpcore-contrib/src/main/java/org/apache/http/contrib/compress/GzipDecompressingEntity.java">Apache
+     * project</a>
      */
     static class GzipDecompressingEntity extends HttpEntityWrapper {
         public GzipDecompressingEntity(final HttpEntity entity) {
             super(entity);
+        }
+
+        @Override
+        public long getContentLength() {
+            // length of ungzipped content is not known
+            return -1;
         }
 
         @Override
@@ -354,12 +361,5 @@ public class RESTService extends IntentService {
             InputStream wrappedin = wrappedEntity.getContent();
             return new GZIPInputStream(wrappedin);
         }
-
-        @Override
-        public long getContentLength() {
-            // length of ungzipped content is not known
-            return -1;
-        }
     }
-
 }

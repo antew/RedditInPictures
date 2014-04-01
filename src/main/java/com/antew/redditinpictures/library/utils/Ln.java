@@ -37,7 +37,7 @@ import android.util.Log;
  * Ln.v("hello there"); Ln.d("%s %s", "hello", "there"); Ln.e( exception, "Error during some operation"); Ln.w(
  * exception, "Error during %s operation", "some other");
  */
-@SuppressWarnings({"ImplicitArrayToString"})
+@SuppressWarnings({ "ImplicitArrayToString" })
 public class Ln {
     /**
      * config is initially set to BaseConfig() with sensible defaults, then replaced by BaseConfig(ContextSingleton)
@@ -188,6 +188,25 @@ public class Ln {
         return config;
     }
 
+    public static String logLevelToString(int loglevel) {
+        switch (loglevel) {
+            case Log.VERBOSE:
+                return "VERBOSE";
+            case Log.DEBUG:
+                return "DEBUG";
+            case Log.INFO:
+                return "INFO";
+            case Log.WARN:
+                return "WARN";
+            case Log.ERROR:
+                return "ERROR";
+            case Log.ASSERT:
+                return "ASSERT";
+        }
+
+        return "UNKNOWN";
+    }
+
     public static interface Config {
         public int getLoggingLevel();
 
@@ -211,7 +230,6 @@ public class Ln {
                 scope = packageName.toUpperCase();
 
                 Ln.d("Configuring Logging, minimum log level is %s", logLevelToString(minimumLogLevel));
-
             } catch (Exception e) {
                 try {
                     Log.e(packageName, "Error configuring logger", e);
@@ -230,38 +248,12 @@ public class Ln {
         }
     }
 
-    public static String logLevelToString(int loglevel) {
-        switch (loglevel) {
-            case Log.VERBOSE:
-                return "VERBOSE";
-            case Log.DEBUG:
-                return "DEBUG";
-            case Log.INFO:
-                return "INFO";
-            case Log.WARN:
-                return "WARN";
-            case Log.ERROR:
-                return "ERROR";
-            case Log.ASSERT:
-                return "ASSERT";
-        }
-
-        return "UNKNOWN";
-    }
-
     /**
      * Default implementation logs to android.util.Log
      */
     public static class Print {
         public int println(int priority, String msg) {
             return Log.println(priority, getScope(5), processMessage(msg));
-        }
-
-        protected String processMessage(String msg) {
-            if (config.minimumLogLevel <= Log.DEBUG) {
-                msg = String.format("%s %s", Thread.currentThread().getName(), msg);
-            }
-            return msg;
         }
 
         protected static String getScope(int skipDepth) {
@@ -273,5 +265,11 @@ public class Ln {
             return config.scope;
         }
 
+        protected String processMessage(String msg) {
+            if (config.minimumLogLevel <= Log.DEBUG) {
+                msg = String.format("%s %s", Thread.currentThread().getName(), msg);
+            }
+            return msg;
+        }
     }
 }

@@ -33,6 +33,18 @@ public class MySubreddits implements ContentValuesArrayOperation {
         return data;
     }
 
+    @Override
+    public ContentValues[] getContentValuesArray() {
+        int subredditCount = data.getChildren().size();
+        List<ContentValues> operations = new ArrayList<ContentValues>(subredditCount);
+
+        for (SubredditChildren children : data.getChildren()) {
+            operations.add(getContentValues(children.getData()));
+        }
+
+        return operations.toArray(new ContentValues[operations.size()]);
+    }
+
     public ContentValues getContentValues(SubredditData data) {
         ContentValues values = new ContentValues();
 
@@ -44,10 +56,10 @@ public class MySubreddits implements ContentValuesArrayOperation {
         values.put(RedditContract.Subreddits.DESCRIPTION       , data.getDescription());
         values.put(RedditContract.Subreddits.CREATED           , data.getCreated());
         values.put(RedditContract.Subreddits.CREATED_UTC       , data.getCreated_utc());
-        
+
         if (data.getHeader_size() != null)
             values.put(RedditContract.Subreddits.HEADER_SIZE       , data.getHeader_size()[0] + ", " + data.getHeader_size()[1]);
-        
+
         values.put(RedditContract.Subreddits.OVER_18           , data.isOver18());
         values.put(RedditContract.Subreddits.SUBSCRIBERS       , data.getSubscribers());
         values.put(RedditContract.Subreddits.ACCOUNTS_ACTIVE   , data.getAccountsActive());
@@ -61,19 +73,4 @@ public class MySubreddits implements ContentValuesArrayOperation {
 
         return values;
     }
-
-    @Override
-    public ContentValues[] getContentValuesArray() {
-        int subredditCount = data.getChildren().size();
-        List<ContentValues> operations = new ArrayList<ContentValues>(subredditCount);
-
-        for (SubredditChildren children : data.getChildren()) {
-            operations.add(getContentValues(children.getData()));
-        }
-
-        return operations.toArray(new ContentValues[operations.size()]);
-    }
-
-
-
 }

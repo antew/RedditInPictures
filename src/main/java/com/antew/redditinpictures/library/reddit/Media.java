@@ -4,6 +4,22 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Media implements Parcelable {
+    //@formatter:off
+    public static final Parcelable.Creator<Media> CREATOR
+        = new Parcelable.Creator<Media>() {
+
+            @Override
+            public Media createFromParcel(Parcel source) {
+                return new Media(source);
+            }
+
+            @Override
+            public Media[] newArray(int size) {
+                return new Media[size];
+            }
+
+
+    };
     private String type;
     private Oembed oembed;
 
@@ -22,22 +38,5 @@ public class Media implements Parcelable {
         dest.writeString(type);
         dest.writeParcelable(oembed, flags);
     }
-
-    //@formatter:off
-    public static final Parcelable.Creator<Media> CREATOR
-        = new Parcelable.Creator<Media>() {
-
-            @Override
-            public Media createFromParcel(Parcel source) {
-                return new Media(source);
-            }
-
-            @Override
-            public Media[] newArray(int size) {
-                return new Media[size];
-            }
-            
-        
-    };
     //@formatter:on
 }

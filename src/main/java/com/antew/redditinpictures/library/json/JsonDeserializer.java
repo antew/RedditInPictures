@@ -10,7 +10,7 @@ import com.google.gson.JsonSyntaxException;
 public class JsonDeserializer {
     public static final String TAG = JsonDeserializer.class.getSimpleName();
     private static Gson gson;
-    
+
     public static <T> T deserialize(String json, Class<T> clazz) {
         try {
             return getGson().fromJson(json, clazz);
@@ -19,18 +19,18 @@ public class JsonDeserializer {
         } catch (IllegalStateException e) {
             Log.e(TAG, "deserialize - Error parsing JSON!", e);
         }
-        
+
         return null;
     }
-    
-    public static Gson getGson () {
+
+    public static Gson getGson() {
         if (gson == null) {
             GsonBuilder builder = new GsonBuilder();
             builder.registerTypeAdapter(Vote.class, new VoteAdapter());
             builder.serializeNulls();
             gson = builder.create();
         }
-        
+
         return gson;
     }
 }

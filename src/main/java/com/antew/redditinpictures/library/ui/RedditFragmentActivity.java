@@ -47,14 +47,10 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     implements LoginDialogFragment.LoginDialogListener, LogoutDialogFragment.LogoutDialogListener, LoaderManager.LoaderCallbacks<Cursor> {
-    public static final int SETTINGS_REQUEST = 20;
-    private ViewType mActiveViewType = ViewType.LIST;
-
-    private enum ViewType {LIST, GRID}
-
+    public static final int      SETTINGS_REQUEST = 20;
     @InjectView(R.id.top_progressbar)
     protected SmoothProgressBar mProgressBar;
-
+    private             ViewType mActiveViewType  = ViewType.LIST;
     private BroadcastReceiver mLoginComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -70,13 +66,44 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         initalizeReceivers();
         initializeLoaders();
 
-        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this);
-        defaultSubredditsTask.execute();
+        new SubredditUtils.SetDefaultSubredditsTask(this).execute();
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+    private void restoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            if (Util.hasHoneycombMR1()) {
+                mActiveViewType = ViewType.valueOf(savedInstanceState.getString(Constants.ACTIVE_VIEW, ViewType.LIST.toString()));
+                mSelectedSubreddit = savedInstanceState.getString(Constants.EXTRA_SELECTED_SUBREDDIT, Constants.REDDIT_FRONTPAGE);
+            } else {
+                if (savedInstanceState.containsKey(Constants.ACTIVE_VIEW)) {
+                    mActiveViewType = ViewType.valueOf(savedInstanceState.getString(Constants.ACTIVE_VIEW));
+                }
+
+                if (savedInstanceState.containsKey(Constants.EXTRA_SELECTED_SUBREDDIT)) {
+                    mSelectedSubreddit = savedInstanceState.getString(Constants.EXTRA_SELECTED_SUBREDDIT);
+                }
+            }
+        }
+    }
+
+    private void initializeActiveView() {
+        switch (mActiveViewType) {
+            case GRID:
+                FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
+                gridTrans.replace(R.id.content_fragment, getNewImageGridFragment());
+                gridTrans.commit();
+                break;
+            case LIST:
+                FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
+                listTrans.replace(R.id.content_fragment, getNewImageListFragment());
+                listTrans.commit();
+                break;
+        }
     }
 
     private void initalizeReceivers() {
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(mLoginComplete, new IntentFilter(Constants.BROADCAST_LOGIN_COMPLETE));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Constants.BROADCAST_LOGIN_COMPLETE));
     }
 
     private void initializeLoaders() {
@@ -84,26 +111,12 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         loaderManager.initLoader(Constants.LOADER_LOGIN, null, this);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-    private void restoreInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            if (Util.hasHoneycombMR1()) {
-                mActiveViewType = ViewType.valueOf(
-                    savedInstanceState.getString(Constants.ACTIVE_VIEW, ViewType.LIST.toString()));
-                mSelectedSubreddit = savedInstanceState.getString(Constants.EXTRA_SELECTED_SUBREDDIT,
-                    Constants.REDDIT_FRONTPAGE);
-            } else {
-                if (savedInstanceState.containsKey(Constants.ACTIVE_VIEW)) {
-                    mActiveViewType =
-                        ViewType.valueOf(savedInstanceState.getString(Constants.ACTIVE_VIEW));
-                }
+    public Fragment getNewImageGridFragment() {
+        return RedditImageGridFragment.newInstance(mSelectedSubreddit, mCategory, mAge);
+    }
 
-                if (savedInstanceState.containsKey(Constants.EXTRA_SELECTED_SUBREDDIT)) {
-                    mSelectedSubreddit =
-                        savedInstanceState.getString(Constants.EXTRA_SELECTED_SUBREDDIT);
-                }
-            }
-        }
+    public Fragment getNewImageListFragment() {
+        return RedditImageListFragment.newInstance(mSelectedSubreddit, mCategory, mAge);
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
@@ -144,9 +157,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                     loadSubreddit(mSelectedSubreddit);
                     return true;
                 } else {
-                    Ln.e("Unable to get sorting criteria for menu item id: "
-                        + item.getItemId()
-                        + ", unable to load subreddit");
+                    Ln.e("Unable to get sorting criteria for menu item id: " + item.getItemId() + ", unable to load subreddit");
 
                     // Fallback to the normal Hot category.
                     RedditSort.SortCriteria sortCriteria = RedditSort.get(R.id.category_hot);
@@ -160,32 +171,6 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                 return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    public void handleLoginAndLogout() {
-        if (!RedditLoginInformation.isLoggedIn()) {
-            LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGIN);
-        } else {
-            DialogFragment logoutFragment =
-                LogoutDialogFragment.newInstance(RedditLoginInformation.getUsername());
-            logoutFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGOUT);
-        }
-    }
-
-    private void initializeActiveView() {
-        switch (mActiveViewType) {
-            case GRID:
-                FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
-                gridTrans.replace(R.id.content_fragment, getNewImageGridFragment());
-                gridTrans.commit();
-                break;
-            case LIST:
-                FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
-                listTrans.replace(R.id.content_fragment, getNewImageListFragment());
-                listTrans.commit();
-                break;
         }
     }
 
@@ -211,14 +196,62 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     public void startPreferences() {
         Intent intent = new Intent(this, RedditInPicturesPreferences.class);
-        intent.putExtra(Constants.EXTRA_SHOW_NSFW_IMAGES,
-            SharedPreferencesHelper.getShowNsfwImages(this));
+        intent.putExtra(Constants.EXTRA_SHOW_NSFW_IMAGES, SharedPreferencesHelper.getShowNsfwImages(this));
         startActivityForResult(intent, SETTINGS_REQUEST);
     }
 
     @Subscribe
     public void requestInProgress(RequestInProgressEvent event) {
         ViewPropertyAnimator.animate(mProgressBar).setDuration(500).alpha(100);
+    }
+
+    public void handleLoginAndLogout() {
+        if (!RedditLoginInformation.isLoggedIn()) {
+            LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
+            loginFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGIN);
+        } else {
+            DialogFragment logoutFragment = LogoutDialogFragment.newInstance(RedditLoginInformation.getUsername());
+            logoutFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGOUT);
+        }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle paramBundle) {
+        switch (id) {
+            case Constants.LOADER_LOGIN:
+                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
+            default:
+                return super.onCreateLoader(id, paramBundle);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        switch (loader.getId()) {
+            case Constants.LOADER_LOGIN:
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        String username = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
+                        String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
+                        String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
+
+                        LoginData data = new LoginData(username, modhash, cookie);
+                        if (!data.equals(RedditLoginInformation.getLoginData())) {
+                            RedditLoginInformation.setLoginData(data);
+                        }
+
+                        requestCompleted(null);
+                        invalidateOptionsMenu();
+
+                        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this);
+                        defaultSubredditsTask.execute();
+                    }
+                }
+                break;
+            default:
+                super.onLoadFinished(loader, cursor);
+                break;
+        }
     }
 
     @Subscribe
@@ -310,8 +343,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         MenuItem loginMenuItem = menu.findItem(R.id.login);
         // If the user is logged in, update the Logout menu item to "Log out <username>"
         if (RedditLoginInformation.isLoggedIn()) {
-            loginMenuItem.setTitle(
-                getString(R.string.log_out_) + RedditLoginInformation.getUsername());
+            loginMenuItem.setTitle(getString(R.string.log_out_) + RedditLoginInformation.getUsername());
             loginMenuItem.setIcon(R.drawable.ic_action_exit_dark);
         } else {
             loginMenuItem.setTitle(R.string.log_on);
@@ -336,50 +368,6 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle paramBundle) {
-        switch (id) {
-            case Constants.LOADER_LOGIN:
-                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null,
-                    RedditContract.Login.DEFAULT_SORT);
-            default:
-                return super.onCreateLoader(id, paramBundle);
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        switch (loader.getId()) {
-            case Constants.LOADER_LOGIN:
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        String username =
-                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
-                        String cookie =
-                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
-                        String modhash =
-                            cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
-
-                        LoginData data = new LoginData(username, modhash, cookie);
-                        if (!data.equals(RedditLoginInformation.getLoginData())) {
-                            RedditLoginInformation.setLoginData(data);
-                        }
-
-                        requestCompleted(null);
-                        invalidateOptionsMenu();
-
-                        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask =
-                            new SubredditUtils.SetDefaultSubredditsTask(this);
-                        defaultSubredditsTask.execute();
-                    }
-                }
-                break;
-            default:
-                super.onLoadFinished(loader, cursor);
-                break;
-        }
-    }
-
-    @Override
     public void onFinishLoginDialog(String username, String password) {
         requestInProgress(null);
         RedditService.login(this, username, password);
@@ -390,8 +378,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     public void onFinishLogoutDialog() {
         // Clear out the login data, Reddit API doesn't incorporate sessions into how it works so simply clearing out the cached data does the trick.
         RedditLoginInformation.setLoginData(null);
-        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask =
-            new SubredditUtils.SetDefaultSubredditsTask(this, true);
+        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this, true);
         defaultSubredditsTask.execute();
         invalidateOptionsMenu();
     }
@@ -401,17 +388,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         boolean successful = intent.getBooleanExtra(Constants.EXTRA_SUCCESS, false);
         if (!successful) {
             String errorMessage = intent.getStringExtra(Constants.EXTRA_ERROR_MESSAGE);
-            Toast.makeText(this, getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT)
-                .show();
+            Toast.makeText(this, getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    public Fragment getNewImageGridFragment() {
-        return RedditImageGridFragment.newInstance(mSelectedSubreddit, mCategory, mAge);
-    }
-
-    public Fragment getNewImageListFragment() {
-        return RedditImageListFragment.newInstance(mSelectedSubreddit, mCategory, mAge);
     }
 
     @Subscribe
@@ -452,4 +430,6 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
         setActionBarTitle(mSelectedSubreddit);
     }
+
+    private enum ViewType {LIST, GRID}
 }

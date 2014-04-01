@@ -17,9 +17,7 @@ import javax.inject.Singleton;
  */
 @Module(
     injects = {
-            ImageGridActivity.class,
-            ImageDetailActivity.class,
-            ImgurAlbumActivity.class
+        ImageGridActivity.class, ImageDetailActivity.class, ImgurAlbumActivity.class
     },
     addsTo = RootModule.class,
     library = true
@@ -35,8 +33,7 @@ public class ActivityModule {
      * Allow the activity context to be injected but require that it be annotated with
      * {@link ForActivity @ForActivity} to explicitly differentiate it from application context.
      */
-    @Provides @ForActivity @Singleton
-    Context provideActivityContext() {
+    @Provides @ForActivity @Singleton Context provideActivityContext() {
         return activity;
     }
 }

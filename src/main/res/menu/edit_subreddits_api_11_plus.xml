@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/add"
         android:icon="@drawable/ic_action_add_dark"
         android:showAsAction="ifRoom"
-        android:title="Add Subreddit"/>
-    
+        android:title="Add Subreddit" />
+
     <item
         android:id="@+id/resync_subreddits"
         android:icon="@drawable/ic_action_reload_dark"
         android:showAsAction="ifRoom"
-        android:title="Refresh from Reddit"/>
-    
+        android:title="Refresh from Reddit" />
+
     <item
         android:id="@+id/reset_subreddits"
         android:icon="@drawable/ic_action_discard"
         android:showAsAction="withText"
-        android:title="Reset to default subreddits"/>
+        android:title="Reset to default subreddits" />
 
 
 </menu>

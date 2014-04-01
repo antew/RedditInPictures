@@ -11,30 +11,29 @@ import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
 
 public class GifView extends View {
-    public static final String TAG                     = GifView.class.getSimpleName();
-    private Movie              mMovie;
-    private long               mMovieStart;
-    private float              mScale;
+    public static final String TAG = GifView.class.getSimpleName();
+    private Movie mMovie;
+    private long  mMovieStart;
+    private float mScale;
 
     public GifView(Context context) {
         super(context);
         setFocusable(true);
-
     }
 
     public GifView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setFocusable(true);
-
     }
-
 
     public void loadGif(String url) {
         Log.i(TAG, "Before trimming URL = " + url);
-        if (url.startsWith(ImageSize.ORIGINAL.name()))
+        if (url.startsWith(ImageSize.ORIGINAL.name())) {
             url = url.replace(ImageSize.ORIGINAL.name(), "");
-        if (url.startsWith(ImageSize.SMALL_SQUARE.name()))
+        }
+        if (url.startsWith(ImageSize.SMALL_SQUARE.name())) {
             url = url.replace(ImageSize.SMALL_SQUARE.name(), "");
+        }
 
         Log.i(TAG, "After trimming URL = " + url);
         new DownloadImageTask().execute(url);
@@ -60,7 +59,7 @@ public class GifView extends View {
             invalidate();
         }
     }
-    
+
     class DownloadImageTask extends AsyncTask<String, Void, byte[]> {
         private String data;
 
@@ -83,8 +82,6 @@ public class GifView extends View {
         protected void onPostExecute(byte[] result) {
             mMovie = Movie.decodeByteArray(result, 0, result.length);
             invalidate();
-
         }
-
     }
 }

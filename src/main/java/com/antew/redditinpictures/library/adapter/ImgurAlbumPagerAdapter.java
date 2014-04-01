@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class ImgurAlbumPagerAdapter extends FragmentStatePagerAdapter {
     private List<ImgurImage> mImages;
-    
+
     public ImgurAlbumPagerAdapter(FragmentManager fm, List<ImgurImage> images) {
         super(fm);
         mImages = images;
@@ -37,34 +37,42 @@ public class ImgurAlbumPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        if (mImages == null)
+        if (mImages == null) {
             return 0;
-        
+        }
+
         return mImages.size();
     }
 
     /**
      * The {@link ImgurImage} for the input position
-     * @param position The position
+     *
+     * @param position
+     *     The position
+     *
      * @return The {@link ImgurImage} at the input position
      */
     public ImgurImage getImage(int position) {
-        if (mImages == null)
+        if (mImages == null) {
             return null;
-        else if (position < 0 || position > mImages.size())
+        } else if (position < 0 || position > mImages.size()) {
             throw new IndexOutOfBoundsException();
+        }
 
         return mImages.get(position);
     }
-    
+
     @Override
     public Fragment getItem(int position) {
         return getImgurAlbumFragment(mImages.get(position));
     }
-    
+
     /**
      * A new {@link ImgurAlbumFragment} for the input {@link ImgurImage}
-     * @param i The {@link ImgurImage}
+     *
+     * @param i
+     *     The {@link ImgurImage}
+     *
      * @return A new {@link ImgurAlbumFragment} for the input {@link ImgurImage}
      */
     public Fragment getImgurAlbumFragment(ImgurImage i) {

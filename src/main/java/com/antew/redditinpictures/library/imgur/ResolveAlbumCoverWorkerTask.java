@@ -16,9 +16,9 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
     // The S before the extension gets us a small image.
     private static final String mImgurImageSuffix = "s.jpg";
 
-    private String mImageUrl;
+    private String    mImageUrl;
     private ImageView mImageView;
-    private Context mContext;
+    private Context   mContext;
 
     public ResolveAlbumCoverWorkerTask(String mImageUrl, ImageView mImageView, Context mContext) {
         super();
@@ -27,68 +27,8 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
         this.mContext = mContext;
     }
 
-    /**
-     * @throws Exception, captured on passed to onException() if present.
-     */
-    @Override protected void onPreExecute() throws Exception {
-        super.onPreExecute();
-        Picasso.with(mContext)
-            .load(R.drawable.loading_spinner_48)
-            .error(R.drawable.empty_photo)
-            .into(mImageView);
-    }
-
-    /**
-     * Computes a result, or throws an exception if unable to do so.
-     *
-     * @return computed result
-     * @throws Exception if unable to compute a result
-     */
-    @Override public String call() throws Exception {
-        Ln.d("Resolving url: %s", mImageUrl);
-        Image imageAlbum = ImageResolver.resolve(mImageUrl);
-        if (imageAlbum instanceof ImgurAlbumType) {
-            return mImgurImagePrefix
-                + ((ImgurAlbumType) imageAlbum).getAlbum().getCover()
-                + mImgurImageSuffix;
-        }
-        return null;
-    }
-
-    /**
-     * @param imageUrl the result of {@link #call()}
-     * @throws Exception, captured on passed to onException() if present.
-     */
-    @Override protected void onSuccess(String imageUrl) throws Exception {
-        if (mImageView != null) {
-            ResolveAlbumCoverWorkerTask albumCoverResolverWorkerTask =
-                getAlbumCoverResolverTask(mImageView);
-            if (this == albumCoverResolverWorkerTask) {
-                Picasso.with(mContext)
-                    .load(imageUrl)
-                    .placeholder(R.drawable.loading_spinner_48)
-                    .error(R.drawable.empty_photo)
-                    .into(mImageView);
-            }
-        }
-    }
-
-    public static class LoadingTaskHolder {
-        private final WeakReference<ResolveAlbumCoverWorkerTask> mAlbumCoverResolverWorkerTask;
-
-        public LoadingTaskHolder(ResolveAlbumCoverWorkerTask bitmapDownloaderTask) {
-            mAlbumCoverResolverWorkerTask =
-                new WeakReference<ResolveAlbumCoverWorkerTask>(bitmapDownloaderTask);
-        }
-
-        public ResolveAlbumCoverWorkerTask getAlbumCoverResolverTask() {
-            return mAlbumCoverResolverWorkerTask.get();
-        }
-    }
-
     public static boolean cancelPotentialDownload(String url, ImageView imageView) {
-        ResolveAlbumCoverWorkerTask albumCoverResolverWorkerTask =
-            getAlbumCoverResolverTask(imageView);
+        ResolveAlbumCoverWorkerTask albumCoverResolverWorkerTask = getAlbumCoverResolverTask(imageView);
 
         if (albumCoverResolverWorkerTask != null) {
             String bitmapUrl = albumCoverResolverWorkerTask.mImageUrl;
@@ -102,6 +42,35 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
         return true;
     }
 
+    /**
+     * @throws Exception,
+     *     captured on passed to onException() if present.
+     */
+    @Override protected void onPreExecute() throws Exception {
+        super.onPreExecute();
+        Picasso.with(mContext).load(R.drawable.loading_spinner_48).error(R.drawable.empty_photo).into(mImageView);
+    }
+
+    /**
+     * @param imageUrl
+     *     the result of {@link #call()}
+     *
+     * @throws Exception,
+     *     captured on passed to onException() if present.
+     */
+    @Override protected void onSuccess(String imageUrl) throws Exception {
+        if (mImageView != null) {
+            ResolveAlbumCoverWorkerTask albumCoverResolverWorkerTask = getAlbumCoverResolverTask(mImageView);
+            if (this == albumCoverResolverWorkerTask) {
+                Picasso.with(mContext)
+                       .load(imageUrl)
+                       .placeholder(R.drawable.loading_spinner_48)
+                       .error(R.drawable.empty_photo)
+                       .into(mImageView);
+            }
+        }
+    }
+
     public static ResolveAlbumCoverWorkerTask getAlbumCoverResolverTask(ImageView imageView) {
         if (imageView != null) {
             Object tag = imageView.getTag();
@@ -111,6 +80,35 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
             }
         }
         return null;
+    }
+
+    /**
+     * Computes a result, or throws an exception if unable to do so.
+     *
+     * @return computed result
+     *
+     * @throws Exception
+     *     if unable to compute a result
+     */
+    @Override public String call() throws Exception {
+        Ln.d("Resolving url: %s", mImageUrl);
+        Image imageAlbum = ImageResolver.resolve(mImageUrl);
+        if (imageAlbum instanceof ImgurAlbumType) {
+            return mImgurImagePrefix + ((ImgurAlbumType) imageAlbum).getAlbum().getCover() + mImgurImageSuffix;
+        }
+        return null;
+    }
+
+    public static class LoadingTaskHolder {
+        private final WeakReference<ResolveAlbumCoverWorkerTask> mAlbumCoverResolverWorkerTask;
+
+        public LoadingTaskHolder(ResolveAlbumCoverWorkerTask bitmapDownloaderTask) {
+            mAlbumCoverResolverWorkerTask = new WeakReference<ResolveAlbumCoverWorkerTask>(bitmapDownloaderTask);
+        }
+
+        public ResolveAlbumCoverWorkerTask getAlbumCoverResolverTask() {
+            return mAlbumCoverResolverWorkerTask.get();
+        }
     }
 }
 

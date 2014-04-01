@@ -20,8 +20,8 @@ import java.util.List;
 
 /**
  * This class is used by Gson to parse JSON from Flickr into POJOs
- * @author Antew
  *
+ * @author Antew
  */
 public class Flickr {
     public static final String TAG = Flickr.class.getSimpleName();
@@ -29,53 +29,29 @@ public class Flickr {
     private FlickrSizes sizes;
 
     /**
-     * Image sizes Flickr returns
-     * @author a
-     *
-     */
-    public enum FlickrSize { 
-        //@formatter:off
-        SQUARE("Square"), 
-        LARGE_SQUARE("Large Square"),
-        THUMBNAIL("Thumbnail"),
-        SMALL("Small"),
-        SMALL_320("Small 320"),
-        MEDIUM("Medium"),
-        MEDIUM_640("Medium 640"),
-        MEDIUM_800("Medium 800"),
-        LARGE("Large"),
-        ORIGINAL("Original");
-        
-        private String key;
-        FlickrSize(String key) {
-            this.key = key;
-        }
-        
-        public String getKey() {
-            return key;
-        }
-        //@formatter:off
-    }
-    
-    /**
      * The status
+     *
      * @return The status
      */
     public String getStat() {
         return stat;
     }
-
+    
     /**
      * The {@link FlickrSizes} class contains a list of sizes the image is available in
+     *
      * @return The sizes object
      */
     public FlickrSizes getSizes() {
         return sizes;
     }
-    
+
     /**
      * Get the {@link FlickrImage} for the requested image size
-     * @param imageSize The image size
+     *
+     * @param imageSize
+     *     The image size
+     *
      * @return The {@link FlickrImage} for the input size, or null if it is not found
      */
     public FlickrImage getSize(FlickrSize imageSize) {
@@ -85,37 +61,69 @@ public class Flickr {
         // Sometimes certain image sizes aren't returned from the API (e.g. 'Original')
         // So we try to walk forward/backward through the list until we find a suitable size
         boolean walkForward = imageSize.ordinal() < (flickrSizes.length / 2);
-        
-        
+
+
         while (result == null && !searchedAll) {
             String searchKey = imageSize.getKey();
             if (sizes != null) {
                 for (FlickrImage f : sizes.getSize()) {
                     Log.i(TAG, "Requested Size - " + searchKey + ", Current Size - " + f.getLabel());
-                    if (f.getLabel().equalsIgnoreCase(searchKey))
+                    if (f.getLabel().equalsIgnoreCase(searchKey)) {
                         return f;
+                    }
                 }
             }
-            
-            
+
+
             if (walkForward) {
-                if ((imageSize.ordinal() + 1) >= flickrSizes.length)
+                if ((imageSize.ordinal() + 1) >= flickrSizes.length) {
                     searchedAll = true;
-                else
+                } else {
                     imageSize = flickrSizes[imageSize.ordinal() + 1];
+                }
             } else {
-                if ((imageSize.ordinal() - 1) <= 0)
+                if ((imageSize.ordinal() - 1) <= 0) {
                     searchedAll = true;
-                else
+                } else {
                     imageSize = flickrSizes[imageSize.ordinal() - 1];
+                }
             }
-                
-            
-            
+
+
+
         }
-        
-        
+
+
         return null;
+    }
+    
+    /**
+     * Image sizes Flickr returns
+     *
+     * @author a
+     */
+    public enum FlickrSize {
+        //@formatter:off
+        SQUARE("Square"),
+        LARGE_SQUARE("Large Square"),
+        THUMBNAIL("Thumbnail"),
+        SMALL("Small"),
+        SMALL_320("Small 320"),
+        MEDIUM("Medium"),
+        MEDIUM_640("Medium 640"),
+        MEDIUM_800("Medium 800"),
+        LARGE("Large"),
+        ORIGINAL("Original");
+
+        private String key;
+        FlickrSize(String key) {
+            this.key = key;
+        }
+
+        public String getKey() {
+            return key;
+        }
+        //@formatter:off
     }
 
     public static final class FlickrSizes {
@@ -149,6 +157,7 @@ public class Flickr {
         
         /**
          * The label contains the {@link FlickrSize}
+         *
          * @return
          */
         public String getLabel() {

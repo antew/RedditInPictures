@@ -52,10 +52,11 @@ public class ImageListCursorAdapter extends CursorAdapter {
     public static final String TAG = ImageListCursorAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
     private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
-    private Pattern mImgurAlbumPattern = Pattern.compile("^https?://imgur.com/a/.*$");
+    private Pattern mImgurAlbumPattern    = Pattern.compile("^https?://imgur.com/a/.*$");
 
     /**
-     * @param context The context
+     * @param context
+     *     The context
      */
     public ImageListCursorAdapter(Context context) {
         super(context, null, 0);
@@ -67,6 +68,11 @@ public class ImageListCursorAdapter extends CursorAdapter {
     public Object getItem(int position) {
         mCursor.moveToPosition(position);
         return mCursor;
+    }
+
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        return mInflater.inflate(R.layout.image_list_item, parent, false);
     }
 
     @Override
@@ -110,7 +116,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
                 } else if (mImgurAlbumPattern.matcher(url).matches()) {
                     if (ResolveAlbumCoverWorkerTask.cancelPotentialDownload(url, holder.imageView)) {
                         ResolveAlbumCoverWorkerTask task = new ResolveAlbumCoverWorkerTask(url, holder.imageView, mContext);
-                        ResolveAlbumCoverWorkerTask.LoadingTaskHolder loadingTaskHolder = new ResolveAlbumCoverWorkerTask.LoadingTaskHolder(task);
+                        ResolveAlbumCoverWorkerTask.LoadingTaskHolder loadingTaskHolder = new ResolveAlbumCoverWorkerTask.LoadingTaskHolder(
+                            task);
                         holder.imageView.setTag(loadingTaskHolder);
                         task.execute();
                     }
@@ -122,33 +129,25 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
         if (Strings.notEmpty(url)) {
             Picasso.with(mContext)
-                .load(url)
-                .placeholder(R.drawable.loading_spinner_48)
-                .error(R.drawable.empty_photo)
-                .fit()
-                .centerCrop()
-                .into(holder.imageView);
+                   .load(url)
+                   .placeholder(R.drawable.loading_spinner_48)
+                   .error(R.drawable.empty_photo)
+                   .fit()
+                   .centerCrop()
+                   .into(holder.imageView);
         }
 
         String separator = " " + "\u2022" + " ";
-        String titleText =
-            postData.getTitle() + " <font color='#BEBEBE'>(" + postData.getDomain() + ")</font>";
+        String titleText = postData.getTitle() + " <font color='#BEBEBE'>(" + postData.getDomain() + ")</font>";
         holder.postTitle.setText(Html.fromHtml(titleText));
         String postInformation = "";
 
         //If we have a NSFW image.
         if (postData.isOver_18()) {
-            postInformation = "<font color='#AC3939'>"
-                + mContext.getString(R.string.nsfw)
-                + "</font>"
-                + separator;
+            postInformation = "<font color='#AC3939'>" + mContext.getString(R.string.nsfw) + "</font>" + separator;
         }
 
-        postInformation += postData.getSubreddit()
-            + separator
-            + postData.getNum_comments()
-            + " "
-            + mContext.getString(R.string.comments);
+        postInformation += postData.getSubreddit() + separator + postData.getNum_comments() + " " + mContext.getString(R.string.comments);
 
         holder.postInformation.setText(Html.fromHtml(postInformation));
         holder.postVotes.setText("" + postData.getScore());
@@ -176,11 +175,6 @@ public class ImageListCursorAdapter extends CursorAdapter {
         });
     }
 
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.image_list_item, parent, false);
-    }
-
     /**
      * Handles updating the vote based on the action bar vote icon that was clicked, broadcasts a
      * message to have the fragment update the score.
@@ -196,8 +190,10 @@ public class ImageListCursorAdapter extends CursorAdapter {
      * If the current vote is DOWN and the new vote is UP, the vote is changed to UP.
      * </p>
      *
-     * @param whichVoteButton The vote representing the menu item which was clicked
-     * @param p The post this vote is for
+     * @param whichVoteButton
+     *     The vote representing the menu item which was clicked
+     * @param p
+     *     The post this vote is for
      */
     private void vote(Vote whichVoteButton, PostData p, ViewHolder holder) {
         if (!RedditLoginInformation.isLoggedIn()) {
@@ -281,12 +277,12 @@ public class ImageListCursorAdapter extends CursorAdapter {
     }
 
     static class ViewHolder {
-        @InjectView(R.id.iv_image) ImageView imageView;
-        @InjectView(R.id.tv_title) TextView postTitle;
-        @InjectView(R.id.tv_post_information) TextView postInformation;
-        @InjectView(R.id.tv_votes) TextView postVotes;
-        @InjectView(R.id.ib_upVote) ImageButton upVote;
-        @InjectView(R.id.ib_downVote) ImageButton downVote;
+        @InjectView(R.id.iv_image)            ImageView   imageView;
+        @InjectView(R.id.tv_title)            TextView    postTitle;
+        @InjectView(R.id.tv_post_information) TextView    postInformation;
+        @InjectView(R.id.tv_votes)            TextView    postVotes;
+        @InjectView(R.id.ib_upVote)           ImageButton upVote;
+        @InjectView(R.id.ib_downVote)         ImageButton downVote;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);

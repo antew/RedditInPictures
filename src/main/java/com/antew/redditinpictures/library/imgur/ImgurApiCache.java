@@ -19,8 +19,8 @@ import java.util.HashMap;
 
 /**
  * Cache used to avoid repeated API calls to Imgur
- * @author Antew
  *
+ * @author Antew
  */
 public class ImgurApiCache {
     private static HashMap<String, ImgurImageApi> imgurImages    = null;
@@ -29,8 +29,8 @@ public class ImgurApiCache {
 
     private ImgurApiCache() {}
 
-    private static class ImgurApiCacheHolder {
-        public static final ImgurApiCache INSTANCE = new ImgurApiCache();
+    public static ImgurApiCache getInstance() {
+        return ImgurApiCacheHolder.INSTANCE;
     }
 
     public boolean containsImgurImage(String url) {
@@ -72,8 +72,9 @@ public class ImgurApiCache {
     public ImgurImageApi getImgurImage(String url) {
         ImgurImageApi retVal = null;
 
-        if (imgurImages != null)
+        if (imgurImages != null) {
             retVal = imgurImages.get(url);
+        }
 
         return retVal;
     }
@@ -81,8 +82,9 @@ public class ImgurApiCache {
     public ImgurAlbumApi getImgurAlbum(String url) {
         ImgurAlbumApi retVal = null;
 
-        if (imgurAlbums != null)
+        if (imgurAlbums != null) {
             retVal = imgurAlbums.get(url);
+        }
 
         return retVal;
     }
@@ -90,14 +92,14 @@ public class ImgurApiCache {
     public ImgurGallery getImgurGallery(String url) {
         ImgurGallery retVal = null;
 
-        if (imgurGalleries != null)
+        if (imgurGalleries != null) {
             retVal = imgurGalleries.get(url);
+        }
 
         return retVal;
     }
 
-    public static ImgurApiCache getInstance() {
-        return ImgurApiCacheHolder.INSTANCE;
+    private static class ImgurApiCacheHolder {
+        public static final ImgurApiCache INSTANCE = new ImgurApiCache();
     }
-
 }

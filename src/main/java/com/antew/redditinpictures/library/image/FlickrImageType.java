@@ -14,21 +14,49 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 public class FlickrImageType extends Image {
-    public static final String  TAG        = FlickrImageType.class.getSimpleName();
-    private static final String FLICKR_URL = "http://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=" + FlickrApiKey.KEY
-                                                   + "&photo_id=%s&format=json&nojsoncallback=1";
-    private static final String URL_REGEX = "^http://(?:\\w+).?flickr.com/(?:.*)/([\\d]{10})/?(?:.*)?$";
-    private Flickr              mFlickr    = null;
+    public static final  String TAG        = FlickrImageType.class.getSimpleName();
+    private static final String FLICKR_URL = "http://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key="
+                                             + FlickrApiKey.KEY
+                                             + "&photo_id=%s&format=json&nojsoncallback=1";
+    private static final String URL_REGEX  = "^http://(?:\\w+).?flickr.com/(?:.*)/([\\d]{10})/?(?:.*)?$";
+    private              Flickr mFlickr    = null;
 
     public FlickrImageType(String url) {
         super(url);
     }
 
+    @Override
+    public String getSize(ImageSize size) {
+        assert size != null : "ImageSize must not be null";
+
+        if (mFlickr == null) {
+            mFlickr = resolve();
+        }
+
+        if (mFlickr == null) {
+            Log.i(TAG, "Received null Flickr object");
+            return null;
+        }
+
+        FlickrSize flickrSize = FlickrSize.ORIGINAL;
+        if (ImageSize.SMALL_SQUARE.equals(size)) {
+            flickrSize = FlickrSize.THUMBNAIL;
+        }
+
+        FlickrImage fi = mFlickr.getSize(flickrSize);
+        if (fi != null) {
+            return fi.getSource();
+        }
+
+        return null;
+    }
+
     /**
      * Resolve the flickr image for the input URL
-     * 
+     *
      * @param url
-     *            The URL to resolve an image from
+     *     The URL to resolve an image from
+     *
      * @return An {@link Flickr} instance representing the image
      */
     private Flickr resolve() {
@@ -39,9 +67,10 @@ public class FlickrImageType extends Image {
 
     /**
      * Resolve an image from Flickr
-     * 
+     *
      * @param url
-     *            The URL to resolve
+     *     The URL to resolve
+     *
      * @return A {@link Flickr} instance
      */
     public static Flickr resolveFlickrImageFromHash(String hash) {
@@ -55,33 +84,9 @@ public class FlickrImageType extends Image {
             } catch (JsonSyntaxException e) {
                 Log.e(TAG, "Error parsing JSON in resolveFlickrImage", e);
             }
-
         }
 
         return flickr;
-    }
-
-    @Override
-    public String getSize(ImageSize size) {
-        assert size != null : "ImageSize must not be null";
-
-        if (mFlickr == null)
-            mFlickr = resolve();
-        
-        if (mFlickr == null) {
-            Log.i(TAG, "Received null Flickr object");
-            return null;
-        }
-
-        FlickrSize flickrSize = FlickrSize.ORIGINAL;
-        if (ImageSize.SMALL_SQUARE.equals(size))
-            flickrSize = FlickrSize.THUMBNAIL;
-
-        FlickrImage fi = mFlickr.getSize(flickrSize);
-        if (fi != null)
-            return fi.getSource();
-
-        return null;
     }
 
     @Override
@@ -93,5 +98,4 @@ public class FlickrImageType extends Image {
     public String getRegexForUrlMatching() {
         return URL_REGEX;
     }
-
 }

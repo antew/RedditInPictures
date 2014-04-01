@@ -46,7 +46,5 @@ class PostResponse extends RedditResponseHandler {
 
         int rowsInserted = resolver.bulkInsert(RedditContract.Posts.CONTENT_URI, operations);
         Log.i(TAG, "Inserted " + rowsInserted + " rows");
-
     }
-
 }

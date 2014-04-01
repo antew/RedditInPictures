@@ -40,16 +40,14 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
     private TextView username;
     private TextView password;
 
-    public interface LoginDialogListener {
-        void onFinishLoginDialog(String username, String password);
-    }
-
     // Empty constructor required for DialogFragment
-    public LoginDialogFragment() {};
+    public LoginDialogFragment() {}
 
     public static LoginDialogFragment newInstance() {
         return new LoginDialogFragment();
     }
+
+    ;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -61,7 +59,7 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
         password.setOnEditorActionListener(this);
         username.requestFocus();
         //@formatter:off
-        final AlertDialog dialog 
+        final AlertDialog dialog
                 = new AlertDialog.Builder(getActivity())
                                  .setView(dialogView)
                                  .setTitle(R.string.log_in_to_reddit)
@@ -83,6 +81,7 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
      * We have to override setOnShowListener here (min API level 8) in order to validate
      * the inputs before closing the dialog. Just overriding setPositiveButton closes the
      * automatically when the button is pressed
+     *
      * @return The onShowListener for the AlertDialog
      */
     private OnShowListener getDialogOnShowListener() {
@@ -99,26 +98,24 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
                         doLogin();
                     }
                 });
-
             }
         };
     }
 
     /**
-     * Perform the login if the user presses the IME key from the password field
+     * Perform the login, provided {@link #hasErrors()} returns false
      */
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_ACTION_DONE) {
-            doLogin();
-            return true;
+    private void doLogin() {
+        if (!hasErrors()) {
+            LoginDialogListener activity = (LoginDialogListener) getActivity();
+            activity.onFinishLoginDialog(username.getText().toString(), password.getText().toString());
+            this.dismiss();
         }
-        return false;
     }
 
     /**
      * Returns true if the username and password pass validation.
-     * 
+     *
      * @return False if the username or password is blank
      */
     private boolean hasErrors() {
@@ -137,14 +134,15 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
     }
 
     /**
-     * Perform the login, provided {@link #hasErrors()} returns false
+     * Perform the login if the user presses the IME key from the password field
      */
-    private void doLogin() {
-        if (!hasErrors()) {
-            LoginDialogListener activity = (LoginDialogListener) getActivity();
-            activity.onFinishLoginDialog(username.getText().toString(), password.getText().toString());
-            this.dismiss();
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+            doLogin();
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -159,10 +157,16 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
      */
     @Override
     public void afterTextChanged(Editable s) {
-        if (username.getText().length() > 0 && username.getError() != null)
+        if (username.getText().length() > 0 && username.getError() != null) {
             username.setError(null);
-        
-        if (password.getText().length() > 0 && password.getError() != null)
+        }
+
+        if (password.getText().length() > 0 && password.getError() != null) {
             password.setError(null);
+        }
+    }
+
+    public interface LoginDialogListener {
+        void onFinishLoginDialog(String username, String password);
     }
 }

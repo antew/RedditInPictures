@@ -23,15 +23,13 @@ import java.lang.reflect.Type;
 
 /**
  * This is used to deserialize booleans from Flickr because they come across and either 1 or 0
- * @author Antew
  *
+ * @author Antew
  */
-public class BooleanDeserializer implements JsonDeserializer<Boolean>  {
+public class BooleanDeserializer implements JsonDeserializer<Boolean> {
 
     @Override
     public Boolean deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
         return element.getAsInt() == 1 ? true : false;
     }
-
-
 }

@@ -12,7 +12,7 @@ import java.lang.ref.WeakReference;
 /**
  * @see <a href="http://stackoverflow.com/questions/3130654/memory-leak-in-webview">Stackoverflow post</a>
  * http://code.google.com/p/android/issues/detail?id=9375
- * 
+ * <p/>
  * Also, you must call {@link #destroy()} from your activity's onDestroy method.
  */
 public class NonLeakingWebView extends WebView {
@@ -42,8 +42,9 @@ public class NonLeakingWebView extends WebView {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             try {
                 final Activity activity = activityRef.get();
-                if (activity != null)
+                if (activity != null) {
                     activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                }
             } catch (RuntimeException ignored) {
                 // ignore any url parsing exceptions
             }

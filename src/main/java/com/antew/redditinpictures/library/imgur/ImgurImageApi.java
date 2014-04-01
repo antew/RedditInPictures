@@ -22,9 +22,9 @@ import com.antew.redditinpictures.library.utils.Util;
 
 /**
  * Class used to parse the Imgur image JSON into POJOs
- * @see <a href="http://api.imgur.com/2/image/u9PWV.json">Example</a>
- * @author Antew
  *
+ * @author Antew
+ * @see <a href="http://api.imgur.com/2/image/u9PWV.json">Example</a>
  */
 public class ImgurImageApi {
     public ImgurImage getImage() {
@@ -45,22 +45,32 @@ public class ImgurImageApi {
             links = in.readParcelable(Link.class.getClassLoader());
             image = in.readParcelable(Image.class.getClassLoader());
         }
-        
+
         public Link getLinks() { return links; }
+
         public Image getImage() { return image; }
-        
+
         @Override
         public String toString() {
             StringBuffer buf = new StringBuffer();
-            buf.append("Links: [ ImgurPage: " + r(links.getImgur_page()) + ", LargeThumbnail: " + r(links.getLarge_thumbnail()) + ", Original: " + r(links.getOriginal()) + ", SmallSquare: " + r(links.getSmall_square()) + "]");
+            buf.append("Links: [ ImgurPage: "
+                       + r(links.getImgur_page())
+                       + ", LargeThumbnail: "
+                       + r(links.getLarge_thumbnail())
+                       + ", Original: "
+                       + r(links.getOriginal())
+                       + ", SmallSquare: "
+                       + r(links.getSmall_square())
+                       + "]");
             return buf.toString();
         }
-        
+
         public String getSize(ImageSize size) {
             String decoded = null;
-            if (links == null)
+            if (links == null) {
                 return null;
-            
+            }
+
             switch (size) {
                 case SMALL_SQUARE:
                     decoded = links.getSmall_square();
@@ -69,21 +79,37 @@ public class ImgurImageApi {
                 case ORIGINAL:
                     decoded = links.getOriginal();
             }
-            
+
+            return decoded;
+        }
+
+        public String getSize(ImageSize size) {
+            String decoded = null;
+            if (links == null) {
+                return null;
+            }
+
+            switch (size) {
+                case SMALL_SQUARE:
+                    decoded = links.getSmall_square();
+                case LARGE_THUMBNAIL:
+                    decoded = links.getLarge_thumbnail();
+                case ORIGINAL:
+                    decoded = links.getOriginal();
+            }
+
             return decoded;
         }
 
         @Override
         public int describeContents() {
             return 0;
-        }
-
-        @Override
+        }        @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeParcelable(links, 0);
             dest.writeParcelable(image, 0);
         }
-        
+
         //@formatter:off
         public static final Parcelable.Creator<ImgurImage> CREATOR
             = new Parcelable.Creator<ImgurImage>() {
@@ -99,12 +125,10 @@ public class ImgurImageApi {
             
         };
         //@formatter:on
-
     }
-    
+
     private static String r(String res) {
         return res == null ? "null" : res;
-            
     }
 
     public static class Image implements Parcelable {
@@ -167,7 +191,7 @@ public class ImgurImageApi {
             dest.writeLong(views);
             dest.writeLong(bandwidth);
         }
-        
+
         //@formatter:off
         public static final Parcelable.Creator<Image> CREATOR
             = new Parcelable.Creator<Image>() {
@@ -183,7 +207,6 @@ public class ImgurImageApi {
             
         };
         //@formatter:on
-
     }
 
     public static class Link implements Parcelable {
@@ -218,7 +241,7 @@ public class ImgurImageApi {
             dest.writeString(small_square);
             dest.writeString(large_thumbnail);
         }
-        
+
         //@formatter:off
         public static final Parcelable.Creator<Link> CREATOR
             = new Parcelable.Creator<Link>() {
@@ -234,6 +257,5 @@ public class ImgurImageApi {
             
         };
         //@formatter:on
-
     }
 }

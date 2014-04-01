@@ -8,13 +8,7 @@ import dagger.ObjectGraph;
 
 public class RedditInPicturesApplication extends Application {
     private static RedditInPicturesApplication instance;
-    private ObjectGraph applicationGraph;
-
-    /**
-     * Create main application
-     */
-    public RedditInPicturesApplication() {
-    }
+    private        ObjectGraph                 applicationGraph;
 
     /**
      * Create main application
@@ -26,16 +20,10 @@ public class RedditInPicturesApplication extends Application {
         attachBaseContext(context);
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        instance = this;
-
-        applicationGraph = ObjectGraph.create(Modules.get(this));
-    }
-
-    public ObjectGraph getApplicationGraph() {
-        return applicationGraph;
+    /**
+     * Create main application
+     */
+    public RedditInPicturesApplication() {
     }
 
     /**
@@ -50,5 +38,17 @@ public class RedditInPicturesApplication extends Application {
 
     public static RedditInPicturesApplication getInstance() {
         return instance;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        instance = this;
+
+        applicationGraph = ObjectGraph.create(Modules.get(this));
+    }
+
+    public ObjectGraph getApplicationGraph() {
+        return applicationGraph;
     }
 }

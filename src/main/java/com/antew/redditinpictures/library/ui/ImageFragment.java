@@ -45,8 +45,11 @@ import javax.inject.Inject;
 
 /**
  * Fragment with convenience methods for displaying images
- * @param <T> The type of view the fragment is using, e.g. GridView, ListView
- * @param <V> The type of the cursor adapter backing the view
+ *
+ * @param <T>
+ *     The type of view the fragment is using, e.g. GridView, ListView
+ * @param <V>
+ *     The type of the cursor adapter backing the view
  */
 public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapter> extends BaseFragment
     implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, ScrollPosReadable {
@@ -55,17 +58,11 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     protected V                  mAdapter;
     protected ThumbnailInfo      mThumbnailInfo;
     protected RedditDataProvider mRedditDataProvider;
-    private   String             mAfter;
-    private   MenuItem           mLoginMenuItem;
-    private boolean mRequestInProgress = false;
-    private boolean mFullRefresh = true;
-
     @Inject
     protected Bus mBus;
-
     @InjectView(R.id.no_images)
     protected TextView mNoImages;
-
+    private   String             mAfter;
     private BroadcastReceiver mSubredditSelected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -75,7 +72,9 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
             fetchImagesFromReddit(true);
         }
     };
-
+    private   MenuItem           mLoginMenuItem;
+    private boolean mRequestInProgress = false;
+    private boolean mFullRefresh       = true;
     private BroadcastReceiver mHttpRequestComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -98,19 +97,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        setHasOptionsMenu(true);
-
-        mThumbnailInfo = ThumbnailInfo.getThumbnailInfo(getResources());
-
-        // Initialize the adapter to null, the adapter will be populated in onLoadFinished
-        mAdapter = getNewAdapter();
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -130,8 +116,7 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
         if (activity instanceof RedditDataProvider) {
             mRedditDataProvider = (RedditDataProvider) activity;
         } else {
-            throw new RuntimeException(
-                "Activity " + activity.toString() + " must implement the RedditDataProvider interface");
+            throw new RuntimeException("Activity " + activity.toString() + " must implement the RedditDataProvider interface");
         }
     }
 
@@ -148,31 +133,6 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
             mLoginMenuItem.setTitle(R.string.log_on);
             mLoginMenuItem.setIcon(R.drawable.ic_action_key_dark);
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View v = inflater.inflate(getLayoutId(), container, false);
-        ButterKnife.inject(this, v);
-        return v;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mRemoveNsfwImages);
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mHttpRequestComplete);
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mSubredditSelected);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN) @Override
@@ -193,28 +153,8 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
         }
     }
 
-
     public Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
         return ImageDetailActivity.class;
-    }
-
-    protected void setRequestInProgress(boolean inProgress) {
-        mRequestInProgress = inProgress;
-        if (inProgress) {
-            mNoImages.setVisibility(View.GONE);
-        }
-    }
-
-    protected void fetchImagesFromReddit(boolean replaceAll) {
-        setRequestInProgress(true);
-        mFullRefresh = replaceAll;
-        //@formatter:off
-        RedditService.getPosts(getActivity(),
-                mRedditDataProvider.getSubreddit(),
-                mRedditDataProvider.getAge(),
-                mRedditDataProvider.getCategory(),
-                mAfter);
-        //@formatter:on
     }
 
     @Override
@@ -289,6 +229,20 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
         }
     }
 
+    protected void fetchImagesFromReddit(boolean replaceAll) {
+        setRequestInProgress(true);
+        mFullRefresh = replaceAll;
+        //@formatter:off
+        RedditService.getPosts(getActivity(),
+                mRedditDataProvider.getSubreddit(),
+                mRedditDataProvider.getAge(),
+                mRedditDataProvider.getCategory(),
+                mAfter);
+        //@formatter:on
+    }
+
+    protected abstract T getAdapterView();
+
     @Override
     public void onLoaderReset(Loader<Cursor> cursor) {
         Log.i(TAG, "onLoaderReset");
@@ -301,6 +255,8 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
                 break;
         }
     }
+
+    protected abstract QueryCriteria getPostsQueryCriteria();
 
     @Override
     public void onHiddenChanged(boolean hidden) {
@@ -317,6 +273,48 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
             }
         }
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        setHasOptionsMenu(true);
+
+        mThumbnailInfo = ThumbnailInfo.getThumbnailInfo(getResources());
+
+        // Initialize the adapter to null, the adapter will be populated in onLoadFinished
+        mAdapter = getNewAdapter();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View v = inflater.inflate(getLayoutId(), container, false);
+        ButterKnife.inject(this, v);
+        return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mRemoveNsfwImages);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mHttpRequestComplete);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mSubredditSelected);
+    }
+
+    protected abstract int getLayoutId();
+
+    protected abstract V getNewAdapter();
 
     @Override
     public int getFirstVisiblePosition() {
@@ -342,12 +340,10 @@ public abstract class ImageFragment<T extends AdapterView, V extends CursorAdapt
         return mRequestInProgress;
     }
 
-    protected abstract int getLayoutId();
-
-    protected abstract V getNewAdapter();
-
-    protected abstract T getAdapterView();
-
-    protected abstract QueryCriteria getPostsQueryCriteria();
-
+    protected void setRequestInProgress(boolean inProgress) {
+        mRequestInProgress = inProgress;
+        if (inProgress) {
+            mNoImages.setVisibility(View.GONE);
+        }
+    }
 }

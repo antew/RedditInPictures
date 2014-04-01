@@ -16,19 +16,25 @@ public class SetDefaultSubredditsDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        AlertDialog.Builder dialog =
-            new AlertDialog.Builder(getActivity()).setTitle(R.string.default_subreddits_title)
-                .setMessage(R.string.default_subreddits_message)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        ((SetDefaultSubredditsDialogListener) getActivity()).onSetDefaultSubreddits();
-                    }
-                })
-                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dialog.cancel();
-                    }
-                });
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity()).setTitle(R.string.default_subreddits_title)
+                                                                           .setMessage(R.string.default_subreddits_message)
+                                                                           .setPositiveButton(R.string.yes,
+                                                                                              new DialogInterface.OnClickListener() {
+                                                                                                  public void onClick(
+                                                                                                      DialogInterface dialog,
+                                                                                                      int whichButton) {
+                                                                                                      ((SetDefaultSubredditsDialogListener) getActivity())
+                                                                                                          .onSetDefaultSubreddits();
+                                                                                                  }
+                                                                                              })
+                                                                           .setNegativeButton(R.string.no,
+                                                                                              new DialogInterface.OnClickListener() {
+                                                                                                  public void onClick(
+                                                                                                      DialogInterface dialog,
+                                                                                                      int whichButton) {
+                                                                                                      dialog.cancel();
+                                                                                                  }
+                                                                                              });
         return dialog.create();
     }
 

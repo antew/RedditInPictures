@@ -4,9 +4,9 @@ import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 
 public class LoadSubredditPostsEvent {
-    private String mSubreddit;
+    private String   mSubreddit;
     private Category mCategory;
-    private Age mAge;
+    private Age      mAge;
 
     public LoadSubredditPostsEvent(String mSubreddit) {
         this.mSubreddit = mSubreddit;

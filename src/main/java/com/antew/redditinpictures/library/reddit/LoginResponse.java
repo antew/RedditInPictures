@@ -10,15 +10,15 @@ public class LoginResponse {
         return errors;
     }
 
+    public void setErrors(List<String[]> errors) {
+        this.errors = errors;
+    }
+
     public LoginData getData() {
         return data;
     }
-    
+
     public void setData(LoginData data) {
         this.data = data;
-    }
-    
-    public void setErrors(List<String[]> errors) {
-        this.errors = errors;
     }
 }

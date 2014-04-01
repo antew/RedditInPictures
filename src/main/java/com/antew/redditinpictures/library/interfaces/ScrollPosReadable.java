@@ -5,5 +5,6 @@ package com.antew.redditinpictures.library.interfaces;
  */
 public interface ScrollPosReadable {
     public int getFirstVisiblePosition();
+
     public void setFirstVisiblePosition(int firstVisiblePosition);
 }

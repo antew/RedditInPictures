@@ -39,17 +39,13 @@ public class SubredditUtils {
 
         String fakeJson = "";
         String line;
-        try
-        {
+        try {
             line = reader.readLine();
-            while (line != null)
-            {
+            while (line != null) {
                 fakeJson = fakeJson + line;
                 line = reader.readLine();
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             Ln.e(e, "Failed to Load Default Subreddits");
             return;
         }
@@ -71,12 +67,14 @@ public class SubredditUtils {
         List<ContentValues> defaultSubredditOperations = new ArrayList<ContentValues>();
         MySubredditsResponse.DefaultSubreddit[] defaultSubreddits = MySubredditsResponse.DefaultSubreddit.values();
         for (MySubredditsResponse.DefaultSubreddit subreddit : defaultSubreddits) {
-            defaultSubredditOperations.add(mySubreddits.getContentValues(new SubredditData(subreddit.getDisplayName(), subreddit.getPriority())));
+            defaultSubredditOperations.add(
+                mySubreddits.getContentValues(new SubredditData(subreddit.getDisplayName(), subreddit.getPriority())));
         }
 
         int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, operations);
         Ln.d("Inserted %d subreddits", rowsInserted);
-        int defaultRowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, defaultSubredditOperations.toArray(new ContentValues[] {}));
+        int defaultRowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI,
+                                                      defaultSubredditOperations.toArray(new ContentValues[] { }));
         Ln.d("Inserted %d default subreddits", defaultRowsInserted);
     }
 
@@ -92,17 +90,13 @@ public class SubredditUtils {
 
         String fakeJson = "";
         String line;
-        try
-        {
+        try {
             line = reader.readLine();
-            while (line != null)
-            {
+            while (line != null) {
                 fakeJson = fakeJson + line;
                 line = reader.readLine();
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             Ln.e(e, "Failed to Load Default Subreddits");
             return;
         }
@@ -116,14 +110,14 @@ public class SubredditUtils {
             return;
         }
 
-
         ContentValues[] operations = mySubreddits.getContentValuesArray();
 
         // Delete any currently existing, to allow us to batch merge...limitations of SQLLite on Android make me sad.
         for (ContentValues contentValue : operations) {
             //TODO: Once API-11 is sunset, replace with a conditional update instead of delete/insert.
             // Updates with parameters aren't supported prior to API-11 (Honeycomb). So instead we are just deleting the record if it exists and recreating it.
-            resolver.delete(RedditContract.Subreddits.CONTENT_URI, "subredditId = ?", new String[] { contentValue.getAsString(RedditContract.Subreddits.SUBREDDIT_ID)});
+            resolver.delete(RedditContract.Subreddits.CONTENT_URI, "subredditId = ?",
+                            new String[] { contentValue.getAsString(RedditContract.Subreddits.SUBREDDIT_ID) });
         }
 
         int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, operations);
@@ -157,7 +151,7 @@ public class SubredditUtils {
         return false;
     }
 
-   public static class SetDefaultSubredditsTask extends SafeAsyncTask<Void> {
+    public static class SetDefaultSubredditsTask extends SafeAsyncTask<Void> {
         boolean forceDefaults = false;
         Context mContext;
 
@@ -185,8 +179,7 @@ public class SubredditUtils {
                 // If we aren't terminating them by default, check to see if they have none. If so we want to set it to the defaults.
                 if (!terminateSubreddits) {
                     // See how many Subreddits are in the database. Only needed if not forcing defaults.
-                    long numSubreddits =
-                        DatabaseUtils.queryNumEntries(mDatabase, RedditDatabase.Tables.SUBREDDITS);
+                    long numSubreddits = DatabaseUtils.queryNumEntries(mDatabase, RedditDatabase.Tables.SUBREDDITS);
                     Ln.d("Number of Subreddits is: %d", numSubreddits);
                     mDatabase.close();
 

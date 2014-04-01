@@ -5,6 +5,8 @@ import com.antew.redditinpictures.library.enums.ImageType;
 
 public interface ImageInformation {
     public String getHash();
+
     public String getSize(ImageSize size);
+
     public ImageType getImageType();
 }

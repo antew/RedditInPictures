@@ -39,13 +39,17 @@ public class CursorPagerAdapter extends FixedFragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        if (mCursor == null) return 0;
+        if (mCursor == null) {
+            return 0;
+        }
 
         return mCursor.getCount();
     }
 
     public void swapCursor(Cursor newCursor) {
-        if (mCursor == newCursor) return;
+        if (mCursor == newCursor) {
+            return;
+        }
 
         mCursor = newCursor;
         notifyDataSetChanged();
@@ -61,9 +65,23 @@ public class CursorPagerAdapter extends FixedFragmentStatePagerAdapter {
     }
 
     /**
+     * Returns an {@link ImageDetailFragment} for the input {@link PostData} object
+     *
+     * @param p
+     *     The {@link PostData} object to pass to the new {@link ImageDetailFragment}
+     *
+     * @return A new {@link ImageDetailFragment} for the input {@link PostData}
+     */
+    public Fragment getImageDetailFragment(PostData p) {
+        return ImageDetailFragment.newInstance(p);
+    }
+
+    /**
      * The PostData at the input position
      *
-     * @param position The position
+     * @param position
+     *     The position
+     *
      * @return PostData at the input position
      */
     public PostData getPost(int position) {
@@ -72,15 +90,5 @@ public class CursorPagerAdapter extends FixedFragmentStatePagerAdapter {
         }
 
         return null;
-    }
-
-    /**
-     * Returns an {@link ImageDetailFragment} for the input {@link PostData} object
-     *
-     * @param p The {@link PostData} object to pass to the new {@link ImageDetailFragment}
-     * @return A new {@link ImageDetailFragment} for the input {@link PostData}
-     */
-    public Fragment getImageDetailFragment(PostData p) {
-        return ImageDetailFragment.newInstance(p);
     }
 }

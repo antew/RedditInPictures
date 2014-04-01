@@ -35,17 +35,24 @@ public class LoginData {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         LoginData loginData = (LoginData) o;
 
-        if (cookie != null ? !cookie.equals(loginData.cookie) : loginData.cookie != null)
+        if (cookie != null ? !cookie.equals(loginData.cookie) : loginData.cookie != null) {
             return false;
-        if (modhash != null ? !modhash.equals(loginData.modhash) : loginData.modhash != null)
+        }
+        if (modhash != null ? !modhash.equals(loginData.modhash) : loginData.modhash != null) {
             return false;
-        if (username != null ? !username.equals(loginData.username) : loginData.username != null)
+        }
+        if (username != null ? !username.equals(loginData.username) : loginData.username != null) {
             return false;
+        }
 
         return true;
     }

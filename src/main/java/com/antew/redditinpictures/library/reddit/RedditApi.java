@@ -28,47 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RedditApi implements Parcelable, ContentValuesOperation, RedditPostFilter<PostData> {
-    private String        kind;
-    private RedditApiData data;
-
-    public RedditApi(Parcel source) {
-        kind = source.readString();
-        data = source.readParcelable(RedditApiData.class.getClassLoader());
-    }
-
-    /**
-     * This method removes unusable posts from the Reddit API data.
-     * 
-     * @return The filtered list of posts after removing non-images, unsupported images, and NSFW
-     *         entries. Whether NSFW images are retained can be controlled via settings.
-     */
-    @Override
-    public List<PostData> filterPosts(boolean includeNsfwImages) {
-        List<PostData> entries = new ArrayList<PostData>();
-
-        for (Children c : data.getChildren()) {
-            PostData pd = c.getData();
-            if (ImageUtil.isSupportedUrl(pd.getUrl())) {
-                if (!pd.isOver_18() || includeNsfwImages)
-                    entries.add(pd);
-
-            }
-        }
-
-        return entries;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(kind);
-        dest.writeParcelable(data, flags);
-    }
-
     //@formatter:off
     public static final Parcelable.Creator<RedditApi> CREATOR
         = new Parcelable.Creator<RedditApi>() {
@@ -82,14 +41,32 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
             public RedditApi[] newArray(int size) {
                 return new RedditApi[size];
             }
-            
-        
+
+
     };
-    //@formatter:on
+    private String        kind;
+    private RedditApiData data;
+
+    public RedditApi(Parcel source) {
+        kind = source.readString();
+        data = source.readParcelable(RedditApiData.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(kind);
+        dest.writeParcelable(data, flags);
+    }
 
     public String getKind() {
         return kind;
     }
+    //@formatter:on
 
     public RedditApiData getData() {
         return data;
@@ -98,12 +75,12 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
     /**
      * Convenience method to return an Array of {@link ContentValues} based on the {@link PostData}
      * from this {@link RedditApi} object.
-     * 
+     *
      * @param includeNsfwImages
-     *            Whether to include Not-Safe-For-Work images in the list
+     *     Whether to include Not-Safe-For-Work images in the list
+     *
      * @return Array of {@link ContentValues} for use with
-     *         {@link ContentProvider#bulkInsert(Uri, ContentValues[])}
-     * 
+     * {@link ContentProvider#bulkInsert(Uri, ContentValues[])}
      */
     public ContentValues[] getPostDataContentValues(boolean includeNsfwImages) {
         List<PostData> postData = filterPosts(includeNsfwImages);
@@ -116,6 +93,28 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
         return operations;
     }
 
+    /**
+     * This method removes unusable posts from the Reddit API data.
+     *
+     * @return The filtered list of posts after removing non-images, unsupported images, and NSFW
+     * entries. Whether NSFW images are retained can be controlled via settings.
+     */
+    @Override
+    public List<PostData> filterPosts(boolean includeNsfwImages) {
+        List<PostData> entries = new ArrayList<PostData>();
+
+        for (Children c : data.getChildren()) {
+            PostData pd = c.getData();
+            if (ImageUtil.isSupportedUrl(pd.getUrl())) {
+                if (!pd.isOver_18() || includeNsfwImages) {
+                    entries.add(pd);
+                }
+            }
+        }
+
+        return entries;
+    }
+
     @Override
     public ContentValues getContentValues() {
         ContentValues values = new ContentValues();
@@ -125,5 +124,4 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
 
         return values;
     }
-
 }

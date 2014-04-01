@@ -23,29 +23,10 @@ import com.nineoldandroids.view.ViewPropertyAnimator;
 
 /**
  * Utility class to simplify fading views in and out with NineOldAndroids
- * @author Antew
  *
+ * @author Antew
  */
 public class FadeInThenOut {
-
-    private static void fade(final View view, final int visibility, int duration) {
-        //@formatter:off
-        ViewPropertyAnimator.animate(view)
-                            .alpha(0)
-                            .setStartDelay(250)
-                            .setDuration(duration / 2)
-                            .setListener(new Animator.AnimatorListener() {
-                                @Override public void onAnimationStart(Animator animator) {}
-                                @Override public void onAnimationCancel(Animator animator) {}
-                                @Override public void onAnimationRepeat(Animator animator) {}
-                    
-                                @Override
-                                public void onAnimationEnd(Animator animator) {
-                                    view.setVisibility(visibility);
-                                }
-                            });
-        //@formatter:on
-    }
 
     public static void fadeInThenOut(final View view, final int duration) {
         //@formatter:off
@@ -58,10 +39,29 @@ public class FadeInThenOut {
                                 @Override public void onAnimationStart(Animator animation) {}
                                 @Override public void onAnimationRepeat(Animator animation) {}
                                 @Override public void onAnimationCancel(Animator animation) {}
-                                
-                                @Override 
+
+                                @Override
                                 public void onAnimationEnd(Animator animation) {
                                     fade(view, View.GONE, duration);
+                                }
+                            });
+        //@formatter:on
+    }
+
+    private static void fade(final View view, final int visibility, int duration) {
+        //@formatter:off
+        ViewPropertyAnimator.animate(view)
+                            .alpha(0)
+                            .setStartDelay(250)
+                            .setDuration(duration / 2)
+                            .setListener(new Animator.AnimatorListener() {
+                                @Override public void onAnimationStart(Animator animator) {}
+                                @Override public void onAnimationCancel(Animator animator) {}
+                                @Override public void onAnimationRepeat(Animator animator) {}
+
+                                @Override
+                                public void onAnimationEnd(Animator animator) {
+                                    view.setVisibility(visibility);
                                 }
                             });
         //@formatter:on

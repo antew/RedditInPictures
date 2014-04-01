@@ -11,7 +11,7 @@ public class ThumbnailInfo {
         thumbnailSize = resources.getDimensionPixelSize(R.dimen.image_thumbnail_size);
         thumbnailSpacing = resources.getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
     }
-    
+
     public static ThumbnailInfo getThumbnailInfo(Resources resources) {
         return new ThumbnailInfo(resources);
     }
@@ -31,5 +31,4 @@ public class ThumbnailInfo {
     public void setSpacing(int thumbnailSpacing) {
         this.thumbnailSpacing = thumbnailSpacing;
     }
-
 }

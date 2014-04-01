@@ -22,20 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Replacer {
-    public enum TextColor {
-        BLUE(0xFF0C5DA5), YELLOW(0xFFFFC200), ORANGE(0xFFBF5D30);
-
-        private int mColor;
-
-        TextColor(int color) {
-            mColor = color;
-        }
-
-        int getColor() {
-            return mColor;
-        }
-    }
-
     public static CharSequence replace(CharSequence source, String regex, TextColor color) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(source);
@@ -60,4 +46,17 @@ public class Replacer {
         return buffer;
     }
 
+    public enum TextColor {
+        BLUE(0xFF0C5DA5), YELLOW(0xFFFFC200), ORANGE(0xFFBF5D30);
+
+        private int mColor;
+
+        TextColor(int color) {
+            mColor = color;
+        }
+
+        int getColor() {
+            return mColor;
+        }
+    }
 }

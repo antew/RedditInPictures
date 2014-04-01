@@ -4,13 +4,13 @@ import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.enums.ImageType;
 
 public class PicsarusImageType extends Image {
-    private static final String PICSARUS_URL          = "http://www.picsarus.com/%s.jpg";
-    private static final String URL_REGEX = "^https?://(?:[i.]|[edge.]|[www.])*picsarus.com/(?:r/[\\w]+/)?([\\w]{6,})(\\..+)?$";
-    
+    private static final String PICSARUS_URL = "http://www.picsarus.com/%s.jpg";
+    private static final String URL_REGEX    = "^https?://(?:[i.]|[edge.]|[www.])*picsarus.com/(?:r/[\\w]+/)?([\\w]{6,})(\\..+)?$";
+
     public PicsarusImageType(java.lang.String url) {
         super(url);
     }
-    
+
     @Override
     public String getSize(ImageSize size) {
         return String.format(PICSARUS_URL, getUrl());
@@ -25,5 +25,4 @@ public class PicsarusImageType extends Image {
     public String getRegexForUrlMatching() {
         return URL_REGEX;
     }
-
 }

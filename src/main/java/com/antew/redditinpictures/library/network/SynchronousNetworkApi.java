@@ -13,15 +13,17 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SynchronousNetworkApi {
-    private static final int   IO_BUFFER_SIZE = 8 * 1024;
-    public static final String TAG            = SynchronousNetworkApi.class.getSimpleName();
+    public static final  String TAG            = SynchronousNetworkApi.class.getSimpleName();
+    private static final int    IO_BUFFER_SIZE = 8 * 1024;
 
     /**
      * Download the input URL and return the output as a String
-     * 
+     *
      * @param urlString
-     *            The URL to download
+     *     The URL to download
+     *
      * @return A String with the downloaded contents
+     *
      * @throws IOException
      */
     public static String downloadUrl(String urlString) {
@@ -45,8 +47,9 @@ public class SynchronousNetworkApi {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
                 StringBuilder builder = new StringBuilder(in.available());
                 String line;
-                while ((line = reader.readLine()) != null)
+                while ((line = reader.readLine()) != null) {
                     builder.append(line);
+                }
 
                 Log.i("Url = " + urlString, " result = " + builder.toString());
                 return builder.toString();
@@ -70,6 +73,17 @@ public class SynchronousNetworkApi {
         return null;
     }
 
+    /**
+     * Workaround for bug pre-Froyo, see here for more info:
+     * http://android-developers.blogspot.com/2011/09/androids-http-clients.html
+     */
+    public static void disableConnectionReuseIfNecessary() {
+        // HTTP connection reuse which was buggy pre-froyo
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+            System.setProperty("http.keepAlive", "false");
+        }
+    }
+
     public static byte[] downloadUrlToByteArray(String urlString) {
         disableConnectionReuseIfNecessary();
         HttpURLConnection urlConnection = null;
@@ -85,7 +99,7 @@ public class SynchronousNetworkApi {
             if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
                 in = new BufferedInputStream(urlConnection.getInputStream(), IO_BUFFER_SIZE);
-                
+
                 return streamToBytes(in);
             }
         } catch (final IOException e) {
@@ -102,7 +116,6 @@ public class SynchronousNetworkApi {
                     // Ignored
                 }
             }
-
         }
         return null;
     }
@@ -119,16 +132,4 @@ public class SynchronousNetworkApi {
         }
         return os.toByteArray();
     }
-
-    /**
-     * Workaround for bug pre-Froyo, see here for more info:
-     * http://android-developers.blogspot.com/2011/09/androids-http-clients.html
-     */
-    public static void disableConnectionReuseIfNecessary() {
-        // HTTP connection reuse which was buggy pre-froyo
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
-            System.setProperty("http.keepAlive", "false");
-        }
-    }
-
 }

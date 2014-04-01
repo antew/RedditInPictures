@@ -23,6 +23,7 @@ import com.antew.redditinpictures.pro.R;
 
 public class CustomViewPager extends ViewPager {
     private boolean mEnabled;
+
     public CustomViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
         setPageMargin((int) getResources().getDimension(R.dimen.pager_margin));
@@ -36,7 +37,7 @@ public class CustomViewPager extends ViewPager {
                 return super.onInterceptTouchEvent(event);
             } catch (final Exception e) {
                 // This is wrapped in a try/catch because this would error when more than 2 fingers were down at the same time
-                
+
                 // java.lang.IllegalArgumentException: pointerIndex out of range
                 // at android.view.MotionEvent.nativeGetAxisValue(Native Method)
                 // at android.view.MotionEvent.getX(MotionEvent.java:1981)
@@ -53,8 +54,9 @@ public class CustomViewPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mEnabled)
+        if (mEnabled) {
             return super.onTouchEvent(event);
+        }
 
         return false;
     }
@@ -67,5 +69,4 @@ public class CustomViewPager extends ViewPager {
     public boolean isSwipingEnabled() {
         return mEnabled;
     }
-
 }

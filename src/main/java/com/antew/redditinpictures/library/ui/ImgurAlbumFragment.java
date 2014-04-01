@@ -33,6 +33,12 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
     private ImgurImage mImage;
 
     /**
+     * Empty constructor as per the Fragment documentation
+     */
+    public ImgurAlbumFragment() {
+    }
+
+    /**
      * Factory method to generate a new instance of the fragment given an {@link ImgurImage}
      *
      * @return A new instance of ImageDetailFragment with imageNum extras
@@ -46,29 +52,14 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         return f;
     }
 
-    /**
-     * Empty constructor as per the Fragment documentation
-     */
-    public ImgurAlbumFragment() {
-    }
-
     @Override
     public void loadExtras() {
-        mImage =
-            getArguments() != null ? (ImgurImage) getArguments().getParcelable(IMAGE_DATA_EXTRA)
-                : null;
+        mImage = getArguments() != null ? (ImgurImage) getArguments().getParcelable(IMAGE_DATA_EXTRA) : null;
     }
 
     @Override
-    protected void resolveImage() {
-        String imageUrl = mImage.getLinks().getOriginal();
-        if (ImageUtil.isGif(imageUrl)) {
-            super.loadGifInWebView(imageUrl);
-        } else {
-            Picasso.with(getActivity())
-                .load(imageUrl)
-                .into(mImageView);
-        }
+    protected boolean shouldShowPostInformation() {
+        return hasTitle() || hasCaption();
     }
 
     @Override
@@ -104,22 +95,21 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         }
     }
 
+    @Override
+    protected void resolveImage() {
+        String imageUrl = mImage.getLinks().getOriginal();
+        if (ImageUtil.isGif(imageUrl)) {
+            super.loadGifInWebView(imageUrl);
+        } else {
+            Picasso.with(getActivity()).load(imageUrl).into(mImageView);
+        }
+    }
+
     private boolean hasTitle() {
-        return mImage.getImage().getTitle() != null && !mImage.getImage()
-            .getTitle()
-            .trim()
-            .equals("");
+        return mImage.getImage().getTitle() != null && !mImage.getImage().getTitle().trim().equals("");
     }
 
     private boolean hasCaption() {
-        return mImage.getImage().getCaption() != null && !mImage.getImage()
-            .getCaption()
-            .trim()
-            .equals("");
-    }
-
-    @Override
-    protected boolean shouldShowPostInformation() {
-        return hasTitle() || hasCaption();
+        return mImage.getImage().getCaption() != null && !mImage.getImage().getCaption().trim().equals("");
     }
 }

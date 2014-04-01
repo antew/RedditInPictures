@@ -22,7 +22,7 @@
             android:layout_alignParentRight="true"
             android:padding="5dp"
             android:layout_centerVertical="true"
-            android:contentDescription="@string/open_menu"/>
+            android:contentDescription="@string/open_menu" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
             android:layout_marginBottom="10dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/ib_more"/>
+            android:layout_toLeftOf="@id/ib_more" />
 
     </RelativeLayout>
 
@@ -59,7 +59,7 @@
             android:layout_weight=".25"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:gravity="center"/>
+            android:gravity="center" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -71,7 +71,7 @@
             android:layout_weight=".25"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:gravity="center"/>
+            android:gravity="center" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -83,7 +83,7 @@
             android:layout_weight=".25"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:gravity="center"/>
+            android:gravity="center" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -95,7 +95,7 @@
             android:layout_weight=".25"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:gravity="center"/>
+            android:gravity="center" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -107,7 +107,7 @@
             android:layout_weight=".25"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:gravity="center"/>
+            android:gravity="center" />
     </LinearLayout>
 
 </LinearLayout>

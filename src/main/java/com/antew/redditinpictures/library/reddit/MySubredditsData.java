@@ -10,8 +10,9 @@ public class MySubredditsData {
     private String                  before;
 
     public void addChildren(List<SubredditChildren> children) {
-        if (this.children == null)
+        if (this.children == null) {
             this.children = new ArrayList<SubredditChildren>();
+        }
 
         this.children.addAll(children);
     }
@@ -24,20 +25,19 @@ public class MySubredditsData {
         return children;
     }
 
-    public void setAfter(String after) {
-        this.after = after;
-    }
-
-    public void setBefore(String before) {
-        this.before = before;
-    }
-
     public String getAfter() {
         return after;
+    }
+
+    public void setAfter(String after) {
+        this.after = after;
     }
 
     public String getBefore() {
         return before;
     }
 
+    public void setBefore(String before) {
+        this.before = before;
+    }
 }

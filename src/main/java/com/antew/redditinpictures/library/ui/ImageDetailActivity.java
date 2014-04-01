@@ -48,17 +48,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageDetailActivity extends ImageViewerActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    protected MenuItem         mUpvoteMenuItem;
-    protected MenuItem         mDownvoteMenuItem;
-    protected RedditUrl        mRedditUrl;
-    protected boolean          mRequestInProgress;
-    private String             mAfter;
-    private String             mBefore;
-    private Category           mCategory;
-    private Age                mAge;
-    private String             mSubreddit;
-    private int                mRequestedPage;
-    private boolean            mFirstLoad = true;
+    protected MenuItem  mUpvoteMenuItem;
+    protected MenuItem  mDownvoteMenuItem;
+    protected RedditUrl mRedditUrl;
+    protected boolean   mRequestInProgress;
+    private   String    mAfter;
+    private   String    mBefore;
+    private   Category  mCategory;
+    private   Age       mAge;
+    private   String    mSubreddit;
+    private   int       mRequestedPage;
+    private boolean mFirstLoad = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,29 +72,28 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         updateDisplay(mPager.getCurrentItem());
     }
 
-    private CursorPagerAdapter getAdapter() {
-        return (CursorPagerAdapter) mAdapter;
-    }
-
-    public FragmentStatePagerAdapter getPagerAdapter() {
-        return new CursorPagerAdapter(getSupportFragmentManager(), null);
-    }
-
     public void getExtras() {
         Intent i = getIntent();
 
-        if (i.hasExtra(Constants.EXTRA_AGE))
+        if (i.hasExtra(Constants.EXTRA_AGE)) {
             mAge = Age.valueOf(i.getStringExtra(Constants.EXTRA_AGE));
+        }
 
-        if (i.hasExtra(Constants.EXTRA_CATEGORY))
+        if (i.hasExtra(Constants.EXTRA_CATEGORY)) {
             mCategory = Category.valueOf(i.getStringExtra(Constants.EXTRA_CATEGORY));
+        }
 
-        if (i.hasExtra(Constants.EXTRA_SELECTED_SUBREDDIT))
+        if (i.hasExtra(Constants.EXTRA_SELECTED_SUBREDDIT)) {
             mSubreddit = i.getStringExtra(Constants.EXTRA_SELECTED_SUBREDDIT);
+        }
 
         mRequestedPage = getIntent().getIntExtra(Constants.EXTRA_IMAGE, -1);
 
         Ln.d("Got Extras: Age %s Category %s Subreddit %s", mAge, mCategory, mSubreddit);
+    }
+
+    public FragmentStatePagerAdapter getPagerAdapter() {
+        return new CursorPagerAdapter(getSupportFragmentManager(), null);
     }
 
     /**
@@ -102,21 +101,74 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
      */
     protected void updateDisplay(int position) {
         PostData p = getAdapter().getPost(position);
-        if (p != null)
+        if (p != null) {
             displayVote(p.getVote());
+        }
 
         int count = getAdapter().getCount();
-        if (count > 0)
+        if (count > 0) {
             getSupportActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
-        else
+        } else {
             getSupportActionBar().setTitle(getString(R.string.reddit_in_pictures));
-            
+        }
+    }
+
+    @Override
+    public void reachedLastPage() {
+        super.reachedLastPage();
+
+        if (!isRequestInProgress() && mAdapter.getCount() > 0) {
+            Ln.d("Reached last page, loading more images");
+            setRequestInProgress(true);
+            RedditService.getPosts(this, mSubreddit, mAge, mCategory, mAfter);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         displayVote();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(Constants.EXTRA_REDDIT_URL, mRedditUrl);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState.containsKey(Constants.EXTRA_REDDIT_URL)) {
+            mRedditUrl = savedInstanceState.getParcelable(Constants.EXTRA_REDDIT_URL);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.image_detail_menu, menu);
+        super.onCreateOptionsMenu(menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // We save the upvote and downvote icons so that we can change their icon later
+        mUpvoteMenuItem = menu.findItem(R.id.upvote);
+        mDownvoteMenuItem = menu.findItem(R.id.downvote);
+
+        if (!RedditLoginInformation.isLoggedIn()) {
+            mUpvoteMenuItem.setVisible(false);
+            mDownvoteMenuItem.setVisible(false);
+        }
+
+        // We save the icon for locking the view pager so that we can reference
+        // it when we receive a broadcast message to toggle the ViewPager lock state
+        lockViewPagerItem = menu.findItem(R.id.lock_viewpager);
+
+        return true;
     }
 
     @Override
@@ -141,42 +193,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     }
 
     /**
-     * Get the Uri for the Reddit page of the current post in the ViewPager.
-     * 
-     * @return The Uri for the post on reddit
-     */
-    protected Uri getPostUri() {
-        //@formatter:off
-        return Uri.parse(getAdapter().getPost(mPager.getCurrentItem())
-                .getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(this)));
-        //@formatter:on
-    }
-
-    /**
-     * Get the URL of the current image in the ViewPager.
-     * 
-     * @return The URL of the current image in the ViewPager.
-     */
-    public String getUrlForSharing() {
-        PostData pd = getAdapter().getPost(mPager.getCurrentItem());
-        return pd.getUrl();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(Constants.EXTRA_REDDIT_URL, mRedditUrl);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        if (savedInstanceState.containsKey(Constants.EXTRA_REDDIT_URL))
-            mRedditUrl = savedInstanceState.getParcelable(Constants.EXTRA_REDDIT_URL);
-    }
-
-    /**
      * Handles updating the vote based on the action bar vote icon that was clicked, broadcasts a
      * message to have the fragment update the score.
      * <p>
@@ -190,13 +206,13 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
      * If the current vote is DOWN and the new vote is DOWN, the vote is changed to NEUTRAL<br>
      * If the current vote is DOWN and the new vote is UP, the vote is changed to UP.
      * </p>
-     * 
+     *
      * @param whichVoteButton
-     *            The vote representing the menu item which was clicked
+     *     The vote representing the menu item which was clicked
      * @param item
-     *            The menu item which was clicked
+     *     The menu item which was clicked
      * @param p
-     *            The post this vote is for
+     *     The post this vote is for
      */
     private void vote(Vote whichVoteButton, MenuItem item, PostData p) {
         if (!RedditLoginInformation.isLoggedIn()) {
@@ -258,39 +274,67 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.image_detail_menu, menu);
-        super.onCreateOptionsMenu(menu);
+    /**
+     * Get the URL of the current image in the ViewPager.
+     *
+     * @return The URL of the current image in the ViewPager.
+     */
+    public String getUrlForSharing() {
+        PostData pd = getAdapter().getPost(mPager.getCurrentItem());
+        return pd.getUrl();
+    }
 
-        return true;
+    /**
+     * Get the Uri for the Reddit page of the current post in the ViewPager.
+     *
+     * @return The Uri for the post on reddit
+     */
+    protected Uri getPostUri() {
+        //@formatter:off
+        return Uri.parse(getAdapter().getPost(mPager.getCurrentItem())
+                .getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(this)));
+        //@formatter:on
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // We save the upvote and downvote icons so that we can change their icon later
-        mUpvoteMenuItem = menu.findItem(R.id.upvote);
-        mDownvoteMenuItem = menu.findItem(R.id.downvote);
-
-        if (!RedditLoginInformation.isLoggedIn()) {
-            mUpvoteMenuItem.setVisible(false);
-            mDownvoteMenuItem.setVisible(false);
+    public String getFilenameForSave() {
+        if (getAdapter() != null && mPager != null) {
+            PostData p = getAdapter().getPost(mPager.getCurrentItem());
+            return StringUtil.sanitizeFileName(p.getTitle());
         }
 
-        // We save the icon for locking the view pager so that we can reference
-        // it when we receive a broadcast message to toggle the ViewPager lock state
-        lockViewPagerItem = menu.findItem(R.id.lock_viewpager);
+        return super.getFilenameForSave();
+    }
 
-        return true;
+    @Override
+    public void onFinishSaveImageDialog(String filename) {
+        PostData p = getAdapter().getPost(mPager.getCurrentItem());
+        Intent intent = new Intent(Constants.BROADCAST_DOWNLOAD_IMAGE);
+        intent.putExtra(Constants.EXTRA_PERMALINK, p.getPermalink());
+        intent.putExtra(Constants.EXTRA_FILENAME, filename);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    public boolean isRequestInProgress() {
+        return mRequestInProgress;
+    }
+
+    public void setRequestInProgress(boolean requestInProgress) {
+        mRequestInProgress = requestInProgress;
+        setSupportProgressBarIndeterminateVisibility(requestInProgress);
     }
 
     public void displayVote() {
         if (getAdapter() != null && mPager != null) {
             PostData post = getAdapter().getPost(mPager.getCurrentItem());
-            if (post != null)
+            if (post != null) {
                 displayVote(post.getVote());
+            }
         }
+    }
 
+    private CursorPagerAdapter getAdapter() {
+        return (CursorPagerAdapter) mAdapter;
     }
 
     public void displayVote(Vote vote) {
@@ -313,55 +357,15 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                 mUpvoteMenuItem.setIcon(R.drawable.ic_action_upvote);
                 mDownvoteMenuItem.setIcon(R.drawable.ic_action_downvote);
                 break;
-
         }
-    }
-
-    @Override
-    public String getFilenameForSave() {
-        if (getAdapter() != null && mPager != null) {
-            PostData p = getAdapter().getPost(mPager.getCurrentItem());
-            return StringUtil.sanitizeFileName(p.getTitle());
-        }
-
-        return super.getFilenameForSave();
-    }
-
-    @Override
-    public void onFinishSaveImageDialog(String filename) {
-        PostData p = getAdapter().getPost(mPager.getCurrentItem());
-        Intent intent = new Intent(Constants.BROADCAST_DOWNLOAD_IMAGE);
-        intent.putExtra(Constants.EXTRA_PERMALINK, p.getPermalink());
-        intent.putExtra(Constants.EXTRA_FILENAME, filename);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-
-    }
-
-    @Override
-    public void reachedLastPage() {
-        super.reachedLastPage();
-
-        if (!isRequestInProgress() && mAdapter.getCount() > 0) {
-            Ln.d("Reached last page, loading more images");
-            setRequestInProgress(true);
-            RedditService.getPosts(this, mSubreddit, mAge, mCategory, mAfter);
-        }
-    }
-
-    public void setRequestInProgress(boolean requestInProgress) {
-        mRequestInProgress = requestInProgress;
-        setSupportProgressBarIndeterminateVisibility(requestInProgress);
-    }
-
-    public boolean isRequestInProgress() {
-        return mRequestInProgress;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
         switch (id) {
             case Constants.LOADER_REDDIT:
-                return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, null, null, null, RedditContract.RedditData.DEFAULT_SORT);
+                return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, null, null, null,
+                                        RedditContract.RedditData.DEFAULT_SORT);
 
             case Constants.LOADER_POSTS:
                 String selection = null;
@@ -369,7 +373,9 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                 List<String> selectionArgsList = new ArrayList<String>();
 
                 // If we have an aggregate subreddit we want to return relevant things.
-                if (mSubreddit.equals(Constants.REDDIT_FRONTPAGE) || mSubreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME) || mSubreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
+                if (mSubreddit.equals(Constants.REDDIT_FRONTPAGE)
+                    || mSubreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME)
+                    || mSubreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
                     selection = null;
                     selectionArgs = null;
                 } else if (mSubreddit.contains("+")) {
@@ -402,16 +408,16 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                 }
 
                 if (selectionArgsList != null && selectionArgsList.size() > 0) {
-                    selectionArgs = selectionArgsList.toArray(new String[] {});
+                    selectionArgs = selectionArgsList.toArray(new String[] { });
                 }
 
                 Ln.d("Retrieveing Posts For %s %s", selection, selectionArgs.toString());
 
                 return new CursorLoader(this, RedditContract.Posts.CONTENT_URI,  // uri
-                    RedditContract.Posts.LISTVIEW_PROJECTION, // projection
-                    selection,                                // selection
-                    selectionArgs,                            // selectionArgs[]
-                    RedditContract.Posts.DEFAULT_SORT);       // sort
+                                        RedditContract.Posts.LISTVIEW_PROJECTION, // projection
+                                        selection,                                // selection
+                                        selectionArgs,                            // selectionArgs[]
+                                        RedditContract.Posts.DEFAULT_SORT);       // sort
         }
 
         return null;
@@ -430,14 +436,14 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
             case Constants.LOADER_POSTS:
                 setRequestInProgress(false);
                 getAdapter().swapCursor(cursor);
-                
+
                 // Set the ViewPager to the index the user selected in ImageGridFragment, we only need to do this
                 // the first time the data is loaded
                 if (mFirstLoad) {
                     mPager.setCurrentItem(mRequestedPage);
                     mFirstLoad = false;
                 }
-                
+
                 updateDisplay(mPager.getCurrentItem());
                 break;
         }
@@ -447,5 +453,4 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     public void onLoaderReset(Loader<Cursor> cursor) {
         getAdapter().swapCursor(null);
     }
-
 }

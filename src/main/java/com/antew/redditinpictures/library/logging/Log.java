@@ -21,8 +21,8 @@ import com.antew.redditinpictures.pro.BuildConfig;
 
 /**
  * Utility class for Logging, wrapps the standard android {@link android.util.Log} class
- * @author Antew
  *
+ * @author Antew
  */
 @SuppressWarnings("unused")
 public class Log {
@@ -39,35 +39,34 @@ public class Log {
             android.util.Log.d(tag, message, t);
         }
     }
-    
+
     public static void v(String tag, String message) {
         if (LEVEL <= android.util.Log.VERBOSE && BuildConfig.DEBUG) {
             android.util.Log.v(tag, message);
         }
     }
-    
+
     public static void v(String tag, Throwable t, String message) {
         if (LEVEL <= android.util.Log.VERBOSE && BuildConfig.DEBUG) {
             android.util.Log.v(tag, message, t);
         }
     }
-    
+
     public static void i(String tag, String message) {
-        if (LEVEL <= android.util.Log.INFO && BuildConfig.DEBUG ) {
+        if (LEVEL <= android.util.Log.INFO && BuildConfig.DEBUG) {
             android.util.Log.i(tag, message);
         }
     }
-    
+
     public static void e(String tag, String message) {
         if (LEVEL <= android.util.Log.ERROR && BuildConfig.DEBUG) {
             android.util.Log.e(tag, message);
         }
     }
-    
+
     public static void e(String tag, String message, Throwable e) {
         if (LEVEL <= android.util.Log.ERROR && BuildConfig.DEBUG) {
             android.util.Log.e(tag, message, e);
         }
     }
-
 }

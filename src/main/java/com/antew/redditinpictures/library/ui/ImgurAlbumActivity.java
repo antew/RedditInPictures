@@ -14,14 +14,14 @@ import com.antew.redditinpictures.pro.R;
 import java.util.List;
 
 public class ImgurAlbumActivity extends ImageViewerActivity {
-    public static final String TAG         = "ImgurAlbumActivity";
-    private Album              mAlbum;
+    public static final String TAG = "ImgurAlbumActivity";
     public static final String EXTRA_ALBUM = "Album";
+    private Album mAlbum;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Put the current page / total pages text in the ActionBar 
         updateDisplay(mPager.getCurrentItem());
     }
@@ -44,8 +44,9 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
         return (List<ImgurImage>) mImages;
     }
 
-    private ImgurAlbumPagerAdapter getAdapter() {
-        return (ImgurAlbumPagerAdapter) mAdapter;
+    @Override
+    protected void updateDisplay(int position) {
+        getSupportActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
     }
 
     @Override
@@ -61,21 +62,6 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
     }
 
     @Override
-    protected void updateDisplay(int position) {
-        getSupportActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
-    }
-
-    @Override
-    public void onFinishSaveImageDialog(String filename) {
-        ImgurImage p = getAdapter().getImage(mPager.getCurrentItem());
-        Intent intent = new Intent(Constants.BROADCAST_DOWNLOAD_IMAGE);
-        intent.putExtra(Constants.EXTRA_IMAGE_HASH, p.getImage().getHash());
-        intent.putExtra(Constants.EXTRA_FILENAME, filename);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-
-    }
-    
-    @Override
     public String getFilenameForSave() {
         String name = super.getFilenameForSave();
         if (getAdapter() != null && mPager != null) {
@@ -87,8 +73,20 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
                 name = StringUtil.sanitizeFileName(p.getImage().getCaption());
             }
         }
-            
+
         return name;
     }
 
+    @Override
+    public void onFinishSaveImageDialog(String filename) {
+        ImgurImage p = getAdapter().getImage(mPager.getCurrentItem());
+        Intent intent = new Intent(Constants.BROADCAST_DOWNLOAD_IMAGE);
+        intent.putExtra(Constants.EXTRA_IMAGE_HASH, p.getImage().getHash());
+        intent.putExtra(Constants.EXTRA_FILENAME, filename);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private ImgurAlbumPagerAdapter getAdapter() {
+        return (ImgurAlbumPagerAdapter) mAdapter;
+    }
 }

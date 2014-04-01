@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    android:background="@drawable/background_menudrawer">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:background="@drawable/background_menudrawer">
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -16,7 +16,7 @@
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:hint="@string/filter_subreddits"
             android:id="@+id/et_subreddit_filter"
-            android:singleLine="true"/>
+            android:singleLine="true" />
 
         <ImageButton
             android:id="@+id/ib_clear"
@@ -27,7 +27,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/ic_action_cancel_dark"
             android:contentDescription="@string/clear"
-            android:padding="5dp"/>
+            android:padding="5dp" />
 
     </FrameLayout>
 
@@ -45,7 +45,7 @@
             android:id="@+id/ib_add"
             android:src="@drawable/ic_action_add_dark"
             android:contentDescription="@string/add_subreddit"
-            style="@style/SubredditMenuDrawerMenuItem"/>
+            style="@style/SubredditMenuDrawerMenuItem" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -53,7 +53,7 @@
             android:id="@+id/ib_sort"
             android:src="@drawable/ic_action_sort_1_dark"
             android:contentDescription="@string/sort_by_popularity"
-            style="@style/SubredditMenuDrawerMenuItem"/>
+            style="@style/SubredditMenuDrawerMenuItem" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -61,7 +61,7 @@
             android:id="@+id/ib_refresh"
             android:contentDescription="@string/reset_subreddits"
             android:src="@drawable/ic_action_reload_dark"
-            style="@style/SubredditMenuDrawerMenuItem"/>
+            style="@style/SubredditMenuDrawerMenuItem" />
 
     </LinearLayout>
 
@@ -71,6 +71,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/fl_subreddit_filter"
-        android:layout_above="@id/ll_menudrawer_menu"/>
+        android:layout_above="@id/ll_menudrawer_menu" />
 
 </RelativeLayout>

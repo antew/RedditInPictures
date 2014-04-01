@@ -13,7 +13,7 @@ public abstract class JsonResult {
 
     public JsonResult(Intent result) {
         mExtraData = result.getBundleExtra(RedditService.EXTRA_PASS_THROUGH);
-        
+
         Bundle args = result.getBundleExtra(RedditService.EXTRA_BUNDLE);
         mRequestCode = (RequestCode) args.getSerializable(RedditService.EXTRA_REQUEST_CODE);
         mHttpStatusCode = args.getInt(RedditService.EXTRA_STATUS_CODE);
@@ -35,5 +35,4 @@ public abstract class JsonResult {
     public String getJson() {
         return mJson;
     }
-
 }

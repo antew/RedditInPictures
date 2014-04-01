@@ -25,11 +25,21 @@ import java.io.IOException;
 /**
  * This is used to serialize/deserialize Votes on Reddit posts Reddit uses true for an upvote, false
  * for downvotes, and null for neutral votes
- * 
+ *
  * @author Antew
- * 
  */
 public class VoteAdapter extends TypeAdapter<Vote> {
+
+    @Override
+    public void write(JsonWriter writer, Vote vote) throws IOException {
+        if (vote == null || vote.equals(Vote.NEUTRAL)) {
+            writer.nullValue();
+        } else if (vote.equals(Vote.UP)) {
+            writer.value(true);
+        } else {
+            writer.value(false);
+        }
+    }
 
     @Override
     public Vote read(JsonReader reader) throws IOException {
@@ -40,15 +50,4 @@ public class VoteAdapter extends TypeAdapter<Vote> {
 
         return reader.nextBoolean() ? Vote.UP : Vote.DOWN;
     }
-
-    @Override
-    public void write(JsonWriter writer, Vote vote) throws IOException {
-        if (vote == null || vote.equals(Vote.NEUTRAL)) {
-            writer.nullValue();
-        } else if (vote.equals(Vote.UP))
-            writer.value(true);
-        else
-            writer.value(false);
-    }
-
 }

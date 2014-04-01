@@ -39,9 +39,9 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
      * Create a new Adapter for the Subreddit/Category/Age combo
      *
      * @param context
-     *            The context
+     *     The context
      * @param subredditActionListener
-     *            Listener for changes to the subreddit (subscribed, unsubscribed, etc)
+     *     Listener for changes to the subreddit (subscribed, unsubscribed, etc)
      */
     public SubredditMenuDrawerCursorAdapter(Context context, OnSubredditActionListener subredditActionListener) {
         super(context, null, 0);
@@ -52,6 +52,11 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        return inflater.inflate(R.layout.subreddit_menudrawer_item, parent, false);
     }
 
     @Override
@@ -82,8 +87,7 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     if (mSubredditActionListener != null) {
-                        mSubredditActionListener.onAction(subredditData,
-                            OnSubredditActionListener.SubredditAction.View);
+                        mSubredditActionListener.onAction(subredditData, OnSubredditActionListener.SubredditAction.View);
                     }
                 }
             });
@@ -97,8 +101,7 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
             holder.info.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     if (mSubredditActionListener != null) {
-                        mSubredditActionListener.onAction(subredditData,
-                            OnSubredditActionListener.SubredditAction.Info);
+                        mSubredditActionListener.onAction(subredditData, OnSubredditActionListener.SubredditAction.Info);
                     }
                 }
             });
@@ -106,8 +109,7 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
             holder.delete.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     if (mSubredditActionListener != null) {
-                        mSubredditActionListener.onAction(subredditData,
-                            OnSubredditActionListener.SubredditAction.Delete);
+                        mSubredditActionListener.onAction(subredditData, OnSubredditActionListener.SubredditAction.Delete);
                     }
                 }
             });
@@ -120,8 +122,7 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
         holder.subscribe.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 if (mSubredditActionListener != null) {
-                    mSubredditActionListener.onAction(subredditData,
-                        OnSubredditActionListener.SubredditAction.Subscribe);
+                    mSubredditActionListener.onAction(subredditData, OnSubredditActionListener.SubredditAction.Subscribe);
                 }
                 // If the user is logged in, make the assumption that the request went through. If the request was bad, it will just show up on the next MySubreddits reload.
                 if (RedditLoginInformation.isLoggedIn()) {
@@ -137,8 +138,7 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
         holder.unsubscribe.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 if (mSubredditActionListener != null) {
-                    mSubredditActionListener.onAction(subredditData,
-                        OnSubredditActionListener.SubredditAction.Unsubscribe);
+                    mSubredditActionListener.onAction(subredditData, OnSubredditActionListener.SubredditAction.Unsubscribe);
                 }
 
                 // If the user is logged in, make the assumption that the request went through. If the request was bad, it will just show up on the next MySubreddits reload.
@@ -149,24 +149,19 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
         });
     }
 
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return inflater.inflate(R.layout.subreddit_menudrawer_item, parent, false);
-    }
-
     public void setActivePosition(int activePosition) {
         this.mActivePosition = activePosition;
     }
 
     protected class ViewHolder {
-        @InjectView(R.id.tv_subreddit) TextView subreddit;
-        @InjectView(R.id.ib_more) ImageButton more;
-        @InjectView(R.id.back) LinearLayout back;
-        @InjectView(R.id.ib_view) ImageButton view;
-        @InjectView(R.id.ib_subscribe) ImageButton subscribe;
-        @InjectView(R.id.ib_unsubscribe) ImageButton unsubscribe;
-        @InjectView(R.id.ib_info) ImageButton info;
-        @InjectView(R.id.ib_delete) ImageButton delete;
+        @InjectView(R.id.tv_subreddit)   TextView     subreddit;
+        @InjectView(R.id.ib_more)        ImageButton  more;
+        @InjectView(R.id.back)           LinearLayout back;
+        @InjectView(R.id.ib_view)        ImageButton  view;
+        @InjectView(R.id.ib_subscribe)   ImageButton  subscribe;
+        @InjectView(R.id.ib_unsubscribe) ImageButton  unsubscribe;
+        @InjectView(R.id.ib_info)        ImageButton  info;
+        @InjectView(R.id.ib_delete)      ImageButton  delete;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);
@@ -177,7 +172,7 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
             ViewUtils.toggleVisibility(back);
         }
 
-        @OnLongClick({R.id.ib_more, R.id.ib_view, R.id.ib_subscribe, R.id.ib_unsubscribe, R.id.ib_info, R.id.ib_delete})
+        @OnLongClick({ R.id.ib_more, R.id.ib_view, R.id.ib_subscribe, R.id.ib_unsubscribe, R.id.ib_info, R.id.ib_delete })
         protected boolean onLongClickMenuOption(View view) {
             if (view != null) {
                 String description = Strings.toString(view.getContentDescription());

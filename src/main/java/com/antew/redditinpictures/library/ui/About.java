@@ -16,9 +16,9 @@ import java.util.Calendar;
 
 public class About extends BaseActivity {
     @InjectView(R.id.tv_version)
-    protected TextView mVersion;
+    protected TextView  mVersion;
     @InjectView(R.id.tv_copyright)
-    protected TextView mCopyright;
+    protected TextView  mCopyright;
     @InjectView(R.id.about_image)
     protected ImageView mImageView;
 
@@ -32,11 +32,11 @@ public class About extends BaseActivity {
         int size = Util.dpToPx(this, 100);
 
         Picasso.with(this)
-            .load(R.drawable.market_icon)
-            .resize(size, size)
-            .placeholder(R.drawable.loading_spinner_76)
-            .error(R.drawable.empty_photo)
-            .into(mImageView);
+               .load(R.drawable.market_icon)
+               .resize(size, size)
+               .placeholder(R.drawable.loading_spinner_76)
+               .error(R.drawable.empty_photo)
+               .into(mImageView);
 
         String version = getString(R.string.version_);
         try {
@@ -49,8 +49,7 @@ public class About extends BaseActivity {
         }
 
         mVersion.setText(version);
-        mCopyright.setText(
-            getString(R.string.copyright_) + Calendar.getInstance().get(Calendar.YEAR));
+        mCopyright.setText(getString(R.string.copyright_) + Calendar.getInstance().get(Calendar.YEAR));
     }
 
     @Override

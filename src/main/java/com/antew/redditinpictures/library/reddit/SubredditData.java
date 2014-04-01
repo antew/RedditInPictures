@@ -22,6 +22,27 @@ public class SubredditData {
     private int     priority;
     private boolean user_is_subscriber;
 
+    private SubredditData() {
+
+    }
+
+    public SubredditData(String display_name) {
+        this(display_name, 0);
+    }
+
+    public SubredditData(String display_name, int priority) {
+        this.display_name = display_name;
+        this.priority = priority;
+    }
+
+    public static SubredditData fromProjection(Cursor cursor) {
+        SubredditData subredditData = new SubredditData();
+        subredditData.display_name = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.DISPLAY_NAME));
+        subredditData.name = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.NAME));
+        subredditData.user_is_subscriber = cursor.getInt(cursor.getColumnIndex(RedditContract.Subreddits.USER_IS_SUBSCRIBER)) == 1;
+        return subredditData;
+    }
+
     public String getDisplay_name() {
         return display_name;
     }
@@ -77,7 +98,7 @@ public class SubredditData {
     public String getHeader_img() {
         return header_img;
     }
-    
+
     public int getAccountsActive() {
         return accounts_active;
     }
@@ -85,25 +106,4 @@ public class SubredditData {
     public int getPriority() { return priority; }
 
     public boolean getUserIsSubscriber() { return user_is_subscriber; }
-
-    private SubredditData() {
-
-    }
-
-    public SubredditData(String display_name) {
-        this(display_name, 0);
-    }
-
-    public SubredditData(String display_name, int priority) {
-        this.display_name = display_name;
-        this.priority = priority;
-    }
-
-    public static SubredditData fromProjection(Cursor cursor) {
-        SubredditData subredditData = new SubredditData();
-        subredditData.display_name = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.DISPLAY_NAME));
-        subredditData.name = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.NAME));
-        subredditData.user_is_subscriber = cursor.getInt(cursor.getColumnIndex(RedditContract.Subreddits.USER_IS_SUBSCRIBER)) == 1;
-        return subredditData;
-    }
 }

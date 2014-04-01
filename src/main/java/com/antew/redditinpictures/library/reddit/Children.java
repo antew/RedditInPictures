@@ -4,6 +4,22 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Children implements Parcelable {
+    //@formatter:off
+    public static final Parcelable.Creator<Children> CREATOR
+        = new Parcelable.Creator<Children>() {
+
+            @Override
+            public Children createFromParcel(Parcel source) {
+                return new Children(source);
+            }
+
+            @Override
+            public Children[] newArray(int size) {
+                return new Children[size];
+            }
+
+
+    };
     private String   kind;
     private PostData data;
 
@@ -30,23 +46,5 @@ public class Children implements Parcelable {
         dest.writeString(kind);
         dest.writeParcelable(data, flags);
     }
-
-    //@formatter:off
-    public static final Parcelable.Creator<Children> CREATOR
-        = new Parcelable.Creator<Children>() {
-
-            @Override
-            public Children createFromParcel(Parcel source) {
-                return new Children(source);
-            }
-
-            @Override
-            public Children[] newArray(int size) {
-                return new Children[size];
-            }
-            
-        
-    };
     //@formatter:on
-
 }

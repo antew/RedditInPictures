@@ -32,9 +32,8 @@ import com.antew.redditinpictures.pro.R;
 /**
  * Preferences for Honeycomb and later, this can be subclassed to add additional Preferences. For an
  * example see RedditInPicturesPreferencesFreeFragment in the RedditInPictures-Free project
- * 
+ *
  * @author Antew
- * 
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
@@ -54,7 +53,7 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
 
     /**
      * This is overridden by subclasses to instantiate the correct Fragment
-     * 
+     *
      * @return
      */
     public Fragment getPrefsFragment() {
@@ -66,7 +65,8 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
      */
     @Override
     public void onBackPressed() {
-        showNsfwImagesNewValue = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_show_nsfw_images), false);
+        showNsfwImagesNewValue = PreferenceManager.getDefaultSharedPreferences(this)
+                                                  .getBoolean(getString(R.string.pref_show_nsfw_images), false);
         Intent i = new Intent();
         i.putExtra(Constants.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
         setResult(RESULT_OK, i);
@@ -83,14 +83,15 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
             PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences, false);
             addPreferencesFromResource(R.xml.preferences);
 
-            getPreferenceManager().findPreference(getString(R.string.pref_about)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            getPreferenceManager().findPreference(getString(R.string.pref_about))
+                                  .setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    startActivity(new Intent(getActivity(), About.class));
-                    return true;
-                }
-            });
+                                      @Override
+                                      public boolean onPreferenceClick(Preference preference) {
+                                          startActivity(new Intent(getActivity(), About.class));
+                                          return true;
+                                      }
+                                  });
         }
     }
 }

@@ -35,28 +35,25 @@ import java.util.regex.Pattern;
 
 /**
  * This is used as the backing adapter for the {@link GridView} in {@link ImageGridFragment}
- * 
+ *
  * @author Antew
- * 
  */
 public class ImageCursorAdapter extends CursorAdapter {
-    public static final String    TAG         = ImageCursorAdapter.class.getSimpleName();
-    private int                   mItemHeight = 0;
-    private int                   mNumColumns = 0;
+    public static final String TAG         = ImageCursorAdapter.class.getSimpleName();
+    private             int    mItemHeight = 0;
+    private             int    mNumColumns = 0;
     private GridView.LayoutParams mImageViewLayoutParams;
     private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
-    private Pattern mImgurAlbumPattern = Pattern.compile("^https?://imgur.com/a/.*$");
+    private Pattern mImgurAlbumPattern    = Pattern.compile("^https?://imgur.com/a/.*$");
 
     /**
-     * 
      * @param context
-     *            The context
+     *     The context
      */
     public ImageCursorAdapter(Context context) {
         super(context, null, 0);
         mContext = context;
         mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-
     }
 
     @Override
@@ -65,33 +62,12 @@ public class ImageCursorAdapter extends CursorAdapter {
         return mCursor;
     }
 
-    /**
-     * Sets the item height. Useful for when we know the column width so the height can be set to
-     * match.
-     * 
-     * @param height The height to use for the grid items
-     */
-    public void setItemHeight(int height) {
-        if (height == mItemHeight) {
-            return;
-        }
-        mItemHeight = height;
-        mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, mItemHeight);
-        notifyDataSetChanged();
-    }
-
-    /**
-     * Sets the number of columns, this is currently used in the {@link OnGlobalLayoutListener} in
-     * {@link ImageGridFragment}
-     * 
-     * @param numColumns The number of columns in the GridView
-     */
-    public void setNumColumns(int numColumns) {
-        mNumColumns = numColumns;
-    }
-
-    public int getNumColumns() {
-        return mNumColumns;
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        ImageView imageView = new ImageView(context);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageView.setLayoutParams(mImageViewLayoutParams);
+        return imageView;
     }
 
     @Override
@@ -121,7 +97,8 @@ public class ImageCursorAdapter extends CursorAdapter {
                 } else if (mImgurAlbumPattern.matcher(url).matches()) {
                     if (ResolveAlbumCoverWorkerTask.cancelPotentialDownload(url, imageView)) {
                         ResolveAlbumCoverWorkerTask task = new ResolveAlbumCoverWorkerTask(url, imageView, mContext);
-                        ResolveAlbumCoverWorkerTask.LoadingTaskHolder loadingTaskHolder = new ResolveAlbumCoverWorkerTask.LoadingTaskHolder(task);
+                        ResolveAlbumCoverWorkerTask.LoadingTaskHolder loadingTaskHolder = new ResolveAlbumCoverWorkerTask.LoadingTaskHolder(
+                            task);
                         imageView.setTag(loadingTaskHolder);
                         task.execute();
                     }
@@ -133,22 +110,43 @@ public class ImageCursorAdapter extends CursorAdapter {
 
         if (Strings.notEmpty(url)) {
             Picasso.with(mContext)
-                .load(url)
-                .placeholder(R.drawable.loading_spinner_76)
-                .error(R.drawable.empty_photo)
-                .fit()
-                .centerCrop()
-                .into(imageView);
+                   .load(url)
+                   .placeholder(R.drawable.loading_spinner_76)
+                   .error(R.drawable.empty_photo)
+                   .fit()
+                   .centerCrop()
+                   .into(imageView);
         }
     }
 
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        ImageView imageView = new ImageView(context);
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imageView.setLayoutParams(mImageViewLayoutParams);
-        return imageView;
-
+    /**
+     * Sets the item height. Useful for when we know the column width so the height can be set to
+     * match.
+     *
+     * @param height
+     *     The height to use for the grid items
+     */
+    public void setItemHeight(int height) {
+        if (height == mItemHeight) {
+            return;
+        }
+        mItemHeight = height;
+        mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, mItemHeight);
+        notifyDataSetChanged();
     }
 
+    public int getNumColumns() {
+        return mNumColumns;
+    }
+
+    /**
+     * Sets the number of columns, this is currently used in the {@link OnGlobalLayoutListener} in
+     * {@link ImageGridFragment}
+     *
+     * @param numColumns
+     *     The number of columns in the GridView
+     */
+    public void setNumColumns(int numColumns) {
+        mNumColumns = numColumns;
+    }
 }

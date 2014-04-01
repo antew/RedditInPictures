@@ -6,6 +6,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RedditApiData implements Parcelable {
+    //@formatter:off
+    public static final Parcelable.Creator<RedditApiData> CREATOR
+        = new Parcelable.Creator<RedditApiData>() {
+
+            @Override
+            public RedditApiData createFromParcel(Parcel source) {
+                return new RedditApiData(source);
+            }
+
+            @Override
+            public RedditApiData[] newArray(int size) {
+                return new RedditApiData[size];
+            }
+
+
+    };
     private String         modhash;
     private List<Children> children;
     private String         after;
@@ -25,20 +41,26 @@ public class RedditApiData implements Parcelable {
 
     //@formatter:off
     public String getModhash()           { return modhash; }
+
     public List<Children> getChildren()  { return children; }
-    public void setAfter(String after)   { this.after = after; }
-    public void setBefore(String before) { this.before = before; }
+
     public String getAfter()             { return after; }
+
+    public void setAfter(String after)   { this.after = after; }
+
     public String getBefore()            { return before;}
+
+    public void setBefore(String before) { this.before = before; }
+    //@formatter:on
+
     public List<PostData> getPosts() {
         List<PostData> posts = new ArrayList<PostData>(children.size());
         for (Children child : children) {
             posts.add(child.getData());
         }
-        
+
         return posts;
     }
-    //@formatter:on
 
     @Override
     public int describeContents() {
@@ -52,23 +74,5 @@ public class RedditApiData implements Parcelable {
         dest.writeString(after);
         dest.writeString(before);
     }
-    
-    //@formatter:off
-    public static final Parcelable.Creator<RedditApiData> CREATOR
-        = new Parcelable.Creator<RedditApiData>() {
-
-            @Override
-            public RedditApiData createFromParcel(Parcel source) {
-                return new RedditApiData(source);
-            }
-
-            @Override
-            public RedditApiData[] newArray(int size) {
-                return new RedditApiData[size];
-            }
-            
-        
-    };
     //@formatter:on
-
 }

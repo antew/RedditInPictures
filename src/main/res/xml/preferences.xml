@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Reddit Options" >
+    <PreferenceCategory android:title="Reddit Options">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_use_mobile_interface"
@@ -16,12 +16,12 @@
             android:defaultValue="false"
             android:key="@string/pref_load_high_quality_thumbnails"
             android:summary="@string/uses_more_bandwidth"
-            android:title="@string/pref_load_high_quality_thumbnails"/>
+            android:title="@string/pref_load_high_quality_thumbnails" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="About" >
+    <PreferenceCategory android:title="About">
         <Preference
             android:key="@string/pref_about"
-            android:title="@string/about_reddit_in_pictures" >
+            android:title="@string/about_reddit_in_pictures">
         </Preference>
     </PreferenceCategory>
 

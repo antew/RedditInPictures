@@ -22,9 +22,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class RedditLoginResponse implements ContentValuesOperation {
     public static final String TAG = RedditLoginResponse.class.getSimpleName();
-    
+
     @SerializedName("json") private LoginResponse loginResponse;
-    
+
     public LoginResponse getLoginResponse() {
         return loginResponse;
     }
@@ -34,9 +34,10 @@ public class RedditLoginResponse implements ContentValuesOperation {
         ContentValues values = new ContentValues();
         if (loginResponse.getErrors().size() > 0) {
             StringBuilder errorMessage = new StringBuilder();
-            for (String[] error : loginResponse.getErrors())
+            for (String[] error : loginResponse.getErrors()) {
                 errorMessage.append(error[1] + " ");
-            
+            }
+
             values.put(RedditContract.Login.SUCCESS, 0);
             values.put(RedditContract.Login.ERROR_MESSAGE, errorMessage.toString());
         } else {
@@ -46,8 +47,7 @@ public class RedditLoginResponse implements ContentValuesOperation {
             values.put(RedditContract.Login.MODHASH, data.getModhash());
             values.put(RedditContract.Login.SUCCESS, 1);
         }
-        
+
         return values;
     }
-
 }

@@ -16,7 +16,7 @@ import java.util.List;
 public class MySubredditsResponse extends RedditResponseHandler {
 
     public static final String TAG = MySubredditsResponse.class.getSimpleName();
-    private RedditResult       result;
+    private RedditResult result;
 
     public MySubredditsResponse(RedditResult result) {
         this.result = result;
@@ -28,14 +28,14 @@ public class MySubredditsResponse extends RedditResponseHandler {
 
         // Don't wipe out the default subreddits
         int userRowsDeleted = resolver.delete(RedditContract.Subreddits.CONTENT_URI, "isDefaultSubreddit = ?", new String[] { "0" });
-        
+
         Log.i(TAG, "MySubreddits complete! = " + result.getJson());
         MySubreddits mySubreddits = JsonDeserializer.deserialize(result.getJson(), MySubreddits.class);
 
         if (mySubreddits == null) {
-            Log.e("MySubreddits",
-                  "Something went wrong on mySubreddits! status = " + result.getHttpStatusCode() +
-                  ", json = " + result.getJson() == null ? "null" : result.getJson());
+            Log.e("MySubreddits", "Something went wrong on mySubreddits! status = " + result.getHttpStatusCode() +
+                                  ", json = " + result.getJson() == null ? "null" : result.getJson()
+                 );
             return;
         }
 
@@ -49,10 +49,8 @@ public class MySubredditsResponse extends RedditResponseHandler {
         // Get the subreddits in an array
         operations.addAll(Arrays.asList(mySubreddits.getContentValuesArray()));
 
-        int rowsInserted = resolver.bulkInsert(
-                RedditContract.Subreddits.CONTENT_URI,
-                operations.toArray(new ContentValues[operations.size()])
-        );
+        int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI,
+                                               operations.toArray(new ContentValues[operations.size()]));
 
         Log.i(TAG, "Inserted " + rowsInserted + " rows");
         
@@ -89,8 +87,8 @@ public class MySubredditsResponse extends RedditResponseHandler {
         public String getDisplayName() {
             return displayName;
         }
+
         public int getPriority() { return priority; }
 
     }
-    
 }

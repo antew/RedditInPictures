@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:menuCategory="system" >
+    <group android:menuCategory="system">
         <item
             android:id="@+id/lock_viewpager"
             android:icon="@drawable/ic_action_lock_open_dark"
             android:orderInCategory="1"
             android:showAsAction="ifRoom"
-            android:title="Disable swiping"/>
+            android:title="Disable swiping" />
         <item
             android:id="@+id/save_post"
             android:icon="@drawable/ic_action_save_dark"
             android:orderInCategory="2"
             android:showAsAction="ifRoom"
-            android:title="Save Image"/>
+            android:title="Save Image" />
         <item
             android:id="@+id/share_post"
             android:icon="@drawable/ic_action_share_dark"
             android:orderInCategory="3"
             android:showAsAction="ifRoom"
-            android:title="Share"/>
+            android:title="Share" />
         <item
             android:id="@+id/view_post"
             android:icon="@drawable/ic_action_globe_dark"
             android:orderInCategory="4"
             android:showAsAction="ifRoom"
-            android:title="Open post on Reddit"/>
+            android:title="Open post on Reddit" />
     </group>
 
 </menu>

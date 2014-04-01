@@ -28,5 +28,4 @@ abstract class RedditResponseHandler {
     }
 
     public abstract void processHttpResponse(Context context);
-
 }

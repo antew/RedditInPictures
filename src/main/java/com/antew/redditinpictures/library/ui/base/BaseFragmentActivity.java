@@ -21,12 +21,10 @@ import javax.inject.Inject;
 /**
  * Base activity for an activity which does not use fragments.
  */
-public abstract class BaseFragmentActivity extends SherlockFragmentActivity implements
-    ActionBarTitleChanger {
-    private ObjectGraph activityGraph;
-
+public abstract class BaseFragmentActivity extends SherlockFragmentActivity implements ActionBarTitleChanger {
     @Inject
     protected Bus mBus;
+    private ObjectGraph activityGraph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,23 +41,6 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
 
         // Inject ourselves so subclasses will have dependencies fulfilled when this method returns.
         activityGraph.inject(this);
-    }
-
-    @Override
-    protected void onPause() {
-        mBus.unregister(this);
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        activityGraph = null;
-
-        if (BuildConfig.DEBUG) {
-            ViewServer.get(this).removeWindow(this);
-        }
-
-        super.onDestroy();
     }
 
     @Override
@@ -80,6 +61,23 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
         return Arrays.<Object>asList(new ActivityModule(this));
     }
 
+    @Override
+    protected void onPause() {
+        mBus.unregister(this);
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        activityGraph = null;
+
+        if (BuildConfig.DEBUG) {
+            ViewServer.get(this).removeWindow(this);
+        }
+
+        super.onDestroy();
+    }
+
     /** Inject the supplied {@code object} using the activity-specific graph. */
     public void inject(Object object) {
         activityGraph.inject(object);
@@ -94,5 +92,4 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
             getSupportActionBar().setTitle(title);
         }
     }
-
 }

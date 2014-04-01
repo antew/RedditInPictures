@@ -15,25 +15,25 @@
  */
 package com.antew.redditinpictures.library.reddit;
 
-
 /**
  * The expectation is that this class will only be used to store data for successful logins
- * 
+ *
  * @author Antew
- * 
  */
 public class RedditLoginInformation {
     public static final String TAG = RedditLoginInformation.class.getSimpleName();
-    private static LoginData   mLoginData;
+    private static LoginData mLoginData;
 
-    private RedditLoginInformation() {};
+    private RedditLoginInformation() {}
 
-    public static void setLoginData(LoginData loginData) {
-        mLoginData = loginData;
-    }
+    ;
 
     public static LoginData getLoginData() {
         return mLoginData;
+    }
+
+    public static void setLoginData(LoginData loginData) {
+        mLoginData = loginData;
     }
 
     public static boolean isLoggedIn() {
@@ -51,5 +51,4 @@ public class RedditLoginInformation {
     public static String getCookie() {
         return mLoginData == null ? null : mLoginData.getCookie();
     }
-
 }

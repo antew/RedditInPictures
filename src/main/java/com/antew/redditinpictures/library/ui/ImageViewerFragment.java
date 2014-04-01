@@ -52,324 +52,34 @@ import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
 public abstract class ImageViewerFragment extends BaseFragment {
-    public static final String TAG = "ImageViewerFragment";
-    protected static final String IMAGE_DATA_EXTRA = "extra_image_data";
+    public static final    String TAG               = "ImageViewerFragment";
+    protected static final String IMAGE_DATA_EXTRA  = "extra_image_data";
     protected static final String IMAGE_ALBUM_EXTRA = "extra_image_album";
-    protected PostData mImage;
-
-    @InjectView(R.id.iv_imageView)
-    protected ImageView mImageView;
-    @InjectView(R.id.pb_progress) ProgressBar mProgress;
-    @InjectView(R.id.rl_post_information_wrapper) RelativeLayout mPostInformationWrapper;
-    @InjectView(R.id.tv_post_title) TextView mPostTitle;
-    @InjectView(R.id.tv_post_information) TextView mPostInformation;
-    @InjectView(R.id.btn_view_gallery) Button mBtnViewGallery;
-    @InjectView(R.id.webview_stub) ViewStub mViewStub;
-    @InjectView(R.id.tv_post_votes) TextView mPostVotes;
-    @InjectView(R.id.tv_error_message) TextView mErrorMessage;
-
-    @Inject
-    ScreenSize mScreenSize;
-
-    protected WebView mWebView;
-    protected boolean mPauseWork = false;
-    private final Object mPauseWorkLock = new Object();
-    private boolean mExitTasksEarly = false;
-    protected String mResolvedImageUrl = null;
-    protected Image mResolvedImage = null;
-    protected int mActionBarHeight;
-    protected Album mAlbum;
-    protected AsyncTask<String, Void, Image> mResolveImageTask = null;
-
-    private boolean mCancelClick = false;
-    private float mDownXPos = 0;
-    private float mDownYPos = 0;
-
     /**
      * Movement threshold used to decide whether to cancel the toggle
      * between windowed mode and fullscreen mode in the
      * WebView in {@link #getWebViewOnTouchListener()}
      */
     private static float MOVE_THRESHOLD;
-
+    private final Object  mPauseWorkLock    = new Object();
+    protected PostData mImage;
+    @InjectView(R.id.iv_imageView)
+    protected                                     ImageView      mImageView;
+    protected WebView mWebView;
+    protected     boolean mPauseWork        = false;
+    protected     String  mResolvedImageUrl = null;
+    protected     Image   mResolvedImage    = null;
+    protected int   mActionBarHeight;
+    protected Album mAlbum;
+    protected AsyncTask<String, Void, Image> mResolveImageTask = null;
     protected SystemUiStateProvider mSystemUiStateProvider;
-
-    /**
-     * Empty constructor as per the Fragment documentation
-     */
-    public ImageViewerFragment() {
-    }
-
-    protected abstract void resolveImage();
-
-    protected abstract void populatePostData(View v);
-
-    protected abstract boolean shouldShowPostInformation();
-
-    /**
-     * Populate image using a url from extras.
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        loadExtras();
-    }
-
-    @Override
-    public void onResume() {
-        Log.i(TAG, "onResume");
-        super.onResume();
-        if (mSystemUiStateProvider.isSystemUiVisible()) {
-            showPostDetails();
-        } else {
-            hidePostDetails();
-        }
-    }
-
-    public void loadExtras() {
-        mImage = getArguments() != null ? (PostData) getArguments().getParcelable(IMAGE_DATA_EXTRA)
-            : null;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-        Bundle savedInstanceState) {
-        Log.i(TAG, "onCreateView");
-        final View view = inflater.inflate(R.layout.image_detail_fragment, container, false);
-        ButterKnife.inject(this, view);
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        Log.i(TAG, "onActivityCreated");
-        super.onActivityCreated(savedInstanceState);
-
-        populatePostData(mPostInformationWrapper);
-
-        if (savedInstanceState != null) loadSavedInstanceState(savedInstanceState);
-
-        final Activity act = getActivity();
-
-        LocalBroadcastManager.getInstance(act)
-            .registerReceiver(mScoreUpdateReceiver,
-                new IntentFilter(Constants.BROADCAST_UPDATE_SCORE));
-        LocalBroadcastManager.getInstance(act)
-            .registerReceiver(mToggleFullscreenIntent,
-                new IntentFilter(Constants.BROADCAST_TOGGLE_FULLSCREEN));
-
-        // Set up on our tap listener for the PhotoView which we use to toggle between fullscreen
-        // and windowed mode
-        ((PhotoView) mImageView).setOnPhotoTapListener(getOnPhotoTapListener(act));
-
-        MOVE_THRESHOLD = 20 * getResources().getDisplayMetrics().density;
-
-        // Calculate ActionBar height
-        TypedValue tv = new TypedValue();
-        if (getActivity().getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
-            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
-                getActivity().getResources().getDisplayMetrics());
-        }
-
-        try {
-            mSystemUiStateProvider = (SystemUiStateProvider) getActivity();
-        } catch (ClassCastException e) {
-            Log.e(TAG, "The activity must implement the SystemUiStateProvider interface", e);
-        }
-
-        // Use the parent activity to load the image asynchronously into the ImageView (so a single
-        // cache can be used over all pages in the ViewPager
-        if (ImageViewerActivity.class.isInstance(getActivity())) {
-            resolveImage();
-        }
-    }
-
-    private OnPhotoTapListener getOnPhotoTapListener(final Activity activity) {
-        return new OnPhotoTapListener() {
-
-            @Override
-            public void onPhotoTap(View view, float x, float y) {
-                Intent intent = new Intent(Constants.BROADCAST_TOGGLE_FULLSCREEN);
-                intent.putExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE,
-                    mSystemUiStateProvider.isSystemUiVisible());
-                LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
-            }
-        };
-    }
-
-    protected void loadSavedInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState.containsKey(IMAGE_DATA_EXTRA)) {
-            mImage = savedInstanceState.getParcelable(IMAGE_DATA_EXTRA);
-        }
-
-        if (savedInstanceState.containsKey(IMAGE_ALBUM_EXTRA)) {
-            mAlbum = savedInstanceState.getParcelable(IMAGE_ALBUM_EXTRA);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        Log.i(TAG, "onSaveInstanceState");
-        if (mImage != null) outState.putParcelable(IMAGE_DATA_EXTRA, mImage);
-
-        if (mAlbum != null) outState.putParcelable(IMAGE_ALBUM_EXTRA, mAlbum);
-
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.i(TAG, "onDestroy");
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mScoreUpdateReceiver);
-        LocalBroadcastManager.getInstance(getActivity())
-            .unregisterReceiver(mToggleFullscreenIntent);
-
-        if (mImageView != null) {
-            mImageView.setImageDrawable(null);
-        }
-
-        if (mWebView != null) mWebView.destroy();
-
-        if (mResolveImageTask != null) {
-            Log.i(TAG, "onDestroy - resolveImageTask not null");
-            if (mResolveImageTask.getStatus() != AsyncTask.Status.FINISHED) {
-                Log.i(TAG, "onDestroy - Cancelling resolveImageTask");
-                mResolveImageTask.cancel(true);
-            }
-        } else {
-            Log.i(TAG, "onDestroy - Not cancelling resolveImageTask");
-        }
-
-        super.onDestroy();
-    }
-
-    public void hidePostDetails() {
-        Log.i(TAG, "hidePostDetails");
-        animate(mPostInformationWrapper).setDuration(500).y(-400);
-    }
-
-    public void showPostDetails() {
-        Log.i(TAG, "showPostDetails");
-        if (shouldShowPostInformation()) {
-            mPostInformationWrapper.setVisibility(View.VISIBLE);
-            animate(mPostInformationWrapper).setDuration(500).y(mActionBarHeight);
-        }
-    }
-
-    /**
-     * This handles receiving the touch events in the WebView so that we can
-     * toggle between fullscreen and windowed mode.
-     *
-     * The first time the user touches the screen we save the X and Y coordinates.
-     * If we receive a {@link MotionEvent#ACTION_DOWN} event we compare the previous
-     * X and Y coordinates to the saved coordinates, if they are greater than {@link
-     * #MOVE_THRESHOLD}
-     * we prevent the toggle from windowed mode to fullscreen mode or vice versa, the idea
-     * being that the user is either dragging the image or using pinch-to-zoom.
-     *
-     * TODO: Implement handling for double tap to zoom.
-     *
-     * @return The {@link OnTouchListener} for the {@link WebView} to use.
-     */
-    public OnTouchListener getWebViewOnTouchListener() {
-        return new OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        mCancelClick = false;
-                        mDownXPos = event.getX();
-                        mDownYPos = event.getY();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (!mCancelClick) {
-
-                            Intent intent = new Intent(Constants.BROADCAST_TOGGLE_FULLSCREEN);
-                            intent.putExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE,
-                                mSystemUiStateProvider.isSystemUiVisible());
-                            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
-                        }
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        if (Math.abs(event.getX() - mDownXPos) > MOVE_THRESHOLD
-                            || Math.abs(event.getY() - mDownYPos) > MOVE_THRESHOLD) {
-                            mCancelClick = true;
-                        }
-                        break;
-                }
-
-                // Return false so that we still let the WebView consume the event
-                return false;
-            }
-        };
-    }
-
-    public void loadImage(Image image) {
-        if (image == null) {
-            Log.e(TAG, "Received null url in loadImage(String imageUrl)");
-            mProgress.setVisibility(View.GONE);
-            mErrorMessage.setVisibility(View.VISIBLE);
-            return;
-        }
-
-        mResolvedImage = image;
-        mResolvedImageUrl = image.getSize(ImageSize.ORIGINAL);
-
-        if (ImageUtil.isGif(mResolvedImageUrl)) {
-            Picasso.with(getActivity())
-                .load(R.drawable.loading_spinner_76)
-                .into(mImageView);
-            loadGifInWebView(mResolvedImageUrl);
-        } else {
-            Picasso.with(getActivity())
-                .load(mResolvedImageUrl)
-                .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
-                .centerInside()
-                .into(mImageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        if (mProgress != null) mProgress.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onError() {
-                        if (mErrorMessage != null) mErrorMessage.setVisibility(View.VISIBLE);
-                    }
-                });
-        }
-    }
-
-    public void loadGifInWebView(String imageUrl) {
-        if (mViewStub.getParent() != null) mWebView = (WebView) mViewStub.inflate();
-
-        initializeWebView(mWebView);
-        mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
-        mImageView.setVisibility(View.GONE);
-    }
-
-    public String getHtmlForImageDisplay(String imageUrl) {
-        return Constants.WEBVIEW_IMAGE_HTML_BEGIN + imageUrl + Constants.WEBVIEW_IMAGE_HTML_END;
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public void initializeWebView(WebView webview) {
-        assert webview != null : "WebView should not be null!";
-
-        WebSettings settings = webview.getSettings();
-        settings.setLoadWithOverviewMode(true);
-        settings.setUseWideViewPort(true);
-        settings.setBuiltInZoomControls(true);
-        if (Util.hasHoneycomb()) {
-            settings.setDisplayZoomControls(false);
-        }
-        webview.setBackgroundColor(Color.BLACK);
-        webview.setVisibility(View.VISIBLE);
-        webview.setOnTouchListener(getWebViewOnTouchListener());
-    }
-
-    //@formatter:off
+    @InjectView(R.id.pb_progress)                 ProgressBar    mProgress;
+    @InjectView(R.id.rl_post_information_wrapper) RelativeLayout mPostInformationWrapper;
+    @InjectView(R.id.tv_post_title)               TextView       mPostTitle;
+    @InjectView(R.id.tv_post_information)         TextView       mPostInformation;
+    @InjectView(R.id.btn_view_gallery)            Button         mBtnViewGallery;
+    @InjectView(R.id.webview_stub)                ViewStub       mViewStub;
+    @InjectView(R.id.tv_post_votes)               TextView       mPostVotes;
     /**
      * This BroadcastReceiver handles updating the score when a vote is cast or changed
      */
@@ -389,7 +99,12 @@ public abstract class ImageViewerFragment extends BaseFragment {
             }
         }
     };
-
+    @InjectView(R.id.tv_error_message)            TextView       mErrorMessage;
+    @Inject ScreenSize mScreenSize;
+    private       boolean mExitTasksEarly   = false;
+    private boolean mCancelClick = false;
+    private float   mDownXPos    = 0;
+    private float   mDownYPos    = 0;
     private BroadcastReceiver mToggleFullscreenIntent = new BroadcastReceiver() {
 
         @Override
@@ -403,6 +118,285 @@ public abstract class ImageViewerFragment extends BaseFragment {
             }
         }
     };
+
+    /**
+     * Empty constructor as per the Fragment documentation
+     */
+    public ImageViewerFragment() {
+    }
+
+    /**
+     * Populate image using a url from extras.
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        loadExtras();
+    }
+
+    public void loadExtras() {
+        mImage = getArguments() != null ? (PostData) getArguments().getParcelable(IMAGE_DATA_EXTRA) : null;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView");
+        final View view = inflater.inflate(R.layout.image_detail_fragment, container, false);
+        ButterKnife.inject(this, view);
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        Log.i(TAG, "onResume");
+        super.onResume();
+        if (mSystemUiStateProvider.isSystemUiVisible()) {
+            showPostDetails();
+        } else {
+            hidePostDetails();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.i(TAG, "onSaveInstanceState");
+        if (mImage != null) {
+            outState.putParcelable(IMAGE_DATA_EXTRA, mImage);
+        }
+
+        if (mAlbum != null) {
+            outState.putParcelable(IMAGE_ALBUM_EXTRA, mAlbum);
+        }
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "onDestroy");
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mScoreUpdateReceiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mToggleFullscreenIntent);
+
+        if (mImageView != null) {
+            mImageView.setImageDrawable(null);
+        }
+
+        if (mWebView != null) {
+            mWebView.destroy();
+        }
+
+        if (mResolveImageTask != null) {
+            Log.i(TAG, "onDestroy - resolveImageTask not null");
+            if (mResolveImageTask.getStatus() != AsyncTask.Status.FINISHED) {
+                Log.i(TAG, "onDestroy - Cancelling resolveImageTask");
+                mResolveImageTask.cancel(true);
+            }
+        } else {
+            Log.i(TAG, "onDestroy - Not cancelling resolveImageTask");
+        }
+
+        super.onDestroy();
+    }
+
+    public void showPostDetails() {
+        Log.i(TAG, "showPostDetails");
+        if (shouldShowPostInformation()) {
+            mPostInformationWrapper.setVisibility(View.VISIBLE);
+            animate(mPostInformationWrapper).setDuration(500).y(mActionBarHeight);
+        }
+    }
+
+    public void hidePostDetails() {
+        Log.i(TAG, "hidePostDetails");
+        animate(mPostInformationWrapper).setDuration(500).y(-400);
+    }
+
+    protected abstract boolean shouldShowPostInformation();
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Log.i(TAG, "onActivityCreated");
+        super.onActivityCreated(savedInstanceState);
+
+        populatePostData(mPostInformationWrapper);
+
+        if (savedInstanceState != null) {
+            loadSavedInstanceState(savedInstanceState);
+        }
+
+        final Activity act = getActivity();
+
+        LocalBroadcastManager.getInstance(act).registerReceiver(mScoreUpdateReceiver, new IntentFilter(Constants.BROADCAST_UPDATE_SCORE));
+        LocalBroadcastManager.getInstance(act)
+                             .registerReceiver(mToggleFullscreenIntent, new IntentFilter(Constants.BROADCAST_TOGGLE_FULLSCREEN));
+
+        // Set up on our tap listener for the PhotoView which we use to toggle between fullscreen
+        // and windowed mode
+        ((PhotoView) mImageView).setOnPhotoTapListener(getOnPhotoTapListener(act));
+
+        MOVE_THRESHOLD = 20 * getResources().getDisplayMetrics().density;
+
+        // Calculate ActionBar height
+        TypedValue tv = new TypedValue();
+        if (getActivity().getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getActivity().getResources().getDisplayMetrics());
+        }
+
+        try {
+            mSystemUiStateProvider = (SystemUiStateProvider) getActivity();
+        } catch (ClassCastException e) {
+            Log.e(TAG, "The activity must implement the SystemUiStateProvider interface", e);
+        }
+
+        // Use the parent activity to load the image asynchronously into the ImageView (so a single
+        // cache can be used over all pages in the ViewPager
+        if (ImageViewerActivity.class.isInstance(getActivity())) {
+            resolveImage();
+        }
+    }
+
+    protected abstract void populatePostData(View v);
+
+    protected void loadSavedInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState.containsKey(IMAGE_DATA_EXTRA)) {
+            mImage = savedInstanceState.getParcelable(IMAGE_DATA_EXTRA);
+        }
+
+        if (savedInstanceState.containsKey(IMAGE_ALBUM_EXTRA)) {
+            mAlbum = savedInstanceState.getParcelable(IMAGE_ALBUM_EXTRA);
+        }
+    }
+
+    private OnPhotoTapListener getOnPhotoTapListener(final Activity activity) {
+        return new OnPhotoTapListener() {
+
+            @Override
+            public void onPhotoTap(View view, float x, float y) {
+                Intent intent = new Intent(Constants.BROADCAST_TOGGLE_FULLSCREEN);
+                intent.putExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
+                LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
+            }
+        };
+    }
+
+    protected abstract void resolveImage();
+
+    public void loadImage(Image image) {
+        if (image == null) {
+            Log.e(TAG, "Received null url in loadImage(String imageUrl)");
+            mProgress.setVisibility(View.GONE);
+            mErrorMessage.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        mResolvedImage = image;
+        mResolvedImageUrl = image.getSize(ImageSize.ORIGINAL);
+
+        if (ImageUtil.isGif(mResolvedImageUrl)) {
+            Picasso.with(getActivity()).load(R.drawable.loading_spinner_76).into(mImageView);
+            loadGifInWebView(mResolvedImageUrl);
+        } else {
+            Picasso.with(getActivity())
+                   .load(mResolvedImageUrl)
+                   .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
+                   .centerInside()
+                   .into(mImageView, new Callback() {
+                       @Override
+                       public void onSuccess() {
+                           if (mProgress != null) {
+                               mProgress.setVisibility(View.GONE);
+                           }
+                       }
+
+                       @Override
+                       public void onError() {
+                           if (mErrorMessage != null) {
+                               mErrorMessage.setVisibility(View.VISIBLE);
+                           }
+                       }
+                   });
+        }
+    }
+
+    public void loadGifInWebView(String imageUrl) {
+        if (mViewStub.getParent() != null) {
+            mWebView = (WebView) mViewStub.inflate();
+        }
+
+        initializeWebView(mWebView);
+        mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
+        mImageView.setVisibility(View.GONE);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public void initializeWebView(WebView webview) {
+        assert webview != null : "WebView should not be null!";
+
+        WebSettings settings = webview.getSettings();
+        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(true);
+        settings.setBuiltInZoomControls(true);
+        if (Util.hasHoneycomb()) {
+            settings.setDisplayZoomControls(false);
+        }
+        webview.setBackgroundColor(Color.BLACK);
+        webview.setVisibility(View.VISIBLE);
+        webview.setOnTouchListener(getWebViewOnTouchListener());
+    }
+
+    //@formatter:off
+
+    public String getHtmlForImageDisplay(String imageUrl) {
+        return Constants.WEBVIEW_IMAGE_HTML_BEGIN + imageUrl + Constants.WEBVIEW_IMAGE_HTML_END;
+    }
+
+    /**
+     * This handles receiving the touch events in the WebView so that we can
+     * toggle between fullscreen and windowed mode.
+     * <p/>
+     * The first time the user touches the screen we save the X and Y coordinates.
+     * If we receive a {@link MotionEvent#ACTION_DOWN} event we compare the previous
+     * X and Y coordinates to the saved coordinates, if they are greater than {@link
+     * #MOVE_THRESHOLD}
+     * we prevent the toggle from windowed mode to fullscreen mode or vice versa, the idea
+     * being that the user is either dragging the image or using pinch-to-zoom.
+     * <p/>
+     * TODO: Implement handling for double tap to zoom.
+     *
+     * @return The {@link OnTouchListener} for the {@link WebView} to use.
+     */
+    public OnTouchListener getWebViewOnTouchListener() {
+        return new OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mCancelClick = false;
+                        mDownXPos = event.getX();
+                        mDownYPos = event.getY();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (!mCancelClick) {
+
+                            Intent intent = new Intent(Constants.BROADCAST_TOGGLE_FULLSCREEN);
+                            intent.putExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
+                            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+                        }
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (Math.abs(event.getX() - mDownXPos) > MOVE_THRESHOLD || Math.abs(event.getY() - mDownYPos) > MOVE_THRESHOLD) {
+                            mCancelClick = true;
+                        }
+                        break;
+                }
+
+                // Return false so that we still let the WebView consume the event
+                return false;
+            }
+        };
+    }
 
     //@formatter:on
 

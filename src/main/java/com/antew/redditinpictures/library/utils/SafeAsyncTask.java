@@ -63,11 +63,6 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
         this.executor = executor;
     }
 
-    public FutureTask<Void> future() {
-        future = new FutureTask<Void>(newTask());
-        return future;
-    }
-
     public SafeAsyncTask<ResultT> executor(Executor executor) {
         this.executor = executor;
         return this;
@@ -95,6 +90,15 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
         executor.execute(future());
     }
 
+    public FutureTask<Void> future() {
+        future = new FutureTask<Void>(newTask());
+        return future;
+    }
+
+    protected Task<ResultT> newTask() {
+        return new Task<ResultT>(this);
+    }
+
     public boolean cancel(boolean mayInterruptIfRunning) {
         if (future == null) {
             throw new UnsupportedOperationException("You cannot cancel this task before calling future()");
@@ -105,19 +109,19 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
 
     /**
      * @throws Exception,
-     * 		captured on passed to onException() if present.
+     *     captured on passed to onException() if present.
      */
     protected void onPreExecute() throws Exception {
     }
 
     /**
      * @param t
-     * 		the result of {@link #call()}
+     *     the result of {@link #call()}
      *
      * @throws Exception,
-     * 		captured on passed to onException() if present.
+     *     captured on passed to onException() if present.
      */
-    @SuppressWarnings({"UnusedDeclaration"})
+    @SuppressWarnings({ "UnusedDeclaration" })
     protected void onSuccess(ResultT t) throws Exception {
     }
 
@@ -128,7 +132,7 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
      * differently than other exceptions.
      *
      * @param e
-     * 		an InterruptedException or InterruptedIOException
+     *     an InterruptedException or InterruptedIOException
      */
     protected void onInterrupted(Exception e) {
         onException(e);
@@ -138,10 +142,10 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
      * Logs the exception as an Error by default, but this method may be overridden by subclasses.
      *
      * @param e
-     * 		the exception thrown from {@link #onPreExecute()}, {@link #call()}, or {@link #onSuccess(Object)}
+     *     the exception thrown from {@link #onPreExecute()}, {@link #call()}, or {@link #onSuccess(Object)}
      *
      * @throws RuntimeException,
-     * 		ignored
+     *     ignored
      */
     protected void onException(Exception e) throws RuntimeException {
         onThrowable(e);
@@ -153,13 +157,9 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
 
     /**
      * @throws RuntimeException,
-     * 		ignored
+     *     ignored
      */
     protected void onFinally() throws RuntimeException {
-    }
-
-    protected Task<ResultT> newTask() {
-        return new Task<ResultT>(this);
     }
 
     public static class Task<ResultT> implements Callable<Void> {
@@ -175,7 +175,6 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
             try {
                 doPreExecute();
                 doSuccess(doCall());
-
             } catch (final Exception e) {
                 try {
                     doException(e);
@@ -183,7 +182,6 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
                     // logged but ignored
                     Ln.e(f);
                 }
-
             } catch (final Throwable t) {
                 try {
                     doThrowable(t);
@@ -207,10 +205,6 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
             });
         }
 
-        protected ResultT doCall() throws Exception {
-            return parent.call();
-        }
-
         protected void doSuccess(final ResultT r) throws Exception {
             postToUiThreadAndWait(new Callable<Object>() {
                 public Object call() throws Exception {
@@ -218,6 +212,10 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
                     return null;
                 }
             });
+        }
+
+        protected ResultT doCall() throws Exception {
+            return parent.call();
         }
 
         protected void doException(final Exception e) throws Exception {
@@ -266,10 +264,10 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
          * an exception, it captures it and rethrows it.
          *
          * @param c
-         * 		the callable to post
+         *     the callable to post
          *
          * @throws Exception
-         * 		on error
+         *     on error
          */
         protected void postToUiThreadAndWait(final Callable c) throws Exception {
             final CountDownLatch latch = new CountDownLatch(1);
@@ -297,9 +295,6 @@ public abstract class SafeAsyncTask<ResultT> implements Callable<ResultT> {
             if (exceptions[0] != null) {
                 throw exceptions[0];
             }
-
         }
-
     }
-
 }

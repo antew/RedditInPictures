@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class SubredditsSearchResponse extends RedditResponseHandler {
 
     public static final String TAG = SubredditsSearchResponse.class.getSimpleName();
-    private RedditResult       result;
+    private RedditResult result;
 
     public SubredditsSearchResponse(RedditResult result) {
         this.result = result;
@@ -32,5 +32,4 @@ public class SubredditsSearchResponse extends RedditResponseHandler {
         intent.putStringArrayListExtra(Constants.EXTRA_SUBREDDIT_NAMES, (ArrayList<String>) subredditsSearch.getNames());
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
-    
 }

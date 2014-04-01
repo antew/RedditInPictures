@@ -14,6 +14,50 @@ public class RedditDatabase extends SQLiteOpenHelper {
     private static final int    DATABASE_VERSION = 4;
     private static final String DATABASE_NAME    = "redditinpictures.db";
 
+    public RedditDatabase(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static void deleteDatabase(Context context) {
+        context.deleteDatabase(DATABASE_NAME);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL(Tables.CreateTableSql.POSTDATA);
+        db.execSQL(Tables.CreateTableSql.REDDIT_DATA);
+        db.execSQL(Tables.CreateTableSql.LOGIN);
+        db.execSQL(Tables.CreateTableSql.SUBREDDITS);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        /* Dropping the tables is useful for quick development, but shouldn't
+           be used in release versions.
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.POSTDATA);
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.REDDIT_DATA);
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.LOGIN);
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.SUBREDDITS);
+        */
+
+        switch (oldVersion) {
+            case 1:
+                // Database version 1 didn't have the 'priority' column
+                db.execSQL("ALTER TABLE " + Tables.SUBREDDITS + " ADD COLUMN " + SubredditColumns.PRIORITY + " INTEGER DEFAULT 0");
+                break;
+            case 2:
+                //Database version 2 didn't have the 'userIsSubscriber' or 'isDefaultSubreddit' column
+                db.execSQL(
+                    "ALTER TABLE " + Tables.SUBREDDITS + " ADD COLUMN " + SubredditColumns.USER_IS_SUBSCRIBER + " INTEGER DEFAULT 0");
+                db.execSQL("ALTER TABLE " + Tables.SUBREDDITS + " ADD COLUMN " + SubredditColumns.DEFAULT_SUBREDDIT + " INTEGER DEFAULT 0");
+                break;
+            case 3:
+                //Database version 3 didn't have the 'isDefaultSubreddit' column
+                db.execSQL("ALTER TABLE " + Tables.SUBREDDITS + " ADD COLUMN " + SubredditColumns.DEFAULT_SUBREDDIT + " INTEGER DEFAULT 0");
+                break;
+        }
+    }
+
     public interface Tables {
         String POSTDATA    = "post_data";
         String REDDIT_DATA = "reddit_data";
@@ -31,7 +75,7 @@ public class RedditDatabase extends SQLiteOpenHelper {
                     + LoginColumns.SUCCESS       + " INTEGER, "
                     + LoginColumns.ERROR_MESSAGE + " TEXT"
                     + " );";
-            
+
             String SUBREDDITS = "CREATE TABLE " + Tables.SUBREDDITS +
                     " ("
                     + BaseColumns._ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -54,10 +98,10 @@ public class RedditDatabase extends SQLiteOpenHelper {
                     + SubredditColumns.USER_IS_SUBSCRIBER + " INTEGER DEFAULT 0,"
                     + SubredditColumns.DEFAULT_SUBREDDIT  + " INTEGER DEFAULT 0"
                     + " );";
-            
-            String POSTDATA = "CREATE TABLE " + Tables.POSTDATA + 
-                    " (" 
-                    + BaseColumns._ID                    + " INTEGER PRIMARY KEY AUTOINCREMENT, " 
+
+            String POSTDATA = "CREATE TABLE " + Tables.POSTDATA +
+                    " ("
+                    + BaseColumns._ID                    + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                     + PostColumns.DOMAIN                 + " TEXT NOT NULL, "
                     + PostColumns.BANNED_BY              + " TEXT, "
                     + PostColumns.SUBREDDIT              + " TEXT NOT NULL, "
@@ -91,7 +135,7 @@ public class RedditDatabase extends SQLiteOpenHelper {
 //                    + PostDataColumns.MODHASH                + " TEXT NOT NULL, "
 //                    + "FOREIGN KEY (" + PostDataColumns.MODHASH + ")" + " REFERENCES " + Tables.REDDIT_DATA + " (" + RedditDataColumns.MODHASH + ")"
                     + " );";
-            
+
             String REDDIT_DATA = "CREATE TABLE " + Tables.REDDIT_DATA +
                     " ("
                     + BaseColumns._ID           + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -102,48 +146,4 @@ public class RedditDatabase extends SQLiteOpenHelper {
             //@formatter:on
         }
     }
-
-    public RedditDatabase(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(Tables.CreateTableSql.POSTDATA);
-        db.execSQL(Tables.CreateTableSql.REDDIT_DATA);
-        db.execSQL(Tables.CreateTableSql.LOGIN);
-        db.execSQL(Tables.CreateTableSql.SUBREDDITS);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        /* Dropping the tables is useful for quick development, but shouldn't
-           be used in release versions.
-        db.execSQL("DROP TABLE IF EXISTS " + Tables.POSTDATA);
-        db.execSQL("DROP TABLE IF EXISTS " + Tables.REDDIT_DATA);
-        db.execSQL("DROP TABLE IF EXISTS " + Tables.LOGIN);
-        db.execSQL("DROP TABLE IF EXISTS " + Tables.SUBREDDITS);
-        */
-
-        switch (oldVersion) {
-            case 1:
-                // Database version 1 didn't have the 'priority' column
-                db.execSQL("ALTER TABLE " + Tables.SUBREDDITS + " ADD COLUMN " + SubredditColumns.PRIORITY + " INTEGER DEFAULT 0");
-                break;
-            case 2:
-                //Database version 2 didn't have the 'userIsSubscriber' or 'isDefaultSubreddit' column
-                db.execSQL("ALTER TABLE " + Tables.SUBREDDITS + " ADD COLUMN " + SubredditColumns.USER_IS_SUBSCRIBER + " INTEGER DEFAULT 0");
-                db.execSQL("ALTER TABLE " + Tables.SUBREDDITS + " ADD COLUMN " + SubredditColumns.DEFAULT_SUBREDDIT + " INTEGER DEFAULT 0");
-                break;
-            case 3:
-                //Database version 3 didn't have the 'isDefaultSubreddit' column
-                db.execSQL("ALTER TABLE " + Tables.SUBREDDITS + " ADD COLUMN " + SubredditColumns.DEFAULT_SUBREDDIT + " INTEGER DEFAULT 0");
-                break;
-        }
-    }
-
-    public static void deleteDatabase(Context context) {
-        context.deleteDatabase(DATABASE_NAME);
-    }
-
 }

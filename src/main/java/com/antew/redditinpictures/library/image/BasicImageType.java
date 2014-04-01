@@ -15,6 +15,11 @@ public class BasicImageType extends Image {
     }
 
     @Override
+    public String getRegexForUrlMatching() {
+        throw new UnsupportedOperationException("Standard URLs like \"www.test.com/image.png\" do not require a RegEx for finding a hash");
+    }
+
+    @Override
     public java.lang.String getSize(ImageSize size) {
         return getUrl();
     }
@@ -23,10 +28,4 @@ public class BasicImageType extends Image {
     public ImageType getImageType() {
         return ImageType.OTHER_SUPPORTED_IMAGE;
     }
-
-    @Override
-    public String getRegexForUrlMatching() {
-        throw new UnsupportedOperationException("Standard URLs like \"www.test.com/image.png\" do not require a RegEx for finding a hash");
-    }
-
 }

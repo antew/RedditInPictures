@@ -16,7 +16,6 @@ public class RedditResult extends JsonResult {
         super(result);
         Bundle args = result.getBundleExtra(RedditService.EXTRA_BUNDLE);
         mReplaceAll = args.getBoolean(RedditService.EXTRA_REPLACE_ALL);
-
     }
 
     public boolean isReplaceAll() {
@@ -32,7 +31,5 @@ public class RedditResult extends JsonResult {
                 throw new NullPointerException("ResponseType was null, is the requestCode defined in ResponseType.newInstance()?");
             }
         }
-
     }
-
 }

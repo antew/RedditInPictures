@@ -24,25 +24,40 @@ import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Util;
 
 public class RedditUrl implements Parcelable {
-    private static final String REDDIT_URL       = "http://www.reddit.com";
-    private static final String BASE_URL         = REDDIT_URL + "/r/";
-    private static final String URL_SEPARATOR    = "/";
-    private static final String QS_SEPARATOR     = "?";
-    private static final String SORT             = "sort=%s";
-    private static final String COUNT            = "limit=%d";
-    private static final String TIME             = "t=%s";
-    private static final String AFTER            = "after=%s";
-    private static final String BEFORE           = "before=%s";
-    private static final String JSON             = ".json";
-    private static final String PARAM_SEPARATOR  = "&";
+    //@formatter:off
+    public static final Parcelable.Creator<RedditUrl> CREATOR
+        = new Parcelable.Creator<RedditUrl>() {
 
-    public final String         subreddit;
-    public final Age            age;
-    public final Category       category;
-    public final int            count;
-    public final String         after;
-    public final String         before;
-    public final boolean        isLoggedIn;
+            @Override
+            public RedditUrl createFromParcel(Parcel source) {
+                return new RedditUrl(source);
+            }
+
+            @Override
+            public RedditUrl[] newArray(int size) {
+                return new RedditUrl[size];
+            }
+
+
+    };
+    private static final String REDDIT_URL      = "http://www.reddit.com";
+    private static final String BASE_URL        = REDDIT_URL + "/r/";
+    private static final String URL_SEPARATOR   = "/";
+    private static final String QS_SEPARATOR    = "?";
+    private static final String SORT            = "sort=%s";
+    private static final String COUNT           = "limit=%d";
+    private static final String TIME            = "t=%s";
+    private static final String AFTER           = "after=%s";
+    private static final String BEFORE          = "before=%s";
+    private static final String JSON            = ".json";
+    private static final String PARAM_SEPARATOR = "&";
+    public final String   subreddit;
+    public final Age      age;
+    public final Category category;
+    public final int      count;
+    public final String   after;
+    public final String   before;
+    public final boolean  isLoggedIn;
 
     private RedditUrl(Builder builder) {
         subreddit = builder.subreddit;
@@ -64,6 +79,25 @@ public class RedditUrl implements Parcelable {
         isLoggedIn = source.readByte() == 1;
     }
 
+    public static String getCategorySimpleName(Category category, Age age) {
+        String simpleName = null;
+        switch (category) {
+
+            case HOT:
+            case NEW:
+            case RISING:
+                simpleName = category.getSimpleName();
+                break;
+
+            case CONTROVERSIAL:
+            case TOP:
+                simpleName = (category.getSimpleName() + " - " + age.getSimpleName());
+                break;
+        }
+
+        return simpleName;
+    }
+
     public String getUrl() {
 
         StringBuffer url = new StringBuffer();
@@ -77,10 +111,11 @@ public class RedditUrl implements Parcelable {
         }
 
         // The "Rising" category uses www.reddit.com/new/?sort=rising
-        if (category.equals(Category.RISING))
+        if (category.equals(Category.RISING)) {
             url.append(Category.NEW.getName());
-        else
+        } else {
             url.append(category.getName());
+        }
 
         url.append(URL_SEPARATOR);
 
@@ -111,35 +146,32 @@ public class RedditUrl implements Parcelable {
         return url.toString();
     }
 
-    public static String getCategorySimpleName(Category category, Age age) {
-        String simpleName = null;
-        switch (category) {
+    @Override
+    public int describeContents() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-            case HOT:
-            case NEW:
-            case RISING:
-                simpleName = category.getSimpleName();
-                break;
-
-            case CONTROVERSIAL:
-            case TOP:
-                simpleName = (category.getSimpleName() + " - " + age.getSimpleName());
-                break;
-
-        }
-
-        return simpleName;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(subreddit);
+        dest.writeString(age.name());
+        dest.writeString(category.name());
+        dest.writeInt(count);
+        dest.writeString(after);
+        dest.writeString(before);
+        dest.writeByte(Util.parcelBoolean(isLoggedIn));
     }
 
     public static class Builder {
         private final String subreddit;
 
-        private Category     category   = Category.HOT;
-        private Age          age        = Age.TODAY;
-        private int          count      = 25;
-        private String       after      = "";
-        private String       before     = "";
-        private boolean      isLoggedIn = false;
+        private Category category   = Category.HOT;
+        private Age      age        = Age.TODAY;
+        private int      count      = 25;
+        private String   after      = "";
+        private String   before     = "";
+        private boolean  isLoggedIn = false;
 
         public Builder(String subreddit) {
             if (subreddit == null) {
@@ -182,39 +214,5 @@ public class RedditUrl implements Parcelable {
             return new RedditUrl(this);
         }
     }
-
-    @Override
-    public int describeContents() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(subreddit);
-        dest.writeString(age.name());
-        dest.writeString(category.name());
-        dest.writeInt(count);
-        dest.writeString(after);
-        dest.writeString(before);
-        dest.writeByte(Util.parcelBoolean(isLoggedIn));
-    }
-
-    //@formatter:off
-    public static final Parcelable.Creator<RedditUrl> CREATOR
-        = new Parcelable.Creator<RedditUrl>() {
-
-            @Override
-            public RedditUrl createFromParcel(Parcel source) {
-                return new RedditUrl(source);
-            }
-
-            @Override
-            public RedditUrl[] newArray(int size) {
-                return new RedditUrl[size];
-            }
-            
-        
-    };
     //@formatter:on
 }

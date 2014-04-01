@@ -17,35 +17,31 @@ import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class RedditImageGridFragment extends RedditImageFragment<GridView, ImageCursorAdapter> {
     //9 is a good number, it's not as great as 8 or as majestic as 42 but it is indeed the product of 3 3s which is okay...I guess.
-    private static final int POST_LOAD_OFFSET = 9;
-    private static final QueryCriteria mQueryCriteria =
-        new QueryCriteria(RedditContract.Posts.GRIDVIEW_PROJECTION,
-            RedditContract.Posts.DEFAULT_SORT);
-    private ThumbnailInfo mThumbnailInfo;
+    private static final int           POST_LOAD_OFFSET = 9;
+    private AbsListView.OnScrollListener mGridViewOnScrollListener = new AbsListView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(AbsListView absListView, int scrollState) {
+            // TODO: Enable this with Picasso https://github.com/square/picasso/issues/248
+            if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+                //mImageFetcher.setPauseWork(true);
+            } else {
+                //mImageFetcher.setPauseWork(false);
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            // if we're are approaching the bottom of the gridview, load more data
+            if (firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET && totalItemCount > 0) {
+                fetchAdditionalImagesFromReddit();
+            }
+        }
+    };
+    private static final QueryCriteria mQueryCriteria   = new QueryCriteria(RedditContract.Posts.GRIDVIEW_PROJECTION,
+                                                                            RedditContract.Posts.DEFAULT_SORT);
     @InjectView(R.id.gridView)
-    protected GridView mGridView;
-
-    private AbsListView.OnScrollListener mGridViewOnScrollListener =
-        new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView absListView, int scrollState) {
-                // TODO: Enable this with Picasso https://github.com/square/picasso/issues/248
-                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
-                    //mImageFetcher.setPauseWork(true);
-                } else {
-                    //mImageFetcher.setPauseWork(false);
-                }
-            }
-
-            @Override
-            public void onScroll(AbsListView absListView, int firstVisibleItem,
-                int visibleItemCount, int totalItemCount) {
-                // if we're are approaching the bottom of the gridview, load more data
-                if (firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET && totalItemCount > 0) {
-                    fetchAdditionalImagesFromReddit();
-                }
-            }
-        };
+    protected GridView      mGridView;
+    private   ThumbnailInfo mThumbnailInfo;
 
     public static Fragment newInstance(String subreddit, Category category, Age age) {
         final Fragment f = new RedditImageGridFragment();
@@ -65,8 +61,7 @@ public class RedditImageGridFragment extends RedditImageFragment<GridView, Image
         mGridView.setAdapter(mAdapter);
         mGridView.setOnItemClickListener(this);
         mGridView.setOnScrollListener(mGridViewOnScrollListener);
-        mGridView.getViewTreeObserver()
-            .addOnGlobalLayoutListener(getGridGlobalLayoutListener(mGridView));
+        mGridView.getViewTreeObserver().addOnGlobalLayoutListener(getGridGlobalLayoutListener(mGridView));
     }
 
     /**
@@ -78,18 +73,15 @@ public class RedditImageGridFragment extends RedditImageFragment<GridView, Image
      *
      * @return The global layout listener
      */
-    private ViewTreeObserver.OnGlobalLayoutListener getGridGlobalLayoutListener(
-        final GridView gridView) {
+    private ViewTreeObserver.OnGlobalLayoutListener getGridGlobalLayoutListener(final GridView gridView) {
         return new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 if (mAdapter.getNumColumns() == 0) {
-                    final int numColumns = (int) Math.floor(
-                        gridView.getWidth() / (mThumbnailInfo.getSize()
-                            + mThumbnailInfo.getSpacing()));
+                    final int numColumns = (int) Math.floor(gridView.getWidth() / (mThumbnailInfo.getSize() + mThumbnailInfo.getSpacing())
+                                                           );
                     if (numColumns > 0) {
-                        final int columnWidth =
-                            (gridView.getWidth() / numColumns) - mThumbnailInfo.getSpacing();
+                        final int columnWidth = (gridView.getWidth() / numColumns) - mThumbnailInfo.getSpacing();
                         mAdapter.setNumColumns(numColumns);
                         mAdapter.setItemHeight(columnWidth);
                     }

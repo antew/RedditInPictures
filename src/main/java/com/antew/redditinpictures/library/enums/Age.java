@@ -17,23 +17,24 @@ public enum Age {
         this.simpleName = simpleName;
     }
 
-    public String getAge() {
-        return this.age;
-    }
-    
-    public String getSimpleName() {
-        return this.simpleName;
-    }
-
     public static Age fromString(String age) {
         if (age != null) {
             for (Age a : Age.values()) {
-                if (age.equalsIgnoreCase(a.age))
+                if (age.equalsIgnoreCase(a.age)) {
                     return a;
+                }
             }
         }
 
         return null;
+    }
+    
+    public String getAge() {
+        return this.age;
+    }
+
+    public String getSimpleName() {
+        return this.simpleName;
     }
     
     //@formatter:off

@@ -13,10 +13,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class ImgurAlbumType extends Image {
-    public static final String  TAG                 = ImgurAlbumType.class.getSimpleName();
+    public static final  String TAG                 = ImgurAlbumType.class.getSimpleName();
     private static final String URL_IMGUR_ALBUM_API = "http://api.imgur.com/2/album/";
-    private static final String URL_REGEX = "imgur.com/a/([A-Za-z0-9]+)";
-    private Album               mAlbum              = null;
+    private static final String URL_REGEX           = "imgur.com/a/([A-Za-z0-9]+)";
+    private              Album  mAlbum              = null;
 
     public ImgurAlbumType(String url) {
         super(url);
@@ -25,34 +25,39 @@ public class ImgurAlbumType extends Image {
 
     /**
      * Resolve an Imgur album
-     * 
+     *
      * @param url
-     *            The input url to use in resolving
+     *     The input url to use in resolving
+     *
      * @return An {@link Album} containing the individual {@link ImgurImage}s
      */
     private Album resolve() {
         ImgurAlbumApi albumApi = null;
         Album album = null;
         String hash = getHash();
-        if (hash != null)
+        if (hash != null) {
             albumApi = resolveImgurAlbumFromHash(hash);
+        }
 
-        if (albumApi != null && albumApi.getAlbum() != null)
+        if (albumApi != null && albumApi.getAlbum() != null) {
             album = albumApi.getAlbum();
+        }
 
         return album;
     }
 
     /**
      * Resolve an {@link ImgurAlbumApi} from an imgur hash
-     * 
+     *
      * @param hash
-     *            The hash to resolve an Album from
+     *     The hash to resolve an Album from
+     *
      * @return An {@link ImgurAlbumApi} representing the image
      */
     public static ImgurAlbumApi resolveImgurAlbumFromHash(String hash) {
-        if (hash == null)
+        if (hash == null) {
             Log.e(TAG, "resolveImgurAlbumFromHash - hash was null");
+        }
 
         Log.i(TAG, "resolveImgurAlbumFromHash, hash = " + hash);
         ImgurAlbumApi album = null;
@@ -68,8 +73,9 @@ public class ImgurAlbumType extends Image {
             try {
                 json = SynchronousNetworkApi.downloadUrl(newUrl);
 
-                if (json == null)
+                if (json == null) {
                     return null;
+                }
 
                 album = gson.fromJson(json, ImgurAlbumApi.class);
                 ImgurApiCache.getInstance().addImgurAlbum(hash, album);
@@ -85,9 +91,10 @@ public class ImgurAlbumType extends Image {
     public String getSize(ImageSize size) {
         assert size != null : "ImageSize must not be null";
 
-        if (mAlbum == null)
+        if (mAlbum == null) {
             mAlbum = resolve();
-        
+        }
+
         ImgurImage imgurImage = null;
         String decodedUrl = null;
 
@@ -100,21 +107,21 @@ public class ImgurAlbumType extends Image {
         return decodedUrl;
     }
 
-    public Album getAlbum() {
-        if (mAlbum != null)
-            return mAlbum;
-
-        return resolve();
-    }
-
     @Override
     public ImageType getImageType() {
         return ImageType.IMGUR_ALBUM;
+    }
+
+    public Album getAlbum() {
+        if (mAlbum != null) {
+            return mAlbum;
+        }
+
+        return resolve();
     }
 
     @Override
     public String getRegexForUrlMatching() {
         return URL_REGEX;
     }
-
 }

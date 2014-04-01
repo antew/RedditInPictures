@@ -25,18 +25,18 @@ public abstract class BaseActivity extends SherlockActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (BuildConfig.DEBUG) {
-            ViewServer.get(this).removeWindow(this);
-        }
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).setFocusedWindow(this);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (BuildConfig.DEBUG) {
+            ViewServer.get(this).removeWindow(this);
         }
     }
 

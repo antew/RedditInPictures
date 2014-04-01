@@ -22,30 +22,6 @@ import java.util.List;
 public class RedditService extends RESTService {
     private static ForceRefreshSubredditTask mForceRefreshSubredditTask;
 
-    @Override
-    public void onRequestComplete(Intent result) {
-        super.onRequestComplete(result);
-
-        RedditResult redditResult = new RedditResult(result);
-
-        if (redditResult.getHttpStatusCode() != 200 || redditResult.getJson() == null) {
-            Ln.i("onRequestComplete - error retrieving data, status code was %d", redditResult.getHttpStatusCode());
-            return;
-        }
-
-        redditResult.handleResponse(getApplicationContext());
-
-    }
-
-    private static Intent getIntentBasics(Intent intent) {
-        intent.putExtra(EXTRA_USER_AGENT, Constants.Reddit.USER_AGENT);
-
-        if (RedditLoginInformation.isLoggedIn())
-            intent.putExtra(EXTRA_COOKIE, Constants.Reddit.REDDIT_SESSION + "=" + RedditLoginInformation.getCookie());
-
-        return intent;
-    }
-
     public static void forceRefreshSubreddit(Context context, String subreddit, Age age, Category category) {
         Ln.d("Attempting to Force Refresh For %s %s %s", subreddit, age, category);
         if (mForceRefreshSubredditTask == null) {
@@ -57,7 +33,9 @@ public class RedditService extends RESTService {
         // If a request is currently processing, let's see if we need to cancel it.
         if (mForceRefreshSubredditTask.isProcessing()) {
             // If we have a request that doesn't exactly equal what we are doing, then let's cancel it and start a new request.
-            if (!mForceRefreshSubredditTask.mSubreddit.equals(subreddit) || mForceRefreshSubredditTask.mAge != age || mForceRefreshSubredditTask.mCategory != category) {
+            if (!mForceRefreshSubredditTask.mSubreddit.equals(subreddit)
+                || mForceRefreshSubredditTask.mAge != age
+                || mForceRefreshSubredditTask.mCategory != category) {
                 mForceRefreshSubredditTask = new ForceRefreshSubredditTask(context, subreddit, age, category);
                 mForceRefreshSubredditTask.execute();
             } else {
@@ -68,7 +46,9 @@ public class RedditService extends RESTService {
             // Otherwise we aren't processing anything currently.
 
             // If the currently created task isn't for the same thing, create a new one.
-            if (!mForceRefreshSubredditTask.mSubreddit.equals(subreddit) || mForceRefreshSubredditTask.mAge != age || mForceRefreshSubredditTask.mCategory != category) {
+            if (!mForceRefreshSubredditTask.mSubreddit.equals(subreddit)
+                || mForceRefreshSubredditTask.mAge != age
+                || mForceRefreshSubredditTask.mCategory != category) {
                 mForceRefreshSubredditTask = new ForceRefreshSubredditTask(context, subreddit, age, category);
             }
 
@@ -82,17 +62,19 @@ public class RedditService extends RESTService {
     }
 
     public static void getPosts(Context context, String subreddit, Age age, Category category, String after) {
-        if (subreddit == null) subreddit = Constants.REDDIT_FRONTPAGE;
+        if (subreddit == null) {
+            subreddit = Constants.REDDIT_FRONTPAGE;
+        }
 
-        if (age == null) age = Age.TODAY;
+        if (age == null) {
+            age = Age.TODAY;
+        }
 
-        if (category == null) category = Category.HOT;
+        if (category == null) {
+            category = Category.HOT;
+        }
 
-        RedditUrl url = new RedditUrl.Builder(subreddit).age(age)
-            .category(category)
-            .count(Constants.POSTS_TO_FETCH)
-            .after(after)
-            .build();
+        RedditUrl url = new RedditUrl.Builder(subreddit).age(age).category(category).count(Constants.POSTS_TO_FETCH).after(after).build();
 
         getPosts(context, url.getUrl());
     }
@@ -104,6 +86,16 @@ public class RedditService extends RESTService {
         intent.setData(Uri.parse(url));
 
         context.startService(intent);
+    }
+
+    private static Intent getIntentBasics(Intent intent) {
+        intent.putExtra(EXTRA_USER_AGENT, Constants.Reddit.USER_AGENT);
+
+        if (RedditLoginInformation.isLoggedIn()) {
+            intent.putExtra(EXTRA_COOKIE, Constants.Reddit.REDDIT_SESSION + "=" + RedditLoginInformation.getCookie());
+        }
+
+        return intent;
     }
 
     public static void vote(Context context, String name, Vote vote) {
@@ -169,10 +161,6 @@ public class RedditService extends RESTService {
         changeSubscription(context, subreddit, SubscribeAction.SUBSCRIBE);
     }
 
-    public static void unsubscribe(Context context, String subreddit) {
-        changeSubscription(context, subreddit, SubscribeAction.UNSUBSCRIBE);
-    }
-
     private static void changeSubscription(Context context, String subreddit, SubscribeAction action) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
@@ -189,23 +177,41 @@ public class RedditService extends RESTService {
         context.startService(intent);
     }
 
+    public static void unsubscribe(Context context, String subreddit) {
+        changeSubscription(context, subreddit, SubscribeAction.UNSUBSCRIBE);
+    }
+
     public static void searchSubreddits(Context context, String query, boolean searchNsfw) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.SEARCH_SUBREDDITS);
-        String url = Constants.Reddit.REDDIT_SEARCH_SUBREDDITS_URL + "?query=" + query + "&include_over_18=" + (searchNsfw == true ? "true" : "false");
+        String url = Constants.Reddit.REDDIT_SEARCH_SUBREDDITS_URL + "?query=" + query + "&include_over_18=" + (searchNsfw == true ? "true"
+                                                                                                                                   : "false");
         intent.setData(Uri.parse(url));
         intent.putExtra(EXTRA_HTTP_VERB, POST);
 
         context.startService(intent);
     }
 
-    private static class ForceRefreshSubredditTask extends SafeAsyncTask<Void> {
-        private Context mContext;
-        protected String mSubreddit;
-        protected Age mAge;
-        protected Category mCategory;
+    @Override
+    public void onRequestComplete(Intent result) {
+        super.onRequestComplete(result);
 
+        RedditResult redditResult = new RedditResult(result);
+
+        if (redditResult.getHttpStatusCode() != 200 || redditResult.getJson() == null) {
+            Ln.i("onRequestComplete - error retrieving data, status code was %d", redditResult.getHttpStatusCode());
+            return;
+        }
+
+        redditResult.handleResponse(getApplicationContext());
+    }
+
+    private static class ForceRefreshSubredditTask extends SafeAsyncTask<Void> {
+        protected String   mSubreddit;
+        protected Age      mAge;
+        protected Category mCategory;
+        private   Context  mContext;
         private boolean mProcessing = false;
 
         public ForceRefreshSubredditTask(Context context, String subreddit, Age age, Category category) {
@@ -240,7 +246,9 @@ public class RedditService extends RESTService {
             ContentResolver resolver = mContext.getContentResolver();
 
             // If we have an aggregate subreddit we need to clear out everything.
-            if (mSubreddit.equals(Constants.REDDIT_FRONTPAGE) || mSubreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME) || mSubreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
+            if (mSubreddit.equals(Constants.REDDIT_FRONTPAGE)
+                || mSubreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME)
+                || mSubreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
                 // Remove all of the post rows.
                 resolver.delete(RedditContract.Posts.CONTENT_URI, null, null);
             } else if (mSubreddit.contains("+")) {
@@ -262,10 +270,10 @@ public class RedditService extends RESTService {
                 where += ")";
 
                 // Only delete records for the subreddits contained in the multi.
-                resolver.delete(RedditContract.Posts.CONTENT_URI, where, selectionArgsList.toArray(new String[]{}));
+                resolver.delete(RedditContract.Posts.CONTENT_URI, where, selectionArgsList.toArray(new String[] { }));
             } else {
                 String where = RedditContract.PostColumns.SUBREDDIT + " = ?";
-                String[] selectionArgs = new String[] {mSubreddit};
+                String[] selectionArgs = new String[] { mSubreddit };
 
                 // Otherwise we have a single subreddit, so we want to remove only posts for that subreddit.
                 resolver.delete(RedditContract.Posts.CONTENT_URI, where, selectionArgs);

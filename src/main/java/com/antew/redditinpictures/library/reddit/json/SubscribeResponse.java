@@ -9,7 +9,7 @@ import com.antew.redditinpictures.library.utils.Constants;
 public class SubscribeResponse extends RedditResponseHandler {
 
     public static final String TAG = SubscribeResponse.class.getSimpleName();
-    private RedditResult       result;
+    private RedditResult result;
 
     public SubscribeResponse(RedditResult result) {
         this.result = result;
@@ -20,5 +20,4 @@ public class SubscribeResponse extends RedditResponseHandler {
         Log.i(TAG, "Got back from subscribe! = " + result.getJson());
         LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Constants.BROADCAST_SUBSCRIBE));
     }
-
 }
