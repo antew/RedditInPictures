@@ -83,28 +83,12 @@ public class ImgurImageApi {
             return decoded;
         }
 
-        public String getSize(ImageSize size) {
-            String decoded = null;
-            if (links == null) {
-                return null;
-            }
-
-            switch (size) {
-                case SMALL_SQUARE:
-                    decoded = links.getSmall_square();
-                case LARGE_THUMBNAIL:
-                    decoded = links.getLarge_thumbnail();
-                case ORIGINAL:
-                    decoded = links.getOriginal();
-            }
-
-            return decoded;
-        }
-
         @Override
         public int describeContents() {
             return 0;
-        }        @Override
+        }
+
+        @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeParcelable(links, 0);
             dest.writeParcelable(image, 0);

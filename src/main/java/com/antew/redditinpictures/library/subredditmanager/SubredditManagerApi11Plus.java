@@ -43,10 +43,10 @@ import java.util.List;
 @TargetApi(11)
 public class SubredditManagerApi11Plus extends SubredditManager {
 
-    public static final String TAG                = SubredditManagerApi11Plus.class.getSimpleName();
-    private             String mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
-    private MenuItem mResetToDefaultSubreddits;
-    private MenuItem mResyncWithReddit;
+    public static final String   TAG                = SubredditManagerApi11Plus.class.getSimpleName();
+    private String               mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
+    private MenuItem             mResetToDefaultSubreddits;
+    private MenuItem             mResyncWithReddit;
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,9 +61,7 @@ public class SubredditManagerApi11Plus extends SubredditManager {
         final ListView listView = getListView();
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new ModeCallback());
-    }
-
-    ;
+    };
 
     /**
      * Get a list of subreddits in alphabetical order
@@ -277,8 +275,7 @@ public class SubredditManagerApi11Plus extends SubredditManager {
         }
     }
 
-    private class ModeCallback implements ListView.MultiChoiceModeListener
-    {
+    private class ModeCallback implements ListView.MultiChoiceModeListener {
 
         private android.view.MenuItem mDelete;
 
@@ -357,9 +354,10 @@ public class SubredditManagerApi11Plus extends SubredditManager {
             }
 
         }
-    }    @Override
-    public void onBackPressed() {
+    }
 
+    @Override
+    public void onBackPressed() {
         Intent i = new Intent();
         i.putExtra(Constants.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
         setResult(RESULT_OK, i);

@@ -177,9 +177,45 @@ public class PostData implements Parcelable, ContentValuesOperation {
         super();
     }
 
+    public int describeContents() {
+        return 0;
+    }
 
-
-
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(domain);
+        dest.writeString(banned_by);
+        dest.writeParcelable(media_embed, flags);
+        dest.writeString(subreddit);
+        dest.writeString(selftext_html);
+        dest.writeString(selftext);
+        dest.writeString(likes.name());
+        dest.writeByte(Util.parcelBoolean(saved));
+        dest.writeString(id);
+        dest.writeByte(Util.parcelBoolean(clicked));
+        dest.writeString(title);
+        dest.writeInt(num_comments);
+        dest.writeInt(score);
+        dest.writeString(approved_by);
+        dest.writeByte(Util.parcelBoolean(over_18));
+        dest.writeByte(Util.parcelBoolean(hidden));
+        dest.writeString(thumbnail);
+        dest.writeString(subreddit_id);
+        dest.writeString(author_flair_css_class);
+        dest.writeInt(downs);
+        dest.writeByte(Util.parcelBoolean(is_self));
+        dest.writeString(permalink);
+        dest.writeString(name);
+        dest.writeLong(created);
+        dest.writeString(url);
+        dest.writeString(author_flair_text);
+        dest.writeString(author);
+        dest.writeLong(created_utc);
+        dest.writeString(link_flair_text);
+        dest.writeString(decoded_url);
+        dest.writeParcelable(image, flags);
+        dest.writeParcelable(album, flags);
+    }
 
     //@formatter:off
     public static final Parcelable.Creator<PostData> CREATOR
@@ -226,77 +262,11 @@ public class PostData implements Parcelable, ContentValuesOperation {
     public void setAuthor(String author)                                 { this.author = author; }
     public void setCreated_utc(long created_utc)                         { this.created_utc = created_utc; }
     public void setLink_flair_text(String link_flair_text)               { this.link_flair_text = link_flair_text; }
-
-    public String getFullPermalink(boolean useMobileInterface) {
-        String url = Constants.REDDIT_BASE_URL + permalink;
-        if (useMobileInterface) {
-            url += Constants.COMPACT_URL;
-        }
-
-        return url;
-    }
-
-    public int describeContents() {
-        return 0;
-    }    public void setNum_reports(int num_reports)                          { this.num_reports = num_reports; }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(domain);
-        dest.writeString(banned_by);
-        dest.writeParcelable(media_embed, flags);
-        dest.writeString(subreddit);
-        dest.writeString(selftext_html);
-        dest.writeString(selftext);
-        dest.writeString(likes.name());
-        dest.writeByte(Util.parcelBoolean(saved));
-        dest.writeString(id);
-        dest.writeByte(Util.parcelBoolean(clicked));
-        dest.writeString(title);
-        dest.writeInt(num_comments);
-        dest.writeInt(score);
-        dest.writeString(approved_by);
-        dest.writeByte(Util.parcelBoolean(over_18));
-        dest.writeByte(Util.parcelBoolean(hidden));
-        dest.writeString(thumbnail);
-        dest.writeString(subreddit_id);
-        dest.writeString(author_flair_css_class);
-        dest.writeInt(downs);
-        dest.writeByte(Util.parcelBoolean(is_self));
-        dest.writeString(permalink);
-        dest.writeString(name);
-        dest.writeLong(created);
-        dest.writeString(url);
-        dest.writeString(author_flair_text);
-        dest.writeString(author);
-        dest.writeLong(created_utc);
-        dest.writeString(link_flair_text);
-        dest.writeString(decoded_url);
-        dest.writeParcelable(image, flags);
-        dest.writeParcelable(album, flags);
-    }    public void setUps(int ups)                                          { this.ups = ups; }
-    //@formatter:on
-
     public void setDecoded_url(String decoded_url)                       { this.decoded_url = decoded_url; }
-
-    public void setImage(ImgurImage image)                               { this.image = image; }    public static PostData fromListViewProjection(Cursor cursor) {
-        PostData postData = new PostData();
-        //@formatter:off
-        postData.selftext     = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT));
-        postData.title        = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
-        postData.score        = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.SCORE));
-        postData.thumbnail    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL));
-        postData.url          = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
-        postData.num_comments = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.COMMENTS));
-        postData.subreddit    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));
-        postData.domain       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
-        postData.author       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR));
-        postData.likes        = Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE)));
-        postData.name         = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME));
-        postData.over_18      = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1;
-        //@formatter:off
-        return postData;
-    }
+    public void setImage(ImgurImage image)                               { this.image = image; }
+    public void setNum_reports(int num_reports)                          { this.num_reports = num_reports; }
+    public void setUps(int ups)                                          { this.ups = ups; }
+    //@formatter:on
 
     @Override
     public ContentValues getContentValues() {
@@ -332,7 +302,28 @@ public class PostData implements Parcelable, ContentValuesOperation {
         values.put(RedditContract.PostColumns.LOADED_AT, System.currentTimeMillis());
 
         return values;
-    }    public PostData(Cursor cursor) {
+    }
+
+    public static PostData fromListViewProjection(Cursor cursor) {
+        PostData postData = new PostData();
+        //@formatter:off
+        postData.selftext     = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT));
+        postData.title        = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
+        postData.score        = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.SCORE));
+        postData.thumbnail    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL));
+        postData.url          = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
+        postData.num_comments = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.COMMENTS));
+        postData.subreddit    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));
+        postData.domain       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
+        postData.author       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR));
+        postData.likes        = Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE)));
+        postData.name         = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME));
+        postData.over_18      = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1;
+        //@formatter:on
+        return postData;
+    }
+
+    public PostData(Cursor cursor) {
         //@formatter:off
         domain                = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
         banned_by             = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.BANNED_BY));
@@ -363,6 +354,6 @@ public class PostData implements Parcelable, ContentValuesOperation {
         created_utc           = cursor.getLong  (cursor.getColumnIndex(RedditContract.Posts.CREATED_UTC));
         link_flair_text       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.LINK_FLAIR_TEXT));
       //decodedUrl            = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DECODED_URL));
-        //@formatter:off
+        //@formatter:on
     }
 }
