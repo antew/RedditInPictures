@@ -120,6 +120,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
+        item.setChecked(true);
+
         switch (item.getItemId()) {
             case R.id.change_view:
                 changeViewType(mActiveViewType == ViewType.LIST ? ViewType.GRID : ViewType.LIST);
