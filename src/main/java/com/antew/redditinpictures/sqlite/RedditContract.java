@@ -149,7 +149,8 @@ public class RedditContract {
 
         public static final String[] SUBREDDITS_PROJECTION = new String[] { _ID, DISPLAY_NAME, PRIORITY, NAME, USER_IS_SUBSCRIBER };
 
-        public static final String DEFAULT_SORT = PRIORITY + " DESC, " + DISPLAY_NAME + " COLLATE NOCASE ASC";
+        public static final String SORT_ALPHABETICALLY = PRIORITY + " DESC, " + DISPLAY_NAME + " COLLATE NOCASE ASC";
+        public static final String SORT_BY_POPULARITY = PRIORITY + " DESC, " + SUBSCRIBERS + " DESC";
 
         public static Uri buildSubredditUri(String displayName) {
             return CONTENT_URI.buildUpon().appendPath(displayName).build();

@@ -695,7 +695,7 @@ public class ImageGridActivity extends BaseFragmentActivity
                     }
                 }
                 return new CursorLoader(this, RedditContract.Subreddits.CONTENT_URI, RedditContract.Subreddits.SUBREDDITS_PROJECTION,
-                                        selection, selectionArgs, RedditContract.Subreddits.DEFAULT_SORT);
+                                        selection, selectionArgs, RedditContract.Subreddits.SORT_ALPHABETICALLY);
         }
 
         return null;

@@ -28,7 +28,6 @@ import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.event.LoadSubredditEvent;
 import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
-import com.antew.redditinpictures.library.reddit.RedditSort;
 import com.antew.redditinpictures.library.reddit.SubredditData;
 import com.antew.redditinpictures.library.reddit.json.MySubredditsResponse;
 import com.antew.redditinpictures.library.service.RedditService;
@@ -37,6 +36,7 @@ import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
+import com.squareup.picasso.Picasso;
 import net.simonvt.menudrawer.MenuDrawer;
 
 public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
@@ -60,6 +60,8 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     protected String   mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
     protected Category mCategory          = Category.HOT;
     protected Age      mAge               = Age.TODAY;
+
+    protected String mSubredditSort = RedditContract.Subreddits.SORT_ALPHABETICALLY;
 
     private OnSubredditActionListener mSubredditActionListener = new OnSubredditActionListener() {
 
@@ -150,7 +152,17 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
     @OnClick(R.id.ib_sort)
     protected void onSortSubreddits() {
-        // Switch between alpha/usage sorting.
+        if (mSubredditSort.equals(RedditContract.Subreddits.SORT_ALPHABETICALLY)) {
+            mSubredditSort = RedditContract.Subreddits.SORT_BY_POPULARITY;
+            Picasso.with(this).load(R.drawable.ic_action_sort_2_dark).into(mSortSubreddits);
+            mSortSubreddits.setContentDescription(getString(R.string.sort_alphabetically));
+        } else {
+            mSubredditSort = RedditContract.Subreddits.SORT_ALPHABETICALLY;
+            Picasso.with(this).load(R.drawable.ic_action_sort_1_dark).into(mSortSubreddits);
+            mSortSubreddits.setContentDescription(getString(R.string.sort_by_popularity));
+        }
+
+        getSupportLoaderManager().restartLoader(Constants.LOADER_SUBREDDITS, null, this);
     }
 
     @OnClick(R.id.ib_refresh)
@@ -212,8 +224,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     private void initializeLoaders() {
-        LoaderManager loaderManager = getSupportLoaderManager();
-        loaderManager.initLoader(Constants.LOADER_SUBREDDITS, null, this);
+        getSupportLoaderManager().initLoader(Constants.LOADER_SUBREDDITS, null, this);
     }
 
     private SubredditMenuDrawerCursorAdapter getSubredditMenuAdapter() {
@@ -307,7 +318,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
                     }
                 }
                 return new CursorLoader(this, RedditContract.Subreddits.CONTENT_URI, RedditContract.Subreddits.SUBREDDITS_PROJECTION,
-                                        selection, selectionArgs, RedditContract.Subreddits.DEFAULT_SORT);
+                                        selection, selectionArgs, mSubredditSort);
         }
 
         return null;

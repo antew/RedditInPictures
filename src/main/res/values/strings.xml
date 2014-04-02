@@ -95,6 +95,7 @@
     <string name="view_as_list">View As List</string>
     <string name="view_as_grid">View As Grid</string>
     <string name="sort_by_popularity">Sort By Popularity</string>
+    <string name="sort_alphabetically">Sort Alphabetically</string>
     <string name="reset_subreddits">Reset Subreddits</string>
     <string name="clear">Clear</string>
     <string name="search">Search</string>
