@@ -28,6 +28,7 @@ import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.event.LoadSubredditEvent;
 import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
+import com.antew.redditinpictures.library.reddit.RedditSort;
 import com.antew.redditinpictures.library.reddit.SubredditData;
 import com.antew.redditinpictures.library.reddit.json.MySubredditsResponse;
 import com.antew.redditinpictures.library.service.RedditService;
@@ -390,13 +391,17 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         }
     }
 
-    protected void loadSubreddit(String subreddit) {
+    private void loadSubreddit(String subreddit) {
+        loadSubreddit(subreddit, mCategory, mAge);
+    }
+
+    private void loadSubreddit(String subreddit, Category category, Age age) {
         if (subreddit.equals("Frontpage")) {
             mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
         } else {
             mSelectedSubreddit = subreddit;
         }
-        mBus.post(new LoadSubredditEvent(mSelectedSubreddit));
+        mBus.post(new LoadSubredditEvent(mSelectedSubreddit, category, age));
     }
 
     protected void closeMenuDrawerIfNeeded() {

@@ -41,7 +41,8 @@ public class RedditImageListFragment extends RedditImageFragment<ListView, Image
         final Bundle args = new Bundle();
         args.putString(Constants.EXTRA_SELECTED_SUBREDDIT, subreddit);
         args.putString(Constants.EXTRA_CATEGORY, category.toString());
-        args.putString(Constants.EXTRA_AGE, age.toString());
+        // Age is null when we're sorting as 'New' or 'Rising'
+        args.putString(Constants.EXTRA_AGE, age == null ? null : age.toString());
         f.setArguments(args);
 
         return f;

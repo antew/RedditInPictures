@@ -111,12 +111,20 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         loaderManager.initLoader(Constants.LOADER_LOGIN, null, this);
     }
 
+    public Fragment getNewImageGridFragment(String subreddit, Category category, Age age) {
+        return RedditImageGridFragment.newInstance(subreddit, category, age);
+    }
+
     public Fragment getNewImageGridFragment() {
-        return RedditImageGridFragment.newInstance(mSelectedSubreddit, mCategory, mAge);
+        return getNewImageGridFragment(mSelectedSubreddit, mCategory, mAge);
+    }
+
+    public Fragment getNewImageListFragment(String subreddit, Category category, Age age) {
+        return RedditImageListFragment.newInstance(subreddit, category, age);
     }
 
     public Fragment getNewImageListFragment() {
-        return RedditImageListFragment.newInstance(mSelectedSubreddit, mCategory, mAge);
+        return getNewImageListFragment(mSelectedSubreddit, mCategory, mAge);
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
@@ -154,26 +162,16 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
             case R.id.category_controversial_all_time:
                 if (RedditSort.contains(item.getItemId())) {
                     RedditSort.SortCriteria sortCriteria = RedditSort.get(item.getItemId());
-                    mAge = sortCriteria.getAge();
-                    mCategory = sortCriteria.getCategory();
-                    loadSubreddit(mSelectedSubreddit);
+                    loadSubreddit(mSelectedSubreddit, sortCriteria.getCategory(), sortCriteria.getAge());
                     return true;
                 } else {
                     Ln.e("Unable to get sorting criteria for menu item id: " + item.getItemId() + ", unable to load subreddit");
-
-                    // Fallback to the normal Hot category.
-                    RedditSort.SortCriteria sortCriteria = RedditSort.get(R.id.category_hot);
-                    if (sortCriteria != null) {
-                        mAge = sortCriteria.getAge();
-                        mCategory = sortCriteria.getCategory();
-                        loadSubreddit(mSelectedSubreddit);
-                        return true;
-                    }
+                    return super.onOptionsItemSelected(item);
                 }
-                return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);
         }
+
     }
 
     private void changeViewType(ViewType viewType) {
@@ -398,33 +396,24 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     public void onLoadSubredditEvent(LoadSubredditEvent event) {
         if (event != null) {
             mSelectedSubreddit = event.getSubreddit();
-            loadSubreddit(mSelectedSubreddit, mCategory, mAge);
+            loadSubreddit(event.getSubreddit(), event.getCategory(), event.getAge());
         }
     }
 
     private void loadSubreddit(String subreddit, Category category, Age age) {
-        if (Strings.notEmpty(subreddit)) {
-            mSelectedSubreddit = subreddit;
-        }
-
-        if (category != null) {
-            mCategory = category;
-        }
-
-        if (age != null) {
-            mAge = age;
-        }
+        mAge = age;
+        mCategory = category;
 
         switch (mActiveViewType) {
             case GRID:
                 FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
-                gridTrans.replace(R.id.content_fragment, getNewImageGridFragment());
+                gridTrans.replace(R.id.content_fragment, getNewImageGridFragment(subreddit, category, age));
                 gridTrans.addToBackStack(null);
                 gridTrans.commit();
                 break;
             case LIST:
                 FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
-                listTrans.replace(R.id.content_fragment, getNewImageListFragment());
+                listTrans.replace(R.id.content_fragment, getNewImageListFragment(subreddit, category, age));
                 listTrans.addToBackStack(null);
                 listTrans.commit();
                 break;

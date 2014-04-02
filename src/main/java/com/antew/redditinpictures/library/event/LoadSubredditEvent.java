@@ -1,13 +1,28 @@
 package com.antew.redditinpictures.library.event;
 
-public class LoadSubredditEvent {
-    private String mSubreddit;
+import com.antew.redditinpictures.library.enums.Age;
+import com.antew.redditinpictures.library.enums.Category;
 
-    public LoadSubredditEvent(String mSubreddit) {
+public class LoadSubredditEvent {
+    private String   mSubreddit;
+    private Age      mAge;
+    private Category mCategory;
+
+    public LoadSubredditEvent(String mSubreddit, Category mCategory, Age mAge) {
         this.mSubreddit = mSubreddit;
+        this.mCategory = mCategory;
+        this.mAge = mAge;
     }
 
     public String getSubreddit() {
         return mSubreddit;
+    }
+
+    public Category getCategory() {
+        return mCategory;
+    }
+
+    public Age getAge() {
+        return mAge;
     }
 }
