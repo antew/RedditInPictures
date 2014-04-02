@@ -19,7 +19,7 @@ import dagger.Module;
         ImageGridFragment.class, ImageListFragment.class, ImageGridActivity.class,
         ImageDetailActivity.class, ImageDetailFragment.class, ImgurAlbumActivity.class,
         RedditFragmentActivity.class, RedditImageListFragment.class, RedditImageGridFragment.class,
-        ImgurAlbumFragment.class,
+        ImgurAlbumFragment.class
     }, library = true
 )
 public class ApplicationModulePro {
