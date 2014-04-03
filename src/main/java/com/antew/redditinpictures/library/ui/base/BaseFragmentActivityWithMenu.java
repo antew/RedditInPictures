@@ -25,7 +25,6 @@ import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.SetDefaultSubredditsDialogFragment;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
-import com.antew.redditinpictures.library.event.LoadSubredditEvent;
 import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.SubredditData;
@@ -39,7 +38,7 @@ import com.antew.redditinpictures.sqlite.RedditContract;
 import com.squareup.picasso.Picasso;
 import net.simonvt.menudrawer.MenuDrawer;
 
-public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
+public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     implements LoaderManager.LoaderCallbacks<Cursor>, SetDefaultSubredditsDialogFragment.SetDefaultSubredditsDialogListener,
                AddSubredditDialogFragment.AddSubredditDialogListener {
     protected MenuDrawer                       mMenuDrawer;
@@ -70,7 +69,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             switch (action) {
                 case View:
                     mMenuDrawer.closeMenu(true);
-                    loadSubreddit(subredditData.getDisplay_name());
+                    loadSubredditFromMenu(subredditData.getDisplay_name());
                     break;
                 case Subscribe:
                     subscribeToSubreddit(subredditData.getName());
@@ -84,7 +83,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             }
         }
     };
-    private TextWatcher mSubredditFilterWatcher = new TextWatcher() {
+    private TextWatcher               mSubredditFilterWatcher  = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             return;
@@ -120,7 +119,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             mMenuDrawer.setActiveView(view, position);
             mSubredditAdapter.setActivePosition(position);
             mMenuDrawer.closeMenu(true);
-            loadSubreddit(subredditName);
+            loadSubredditFromMenu(subredditName);
         }
     };
 
@@ -246,13 +245,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         loaderManager.restartLoader(Constants.LOADER_SUBREDDITS, filterBundle, this);
     }
 
-    protected void subscribeToSubreddit(String subredditName) {
-        if (!RedditLoginInformation.isLoggedIn()) {
-            showLogin();
-        } else {
-            RedditService.subscribe(this, subredditName);
-        }
-    }
+    protected abstract void subscribeToSubreddit(String subredditName);
 
     protected void showLogin() {
         // Only needs to be shown if they aren't currently logged in.
@@ -262,13 +255,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         }
     }
 
-    protected void unsubscribeToSubreddit(String subredditName) {
-        if (!RedditLoginInformation.isLoggedIn()) {
-            showLogin();
-        } else {
-            RedditService.unsubscribe(this, subredditName);
-        }
-    }
+    protected abstract void unsubscribeToSubreddit(String subredditName);
 
     protected void deleteSubreddit(String subredditName) {
         // If the user isn't logged in we don't care about subscribing/unsubscribing
@@ -397,23 +384,12 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @Override public void onAddSubreddit(String subreddit) {
         if (Strings.notEmpty(subreddit)) {
             RedditService.aboutSubreddit(this, subreddit);
-            loadSubreddit(subreddit);
+            loadSubredditFromMenu(subreddit);
             closeMenuDrawerIfNeeded();
         }
     }
 
-    private void loadSubreddit(String subreddit) {
-        loadSubreddit(subreddit, mCategory, mAge);
-    }
-
-    private void loadSubreddit(String subreddit, Category category, Age age) {
-        if (subreddit.equals("Frontpage")) {
-            mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
-        } else {
-            mSelectedSubreddit = subreddit;
-        }
-        mBus.post(new LoadSubredditEvent(mSelectedSubreddit, category, age));
-    }
+    protected abstract void loadSubredditFromMenu(String subreddit);
 
     protected void closeMenuDrawerIfNeeded() {
         if (mMenuDrawer != null && mMenuDrawer.isMenuVisible()) {

@@ -29,7 +29,7 @@
             android:syncable="false"/>
 
         <activity
-            android:name="com.antew.redditinpictures.ui.ImageGridActivityFree"
+            android:name="com.antew.redditinpictures.ui.RedditFragmentActivityFree"
             android:label="@string/app_name"
             android:uiOptions="splitActionBarWhenNarrow"
             android:theme="@style/AppTheme">
@@ -44,7 +44,7 @@
             android:name="com.antew.redditinpictures.ui.ImageDetailActivityFree"
             android:label="@string/app_name"
             android:uiOptions="splitActionBarWhenNarrow"
-            android:parentActivityName="com.antew.redditinpictures.ui.ImageGridActivityFree"
+            android:parentActivityName="com.antew.redditinpictures.ui.RedditFragmentActivityFree"
             android:theme="@style/AppTheme.FullScreen">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

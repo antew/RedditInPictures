@@ -151,46 +151,6 @@ public class ImageGridActivity extends BaseFragmentActivity
             }
         }
     };
-    private BroadcastReceiver mSubredditsSearch = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra(Constants.EXTRA_SUBREDDIT_NAMES)) {
-                Ln.d("Got Back Subreddit Search Result");
-                final ArrayList<String> subredditNames = intent.getStringArrayListExtra(Constants.EXTRA_SUBREDDIT_NAMES);
-                AutoCompleteTextView mSubredditFilter = (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
-                if (mSubredditFilter != null) {
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(ImageGridActivity.this,
-                                                                            android.R.layout.simple_dropdown_item_1line, subredditNames);
-                    mSubredditFilter.setAdapter(adapter);
-                    mSubredditFilter.showDropDown();
-
-                    mSubredditFilter.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            mSelectedSubreddit = subredditNames.get(position);
-                            RedditService.aboutSubreddit(ImageGridActivity.this, mSelectedSubreddit);
-
-                            mSubredditDrawer.setActiveView(view, position);
-                            mSubredditAdapter.setActivePosition(position);
-                            mSubredditDrawer.closeMenu(true);
-                            loadSubreddit(mSelectedSubreddit);
-                        }
-                    });
-
-                    mSubredditFilter.setImeActionLabel(getString(R.string.go), KeyEvent.KEYCODE_ENTER);
-                    mSubredditFilter.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                                                                   @Override
-                                                                   public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                                                                       Ln.d("Action: %d Event: %s", actionId, event);
-                                                                       return true;
-                                                                   }
-                                                               }
-                                                              );
-                }
-            }
-        }
-    };
     private AdapterView.OnItemClickListener mSubredditClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -237,31 +197,6 @@ public class ImageGridActivity extends BaseFragmentActivity
         mSubredditList.setAdapter(mSubredditAdapter);
         mSubredditList.setOnItemClickListener(mSubredditClickListener);
 
-        final AutoCompleteTextView mSubredditFilter = (AutoCompleteTextView) findViewById(R.id.et_subreddit_filter);
-        mSubredditFilter.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                return;
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s == null) {
-                    return;
-                }
-
-                LoaderManager loaderManager = getSupportLoaderManager();
-                Bundle filterBundle = new Bundle();
-                filterBundle.putString(Constants.EXTRA_QUERY, s.toString());
-                loaderManager.restartLoader(Constants.LOADER_SUBREDDITS, filterBundle, ImageGridActivity.this);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                return;
-            }
-        });
-
         SetDefaultSubredditsTask defaultSubredditsTask = new SetDefaultSubredditsTask();
         defaultSubredditsTask.execute();
 
@@ -275,7 +210,6 @@ public class ImageGridActivity extends BaseFragmentActivity
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMySubreddits, new IntentFilter(Constants.BROADCAST_MY_SUBREDDITS));
         LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Constants.BROADCAST_LOGIN_COMPLETE));
-        LocalBroadcastManager.getInstance(this).registerReceiver(mSubredditsSearch, new IntentFilter(Constants.BROADCAST_SUBREDDIT_SEARCH));
         initializeLoaders();
     }
 
@@ -380,7 +314,6 @@ public class ImageGridActivity extends BaseFragmentActivity
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMySubreddits);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mLoginComplete);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSubredditsSearch);
         super.onPause();
     }
 

@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -36,7 +37,6 @@ import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivityWithMenu;
 import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
-import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
@@ -47,11 +47,11 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     implements LoginDialogFragment.LoginDialogListener, LogoutDialogFragment.LogoutDialogListener, LoaderManager.LoaderCallbacks<Cursor> {
-    public static final int      SETTINGS_REQUEST = 20;
+    public static final int SETTINGS_REQUEST = 20;
     @InjectView(R.id.top_progressbar)
     protected SmoothProgressBar mProgressBar;
-    private             ViewType mActiveViewType  = ViewType.LIST;
-    private BroadcastReceiver mLoginComplete = new BroadcastReceiver() {
+    private ViewType          mActiveViewType = ViewType.LIST;
+    private BroadcastReceiver mLoginComplete  = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             handleLoginComplete(intent);
@@ -109,6 +109,22 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     private void initializeLoaders() {
         LoaderManager loaderManager = getSupportLoaderManager();
         loaderManager.initLoader(Constants.LOADER_LOGIN, null, this);
+    }
+
+    @Override protected void subscribeToSubreddit(String subredditName) {
+        if (!RedditLoginInformation.isLoggedIn()) {
+            showLogin();
+        } else {
+            RedditService.subscribe(this, subredditName);
+        }
+    }
+
+    @Override protected void unsubscribeToSubreddit(String subredditName) {
+        if (!RedditLoginInformation.isLoggedIn()) {
+            showLogin();
+        } else {
+            RedditService.unsubscribe(this, subredditName);
+        }
     }
 
     public Fragment getNewImageGridFragment(String subreddit, Category category, Age age) {
@@ -171,7 +187,6 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
     private void changeViewType(ViewType viewType) {
@@ -195,7 +210,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     }
 
     public void startPreferences() {
-        Intent intent = new Intent(this, RedditInPicturesPreferences.class);
+        Intent intent = new Intent(this, getPreferencesClass());
         intent.putExtra(Constants.EXTRA_SHOW_NSFW_IMAGES, SharedPreferencesHelper.getShowNsfwImages(this));
         startActivityForResult(intent, SETTINGS_REQUEST);
     }
@@ -252,6 +267,10 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                 super.onLoadFinished(loader, cursor);
                 break;
         }
+    }
+
+    @Override protected void loadSubredditFromMenu(String subreddit) {
+        loadSubreddit(subreddit, mCategory, mAge);
     }
 
     @Subscribe
@@ -401,25 +420,35 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     }
 
     private void loadSubreddit(String subreddit, Category category, Age age) {
-        mAge = age;
+        if (subreddit.equals(Constants.REDDIT_FRONTPAGE) || subreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME)) {
+            mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
+        } else {
+            mSelectedSubreddit = subreddit;
+        }
+
         mCategory = category;
+        mAge = age;
 
         switch (mActiveViewType) {
             case GRID:
                 FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
-                gridTrans.replace(R.id.content_fragment, getNewImageGridFragment(subreddit, category, age));
+                gridTrans.replace(R.id.content_fragment, getNewImageGridFragment(mSelectedSubreddit, mCategory, mAge));
                 gridTrans.addToBackStack(null);
                 gridTrans.commit();
                 break;
             case LIST:
                 FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
-                listTrans.replace(R.id.content_fragment, getNewImageListFragment(subreddit, category, age));
+                listTrans.replace(R.id.content_fragment, getNewImageListFragment(mSelectedSubreddit, mCategory, mAge));
                 listTrans.addToBackStack(null);
                 listTrans.commit();
                 break;
         }
 
         setActionBarTitle(mSelectedSubreddit);
+    }
+
+    public Class<? extends PreferenceActivity> getPreferencesClass() {
+        return RedditInPicturesPreferences.class;
     }
 
     private enum ViewType {LIST, GRID}
