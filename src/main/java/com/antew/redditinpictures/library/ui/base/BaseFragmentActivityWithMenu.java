@@ -20,6 +20,7 @@ import butterknife.OnClick;
 import butterknife.OnLongClick;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.adapter.SubredditMenuDrawerCursorAdapter;
+import com.antew.redditinpictures.library.dialog.AboutSubredditDialogFragment;
 import com.antew.redditinpictures.library.dialog.AddSubredditDialogFragment;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.SetDefaultSubredditsDialogFragment;
@@ -77,6 +78,8 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
                 case Unsubscribe:
                     unsubscribeToSubreddit(subredditData.getName());
                     break;
+                case Info:
+                    displaySubredditInfo(subredditData);
                 case Delete:
                     deleteSubreddit(subredditData.getName());
                     break;
@@ -200,6 +203,11 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         mMenuDrawer.setMenuView(R.layout.subreddit_menudrawer);
         mMenuDrawer.setSlideDrawable(R.drawable.ic_drawer);
         mMenuDrawer.setDrawerIndicatorEnabled(true);
+    }
+
+    protected void displaySubredditInfo(SubredditData subredditData) {
+        AboutSubredditDialogFragment fragment = AboutSubredditDialogFragment.newInstance(subredditData);
+        fragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_ABOUT_SUBREDDIT);
     }
 
     private void setupMenuDrawer() {

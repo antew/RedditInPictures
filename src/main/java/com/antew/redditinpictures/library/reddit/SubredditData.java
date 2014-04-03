@@ -1,9 +1,12 @@
 package com.antew.redditinpictures.library.reddit;
 
 import android.database.Cursor;
+import android.os.Parcel;
+import android.os.Parcelable;
+import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
-public class SubredditData {
+public class SubredditData implements Parcelable {
     private String  display_name;
     private String  description;
     private String  name;
@@ -40,6 +43,9 @@ public class SubredditData {
         subredditData.display_name = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.DISPLAY_NAME));
         subredditData.name = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.NAME));
         subredditData.user_is_subscriber = cursor.getInt(cursor.getColumnIndex(RedditContract.Subreddits.USER_IS_SUBSCRIBER)) == 1;
+        subredditData.description = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.DESCRIPTION));
+        subredditData.public_description = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.PUBLIC_DESCRIPTION));
+        subredditData.header_img = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.HEADER_IMAGE));
         return subredditData;
     }
 
@@ -106,4 +112,78 @@ public class SubredditData {
     public int getPriority() { return priority; }
 
     public boolean getUserIsSubscriber() { return user_is_subscriber; }
+
+    public SubredditData(Parcel source) {
+        display_name = source.readString();
+        description = source.readString();
+        name = source.readString();
+        created = source.readLong();
+        url = source.readString();
+        title = source.readString();
+        created_utc = source.readLong();
+        public_description = source.readString();
+        source.readIntArray(header_size);
+        accounts_active = source.readInt();
+        over18 = source.readByte() == 1;
+        subscribers = source.readInt();
+        header_title = source.readString();
+        id = source.readString();
+        header_img = source.readString();
+        priority = source.readInt();
+        user_is_subscriber = source.readByte() == 1;
+    }
+
+    /**
+     * Describe the kinds of special objects contained in this Parcelable's
+     * marshalled representation.
+     *
+     * @return a bitmask indicating the set of special object types marshalled
+     * by the Parcelable.
+     */
+    @Override public int describeContents() {
+        return 0;
+    }
+
+    /**
+     * Flatten this object in to a Parcel.
+     *
+     * @param dest
+     *     The Parcel in which the object should be written.
+     * @param flags
+     *     Additional flags about how the object should be written.
+     *     May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
+    @Override public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(display_name);
+        dest.writeString(description);
+        dest.writeString(name);
+        dest.writeLong(created);
+        dest.writeString(url);
+        dest.writeString(title);
+        dest.writeLong(created_utc);
+        dest.writeString(public_description);
+        dest.writeIntArray(header_size);
+        dest.writeInt(accounts_active);
+        dest.writeByte(Util.parcelBoolean(over18));
+        dest.writeInt(subscribers);
+        dest.writeString(header_title);
+        dest.writeString(id);
+        dest.writeString(header_img);
+        dest.writeInt(priority);
+        dest.writeByte(Util.parcelBoolean(user_is_subscriber));
+    }
+
+    public static final Parcelable.Creator<SubredditData> CREATOR = new Parcelable.Creator<SubredditData>() {
+
+        @Override
+        public SubredditData createFromParcel(Parcel source) {
+            return new SubredditData(source);
+        }
+
+        public SubredditData[] newArray(int size) {
+            return new SubredditData[size];
+        }
+
+        ;
+    };
 }

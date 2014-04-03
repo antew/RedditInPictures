@@ -20,13 +20,15 @@ public class Constants {
     public static final int    POSITION_FRONTPAGE = 0;
 
     public static class Extra {
-        private static final String EXTRA_PREFIX = PACKAGE_PREFIX + ".extra.";
-        public static final  String EXTRA_TITLE  = EXTRA_PREFIX + "title";
+        private static final String EXTRA_PREFIX         = PACKAGE_PREFIX + ".extra.";
+        public static final  String EXTRA_TITLE          = EXTRA_PREFIX + "title";
+        public static final  String EXTRA_SUBREDDIT_DATA = EXTRA_PREFIX + "subredditData";
     }
 
     public static class Dialog {
         public static final String DIALOG_DEFAULT_SUBREDDITS = "defaultSubreddits";
         public static final String DIALOG_ADD_SUBREDDIT      = "addSubreddit";
+        public static final String DIALOG_ABOUT_SUBREDDIT    = "aboutSubreddit";
     }
 
     public static class Reddit {
