@@ -45,7 +45,7 @@ import javax.inject.Inject;
  * @param <V>
  *     The type of the cursor adapter backing the view
  */
-public abstract class RedditImageFragment<T extends AdapterView, V extends CursorAdapter> extends BaseFragment
+public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V extends CursorAdapter> extends BaseFragment
     implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     protected V        mAdapter;
     @Inject

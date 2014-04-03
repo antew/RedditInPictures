@@ -290,10 +290,8 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
      * @return The Uri for the post on reddit
      */
     protected Uri getPostUri() {
-        //@formatter:off
-        return Uri.parse(getAdapter().getPost(mPager.getCurrentItem())
-                .getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(this)));
-        //@formatter:on
+        return Uri.parse(
+            getAdapter().getPost(mPager.getCurrentItem()).getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(this)));
     }
 
     @Override

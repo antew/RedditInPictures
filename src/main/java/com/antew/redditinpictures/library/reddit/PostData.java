@@ -311,6 +311,7 @@ public class PostData implements Parcelable, ContentValuesOperation {
         postData.title        = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
         postData.score        = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.SCORE));
         postData.thumbnail    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL));
+        postData.permalink    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.PERMALINK));
         postData.url          = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
         postData.num_comments = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.COMMENTS));
         postData.subreddit    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));

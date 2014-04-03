@@ -110,7 +110,7 @@ public class RedditContract {
 
         public static final String[] GRIDVIEW_PROJECTION = new String[] { _ID, URL, THUMBNAIL, DOMAIN };
         public static final String[] LISTVIEW_PROJECTION = new String[] {
-            _ID, URL, THUMBNAIL, TITLE, SCORE, SELFTEXT, COMMENTS, SUBREDDIT, DOMAIN, AUTHOR, VOTE, NAME, OVER_18
+            _ID, URL, THUMBNAIL, TITLE, SCORE, SELFTEXT, COMMENTS, SUBREDDIT, DOMAIN, AUTHOR, VOTE, NAME, OVER_18, PERMALINK
         };
 
         public static Uri buildPostDataUri(long postNumber) {
