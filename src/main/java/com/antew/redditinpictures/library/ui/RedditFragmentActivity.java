@@ -177,6 +177,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
             case R.id.category_controversial_year:
             case R.id.category_controversial_all_time:
                 if (RedditSort.contains(item.getItemId())) {
+                    requestInProgress(null);
                     RedditSort.SortCriteria sortCriteria = RedditSort.get(item.getItemId());
                     loadSubreddit(mSelectedSubreddit, sortCriteria.getCategory(), sortCriteria.getAge());
                     return true;
