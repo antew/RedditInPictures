@@ -33,11 +33,11 @@ import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
 import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.ImageUtil;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Callback;
@@ -52,7 +52,6 @@ import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
 public abstract class ImageViewerFragment extends BaseFragment {
-    public static final    String TAG               = "ImageViewerFragment";
     protected static final String IMAGE_DATA_EXTRA  = "extra_image_data";
     protected static final String IMAGE_ALBUM_EXTRA = "extra_image_album";
     /**
@@ -61,25 +60,25 @@ public abstract class ImageViewerFragment extends BaseFragment {
      * WebView in {@link #getWebViewOnTouchListener()}
      */
     private static float MOVE_THRESHOLD;
-    private final Object  mPauseWorkLock    = new Object();
-    protected PostData mImage;
+    private final Object mPauseWorkLock = new Object();
+    protected PostData  mImage;
     @InjectView(R.id.iv_imageView)
-    protected                                     ImageView      mImageView;
-    protected WebView mWebView;
-    protected     boolean mPauseWork        = false;
-    protected     String  mResolvedImageUrl = null;
-    protected     Image   mResolvedImage    = null;
+    protected ImageView mImageView;
+    protected WebView   mWebView;
+    protected boolean mPauseWork        = false;
+    protected String  mResolvedImageUrl = null;
+    protected Image   mResolvedImage    = null;
     protected int   mActionBarHeight;
     protected Album mAlbum;
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
-    protected SystemUiStateProvider mSystemUiStateProvider;
-    @InjectView(R.id.pb_progress)                 ProgressBar    mProgress;
-    @InjectView(R.id.rl_post_information_wrapper) RelativeLayout mPostInformationWrapper;
-    @InjectView(R.id.tv_post_title)               TextView       mPostTitle;
-    @InjectView(R.id.tv_post_information)         TextView       mPostInformation;
-    @InjectView(R.id.btn_view_gallery)            Button         mBtnViewGallery;
-    @InjectView(R.id.webview_stub)                ViewStub       mViewStub;
-    @InjectView(R.id.tv_post_votes)               TextView       mPostVotes;
+    protected                                     SystemUiStateProvider mSystemUiStateProvider;
+    @InjectView(R.id.pb_progress)                 ProgressBar           mProgress;
+    @InjectView(R.id.rl_post_information_wrapper) RelativeLayout        mPostInformationWrapper;
+    @InjectView(R.id.tv_post_title)               TextView              mPostTitle;
+    @InjectView(R.id.tv_post_information)         TextView              mPostInformation;
+    @InjectView(R.id.btn_view_gallery)            Button                mBtnViewGallery;
+    @InjectView(R.id.webview_stub)                ViewStub              mViewStub;
+    @InjectView(R.id.tv_post_votes)               TextView              mPostVotes;
     /**
      * This BroadcastReceiver handles updating the score when a vote is cast or changed
      */
@@ -93,24 +92,22 @@ public abstract class ImageViewerFragment extends BaseFragment {
                 mImage.getPermalink().equals(intent.getStringExtra(Constants.EXTRA_PERMALINK))) {
 
                 if (mPostVotes != null) {
-                    Log.i(TAG, "Updating score to " + intent.getIntExtra(Constants.EXTRA_SCORE, 0));
                     mPostVotes.setText("" + intent.getIntExtra(Constants.EXTRA_SCORE, 0));
                 }
             }
         }
     };
-    @InjectView(R.id.tv_error_message)            TextView       mErrorMessage;
-    @Inject ScreenSize mScreenSize;
-    private       boolean mExitTasksEarly   = false;
-    private boolean mCancelClick = false;
-    private float   mDownXPos    = 0;
-    private float   mDownYPos    = 0;
+    @InjectView(R.id.tv_error_message) TextView   mErrorMessage;
+    @Inject                            ScreenSize mScreenSize;
+    private boolean           mExitTasksEarly         = false;
+    private boolean           mCancelClick            = false;
+    private float             mDownXPos               = 0;
+    private float             mDownYPos               = 0;
     private BroadcastReceiver mToggleFullscreenIntent = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            boolean isSystemUiVisible =
-                intent.getBooleanExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
+            boolean isSystemUiVisible = intent.getBooleanExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
             if (isSystemUiVisible) {
                 hidePostDetails();
             } else {
@@ -130,7 +127,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         loadExtras();
@@ -142,7 +138,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i(TAG, "onCreateView");
         final View view = inflater.inflate(R.layout.image_detail_fragment, container, false);
         ButterKnife.inject(this, view);
         return view;
@@ -150,7 +145,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
     @Override
     public void onResume() {
-        Log.i(TAG, "onResume");
         super.onResume();
         if (mSystemUiStateProvider.isSystemUiVisible()) {
             showPostDetails();
@@ -161,7 +155,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.i(TAG, "onSaveInstanceState");
         if (mImage != null) {
             outState.putParcelable(IMAGE_DATA_EXTRA, mImage);
         }
@@ -175,7 +168,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "onDestroy");
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mScoreUpdateReceiver);
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mToggleFullscreenIntent);
 
@@ -183,25 +175,17 @@ public abstract class ImageViewerFragment extends BaseFragment {
             mImageView.setImageDrawable(null);
         }
 
-        if (mWebView != null) {
-            mWebView.destroy();
-        }
-
         if (mResolveImageTask != null) {
-            Log.i(TAG, "onDestroy - resolveImageTask not null");
             if (mResolveImageTask.getStatus() != AsyncTask.Status.FINISHED) {
-                Log.i(TAG, "onDestroy - Cancelling resolveImageTask");
+                Ln.i("onDestroy - Cancelling resolveImageTask");
                 mResolveImageTask.cancel(true);
             }
-        } else {
-            Log.i(TAG, "onDestroy - Not cancelling resolveImageTask");
         }
 
         super.onDestroy();
     }
 
     public void showPostDetails() {
-        Log.i(TAG, "showPostDetails");
         if (shouldShowPostInformation()) {
             mPostInformationWrapper.setVisibility(View.VISIBLE);
             animate(mPostInformationWrapper).setDuration(500).y(mActionBarHeight);
@@ -209,7 +193,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
     }
 
     public void hidePostDetails() {
-        Log.i(TAG, "hidePostDetails");
         animate(mPostInformationWrapper).setDuration(500).y(-400);
     }
 
@@ -217,7 +200,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        Log.i(TAG, "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
 
         populatePostData(mPostInformationWrapper);
@@ -247,7 +229,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
         try {
             mSystemUiStateProvider = (SystemUiStateProvider) getActivity();
         } catch (ClassCastException e) {
-            Log.e(TAG, "The activity must implement the SystemUiStateProvider interface", e);
+            Ln.e(e, "The activity must implement the SystemUiStateProvider interface");
         }
 
         // Use the parent activity to load the image asynchronously into the ImageView (so a single
@@ -285,7 +267,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
     public void loadImage(Image image) {
         if (image == null) {
-            Log.e(TAG, "Received null url in loadImage(String imageUrl)");
+            Ln.e("Received null url in loadImage(String imageUrl)");
             mProgress.setVisibility(View.GONE);
             mErrorMessage.setVisibility(View.VISIBLE);
             return;
@@ -318,6 +300,18 @@ public abstract class ImageViewerFragment extends BaseFragment {
                        }
                    });
         }
+    }
+
+    /**
+     * Called when the Fragment is no longer resumed.  This is generally
+     * tied to {@link android.app.Activity#onPause() Activity.onPause} of the containing
+     * Activity's lifecycle.
+     */
+    @Override public void onPause() {
+        if (mWebView != null) {
+            mWebView.destroy();
+        }
+        super.onPause();
     }
 
     public void loadGifInWebView(String imageUrl) {
@@ -414,11 +408,9 @@ public abstract class ImageViewerFragment extends BaseFragment {
          */
         @Override
         protected Image doInBackground(String... params) {
-            Log.d(TAG, "doInBackground - starting work");
-
             data = params[0];
             Image resolvedImage = null;
-            Log.i(TAG, "ResolveImageTask url = " + data);
+            Ln.i("Resolving Image Url: %s", data);
             // Wait here if work is paused and the task is not cancelled
             synchronized (mPauseWorkLock) {
                 while (mPauseWork && !isCancelled()) {
@@ -432,8 +424,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
             if (!isCancelled() && !mExitTasksEarly) {
                 resolvedImage = ImageResolver.resolve(data);
             }
-
-            Log.d(TAG, "doInBackground - finished work");
 
             return resolvedImage;
         }

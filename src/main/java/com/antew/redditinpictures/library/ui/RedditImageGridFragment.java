@@ -15,7 +15,7 @@ import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
-public class RedditImageGridFragment extends RedditImageFragment<GridView, ImageCursorAdapter> {
+public class RedditImageGridFragment extends RedditImageAdapterViewFragment<GridView, ImageCursorAdapter> {
     //9 is a good number, it's not as great as 8 or as majestic as 42 but it is indeed the product of 3 3s which is okay...I guess.
     private static final int           POST_LOAD_OFFSET = 9;
     private AbsListView.OnScrollListener mGridViewOnScrollListener = new AbsListView.OnScrollListener() {

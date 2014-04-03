@@ -13,7 +13,7 @@ import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
-public class RedditImageListFragment extends RedditImageFragment<ListView, ImageListCursorAdapter> {
+public class RedditImageListFragment extends RedditImageAdapterViewFragment<ListView, ImageListCursorAdapter> {
     //8 is a good number, the kind of number that you could say take home to your parents and not be worried about what they might think about it.
     private static final int POST_LOAD_OFFSET = 8;
     private AbsListView.OnScrollListener mListScrollListener = new AbsListView.OnScrollListener() {
