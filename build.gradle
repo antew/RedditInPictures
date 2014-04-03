@@ -12,7 +12,7 @@ apply plugin: 'android'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.0.2'
+    buildToolsVersion '19.0.3'
 
     defaultConfig {
         minSdkVersion 8
@@ -35,13 +35,13 @@ android {
     productFlavors {
         free {
             packageName "com.antew.redditinpictures"
-            versionCode 11
+            versionCode 12
             signingConfig signingConfigs.prod
         }
 
         pro {
             packageName "com.antew.redditinpictures.pro"
-            versionCode 8
+            versionCode 9
             signingConfig signingConfigs.prod
         }
     }
