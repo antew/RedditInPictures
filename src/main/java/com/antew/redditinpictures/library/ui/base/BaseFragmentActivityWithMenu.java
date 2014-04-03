@@ -80,6 +80,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
                     break;
                 case Info:
                     displaySubredditInfo(subredditData);
+                    break;
                 case Delete:
                     deleteSubreddit(subredditData.getName());
                     break;
