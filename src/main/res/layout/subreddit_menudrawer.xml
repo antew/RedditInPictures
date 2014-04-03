@@ -40,24 +40,18 @@
         android:background="#1A1A1A">
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
             android:id="@+id/ib_add"
             android:src="@drawable/ic_action_add_dark"
             android:contentDescription="@string/add_subreddit"
             style="@style/SubredditMenuDrawerMenuItem" />
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
             android:id="@+id/ib_sort"
             android:src="@drawable/ic_action_sort_1_dark"
             android:contentDescription="@string/sort_by_popularity"
             style="@style/SubredditMenuDrawerMenuItem" />
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
             android:id="@+id/ib_refresh"
             android:contentDescription="@string/reset_subreddits"
             android:src="@drawable/ic_action_reload_dark"

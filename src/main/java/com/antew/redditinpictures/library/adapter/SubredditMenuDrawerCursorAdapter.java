@@ -29,8 +29,6 @@ import com.antew.redditinpictures.pro.R;
  * @author Antew
  */
 public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
-
-    private static final String TAG = SubredditMenuDrawerCursorAdapter.class.getSimpleName();
     private LayoutInflater inflater;
     private int mActivePosition = -1;
     private OnSubredditActionListener mSubredditActionListener;
@@ -64,13 +62,13 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
         final ViewHolder holder;
         if (view != null && view.getTag() != null) {
             holder = (ViewHolder) view.getTag();
-
-            // If we recycled this row, make sure the menu is not shown.
-            holder.back.setVisibility(View.GONE);
         } else {
             holder = new ViewHolder(view);
             view.setTag(holder);
         }
+
+        // Always make sure the menu is not shown initially.
+        holder.back.setVisibility(View.GONE);
 
         final SubredditData subredditData = SubredditData.fromProjection(cursor);
         holder.subreddit.setText(subredditData.getDisplay_name());

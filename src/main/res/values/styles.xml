@@ -34,10 +34,21 @@
     </style>
 
     <style name="SubredditMenuDrawerMenuItem">
-        <item name="android:background">@android:color/transparent</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/abs__item_background_holo_dark</item>
         <item name="android:layout_weight">.25</item>
         <item name="android:paddingTop">@dimen/subreddit_menu_padding</item>
         <item name="android:paddingBottom">@dimen/subreddit_menu_padding</item>
+    </style>
+
+    <style name="SubredditMenuItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/abs__item_background_holo_dark</item>
+        <item name="android:layout_weight">.25</item>
+        <item name="android:paddingTop">@dimen/subreddit_menu_item_padding</item>
+        <item name="android:paddingBottom">@dimen/subreddit_menu_item_padding</item>
     </style>
 
     <style name="AboutHeader">

@@ -10,14 +10,14 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/front">
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_more_dark"
-            android:background="@android:color/transparent"
+            android:background="@drawable/abs__item_background_holo_dark"
             android:id="@+id/ib_more"
             android:layout_alignParentRight="true"
             android:padding="5dp"
@@ -43,71 +43,40 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/back"
-        android:visibility="gone"
         android:background="#1A1A1A">
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/ib_view"
             android:src="@drawable/ic_action_picture_dark"
             android:contentDescription="@string/view_subreddit"
-            android:background="@android:color/transparent"
-            android:layout_weight=".25"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:gravity="center" />
+            style="@style/SubredditMenuItem"/>
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/ib_subscribe"
             android:src="@drawable/ic_action_tick_dark"
             android:contentDescription="@string/subscribe"
-            android:background="@android:color/transparent"
-            android:layout_weight=".25"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:gravity="center" />
+            style="@style/SubredditMenuItem"/>
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/ib_unsubscribe"
             android:src="@drawable/ic_action_cancel_dark"
             android:contentDescription="@string/unsubscribe"
-            android:background="@android:color/transparent"
-            android:layout_weight=".25"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:gravity="center" />
+            style="@style/SubredditMenuItem"/>
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/ib_info"
             android:src="@drawable/ic_action_info_dark"
             android:contentDescription="@string/info"
-            android:background="@android:color/transparent"
-            android:layout_weight=".25"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:gravity="center" />
+            style="@style/SubredditMenuItem"/>
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/ib_delete"
             android:src="@drawable/ic_action_trash_dark"
             android:contentDescription="@string/delete"
-            android:background="@android:color/transparent"
-            android:layout_weight=".25"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:gravity="center" />
+            style="@style/SubredditMenuItem"/>
     </LinearLayout>
 
 </LinearLayout>
