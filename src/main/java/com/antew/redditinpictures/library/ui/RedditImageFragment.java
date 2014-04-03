@@ -178,7 +178,7 @@ public abstract class RedditImageFragment<T extends AdapterView, V extends Curso
 
     protected void forceFetchImagesFromReddit() {
         produceRequestInProgressEvent();
-        RedditService.forceRefreshSubreddit(getActivity(), mCurrentSubreddit, mAge, mCategory);
+        RedditService.getPosts(getActivity(), mCurrentSubreddit, mAge, mCategory);
     }
 
     protected abstract T getAdapterView();

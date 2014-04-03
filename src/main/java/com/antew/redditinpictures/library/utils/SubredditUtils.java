@@ -151,6 +151,44 @@ public class SubredditUtils {
         return false;
     }
 
+    public static void deletePostsForSubreddit(Context context, String subreddit) {
+        ContentResolver resolver = context.getContentResolver();
+
+        // If we have an aggregate subreddit we need to clear out everything.
+        if (subreddit.equals(Constants.REDDIT_FRONTPAGE)
+            || subreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME)
+            || subreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
+            // Remove all of the post rows.
+            resolver.delete(RedditContract.Posts.CONTENT_URI, null, null);
+        } else if (subreddit.contains("+")) {
+            // Poor mans checking for multis. If we have a multi, we want to handle all of them appropriately.
+            String[] subredditArray = subreddit.split("\\+");
+
+            String where = null;
+            List<String> selectionArgsList = new ArrayList<String>();
+
+            for (String item : subredditArray) {
+                if (where == null) {
+                    where = RedditContract.PostColumns.SUBREDDIT + " in (?";
+                } else {
+                    where += ",?";
+                }
+                selectionArgsList.add(item);
+            }
+            // Close the in statement.
+            where += ")";
+
+            // Only delete records for the subreddits contained in the multi.
+            resolver.delete(RedditContract.Posts.CONTENT_URI, where, selectionArgsList.toArray(new String[] { }));
+        } else {
+            String where = RedditContract.PostColumns.SUBREDDIT + " = ?";
+            String[] selectionArgs = new String[] { subreddit };
+
+            // Otherwise we have a single subreddit, so we want to remove only posts for that subreddit.
+            resolver.delete(RedditContract.Posts.CONTENT_URI, where, selectionArgs);
+        }
+    }
+
     public static class SetDefaultSubredditsTask extends SafeAsyncTask<Void> {
         boolean forceDefaults = false;
         Context mContext;

@@ -236,7 +236,7 @@ public class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     protected void forceRefreshCurrentSubreddit() {
-        RedditService.forceRefreshSubreddit(this, mSelectedSubreddit, mAge, mCategory);
+        RedditService.getPosts(this, mSelectedSubreddit, mAge, mCategory);
     }
 
     protected void filterSubreddits(String filterText) {

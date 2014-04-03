@@ -4,9 +4,13 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditApi;
+import com.antew.redditinpictures.library.service.RedditService;
+import com.antew.redditinpictures.library.utils.Constants;
+import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 class PostResponse extends RedditResponseHandler {
@@ -29,6 +33,16 @@ class PostResponse extends RedditResponseHandler {
         if (redditApi == null) {
             Log.e(TAG, "Error parsing Reddit api response");
             return;
+        }
+
+        // If we are replacing all, go ahead and clear out the old posts.
+        if (result.isReplaceAll()) {
+            Bundle arguments = result.getArguments();
+            String subreddit = Constants.REDDIT_FRONTPAGE;
+            if (arguments.containsKey(RedditService.EXTRA_SUBREDDIT)) {
+                subreddit = arguments.getString(RedditService.EXTRA_SUBREDDIT);
+            }
+            SubredditUtils.deletePostsForSubreddit(context, subreddit);
         }
 
         ContentValues[] operations = redditApi.getPostDataContentValues(true);

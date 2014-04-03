@@ -1,6 +1,5 @@
 package com.antew.redditinpictures.library.service;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,48 +13,10 @@ import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.json.RedditResult;
 import com.antew.redditinpictures.library.utils.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
-import com.antew.redditinpictures.library.utils.SafeAsyncTask;
+import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.sqlite.RedditContract;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RedditService extends RESTService {
-    private static ForceRefreshSubredditTask mForceRefreshSubredditTask;
-
-    public static void forceRefreshSubreddit(Context context, String subreddit, Age age, Category category) {
-        Ln.d("Attempting to Force Refresh For %s %s %s", subreddit, age, category);
-        if (mForceRefreshSubredditTask == null) {
-            mForceRefreshSubredditTask = new ForceRefreshSubredditTask(context, subreddit, age, category);
-            mForceRefreshSubredditTask.execute();
-            return;
-        }
-
-        // If a request is currently processing, let's see if we need to cancel it.
-        if (mForceRefreshSubredditTask.isProcessing()) {
-            // If we have a request that doesn't exactly equal what we are doing, then let's cancel it and start a new request.
-            if (!mForceRefreshSubredditTask.mSubreddit.equals(subreddit)
-                || mForceRefreshSubredditTask.mAge != age
-                || mForceRefreshSubredditTask.mCategory != category) {
-                mForceRefreshSubredditTask = new ForceRefreshSubredditTask(context, subreddit, age, category);
-                mForceRefreshSubredditTask.execute();
-            } else {
-                // If we have the same request going on, just let it go.
-                return;
-            }
-        } else {
-            // Otherwise we aren't processing anything currently.
-
-            // If the currently created task isn't for the same thing, create a new one.
-            if (!mForceRefreshSubredditTask.mSubreddit.equals(subreddit)
-                || mForceRefreshSubredditTask.mAge != age
-                || mForceRefreshSubredditTask.mCategory != category) {
-                mForceRefreshSubredditTask = new ForceRefreshSubredditTask(context, subreddit, age, category);
-            }
-
-            // Now we have either created a new task or we are restarting an old one with for the same thing.
-            mForceRefreshSubredditTask.execute();
-        }
-    }
 
     public static void getPosts(Context context, String subreddit, Age age, Category category) {
         getPosts(context, subreddit, age, category, null);
@@ -76,13 +37,15 @@ public class RedditService extends RESTService {
 
         RedditUrl url = new RedditUrl.Builder(subreddit).age(age).category(category).count(Constants.POSTS_TO_FETCH).after(after).build();
 
-        getPosts(context, url.getUrl());
+        getPosts(context, url.getUrl(), subreddit, after);
     }
 
-    private static void getPosts(Context context, String url) {
+    private static void getPosts(Context context, String url, String subreddit, String after) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.POSTS);
+        intent.putExtra(RedditService.EXTRA_REPLACE_ALL, Strings.isEmpty(after));
+        intent.putExtra(RedditService.EXTRA_SUBREDDIT, subreddit);
         intent.setData(Uri.parse(url));
 
         context.startService(intent);
@@ -205,87 +168,5 @@ public class RedditService extends RESTService {
         }
 
         redditResult.handleResponse(getApplicationContext());
-    }
-
-    private static class ForceRefreshSubredditTask extends SafeAsyncTask<Void> {
-        protected String   mSubreddit;
-        protected Age      mAge;
-        protected Category mCategory;
-        private   Context  mContext;
-        private boolean mProcessing = false;
-
-        public ForceRefreshSubredditTask(Context context, String subreddit, Age age, Category category) {
-            mContext = context;
-            mSubreddit = subreddit;
-            mAge = age;
-            mCategory = category;
-        }
-
-        public boolean isProcessing() {
-            return mProcessing;
-        }
-
-        @Override
-        public Void call() throws Exception {
-            mProcessing = true;
-
-            if (mSubreddit == null) {
-                mSubreddit = Constants.REDDIT_FRONTPAGE;
-            }
-
-            if (mAge == null) {
-                mAge = Age.TODAY;
-            }
-
-            if (mCategory == null) {
-                mCategory = Category.HOT;
-            }
-
-            Ln.d("Forcing Refresh For %s %s %s", mSubreddit, mAge, mCategory);
-
-            ContentResolver resolver = mContext.getContentResolver();
-
-            // If we have an aggregate subreddit we need to clear out everything.
-            if (mSubreddit.equals(Constants.REDDIT_FRONTPAGE)
-                || mSubreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME)
-                || mSubreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
-                // Remove all of the post rows.
-                resolver.delete(RedditContract.Posts.CONTENT_URI, null, null);
-            } else if (mSubreddit.contains("+")) {
-                // Poor mans checking for multis. If we have a multi, we want to handle all of them appropriately.
-                String[] subredditArray = mSubreddit.split("\\+");
-
-                String where = null;
-                List<String> selectionArgsList = new ArrayList<String>();
-
-                for (String item : subredditArray) {
-                    if (where == null) {
-                        where = RedditContract.PostColumns.SUBREDDIT + " in (?";
-                    } else {
-                        where += ",?";
-                    }
-                    selectionArgsList.add(item);
-                }
-                // Close the in statement.
-                where += ")";
-
-                // Only delete records for the subreddits contained in the multi.
-                resolver.delete(RedditContract.Posts.CONTENT_URI, where, selectionArgsList.toArray(new String[] { }));
-            } else {
-                String where = RedditContract.PostColumns.SUBREDDIT + " = ?";
-                String[] selectionArgs = new String[] { mSubreddit };
-
-                // Otherwise we have a single subreddit, so we want to remove only posts for that subreddit.
-                resolver.delete(RedditContract.Posts.CONTENT_URI, where, selectionArgs);
-            }
-
-            getPosts(mContext, mSubreddit, mAge, mCategory);
-            return null;
-        }
-
-        @Override protected void onFinally() throws RuntimeException {
-            super.onFinally();
-            mProcessing = false;
-        }
     }
 }
