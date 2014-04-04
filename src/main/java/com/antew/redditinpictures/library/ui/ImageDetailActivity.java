@@ -29,7 +29,9 @@ import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.CursorPagerAdapter;
+import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.enums.Vote;
@@ -38,7 +40,6 @@ import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.service.RedditService;
-import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.library.utils.Strings;
@@ -159,11 +160,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         mUpvoteMenuItem = menu.findItem(R.id.upvote);
         mDownvoteMenuItem = menu.findItem(R.id.downvote);
 
-        if (!RedditLoginInformation.isLoggedIn()) {
-            mUpvoteMenuItem.setVisible(false);
-            mDownvoteMenuItem.setVisible(false);
-        }
-
         // We save the icon for locking the view pager so that we can reference
         // it when we receive a broadcast message to toggle the ViewPager lock state
         lockViewPagerItem = menu.findItem(R.id.lock_viewpager);
@@ -183,12 +179,24 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         return true;
     }
 
+    protected void showLogin() {
+        // Only needs to be shown if they aren't currently logged in.
+        if (!RedditLoginInformation.isLoggedIn()) {
+            LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
+            loginFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGIN);
+        }
+    }
+
     public void handleVote(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.upvote) {
-            vote(Vote.UP, item, getAdapter().getPost(mPager.getCurrentItem()));
-        } else if (itemId == R.id.downvote) {
-            vote(Vote.DOWN, item, getAdapter().getPost(mPager.getCurrentItem()));
+        if (!RedditLoginInformation.isLoggedIn()) {
+            showLogin();
+        } else {
+            int itemId = item.getItemId();
+            if (itemId == R.id.upvote) {
+                vote(Vote.UP, item, getAdapter().getPost(mPager.getCurrentItem()));
+            } else if (itemId == R.id.downvote) {
+                vote(Vote.DOWN, item, getAdapter().getPost(mPager.getCurrentItem()));
+            }
         }
     }
 
