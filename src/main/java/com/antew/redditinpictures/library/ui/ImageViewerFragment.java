@@ -175,6 +175,11 @@ public abstract class ImageViewerFragment extends BaseFragment {
             mImageView.setImageDrawable(null);
         }
 
+        if (mWebView != null) {
+            mWebView.destroy();
+        }
+
+
         if (mResolveImageTask != null) {
             if (mResolveImageTask.getStatus() != AsyncTask.Status.FINISHED) {
                 Ln.i("onDestroy - Cancelling resolveImageTask");
@@ -300,18 +305,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
                        }
                    });
         }
-    }
-
-    /**
-     * Called when the Fragment is no longer resumed.  This is generally
-     * tied to {@link android.app.Activity#onPause() Activity.onPause} of the containing
-     * Activity's lifecycle.
-     */
-    @Override public void onPause() {
-        if (mWebView != null) {
-            mWebView.destroy();
-        }
-        super.onPause();
     }
 
     public void loadGifInWebView(String imageUrl) {
