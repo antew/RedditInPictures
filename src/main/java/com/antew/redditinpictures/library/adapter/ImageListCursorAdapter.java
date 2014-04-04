@@ -36,6 +36,7 @@ import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.ui.RedditFragmentActivity;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.pro.R;
@@ -197,8 +198,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
      */
     private void vote(Vote whichVoteButton, PostData p, ViewHolder holder) {
         if (!RedditLoginInformation.isLoggedIn()) {
-            if (mContext instanceof ImageGridActivity) {
-                ((ImageGridActivity) mContext).handleLoginAndLogout();
+            if (mContext instanceof RedditFragmentActivity) {
+                ((RedditFragmentActivity) mContext).handleLoginAndLogout();
             }
             return;
         }

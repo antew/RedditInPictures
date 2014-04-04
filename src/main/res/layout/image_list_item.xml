@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/ib_upVote"
             android:src="@drawable/arrow_up"
-            android:background="@android:color/transparent"
+            android:background="@drawable/abs__item_background_holo_dark"
             android:layout_alignParentTop="true"
             android:layout_above="@id/tv_votes"
             android:layout_marginBottom="-10dp" />
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/ib_downVote"
             android:src="@drawable/arrow_down"
-            android:background="@android:color/transparent"
+            android:background="@drawable/abs__item_background_holo_dark"
             android:layout_alignParentBottom="true"
             android:layout_below="@id/tv_votes"
             android:layout_marginTop="-10dp" />
