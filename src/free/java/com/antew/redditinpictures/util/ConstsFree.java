@@ -3,7 +3,7 @@ package com.antew.redditinpictures.util;
 import android.content.Context;
 import android.content.res.TypedArray;
 
-import com.antew.redditinpictures.library.utils.Constants;
+import com.antew.redditinpictures.library.Constants;
 
 public class ConstsFree extends Constants {
     public static final String ADMOB_ID            = "a14fd4522953241";

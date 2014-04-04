@@ -6,7 +6,7 @@ import com.android.debug.hv.ViewServer;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
 import com.antew.redditinpictures.library.modules.ActivityModule;
-import com.antew.redditinpictures.library.utils.Constants;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.BuildConfig;

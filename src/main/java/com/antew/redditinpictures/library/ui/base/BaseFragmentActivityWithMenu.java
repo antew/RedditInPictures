@@ -31,7 +31,7 @@ import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.SubredditData;
 import com.antew.redditinpictures.library.reddit.json.MySubredditsResponse;
 import com.antew.redditinpictures.library.service.RedditService;
-import com.antew.redditinpictures.library.utils.Constants;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.pro.R;

@@ -28,21 +28,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RedditApi implements Parcelable, ContentValuesOperation, RedditPostFilter<PostData> {
-    //@formatter:off
-    public static final Parcelable.Creator<RedditApi> CREATOR
-        = new Parcelable.Creator<RedditApi>() {
+    public static final Parcelable.Creator<RedditApi> CREATOR = new Parcelable.Creator<RedditApi>() {
 
-            @Override
-            public RedditApi createFromParcel(Parcel source) {
-                return new RedditApi(source);
-            }
+        @Override
+        public RedditApi createFromParcel(Parcel source) {
+            return new RedditApi(source);
+        }
 
-            @Override
-            public RedditApi[] newArray(int size) {
-                return new RedditApi[size];
-            }
-
-
+        @Override
+        public RedditApi[] newArray(int size) {
+            return new RedditApi[size];
+        }
     };
     private String        kind;
     private RedditApiData data;
@@ -66,7 +62,6 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
     public String getKind() {
         return kind;
     }
-    //@formatter:on
 
     public RedditApiData getData() {
         return data;
@@ -121,6 +116,7 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
         values.put(RedditContract.RedditData.AFTER, data.getAfter());
         values.put(RedditContract.RedditData.BEFORE, data.getBefore());
         values.put(RedditContract.RedditData.MODHASH, data.getModhash());
+        values.put(RedditContract.RedditData.RETRIEVED_DATE, data.getRetrievedDate().getTime());
 
         return values;
     }

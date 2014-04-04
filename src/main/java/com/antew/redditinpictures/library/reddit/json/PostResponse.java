@@ -9,9 +9,10 @@ import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditApi;
 import com.antew.redditinpictures.library.service.RedditService;
-import com.antew.redditinpictures.library.utils.Constants;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.sqlite.RedditContract;
+import java.util.Date;
 
 class PostResponse extends RedditResponseHandler {
     public static String TAG = PostResponse.class.getSimpleName();
@@ -33,6 +34,10 @@ class PostResponse extends RedditResponseHandler {
         if (redditApi == null) {
             Log.e(TAG, "Error parsing Reddit api response");
             return;
+        }
+
+        if (redditApi.getData() != null) {
+            redditApi.getData().setRetrievedDate(new Date());
         }
 
         // If we are replacing all, go ahead and clear out the old posts.

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antew.redditinpictures.library.utils;
+package com.antew.redditinpictures.library;
 
 public class Constants {
-    public static final String PACKAGE_PREFIX     = "com.antew.redditinpictures";
-    public static final int    POSITION_FRONTPAGE = 0;
+    public static final String PACKAGE_PREFIX      = "com.antew.redditinpictures";
+    public static final int    POSTS_CACHE_TIMEOUT = 5 * 1000 * 60; //5 Minutes.
 
     public static class Extra {
         private static final String EXTRA_PREFIX         = PACKAGE_PREFIX + ".extra.";

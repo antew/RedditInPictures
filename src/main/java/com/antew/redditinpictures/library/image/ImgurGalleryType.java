@@ -12,7 +12,7 @@ import com.antew.redditinpictures.library.imgur.SimpleImgurGallery;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
-import com.antew.redditinpictures.library.utils.Constants;
+import com.antew.redditinpictures.library.Constants;
 
 public class ImgurGalleryType extends Image {
     public static final  String TAG                   = ImgurGalleryType.class.getSimpleName();

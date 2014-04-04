@@ -10,9 +10,9 @@ public class RedditContract {
 
     ;
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
-    public static final int    BASE              = 1;
-    public static final int    REDDIT            = 100;
-    public static final int    REDDIT_ID         = 101;
+    public static final int BASE             = 1;
+    public static final int REDDIT           = 100;
+    public static final int REDDIT_ID        = 101;
 
     public static final int POSTS    = 200;
     public static final int POSTS_ID = 201;
@@ -20,19 +20,21 @@ public class RedditContract {
     public static final int LOGIN    = 300;
     public static final int LOGIN_ID = 301;
 
-    public static final int SUBREDDIT    = 400;
-    public static final int SUBREDDIT_ID = 401;
+    public static final int    SUBREDDIT        = 400;
+    public static final int    SUBREDDIT_ID     = 401;
     public static final String PATH_POSTS       = "posts";
     public static final String PATH_REDDIT_DATA = "reddit_data";
     public static final String PATH_SUBREDDITS  = "subreddits";
     public static final String PATH_LOGIN       = "login";
+
     private RedditContract() {
     }
 
     public interface RedditDataColumns {
-        String MODHASH = "modhash";
-        String AFTER   = "after";
-        String BEFORE  = "before";
+        String MODHASH        = "modhash";
+        String AFTER          = "after";
+        String BEFORE         = "before";
+        String RETRIEVED_DATE = "retrievedDate";
     }
 
     public interface LoginColumns {
@@ -147,10 +149,12 @@ public class RedditContract {
         public static final String CONTENT_TYPE      = "vnd.android.cursor.dir/vnd.redditinpictures.subreddits";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.redditinpictures.subreddits";
 
-        public static final String[] SUBREDDITS_PROJECTION = new String[] { _ID, DISPLAY_NAME, PRIORITY, NAME, USER_IS_SUBSCRIBER, DESCRIPTION, PUBLIC_DESCRIPTION, HEADER_IMAGE, OVER_18, SUBSCRIBERS };
+        public static final String[] SUBREDDITS_PROJECTION = new String[] {
+            _ID, DISPLAY_NAME, PRIORITY, NAME, USER_IS_SUBSCRIBER, DESCRIPTION, PUBLIC_DESCRIPTION, HEADER_IMAGE, OVER_18, SUBSCRIBERS
+        };
 
         public static final String SORT_ALPHABETICALLY = PRIORITY + " DESC, " + DISPLAY_NAME + " COLLATE NOCASE ASC";
-        public static final String SORT_BY_POPULARITY = PRIORITY + " DESC, " + SUBSCRIBERS + " DESC";
+        public static final String SORT_BY_POPULARITY  = PRIORITY + " DESC, " + SUBSCRIBERS + " DESC";
 
         public static Uri buildSubredditUri(String displayName) {
             return CONTENT_URI.buildUpon().appendPath(displayName).build();

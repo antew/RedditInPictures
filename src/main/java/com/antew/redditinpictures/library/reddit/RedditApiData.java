@@ -3,29 +3,27 @@ package com.antew.redditinpictures.library.reddit;
 import android.os.Parcel;
 import android.os.Parcelable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class RedditApiData implements Parcelable {
-    //@formatter:off
-    public static final Parcelable.Creator<RedditApiData> CREATOR
-        = new Parcelable.Creator<RedditApiData>() {
+    public static final Parcelable.Creator<RedditApiData> CREATOR = new Parcelable.Creator<RedditApiData>() {
 
-            @Override
-            public RedditApiData createFromParcel(Parcel source) {
-                return new RedditApiData(source);
-            }
+        @Override
+        public RedditApiData createFromParcel(Parcel source) {
+            return new RedditApiData(source);
+        }
 
-            @Override
-            public RedditApiData[] newArray(int size) {
-                return new RedditApiData[size];
-            }
-
-
+        @Override
+        public RedditApiData[] newArray(int size) {
+            return new RedditApiData[size];
+        }
     };
     private String         modhash;
     private List<Children> children;
     private String         after;
     private String         before;
+    private Date           retrievedDate;
 
     public RedditApiData(Parcel source) {
         children = new ArrayList<Children>();
@@ -33,25 +31,32 @@ public class RedditApiData implements Parcelable {
         source.readList(children, Children.class.getClassLoader());
         after = source.readString();
         before = source.readString();
+        retrievedDate = new Date(source.readLong());
     }
 
     public void addChildren(List<Children> children) {
         this.children.addAll(children);
     }
 
-    //@formatter:off
-    public String getModhash()           { return modhash; }
+    public String getModhash() { return modhash; }
 
-    public List<Children> getChildren()  { return children; }
+    public List<Children> getChildren() { return children; }
 
-    public String getAfter()             { return after; }
+    public String getAfter() { return after; }
 
-    public void setAfter(String after)   { this.after = after; }
+    public void setAfter(String after) { this.after = after; }
 
-    public String getBefore()            { return before;}
+    public String getBefore() { return before;}
 
     public void setBefore(String before) { this.before = before; }
-    //@formatter:on
+
+    public Date getRetrievedDate() {
+        return retrievedDate;
+    }
+
+    public void setRetrievedDate(Date retrievedDate) {
+        this.retrievedDate = retrievedDate;
+    }
 
     public List<PostData> getPosts() {
         List<PostData> posts = new ArrayList<PostData>(children.size());
@@ -73,6 +78,6 @@ public class RedditApiData implements Parcelable {
         dest.writeList(children);
         dest.writeString(after);
         dest.writeString(before);
+        dest.writeLong(retrievedDate.getTime());
     }
-    //@formatter:on
 }

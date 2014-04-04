@@ -11,12 +11,16 @@ import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.json.RedditResult;
-import com.antew.redditinpictures.library.utils.Constants;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class RedditService extends RESTService {
+
+    public static void getPostsIfNeeded(Context context, String subreddit, Age age, Category category) {
+
+    }
 
     public static void getPosts(Context context, String subreddit, Age age, Category category) {
         getPosts(context, subreddit, age, category, null);
