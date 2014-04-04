@@ -251,7 +251,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
                     selectionArgs = selectionArgsList.toArray(new String[] { });
                 }
 
-                Ln.d("Retrieveing Posts For %s %s", selection, selectionArgs.toString());
+                Ln.d("Retrieveing Posts For %s %s", selection, Strings.toString(selectionArgs));
 
                 return new CursorLoader(getActivity(), RedditContract.Posts.CONTENT_URI,  // uri
                                         queryCriteria.getProjection(),     // projection
