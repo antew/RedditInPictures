@@ -147,7 +147,7 @@ public class RedditContract {
         public static final String CONTENT_TYPE      = "vnd.android.cursor.dir/vnd.redditinpictures.subreddits";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.redditinpictures.subreddits";
 
-        public static final String[] SUBREDDITS_PROJECTION = new String[] { _ID, DISPLAY_NAME, PRIORITY, NAME, USER_IS_SUBSCRIBER, DESCRIPTION, PUBLIC_DESCRIPTION, HEADER_IMAGE };
+        public static final String[] SUBREDDITS_PROJECTION = new String[] { _ID, DISPLAY_NAME, PRIORITY, NAME, USER_IS_SUBSCRIBER, DESCRIPTION, PUBLIC_DESCRIPTION, HEADER_IMAGE, OVER_18, SUBSCRIBERS };
 
         public static final String SORT_ALPHABETICALLY = PRIORITY + " DESC, " + DISPLAY_NAME + " COLLATE NOCASE ASC";
         public static final String SORT_BY_POPULARITY = PRIORITY + " DESC, " + SUBSCRIBERS + " DESC";

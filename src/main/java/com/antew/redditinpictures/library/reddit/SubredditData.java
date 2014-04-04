@@ -43,6 +43,8 @@ public class SubredditData implements Parcelable {
         subredditData.display_name = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.DISPLAY_NAME));
         subredditData.name = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.NAME));
         subredditData.user_is_subscriber = cursor.getInt(cursor.getColumnIndex(RedditContract.Subreddits.USER_IS_SUBSCRIBER)) == 1;
+        subredditData.over18 = cursor.getInt(cursor.getColumnIndex(RedditContract.Subreddits.OVER_18)) == 1;
+        subredditData.subscribers = cursor.getInt(cursor.getColumnIndex(RedditContract.Subreddits.SUBSCRIBERS));
         subredditData.description = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.DESCRIPTION));
         subredditData.public_description = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.PUBLIC_DESCRIPTION));
         subredditData.header_img = cursor.getString(cursor.getColumnIndex(RedditContract.Subreddits.HEADER_IMAGE));

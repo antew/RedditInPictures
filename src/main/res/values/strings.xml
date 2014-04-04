@@ -105,6 +105,7 @@
     <string name="copyright_">"Copyright "</string>
     <string name="close">Close</string>
     <string name="about_subreddit">About Subreddit</string>
+    <string name="_subscribers">" Subscribers"</string>
     <!-- End Single Word/Phrase Resources -->
 
     <!-- Shared Preferences Keys -->

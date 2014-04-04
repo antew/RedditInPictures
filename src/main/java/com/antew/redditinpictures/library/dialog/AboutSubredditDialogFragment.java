@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,7 +14,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.reddit.SubredditData;
 import com.antew.redditinpictures.library.utils.Constants;
-import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Picasso;
 
@@ -21,6 +21,7 @@ public class AboutSubredditDialogFragment extends DialogFragment {
     SubredditData mSubredditData;
     @InjectView(R.id.iv_header)            ImageView header;
     @InjectView(R.id.tv_name)              TextView  name;
+    @InjectView(R.id.tv_info)              TextView  info;
     @InjectView(R.id.tv_short_description) TextView  shortDescription;
     @InjectView(R.id.tv_description)       TextView  description;
 
@@ -50,14 +51,23 @@ public class AboutSubredditDialogFragment extends DialogFragment {
         ButterKnife.inject(this, dialogView);
 
         if (mSubredditData != null) {
-            int size = Util.dpToPx(getActivity(), 100);
+            String separator = " " + "\u2022" + " ";
+            String infoText = "";
+
+            //If we have a NSFW subreddit.
+            if (mSubredditData.isOver18()) {
+                infoText = "<font color='#AC3939'>" + getActivity().getString(R.string.nsfw) + "</font>" + separator;
+            }
+
+            infoText += mSubredditData.getSubscribers() + getActivity().getString(R.string._subscribers);
+
             Picasso.with(getActivity())
                    .load(mSubredditData.getHeader_img())
                    .placeholder(R.drawable.loading_spinner_76)
-                   .resize(size, size)
                    .error(R.drawable.empty_photo)
                    .into(header);
             name.setText(mSubredditData.getDisplay_name());
+            info.setText(Html.fromHtml(infoText));
             shortDescription.setText(mSubredditData.getPublic_description());
             description.setText(mSubredditData.getDescription());
         }
