@@ -3,3 +3,6 @@ language: java
 env:
   global:
     - TERM=dumb
+
+before_install:
+    chmod +x ./gradlew
