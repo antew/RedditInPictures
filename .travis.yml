@@ -1,8 +1,24 @@
 language: java
+jdk: oraclejdk7
+
+notifications:
+  email: false
 
 env:
   global:
+    # Without TERM=dumb, we get mangled output in the Travis console
     - TERM=dumb
 
+
 before_install:
-    chmod +x ./gradlew
+  - export TERM=dumb
+
+  # Install base Android SDK and components
+  - sudo apt-get install -qq libstdc++6:i386 lib32z1
+  - export COMPONENTS=build-tools-19.0.3,android-19,extra-android-m2repository
+  - curl -L https://raw.github.com/embarkmobile/android-sdk-installer/version-1/android-sdk-installer | bash /dev/stdin --install=$COMPONENTS
+  - source ~/.android-sdk-installer/env
+  - chmod +x ./gradlew
+
+install:
+    - ./gradlew assembleDebug
