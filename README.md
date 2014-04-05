@@ -6,6 +6,8 @@
 * Maintained By [Antew](https://github.com/antew) and [David Pate](https://github.com/DavidTPate)
 * Twitter: [@davidtpate](http://twitter.com/davidtpate)
 
+[![Build Status](https://travis-ci.org/antew/RedditInPictures.svg?branch=travis)](https://travis-ci.org/antew/RedditInPictures)
+
 ## Features
 
 * Easy viewing experience for images submitted to the Reddit platform.
