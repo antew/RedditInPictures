@@ -4,10 +4,12 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.9.0'
+    classpath 'com.android.tools.build:gradle:0.9.+'
+    classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.9.+'
   }
 }
 
+apply plugin: 'android-sdk-manager'
 apply plugin: 'android'
 
 android {
@@ -44,6 +46,10 @@ android {
             versionCode 10
             signingConfig signingConfigs.prod
         }
+    }
+
+    lintOptions {
+        abortOnError false
     }
 
 }
