@@ -398,6 +398,10 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     public void onFinishLogoutDialog() {
         // Clear out the login data, Reddit API doesn't incorporate sessions into how it works so simply clearing out the cached data does the trick.
         RedditLoginInformation.setLoginData(null);
+
+        // This should really be done async, but we store a maximum of one row
+        // on the table and it is reasonably fast as is, around 50ms in my tests.
+        getContentResolver().delete(RedditContract.Login.CONTENT_URI, null, null);
         SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this, true);
         defaultSubredditsTask.execute();
         invalidateOptionsMenu();
