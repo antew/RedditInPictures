@@ -55,6 +55,14 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
         return image.getLinks().getImgur_page();
     }
 
+    /**
+     * Get the currently displayed image fragment and cause it to refresh the currently displayed contents.
+     */
+    @Override
+    protected void refreshCurentImage() {
+
+    }
+
     @Override
     protected Uri getPostUri() {
         ImgurImage image = getAdapter().getImage(mPager.getCurrentItem());

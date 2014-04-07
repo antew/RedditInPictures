@@ -332,26 +332,34 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == android.R.id.home) {
-            finish();
-        } else if (itemId == R.id.lock_viewpager) {
-            toggleViewPagerLock();
-        } else if (itemId == R.id.share_post) {
-            String subject = getString(R.string.check_out_this_image);
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-            intent.putExtra(Intent.EXTRA_TEXT, subject + " " + getUrlForSharing());
-            startActivity(Intent.createChooser(intent, getString(R.string.share_using_)));
-        } else if (itemId == R.id.view_post) {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, getPostUri());
-            startActivity(browserIntent);
-        } else if (itemId == R.id.save_post) {
-            handleSaveImage();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.lock_viewpager:
+                toggleViewPagerLock();
+                return true;
+            case R.id.share_post:
+                String subject = getString(R.string.check_out_this_image);
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                intent.putExtra(Intent.EXTRA_TEXT, subject + " " + getUrlForSharing());
+                startActivity(Intent.createChooser(intent, getString(R.string.share_using_)));
+                return true;
+            case R.id.view_post:
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, getPostUri());
+                startActivity(browserIntent);
+                return true;
+            case R.id.save_post:
+                handleSaveImage();
+                return true;
+            case R.id.refresh:
+                refreshCurentImage();
+                return true;
+            default:
+                return false;
         }
-
-        return true;
     }
 
     /**
@@ -374,6 +382,11 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * @return The URL of the current image in the ViewPager.
      */
     public abstract String getUrlForSharing();
+
+    /**
+     * Get the currently displayed image fragment and cause it to refresh the currently displayed contents.
+     */
+    protected abstract void refreshCurentImage();
 
     /**
      * Get the Uri for the page of the current post in the ViewPager.

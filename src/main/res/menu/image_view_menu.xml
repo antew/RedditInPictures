@@ -21,9 +21,15 @@
             android:showAsAction="ifRoom"
             android:title="@string/share_image" />
         <item
+            android:id="@+id/refresh"
+            android:icon="@drawable/ic_action_reload_dark"
+            android:orderInCategory="4"
+            android:showAsAction="ifRoom"
+            android:title="@string/refresh" />
+        <item
             android:id="@+id/view_post"
             android:icon="@drawable/ic_action_globe_dark"
-            android:orderInCategory="4"
+            android:orderInCategory="5"
             android:showAsAction="ifRoom"
             android:title="@string/open_post_on_reddit" />
     </group>
