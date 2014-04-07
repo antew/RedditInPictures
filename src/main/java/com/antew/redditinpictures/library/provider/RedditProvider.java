@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.antew.redditinpictures.sqlite.RedditContract.Login;
 import com.antew.redditinpictures.sqlite.RedditContract.LoginColumns;
@@ -125,7 +126,7 @@ public class RedditProvider extends ContentProvider {
      */
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        final SQLiteDatabase db = mDatabase.getReadableDatabase();
+        final SQLiteDatabase db = mDatabase.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         ContentResolver resolver = getContext().getContentResolver();
 
@@ -246,5 +247,66 @@ public class RedditProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+    }
+
+    private String getTable(Uri uri) {
+        final int match = sUriMatcher.match(uri);
+
+        switch (match) {
+            case RedditContract.REDDIT:
+            case RedditContract.REDDIT_ID:
+                return Tables.REDDIT_DATA;
+
+            case RedditContract.POSTS:
+            case RedditContract.POSTS_ID:
+                return Tables.POSTDATA;
+
+            case RedditContract.LOGIN:
+            case RedditContract.LOGIN_ID:
+                return Tables.LOGIN;
+
+            case RedditContract.SUBREDDIT:
+            case RedditContract.SUBREDDIT_ID:
+                return Tables.SUBREDDITS;
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+    }
+    /**
+     * The default {@link #bulkInsert(android.net.Uri, android.content.ContentValues[])}
+     * loops over the data and calls {@link #insert(android.net.Uri, android.content.ContentValues)} for each
+     * row.  This speeds it up a bit by wrapping the inserts in a transaction.
+     * @param uri The content:// URI of the insertion request.
+     * @param values An array of sets of column_name/value pairs to add to the database.
+     *    This must not be {@code null}.
+     * @return The number of values that were inserted.
+     */
+    @Override public int bulkInsert(Uri uri, ContentValues[] values) {
+        // Get the table for this URI, if it doesn't exist
+        // throw an exception for the caller
+        String table = getTable(uri);
+        if (Strings.isEmpty(table)) {
+            throw new IllegalArgumentException("Unable to look up table for URI: " + (uri == null ? "null" : uri.toString()));
+        }
+
+        final SQLiteDatabase db = mDatabase.getWritableDatabase();
+        db.beginTransaction();
+
+        int numValues = values.length;
+        try {
+            for (int i = 0; i < numValues; i++) {
+                db.insertOrThrow(table, null, values[i]);
+            }
+            db.setTransactionSuccessful();
+            // We don't want to get notified for every row, only notify once we have
+            // loaded everything
+            getContext().getContentResolver().notifyChange(uri, null);
+        } finally {
+            db.endTransaction();
+        }
+
+
+        return numValues;
     }
 }
