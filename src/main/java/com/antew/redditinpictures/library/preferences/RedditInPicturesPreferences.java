@@ -25,8 +25,8 @@ import android.preference.Preference.OnPreferenceClickListener;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.pro.R;
 
 /**

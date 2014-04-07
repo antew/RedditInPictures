@@ -1,5 +1,6 @@
 package com.antew.redditinpictures.library.image;
 
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.enums.ImageSize;
 import com.antew.redditinpictures.library.enums.ImageType;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi;
@@ -7,7 +8,6 @@ import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurApiCache;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
-import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;

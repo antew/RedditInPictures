@@ -23,7 +23,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
-import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import java.util.ArrayList;

@@ -1,7 +1,5 @@
 package com.antew.redditinpictures;
 
-import android.app.Application;
-
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.modules.RootModule;
 import com.antew.redditinpictures.library.utils.Ln;

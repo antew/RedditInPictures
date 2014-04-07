@@ -5,9 +5,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.reddit.RedditLoginResponse;
-import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
