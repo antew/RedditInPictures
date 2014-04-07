@@ -137,8 +137,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     }
 
     private void initializeLoaders() {
-        LoaderManager loaderManager = getSupportLoaderManager();
-        loaderManager.initLoader(Constants.LOADER_LOGIN, null, this);
+        getSupportLoaderManager().initLoader(Constants.LOADER_LOGIN, null, this);
     }
 
     @Override protected void subscribeToSubreddit(String subredditName) {
@@ -292,8 +291,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                         requestCompleted(null);
                         invalidateOptionsMenu();
 
-                        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this);
-                        defaultSubredditsTask.execute();
+                        new SubredditUtils.SetDefaultSubredditsTask(this).execute();
+                        forceRefreshCurrentSubreddit();
                     }
                 }
                 break;
