@@ -39,6 +39,7 @@ import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivityWithMenu;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.RedditUtils;
+import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
@@ -71,19 +72,46 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         new SubredditUtils.SetDefaultSubredditsTask(this).execute();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(Constants.ACTIVE_VIEW, mActiveViewType.toString());
+        outState.putString(Constants.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
+        outState.putString(Constants.EXTRA_CATEGORY, Strings.toString(mCategory));
+        outState.putString(Constants.EXTRA_AGE, Strings.toString(mAge));
+        super.onSaveInstanceState(outState);
+    }
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     private void restoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             if (Util.hasHoneycombMR1()) {
                 mActiveViewType = ViewType.valueOf(savedInstanceState.getString(Constants.ACTIVE_VIEW, ViewType.LIST.toString()));
                 mSelectedSubreddit = savedInstanceState.getString(Constants.EXTRA_SELECTED_SUBREDDIT, Constants.REDDIT_FRONTPAGE);
+                mCategory = Category.valueOf(savedInstanceState.getString(Constants.EXTRA_CATEGORY, Category.HOT.toString()));
+                mAge = Age.valueOf(savedInstanceState.getString(Constants.EXTRA_AGE, Age.TODAY.toString()));
             } else {
                 if (savedInstanceState.containsKey(Constants.ACTIVE_VIEW)) {
                     mActiveViewType = ViewType.valueOf(savedInstanceState.getString(Constants.ACTIVE_VIEW));
+                } else {
+                    mActiveViewType = ViewType.LIST;
                 }
 
                 if (savedInstanceState.containsKey(Constants.EXTRA_SELECTED_SUBREDDIT)) {
                     mSelectedSubreddit = savedInstanceState.getString(Constants.EXTRA_SELECTED_SUBREDDIT);
+                } else {
+                    mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
+                }
+
+                if (savedInstanceState.containsKey(Constants.EXTRA_CATEGORY)) {
+                    mCategory = Category.valueOf(savedInstanceState.getString(Constants.EXTRA_CATEGORY));
+                } else {
+                    mCategory = Category.HOT;
+                }
+
+                if (savedInstanceState.containsKey(Constants.EXTRA_AGE)) {
+                    mAge = Age.valueOf(savedInstanceState.getString(Constants.EXTRA_AGE));
+                } else {
+                    mAge = Age.TODAY;
                 }
             }
         }
