@@ -11,56 +11,56 @@
         android:id="@+id/sort_subreddits"
         android:icon="@drawable/ic_action_sort_1_dark"
         android:showAsAction="always"
-        android:title="Sort">
+        android:title="@string/sort">
         <menu>
             <group
                 android:id="@+id/categories"
                 android:checkableBehavior="single">
                 <item
                     android:id="@+id/category_hot"
-                    android:title="Hot" />
+                    android:title="@string/hot" />
                 <item
                     android:id="@+id/category_new"
-                    android:title="New" />
+                    android:title="@string/new" />
                 <item
                     android:id="@+id/category_rising"
-                    android:title="Rising" />
+                    android:title="@string/rising" />
                 <item
                     android:id="@+id/category_top_hour"
-                    android:title="Top: Hour" />
+                    android:title="@string/top_hour" />
                 <item
                     android:id="@+id/category_top_today"
-                    android:title="Top: Today" />
+                    android:title="@string/top_today" />
                 <item
                     android:id="@+id/category_top_week"
-                    android:title="Top: Week" />
+                    android:title="@string/top_week" />
                 <item
                     android:id="@+id/category_top_month"
-                    android:title="Top: Month" />
+                    android:title="@string/top_month" />
                 <item
                     android:id="@+id/category_top_year"
-                    android:title="Top: Year" />
+                    android:title="@string/top_year" />
                 <item
                     android:id="@+id/category_top_all_time"
-                    android:title="Top: All Time" />
+                    android:title="@string/top_all_time" />
                 <item
                     android:id="@+id/category_controversial_hour"
-                    android:title="Controversial: Hour" />
+                    android:title="@string/controversial_hour" />
                 <item
                     android:id="@+id/category_controversial_today"
-                    android:title="Controversial: Today" />
+                    android:title="@string/controversial_today" />
                 <item
                     android:id="@+id/category_controversial_week"
-                    android:title="Controversial: Week" />
+                    android:title="@string/controversial_week" />
                 <item
                     android:id="@+id/category_controversial_month"
-                    android:title="Controversial: Month" />
+                    android:title="@string/controversial_month" />
                 <item
                     android:id="@+id/category_controversial_year"
-                    android:title="Controversial: Year" />
+                    android:title="@string/controversial_year" />
                 <item
                     android:id="@+id/category_controversial_all_time"
-                    android:title="Controversial: All Time" />
+                    android:title="@string/controversial_all_time" />
             </group>
         </menu>
 
@@ -70,19 +70,19 @@
         android:id="@+id/refresh_all"
         android:icon="@drawable/ic_action_reload_dark"
         android:showAsAction="always"
-        android:title="Refresh" />
+        android:title="@string/refresh" />
 
     <item
         android:id="@+id/login"
         android:icon="@drawable/ic_action_key_dark"
         android:showAsAction="ifRoom"
-        android:title="Log In" />
+        android:title="@string/log_in" />
 
     <item
         android:id="@+id/settings"
         android:icon="@drawable/ic_action_settings_dark"
         android:showAsAction="ifRoom"
-        android:title="Settings" />
+        android:title="@string/settings" />
 
 
 </menu>

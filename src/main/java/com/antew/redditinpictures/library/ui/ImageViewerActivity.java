@@ -304,7 +304,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getSupportMenuInflater().inflate(R.menu.base_imageviewer_menu, menu);
+        getSupportMenuInflater().inflate(R.menu.image_view_menu, menu);
         return true;
     }
 

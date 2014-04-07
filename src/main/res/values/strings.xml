@@ -59,7 +59,7 @@
     <string name="retrieving_subscribed_subreddits">Retrieving subscribed subreddits</string>
     <string name="save_image">Save Image</string>
     <string name="select_items">Select Items</string>
-    <string name="share_using_">Share using...</string>
+    <string name="share_using_">Share using…</string>
     <string name="show_nsfw_images_while_browsing">Show NSFW images while browsing.</string>
     <string name="some_nsfw_images_were_hidden">Some nsfw images were hidden, this can be disabled in settings.</string>
     <string name="swiping_disabled">Swiping disabled</string>
@@ -118,4 +118,27 @@
     <!-- Default Subreddits, grabbed image subreddits from the top 125 subreddits by activity -->
     <string name="default_subreddits_multi">pics+funny+gaming+aww+AdviceAnimals+EarthPorn+gifs+woahdude+mildlyinteresting+lifehacks+reactiongifs+photoshopbattles+FoodPorn+wheredidthesodago+HistoryPorn+cats+fffffffuuuuuuuuuuuu+standupshots+thewalkingdead+doctorwho+comics+QuotesPorn+carporn+SpacePorn</string>
     <string name="media_credits">Media Credits</string>
+    <string name="disable_swiping">Disable Swiping</string>
+    <string name="share_image">Share Image</string>
+    <string name="open_post_on_reddit">Open Post on Reddit</string>
+    <string name="hot">Hot</string>
+    <string name="new">New</string>
+    <string name="rising">Rising</string>
+    <string name="top_hour">Top: Hour</string>
+    <string name="top_today">Top: Today</string>
+    <string name="top_week">Top: Week</string>
+    <string name="top_month">Top: Month</string>
+    <string name="top_year">Top: Year</string>
+    <string name="top_all_time">Top: All Time</string>
+    <string name="controversial_hour">Controversial: Hour</string>
+    <string name="controversial_today">Controversial: Today</string>
+    <string name="controversial_week">Controversial: Week</string>
+    <string name="controversial_month">Controversial: Month</string>
+    <string name="controversial_year">Controversial: Year</string>
+    <string name="controversial_all_time">Controversial: All Time</string>
+    <string name="sort">Sort</string>
+    <string name="refresh">Refresh</string>
+    <string name="settings">Settings</string>
+    <string name="upvote">Upvote</string>
+    <string name="downvote">Downvote</string>
 </resources>

@@ -32,7 +32,6 @@
         android:paddingLeft="6dip"
         android:paddingRight="6dip"
         android:paddingTop="6dip"
-        android:text="Europe&apos;s Leaders Fear Libya Could Become Next Afghanistan"
         android:textSize="15sp"
         android:textStyle="bold" />
 
@@ -47,7 +46,6 @@
         android:paddingBottom="6dip"
         android:paddingLeft="6dip"
         android:singleLine="true"
-        android:text="March 29th, 2010. 09:34 AM"
         android:textSize="14sp" />
 
 </RelativeLayout>

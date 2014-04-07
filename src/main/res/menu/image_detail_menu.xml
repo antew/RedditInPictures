@@ -7,13 +7,13 @@
             android:icon="@drawable/ic_action_upvote"
             android:orderInCategory="1"
             android:showAsAction="ifRoom"
-            android:title="Upvote" />
+            android:title="@string/upvote" />
         <item
             android:id="@+id/downvote"
             android:icon="@drawable/ic_action_downvote"
             android:orderInCategory="2"
             android:showAsAction="ifRoom"
-            android:title="Downvote" />
+            android:title="@string/downvote" />
     </group>
 
 </menu>
