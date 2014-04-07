@@ -56,37 +56,9 @@ public class RedditProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         final SQLiteDatabase db = mDatabase.getReadableDatabase();
-        final int match = sUriMatcher.match(uri);
-        Cursor cursor = null;
 
-        switch (match) {
-            case RedditContract.REDDIT:
-                cursor = db.query(Tables.REDDIT_DATA, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case RedditContract.REDDIT_ID:
-                cursor = db.query(Tables.REDDIT_DATA, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case RedditContract.POSTS:
-                cursor = db.query(Tables.POSTDATA, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case RedditContract.POSTS_ID:
-                cursor = db.query(Tables.POSTDATA, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case RedditContract.LOGIN:
-                cursor = db.query(Tables.LOGIN, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case RedditContract.LOGIN_ID:
-                cursor = db.query(Tables.LOGIN, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case RedditContract.SUBREDDIT:
-            case RedditContract.SUBREDDIT_ID:
-                cursor = db.query(Tables.SUBREDDITS, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-        }
-
+        String table = getTable(uri);
+        Cursor cursor = db.query(table, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         return cursor;
@@ -130,29 +102,26 @@ public class RedditProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         ContentResolver resolver = getContext().getContentResolver();
 
+        String table = getTable(uri);
+        long id = db.insertOrThrow(table, null, values);
+        resolver.notifyChange(uri, null);
+
+        // Return a URI pointing to the new row
         switch (match) {
             case RedditContract.REDDIT:
             case RedditContract.REDDIT_ID:
-                db.insertOrThrow(Tables.REDDIT_DATA, null, values);
-                resolver.notifyChange(uri, null);
                 return RedditData.buildPostDataUri(values.getAsString(RedditDataColumns.MODHASH));
 
             case RedditContract.POSTS:
             case RedditContract.POSTS_ID:
-                long id = db.insertOrThrow(Tables.POSTDATA, null, values);
-                resolver.notifyChange(uri, null);
                 return Posts.buildPostDataUri(id);
 
             case RedditContract.LOGIN:
             case RedditContract.LOGIN_ID:
-                db.insertOrThrow(Tables.LOGIN, null, values);
-                resolver.notifyChange(uri, null);
                 return Login.buildLoginUri(values.getAsString(LoginColumns.USERNAME));
 
             case RedditContract.SUBREDDIT:
             case RedditContract.SUBREDDIT_ID:
-                db.insertOrThrow(Tables.SUBREDDITS, null, values);
-                resolver.notifyChange(uri, null);
                 return Subreddits.buildSubredditUri(values.getAsString(Subreddits.DISPLAY_NAME));
 
             default:
@@ -164,43 +133,11 @@ public class RedditProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         Ln.i("delete(uri=" + uri + ")");
         final SQLiteDatabase db = mDatabase.getWritableDatabase();
-        ContentResolver resolver = getContext().getContentResolver();
 
-        final int match = sUriMatcher.match(uri);
-        switch (match) {
-
-            case RedditContract.BASE:
-                deleteDatabase();
-                resolver.notifyChange(uri, null, false);
-                return 1;
-
-            case RedditContract.REDDIT:
-            case RedditContract.REDDIT_ID:
-                int rows = db.delete(Tables.REDDIT_DATA, selection, selectionArgs);
-                resolver.notifyChange(uri, null);
-                return rows;
-
-            case RedditContract.POSTS:
-            case RedditContract.POSTS_ID:
-                rows = db.delete(Tables.POSTDATA, selection, selectionArgs);
-                resolver.notifyChange(uri, null);
-                return rows;
-
-            case RedditContract.LOGIN:
-            case RedditContract.LOGIN_ID:
-                rows = db.delete(Tables.LOGIN, selection, selectionArgs);
-                resolver.notifyChange(uri, null);
-                return rows;
-
-            case RedditContract.SUBREDDIT:
-            case RedditContract.SUBREDDIT_ID:
-                rows = db.delete(Tables.SUBREDDITS, selection, selectionArgs);
-                resolver.notifyChange(uri, null);
-                return rows;
-
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-        }
+        String table = getTable(uri);
+        int rows = db.delete(table, selection, selectionArgs);
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rows;
     }
 
     private void deleteDatabase() {
@@ -217,36 +154,11 @@ public class RedditProvider extends ContentProvider {
         final SQLiteDatabase db = mDatabase.getWritableDatabase();
         ContentResolver resolver = getContext().getContentResolver();
 
-        final int match = sUriMatcher.match(uri);
-        switch (match) {
+        String table = getTable(uri);
+        int rows = db.update(table, values, selection, selectionArgs);
+        resolver.notifyChange(uri, null);
 
-            case RedditContract.REDDIT:
-            case RedditContract.REDDIT_ID:
-                int rows = db.update(Tables.REDDIT_DATA, values, selection, selectionArgs);
-                resolver.notifyChange(uri, null);
-                return rows;
-
-            case RedditContract.POSTS:
-            case RedditContract.POSTS_ID:
-                rows = db.update(Tables.POSTDATA, values, selection, selectionArgs);
-                resolver.notifyChange(uri, null);
-                return rows;
-
-            case RedditContract.LOGIN:
-            case RedditContract.LOGIN_ID:
-                rows = db.update(Tables.LOGIN, values, selection, selectionArgs);
-                resolver.notifyChange(uri, null);
-                return rows;
-
-            case RedditContract.SUBREDDIT:
-            case RedditContract.SUBREDDIT_ID:
-                rows = db.update(Tables.SUBREDDITS, values, selection, selectionArgs);
-                resolver.notifyChange(uri, null);
-                return rows;
-
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-        }
+        return rows;
     }
 
     private String getTable(Uri uri) {
@@ -286,9 +198,6 @@ public class RedditProvider extends ContentProvider {
         // Get the table for this URI, if it doesn't exist
         // throw an exception for the caller
         String table = getTable(uri);
-        if (Strings.isEmpty(table)) {
-            throw new IllegalArgumentException("Unable to look up table for URI: " + (uri == null ? "null" : uri.toString()));
-        }
 
         final SQLiteDatabase db = mDatabase.getWritableDatabase();
         db.beginTransaction();
