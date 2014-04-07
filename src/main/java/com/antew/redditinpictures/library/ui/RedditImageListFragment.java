@@ -5,18 +5,20 @@ import android.support.v4.app.Fragment;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import butterknife.InjectView;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.ImageListCursorAdapter;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
-import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
+import com.squareup.otto.Subscribe;
 
 public class RedditImageListFragment extends RedditImageAdapterViewFragment<ListView, ImageListCursorAdapter> {
     //8 is a good number, the kind of number that you could say take home to your parents and not be worried about what they might think about it.
-    private static final int POST_LOAD_OFFSET = 8;
-    private AbsListView.OnScrollListener mListScrollListener = new AbsListView.OnScrollListener() {
+    private static final int                          POST_LOAD_OFFSET    = 8;
+    private              AbsListView.OnScrollListener mListScrollListener = new AbsListView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(AbsListView absListView, int scrollState) {
 
@@ -30,8 +32,8 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
             }
         }
     };
-    private static final QueryCriteria mQueryCriteria = new QueryCriteria(RedditContract.Posts.LISTVIEW_PROJECTION,
-                                                                          RedditContract.Posts.DEFAULT_SORT);
+    private static final QueryCriteria                mQueryCriteria      = new QueryCriteria(RedditContract.Posts.LISTVIEW_PROJECTION,
+                                                                                              RedditContract.Posts.DEFAULT_SORT);
     @InjectView(R.id.image_list)
     protected ListView mImageListView;
 
@@ -46,6 +48,17 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
         f.setArguments(args);
 
         return f;
+    }
+
+    /**
+     * If we're forcing a refresh from Reddit we want
+     * to discard the old posts so that the user has
+     * a better indication we are fetching posts anew.
+     *
+     * @param event
+     */
+    @Override @Subscribe protected void handleForcePostRefreshEvent(ForcePostRefreshEvent event) {
+        super.handleForcePostRefreshEvent(event);
     }
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {

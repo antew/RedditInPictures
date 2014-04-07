@@ -6,19 +6,21 @@ import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.GridView;
 import butterknife.InjectView;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.ImageCursorAdapter;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
+import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
-import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
+import com.squareup.otto.Subscribe;
 
 public class RedditImageGridFragment extends RedditImageAdapterViewFragment<GridView, ImageCursorAdapter> {
     //9 is a good number, it's not as great as 8 or as majestic as 42 but it is indeed the product of 3 3s which is okay...I guess.
-    private static final int           POST_LOAD_OFFSET = 9;
-    private AbsListView.OnScrollListener mGridViewOnScrollListener = new AbsListView.OnScrollListener() {
+    private static final int                          POST_LOAD_OFFSET          = 9;
+    private              AbsListView.OnScrollListener mGridViewOnScrollListener = new AbsListView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(AbsListView absListView, int scrollState) {
             // TODO: Enable this with Picasso https://github.com/square/picasso/issues/248
@@ -37,8 +39,8 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
             }
         }
     };
-    private static final QueryCriteria mQueryCriteria   = new QueryCriteria(RedditContract.Posts.GRIDVIEW_PROJECTION,
-                                                                            RedditContract.Posts.DEFAULT_SORT);
+    private static final QueryCriteria                mQueryCriteria            = new QueryCriteria(
+        RedditContract.Posts.GRIDVIEW_PROJECTION, RedditContract.Posts.DEFAULT_SORT);
     @InjectView(R.id.gridView)
     protected GridView      mGridView;
     private   ThumbnailInfo mThumbnailInfo;
@@ -79,8 +81,7 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
             @Override
             public void onGlobalLayout() {
                 if (mAdapter.getNumColumns() == 0) {
-                    final int numColumns = (int) Math.floor(gridView.getWidth() / (mThumbnailInfo.getSize() + mThumbnailInfo.getSpacing())
-                                                           );
+                    final int numColumns = (int) Math.floor(gridView.getWidth() / (mThumbnailInfo.getSize() + mThumbnailInfo.getSpacing()));
                     if (numColumns > 0) {
                         final int columnWidth = (gridView.getWidth() / numColumns) - mThumbnailInfo.getSpacing();
                         mAdapter.setNumColumns(numColumns);
@@ -89,6 +90,17 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
                 }
             }
         };
+    }
+
+    /**
+     * If we're forcing a refresh from Reddit we want
+     * to discard the old posts so that the user has
+     * a better indication we are fetching posts anew.
+     *
+     * @param event
+     */
+    @Override @Subscribe protected void handleForcePostRefreshEvent(ForcePostRefreshEvent event) {
+        super.handleForcePostRefreshEvent(event);
     }
 
     @Override protected int getLayoutId() {

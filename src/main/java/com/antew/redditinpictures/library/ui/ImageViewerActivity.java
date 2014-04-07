@@ -90,9 +90,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) {
-            Util.enableStrictMode();
-        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_detail_pager);
 

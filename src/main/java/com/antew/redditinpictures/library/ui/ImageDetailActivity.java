@@ -225,7 +225,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
      */
     private void vote(Vote whichVoteButton, MenuItem item, PostData p) {
         if (!RedditLoginInformation.isLoggedIn()) {
-            Toast.makeText(this, R.string.you_must_be_logged_in_to_vote, Toast.LENGTH_SHORT).show();
             return;
         }
 
