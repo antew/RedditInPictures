@@ -6,10 +6,23 @@ import com.antew.redditinpictures.library.logging.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import java.io.Reader;
 
 public class JsonDeserializer {
     public static final String TAG = JsonDeserializer.class.getSimpleName();
     private static Gson gson;
+
+    public static <T> T deserialize(Reader json, Class<T> clazz) {
+        try {
+            return getGson().fromJson(json, clazz);
+        } catch (JsonSyntaxException e) {
+            Log.e(TAG, "deserialize - Error parsing JSON!", e);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "deserialize - Error parsing JSON!", e);
+        }
+
+        return null;
+    }
 
     public static <T> T deserialize(String json, Class<T> clazz) {
         try {
