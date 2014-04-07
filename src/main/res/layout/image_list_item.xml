@@ -1,85 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/fragment_wrapper"
-              android:layout_width="match_parent"
-              android:minHeight="?android:attr/listPreferredItemHeight"
-              android:paddingTop="5dp"
-              android:paddingBottom="5dp"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:descendantFocusability="blocksDescendants">
-
-    <RelativeLayout
-        android:layout_width="50dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tv_votes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:textColor="@color/white"
-            android:layout_centerInParent="true"
-            android:textSize="@dimen/text_size_small" />
-
-        <ImageButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/ib_upVote"
-            android:src="@drawable/arrow_up"
-            android:background="@drawable/abs__item_background_holo_dark"
-            android:layout_alignParentTop="true"
-            android:layout_above="@id/tv_votes"
-            android:layout_marginBottom="-10dp" />
-
-        <ImageButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/ib_downVote"
-            android:src="@drawable/arrow_down"
-            android:background="@drawable/abs__item_background_holo_dark"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@id/tv_votes"
-            android:layout_marginTop="-10dp" />
-
-    </RelativeLayout>
-
-    <ImageView
-        android:id="@+id/iv_image"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="5dp"
-        android:contentDescription="@string/imageview_description"
-        android:focusableInTouchMode="false"
-        android:scaleType="centerCrop"
-        android:src="@drawable/empty_photo" />
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:minHeight="?android:attr/listPreferredItemHeight"
+             android:layout_height="wrap_content"
+             android:descendantFocusability="blocksDescendants">
 
     <LinearLayout
-        android:id="@+id/post_information_wrapper"
+        android:id="@+id/back"
+        android:tag="back"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginLeft="5dp"
-        android:minHeight="?android:attr/listPreferredItemHeight">
+        android:layout_height="match_parent"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tv_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/primary_text_dark"
-            android:textSize="@dimen/text_size_small" />
+        <ImageButton
+            android:id="@+id/ib_view"
+            android:src="@drawable/ic_action_picture_dark"
+            android:contentDescription="@string/view_subreddit"
+            style="@style/SubredditMenuItem"
+            android:layout_gravity="center_vertical"/>
 
-        <TextView
-            android:id="@+id/tv_post_information"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_micro" />
+        <ImageButton
+            android:id="@+id/ib_save"
+            android:src="@drawable/ic_action_save_dark"
+            android:contentDescription="@string/save_image"
+            style="@style/SubredditMenuItem"
+            android:layout_gravity="center_vertical"/>
+
+        <ImageButton
+            android:id="@+id/ib_open"
+            android:src="@drawable/ic_action_globe_dark"
+            android:contentDescription="@string/open_post_on_reddit"
+            style="@style/SubredditMenuItem"
+            android:layout_gravity="center_vertical"/>
+
+        <ImageButton
+            android:id="@+id/ib_report"
+            android:src="@drawable/ic_action_warning_dark"
+            android:contentDescription="@string/report_image_display_issue"
+            style="@style/SubredditMenuItem"
+            android:layout_gravity="center_vertical"/>
+
     </LinearLayout>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/front"
+        android:tag="front"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:orientation="horizontal"
+        android:background="#000">
+
+        <RelativeLayout
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_votes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:textColor="@color/white"
+                android:layout_centerInParent="true"
+                android:textSize="@dimen/text_size_small" />
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ib_upVote"
+                android:src="@drawable/arrow_up"
+                android:background="@drawable/abs__item_background_holo_dark"
+                android:layout_alignParentTop="true"
+                android:layout_above="@id/tv_votes"
+                android:layout_marginBottom="-10dp" />
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ib_downVote"
+                android:src="@drawable/arrow_down"
+                android:background="@drawable/abs__item_background_holo_dark"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@id/tv_votes"
+                android:layout_marginTop="-10dp" />
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/iv_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:contentDescription="@string/imageview_description"
+            android:focusableInTouchMode="false"
+            android:scaleType="centerCrop"
+            android:src="@drawable/empty_photo" />
+
+        <LinearLayout
+            android:id="@+id/post_information_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="5dp"
+            android:minHeight="?android:attr/listPreferredItemHeight">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="@dimen/text_size_small" />
+
+            <TextView
+                android:id="@+id/tv_post_information"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_size_micro" />
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

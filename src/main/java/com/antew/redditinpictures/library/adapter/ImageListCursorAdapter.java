@@ -27,8 +27,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnLongClick;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.imgur.ResolveAlbumCoverWorkerTask;
@@ -48,7 +50,6 @@ import java.util.regex.Pattern;
  * @author Antew
  */
 public class ImageListCursorAdapter extends CursorAdapter {
-    public static final String TAG = ImageListCursorAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
     private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
     private Pattern mImgurAlbumPattern    = Pattern.compile("^https?://imgur.com/a/.*$");
@@ -75,7 +76,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, Context context, final Cursor cursor) {
         final ViewHolder holder;
         if (view != null && view.getTag() != null) {
             holder = (ViewHolder) view.getTag();
@@ -171,6 +172,26 @@ public class ImageListCursorAdapter extends CursorAdapter {
             public void onClick(View v) {
                 vote(Vote.DOWN, postData, holder);
             }
+        });
+
+        holder.view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { viewImage(cursor.getPosition()); }
+        });
+
+        holder.save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { saveImage(postData); }
+        });
+
+        holder.open.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { saveImage(postData); }
+        });
+
+        holder.report.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { saveImage(postData); }
         });
     }
 
@@ -275,16 +296,59 @@ public class ImageListCursorAdapter extends CursorAdapter {
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 
-    static class ViewHolder {
-        @InjectView(R.id.iv_image)            ImageView   imageView;
-        @InjectView(R.id.tv_title)            TextView    postTitle;
-        @InjectView(R.id.tv_post_information) TextView    postInformation;
-        @InjectView(R.id.tv_votes)            TextView    postVotes;
-        @InjectView(R.id.ib_upVote)           ImageButton upVote;
-        @InjectView(R.id.ib_downVote)         ImageButton downVote;
+    protected void viewImage(int position) {
+        // Send a request to the Activity that created this adapter (and implements the listener interface) to open the image.
+    }
+
+    protected void saveImage(PostData postData) {
+        // Open up the Save dialog for the image and go through the normal process.
+    }
+
+    protected void openPost(PostData postData) {
+        // Fire off an intent to open the post in a browser.
+    }
+
+    protected void reportImage(PostData postData) {
+        // Do something to report an image not loading.
+    }
+
+    protected class ViewHolder {
+        @InjectView(R.id.iv_image)
+        ImageView   imageView;
+        @InjectView(R.id.tv_title)
+        TextView    postTitle;
+        @InjectView(R.id.tv_post_information)
+        TextView    postInformation;
+        @InjectView(R.id.tv_votes)
+        TextView    postVotes;
+        @InjectView(R.id.ib_upVote)
+        ImageButton upVote;
+        @InjectView(R.id.ib_downVote)
+        ImageButton downVote;
+        @InjectView(R.id.ib_view)
+        ImageButton view;
+        @InjectView(R.id.ib_save)
+        ImageButton save;
+        @InjectView(R.id.ib_open)
+        ImageButton open;
+        @InjectView(R.id.ib_report)
+        ImageButton report;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);
+        }
+
+        @OnLongClick({ R.id.ib_view, R.id.ib_save, R.id.ib_open, R.id.ib_report })
+        protected boolean onLongClickMenuOption(View view) {
+            if (view != null) {
+                String description = Strings.toString(view.getContentDescription());
+                if (Strings.notEmpty(description)) {
+                    Toast.makeText(mContext, description, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
