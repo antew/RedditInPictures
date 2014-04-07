@@ -24,9 +24,7 @@ public class RedditLoginInformation {
     public static final String TAG = RedditLoginInformation.class.getSimpleName();
     private static LoginData mLoginData;
 
-    private RedditLoginInformation() {}
-
-    ;
+    private RedditLoginInformation() {};
 
     public static LoginData getLoginData() {
         return mLoginData;
