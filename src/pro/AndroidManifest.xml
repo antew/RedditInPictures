@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.antew.redditinpictures.pro"
-    android:versionCode="2"
-    android:versionName="1.1">
+    package="com.antew.redditinpictures.pro">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="19"/>
 
     <application
         android:allowBackup="true"
@@ -48,7 +42,7 @@
             android:theme="@style/AppTheme.FullScreen">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.antew.redditinpictures.library.ui.ImageGridActivity"/>
+                android:value="com.antew.redditinpictures.library.ui.RedditFragmentActivity"/>
         </activity>
 
         <activity
@@ -61,16 +55,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.antew.redditinpictures.library.ui.ImageDetailActivity"/>
         </activity>
-
-        <activity
-            android:name="com.antew.redditinpictures.library.subredditmanager.SubredditManager"
-            android:label="@string/edit_subreddits"
-            android:theme="@style/Theme.Sherlock"/>
-
-        <activity
-            android:name="com.antew.redditinpictures.library.subredditmanager.SubredditManagerApi11Plus"
-            android:label="@string/edit_subreddits"
-            android:theme="@style/Theme.Sherlock"/>
 
         <activity
             android:name="com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment"

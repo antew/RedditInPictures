@@ -90,6 +90,7 @@
     <string name="go">Go</string>
     <string name="info">Info</string>
     <string name="subreddit">Subreddit</string>
+    <string name="subreddit_icon">Subreddit Icon</string>
     <string name="add_subreddit">Add Subreddit</string>
     <string name="filter_subreddits">Filter Subreddits</string>
     <string name="view_as_list">View As List</string>
