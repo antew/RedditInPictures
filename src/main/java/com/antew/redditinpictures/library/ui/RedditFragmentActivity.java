@@ -25,6 +25,7 @@ import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.LogoutDialogFragment;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
+import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.event.LoadSubredditEvent;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
@@ -155,6 +156,9 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                 startPreferences();
                 return true;
             case R.id.refresh_all:
+                // Notify our image fragment(s) that they need
+                // to remove references to the now stale data
+                mBus.post(new ForcePostRefreshEvent());
                 requestInProgress(null);
                 forceRefreshCurrentSubreddit();
                 return true;

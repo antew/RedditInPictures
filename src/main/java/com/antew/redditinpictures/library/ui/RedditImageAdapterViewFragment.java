@@ -20,6 +20,7 @@ import butterknife.InjectView;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
+import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
@@ -34,6 +35,7 @@ import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -189,6 +191,20 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
         mRequestInProgress = true;
         mBus.post(new RequestInProgressEvent());
         mNoImages.setVisibility(View.GONE);
+    }
+
+    /**
+     * If we're forcing a refresh from Reddit we want
+     * to discard the old posts so that the user has
+     * a better indication we are fetching posts anew.
+     *
+     * @param event
+     */
+    @Subscribe
+    protected void handleForcePostRefreshEvent(ForcePostRefreshEvent event) {
+        if (mAdapter != null) {
+            mAdapter.swapCursor(null);
+        }
     }
 
     /**
