@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Debug;
 import android.support.v4.content.LocalBroadcastManager;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
@@ -38,105 +39,33 @@ public class SubredditUtils {
         // Get the defaults subreddit response (static JSON).
         BufferedReader reader = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(R.raw.default_subreddits)));
 
-        String fakeJson = "";
-        String line;
-        try {
-            line = reader.readLine();
-            while (line != null) {
-                fakeJson = fakeJson + line;
-                line = reader.readLine();
-            }
-        } catch (IOException e) {
-            Ln.e(e, "Failed to Load Default Subreddits");
-            return;
-        }
-
         ContentResolver resolver = context.getContentResolver();
 
         int userRowsDeleted = resolver.delete(RedditContract.Subreddits.CONTENT_URI, null, null);
         Ln.d("Deleted %d Subreddits", userRowsDeleted);
 
-        MySubreddits mySubreddits = JsonDeserializer.deserialize(fakeJson, MySubreddits.class);
+        MySubreddits mySubreddits = JsonDeserializer.deserialize(reader, MySubreddits.class);
 
         if (mySubreddits == null) {
             Ln.e("Failed to Desearialize Default Subreddits");
             return;
         }
 
-        ContentValues[] operations = mySubreddits.getContentValuesArray();
-
-        List<ContentValues> defaultSubredditOperations = new ArrayList<ContentValues>();
         MySubredditsResponse.DefaultSubreddit[] defaultSubreddits = MySubredditsResponse.DefaultSubreddit.values();
+
+        int capacity = defaultSubreddits.length + mySubreddits.getCount();
+        List<ContentValues> defaultSubredditOperations = new ArrayList<ContentValues>(capacity);
+
         for (MySubredditsResponse.DefaultSubreddit subreddit : defaultSubreddits) {
             defaultSubredditOperations.add(
                 mySubreddits.getContentValues(new SubredditData(subreddit.getDisplayName(), subreddit.getPriority())));
         }
 
-        int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, operations);
-        Ln.d("Inserted %d subreddits", rowsInserted);
+        defaultSubredditOperations.addAll(mySubreddits.getContentValuesArray());
+
         int defaultRowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI,
                                                       defaultSubredditOperations.toArray(new ContentValues[] { }));
         Ln.d("Inserted %d default subreddits", defaultRowsInserted);
-    }
-
-    public static void mergeDefaultSubreddits(Context context) {
-        if (context == null) {
-            Ln.e("Got a Null Context");
-            return;
-        }
-
-        Ln.d("Merging Default Subreddits");
-        // Get the defaults subreddit response (static JSON).
-        BufferedReader reader = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(R.raw.default_subreddits)));
-
-        String fakeJson = "";
-        String line;
-        try {
-            line = reader.readLine();
-            while (line != null) {
-                fakeJson = fakeJson + line;
-                line = reader.readLine();
-            }
-        } catch (IOException e) {
-            Ln.e(e, "Failed to Load Default Subreddits");
-            return;
-        }
-
-        ContentResolver resolver = context.getContentResolver();
-
-        MySubreddits mySubreddits = JsonDeserializer.deserialize(fakeJson, MySubreddits.class);
-
-        if (mySubreddits == null) {
-            Ln.e("Failed to Desearialize Default Subreddits");
-            return;
-        }
-
-        ContentValues[] operations = mySubreddits.getContentValuesArray();
-
-        // Delete any currently existing, to allow us to batch merge...limitations of SQLLite on Android make me sad.
-        for (ContentValues contentValue : operations) {
-            //TODO: Once API-11 is sunset, replace with a conditional update instead of delete/insert.
-            // Updates with parameters aren't supported prior to API-11 (Honeycomb). So instead we are just deleting the record if it exists and recreating it.
-            resolver.delete(RedditContract.Subreddits.CONTENT_URI, "subredditId = ?",
-                            new String[] { contentValue.getAsString(RedditContract.Subreddits.SUBREDDIT_ID) });
-        }
-
-        int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, operations);
-        Ln.d("Inserted %d subreddits", rowsInserted);
-
-        ArrayList<String> subReddits = new ArrayList<String>();
-
-        for (SubredditChildren c : mySubreddits.getData().getChildren()) {
-            SubredditData data = c.getData();
-            subReddits.add(data.getDisplay_name());
-        }
-
-        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
-        SharedPreferencesHelper.saveArray(subReddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, context);
-
-        Intent intent = new Intent(Constants.BROADCAST_MY_SUBREDDITS);
-        intent.putStringArrayListExtra(Constants.EXTRA_MY_SUBREDDITS, subReddits);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     public static boolean isDefaultSubreddit(String subreddit) {

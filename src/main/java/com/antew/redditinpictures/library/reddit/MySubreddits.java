@@ -34,7 +34,7 @@ public class MySubreddits implements ContentValuesArrayOperation {
     }
 
     @Override
-    public ContentValues[] getContentValuesArray() {
+    public List<ContentValues> getContentValuesArray() {
         int subredditCount = data.getChildren().size();
         List<ContentValues> operations = new ArrayList<ContentValues>(subredditCount);
 
@@ -42,7 +42,7 @@ public class MySubreddits implements ContentValuesArrayOperation {
             operations.add(getContentValues(children.getData()));
         }
 
-        return operations.toArray(new ContentValues[operations.size()]);
+        return operations;
     }
 
     public ContentValues getContentValues(SubredditData data) {
@@ -72,5 +72,13 @@ public class MySubreddits implements ContentValuesArrayOperation {
         //@formatter:on
 
         return values;
+    }
+
+    public int getCount() {
+        if (data != null && data.getChildren() != null) {
+            return data.getChildren().size();
+        }
+
+        return 0;
     }
 }

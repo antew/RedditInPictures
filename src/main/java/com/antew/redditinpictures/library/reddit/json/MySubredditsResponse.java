@@ -39,37 +39,22 @@ public class MySubredditsResponse extends RedditResponseHandler {
             return;
         }
 
-        List<ContentValues> operations = new ArrayList<ContentValues>(100);
-        // Add in the default subreddits ('Frontpage' and 'All')
         DefaultSubreddit[] defaultSubreddits = DefaultSubreddit.values();
+        int capacity = mySubreddits.getCount() + defaultSubreddits.length;
+        List<ContentValues> operations = new ArrayList<ContentValues>(capacity);
+
+        // Add in the default subreddits ('Frontpage' and 'All')
         for (DefaultSubreddit subreddit : defaultSubreddits) {
             operations.add(mySubreddits.getContentValues(new SubredditData(subreddit.getDisplayName(), subreddit.getPriority())));
         }
 
         // Get the subreddits in an array
-        operations.addAll(Arrays.asList(mySubreddits.getContentValuesArray()));
+        operations.addAll(mySubreddits.getContentValuesArray());
 
         int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI,
                                                operations.toArray(new ContentValues[operations.size()]));
 
         Log.i(TAG, "Inserted " + rowsInserted + " rows");
-        
-        /*
-        ArrayList<String> subReddits = new ArrayList<String>();
-
-        for (SubredditChildren c : mySubreddits.getData().getChildren()) {
-            SubredditData data = c.getData();
-            subReddits.add(data.getDisplay_name());
-            Log.i("Subscribed Subreddits", data.getDisplay_name());
-        }
-
-        Collections.sort(subReddits, StringUtil.getCaseInsensitiveComparator());
-        SharedPreferencesHelper.saveArray(subReddits, SubredditManager.PREFS_NAME, SubredditManager.ARRAY_NAME, context);
-
-        Intent intent = new Intent(Constants.BROADCAST_MY_SUBREDDITS);
-        intent.putStringArrayListExtra(Constants.EXTRA_MY_SUBREDDITS, subReddits);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-        */
     }
 
     public enum DefaultSubreddit {
