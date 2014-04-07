@@ -15,7 +15,7 @@
  */
 package com.antew.redditinpictures.library.imageapi;
 
-import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.utils.Ln;
 import java.util.List;
 
 /**
@@ -67,7 +67,7 @@ public class Flickr {
             String searchKey = imageSize.getKey();
             if (sizes != null) {
                 for (FlickrImage f : sizes.getSize()) {
-                    Log.i(TAG, "Requested Size - " + searchKey + ", Current Size - " + f.getLabel());
+                    Ln.i(TAG, "Requested Size - %s, Current Size - %s", searchKey, f.getLabel());
                     if (f.getLabel().equalsIgnoreCase(searchKey)) {
                         return f;
                     }

@@ -1,11 +1,10 @@
 package com.antew.redditinpictures.library.reddit.json;
 
 import android.content.Context;
-import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.utils.Strings;
 
 public class VoteResponse extends RedditResponseHandler {
-
-    public static final String TAG = VoteResponse.class.getSimpleName();
     private RedditResult result;
 
     public VoteResponse(RedditResult result) {
@@ -14,6 +13,6 @@ public class VoteResponse extends RedditResponseHandler {
 
     @Override
     public void processHttpResponse(Context context) {
-        Log.i(TAG, "Got back from vote! = " + result.getJson());
+        Ln.i("Got back from vote! = %s", Strings.toString(result.getJson()));
     }
 }

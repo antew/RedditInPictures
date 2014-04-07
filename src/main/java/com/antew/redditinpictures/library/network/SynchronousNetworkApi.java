@@ -1,7 +1,7 @@
 package com.antew.redditinpictures.library.network;
 
 import android.os.Build;
-import com.antew.redditinpictures.library.logging.Log;
+import com.antew.redditinpictures.library.utils.Ln;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -13,7 +13,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SynchronousNetworkApi {
-    public static final  String TAG            = SynchronousNetworkApi.class.getSimpleName();
     private static final int    IO_BUFFER_SIZE = 8 * 1024;
 
     /**
@@ -51,11 +50,11 @@ public class SynchronousNetworkApi {
                     builder.append(line);
                 }
 
-                Log.i("Url = " + urlString, " result = " + builder.toString());
+                Ln.i("Url = %s result = %s",urlString, builder.toString());
                 return builder.toString();
             }
         } catch (final IOException e) {
-            Log.e(TAG, "Error in downloadUrl - " + e);
+            Ln.e(e, "Error in downloadUrl");
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -103,7 +102,7 @@ public class SynchronousNetworkApi {
                 return streamToBytes(in);
             }
         } catch (final IOException e) {
-            Log.e(TAG, "Error in downloadUrl - " + e);
+            Ln.e(e, "Error in downloadUrl");
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

@@ -8,9 +8,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.Ln;
-import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.antew.redditinpictures.sqlite.RedditContract.Login;
 import com.antew.redditinpictures.sqlite.RedditContract.LoginColumns;
@@ -22,7 +20,6 @@ import com.antew.redditinpictures.sqlite.RedditDatabase;
 import com.antew.redditinpictures.sqlite.RedditDatabase.Tables;
 
 public class RedditProvider extends ContentProvider {
-    public static final  String     TAG         = RedditProvider.class.getSimpleName();
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private RedditDatabase mDatabase;
 
@@ -150,7 +147,7 @@ public class RedditProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        Log.i(TAG, "update(uri=" + uri + ", values=" + values.toString() + ")");
+        Ln.i("update(uri= %s values= %s)", uri, values.toString());
         final SQLiteDatabase db = mDatabase.getWritableDatabase();
         ContentResolver resolver = getContext().getContentResolver();
 

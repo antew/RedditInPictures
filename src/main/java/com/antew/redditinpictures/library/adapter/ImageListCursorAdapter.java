@@ -29,13 +29,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.enums.Vote;
 import com.antew.redditinpictures.library.imgur.ResolveAlbumCoverWorkerTask;
 import com.antew.redditinpictures.library.reddit.PostData;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
-import com.antew.redditinpictures.library.ui.ImageGridActivity;
-import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.ui.RedditFragmentActivity;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
@@ -44,8 +43,7 @@ import com.squareup.picasso.Picasso;
 import java.util.regex.Pattern;
 
 /**
- * This is used as the backing adapter for the {@link android.widget.GridView} in {@link
- * com.antew.redditinpictures.library.ui.ImageGridFragment}
+ * This is used as the backing adapter for a {@link android.widget.GridView}
  *
  * @author Antew
  */

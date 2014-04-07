@@ -19,8 +19,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Util;
 
 public class RedditUrl implements Parcelable {
@@ -141,7 +141,7 @@ public class RedditUrl implements Parcelable {
             url.append(String.format(BEFORE, before));
         }
 
-        Log.i("Returning URL", url.toString());
+        Ln.i("Returning URL - %s", url.toString());
 
         return url.toString();
     }

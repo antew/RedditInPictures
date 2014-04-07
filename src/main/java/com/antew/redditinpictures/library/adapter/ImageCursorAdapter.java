@@ -25,7 +25,6 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.GridView;
 import android.widget.ImageView;
 import com.antew.redditinpictures.library.imgur.ResolveAlbumCoverWorkerTask;
-import com.antew.redditinpictures.library.ui.ImageGridFragment;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.pro.R;

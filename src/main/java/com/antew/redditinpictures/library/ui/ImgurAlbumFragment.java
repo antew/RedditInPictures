@@ -21,8 +21,8 @@ import android.text.Html;
 import android.view.View;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.Image;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.utils.ImageUtil;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -77,14 +77,14 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
 
         if (hasTitle || hasCaption) {
             if (hasTitle) {
-                Log.i(TAG, "Title - " + image.getTitle());
+                Ln.i("Title - %s", image.getTitle());
                 mPostTitle.setText(Html.fromHtml(image.getTitle()));
             } else {
                 mPostTitle.setVisibility(View.GONE);
             }
 
             if (hasCaption) {
-                Log.i(TAG, "Caption - " + image.getCaption());
+                Ln.i("Caption - %s", image.getCaption());
                 mPostInformation.setText(Html.fromHtml(image.getCaption()));
             } else {
                 mPostInformation.setVisibility(View.GONE);

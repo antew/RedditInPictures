@@ -5,14 +5,13 @@ import com.antew.redditinpictures.library.enums.ImageType;
 import com.antew.redditinpictures.library.imgur.ImgurApiCache;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class ImgurImageType extends Image {
-    public static final  String     TAG                 = ImgurImage.class.getSimpleName();
     private static final String     URL_IMGUR_IMAGE_API = "http://api.imgur.com/2/image/";
     private static final String     URL_REGEX           = "imgur.com/(?:gallery/)?([A-Za-z0-9]+)";
     private              ImgurImage mImgurImage         = null;
@@ -25,10 +24,7 @@ public class ImgurImageType extends Image {
     /**
      * Resolve the imgur image for the input URL
      *
-     * @param url
-     *     The URL to resolve an image from
-     *
-     * @return An {@link ImageContainer} containing the ImgurImage
+     * @return An {@link ImgurImage}
      */
     private ImgurImage resolve() {
         ImgurImage imgurImage = resolveImgurImageFromHash(getHash());
@@ -46,7 +42,7 @@ public class ImgurImageType extends Image {
      */
     public static ImgurImage resolveImgurImageFromHash(String hash) {
         if (hash == null) {
-            Log.e(TAG, "Received null hash in resolveImgurImageFromHash");
+            Ln.e("Received null hash in resolveImgurImageFromHash");
             return null;
         }
 
@@ -57,10 +53,10 @@ public class ImgurImageType extends Image {
 
         String apiUrl = URL_IMGUR_IMAGE_API + hash + Constants.JSON;
         if (ImgurApiCache.getInstance().containsImgurImage(hash)) {
-            Log.i(TAG, "cache - resolveImgurImageFromHash - " + hash + " found in cache");
+            Ln.i("cache - resolveImgurImageFromHash - %s found in cache", hash);
             imgurImageApi = ImgurApiCache.getInstance().getImgurImage(hash);
         } else {
-            Log.i(TAG, "cache - resolveImgurImageFromHash - " + hash + " NOT found in cache");
+            Ln.i("cache - resolveImgurImageFromHash - %s NOT found in cache", hash);
             try {
                 json = SynchronousNetworkApi.downloadUrl(apiUrl);
 
@@ -71,7 +67,7 @@ public class ImgurImageType extends Image {
                 imgurImageApi = gson.fromJson(json, ImgurImageApi.class);
                 ImgurApiCache.getInstance().addImgurImage(hash, imgurImageApi);
             } catch (JsonSyntaxException e) {
-                Log.e(TAG, "resolveImgurImageFromHash", e);
+                Ln.e(e, "resolveImgurImageFromHash");
             }
         }
 

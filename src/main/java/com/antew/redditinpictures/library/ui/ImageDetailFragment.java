@@ -25,15 +25,13 @@ import com.antew.redditinpictures.library.enums.ImageType;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.image.ImgurGalleryType;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.PostData;
+import com.antew.redditinpictures.library.utils.Ln;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
 public class ImageDetailFragment extends ImageViewerFragment {
-    public static final String TAG = ImageDetailFragment.class.getSimpleName();
-
     /**
      * Empty constructor as per the Fragment documentation
      */
@@ -96,7 +94,7 @@ public class ImageDetailFragment extends ImageViewerFragment {
         super.loadImage(image);
 
         if (image == null) {
-            Log.e(TAG, "Recieved null ImageContainer in loadImage(ImageContainer image)");
+            Ln.e("Recieved null ImageContainer in loadImage(ImageContainer image)");
             return;
         }
 
@@ -121,7 +119,7 @@ public class ImageDetailFragment extends ImageViewerFragment {
 
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "View Gallery");
+                Ln.i("View Gallery");
                 Intent intent = new Intent(getActivity(), getImgurAlbumActivity());
                 intent.putExtra(ImgurAlbumActivity.EXTRA_ALBUM, mAlbum);
                 startActivity(intent);

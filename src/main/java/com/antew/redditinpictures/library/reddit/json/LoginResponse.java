@@ -6,9 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.RedditLoginResponse;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class LoginResponse extends RedditResponseHandler {
@@ -29,7 +29,7 @@ public class LoginResponse extends RedditResponseHandler {
         RedditLoginResponse response = JsonDeserializer.deserialize(result.getJson(), RedditLoginResponse.class);
 
         if (response == null) {
-            Log.e(TAG, "Error parsing Reddit login response");
+            Ln.e("Error parsing Reddit login response");
             return;
         }
 

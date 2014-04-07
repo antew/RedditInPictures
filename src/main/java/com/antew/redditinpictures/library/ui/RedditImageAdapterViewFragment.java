@@ -57,7 +57,6 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     protected TextView mNoImages;
     protected boolean mRequestInProgress;
     private   String   mAfter;
-    private boolean mFullRefresh = true;
     private String   mCurrentSubreddit = Constants.REDDIT_FRONTPAGE;
     private Category mCategory         = Category.HOT;
     private Age      mAge              = Age.TODAY;

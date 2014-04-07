@@ -10,12 +10,11 @@ import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.imgur.SimpleImgurGallery;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.utils.Ln;
 
 public class ImgurGalleryType extends Image {
-    public static final  String TAG                   = ImgurGalleryType.class.getSimpleName();
     private static final String URL_IMGUR_GALLERY_API = "http://imgur.com/gallery/";
     private static final String URL_REGEX             = "imgur.com/gallery/([A-Za-z0-9]+)";
     private SimpleImgurGallery mSimpleImgurGallery;
@@ -60,10 +59,10 @@ public class ImgurGalleryType extends Image {
         String newUrl = URL_IMGUR_GALLERY_API + hash + Constants.JSON;
 
         if (cache.containsImgurGallery(hash)) {
-            Log.d(TAG, "cache - getImgurGalleryFromHash - " + hash + " found in cache");
+            Ln.d("cache - getImgurGalleryFromHash - %s found in cache", hash);
             gallery = cache.getImgurGallery(hash);
         } else {
-            Log.d(TAG, "cache - getImgurGalleryFromHash - " + hash + " NOT found in cache");
+            Ln.d("cache - getImgurGalleryFromHash - %s NOT found in cache", hash);
 
             String json = SynchronousNetworkApi.downloadUrl(newUrl);
             gallery = JsonDeserializer.deserialize(json, ImgurGallery.class);
@@ -90,7 +89,7 @@ public class ImgurGalleryType extends Image {
 
                 cache.addImgurGallery(hash, gallery);
             } else {
-                Log.e(TAG, "getImgurGalleryFromHash, error resolving image");
+                Ln.e("getImgurGalleryFromHash, error resolving image");
             }
         }
 
@@ -119,7 +118,7 @@ public class ImgurGalleryType extends Image {
         SimpleImgurGallery gallery = resolve();
 
         if (gallery == null) {
-            Log.e(TAG, "Was passed a null SimpleImgurGallery in getSize method");
+            Ln.e("Was passed a null SimpleImgurGallery in getSize method");
             return null;
         }
 

@@ -7,11 +7,10 @@ import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.view.View;
 import com.antew.redditinpictures.library.enums.ImageSize;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
+import com.antew.redditinpictures.library.utils.Ln;
 
 public class GifView extends View {
-    public static final String TAG = GifView.class.getSimpleName();
     private Movie mMovie;
     private long  mMovieStart;
     private float mScale;
@@ -27,7 +26,7 @@ public class GifView extends View {
     }
 
     public void loadGif(String url) {
-        Log.i(TAG, "Before trimming URL = " + url);
+        Ln.i("Before trimming URL = %s", url);
         if (url.startsWith(ImageSize.ORIGINAL.name())) {
             url = url.replace(ImageSize.ORIGINAL.name(), "");
         }
@@ -35,7 +34,7 @@ public class GifView extends View {
             url = url.replace(ImageSize.SMALL_SQUARE.name(), "");
         }
 
-        Log.i(TAG, "After trimming URL = " + url);
+        Ln.i("After trimming URL = %s", url);
         new DownloadImageTask().execute(url);
     }
 
@@ -52,8 +51,8 @@ public class GifView extends View {
                 dur = 3000;
             }
             int relTime = (int) ((now - mMovieStart) % dur);
-            Log.d("", "real time :: " + relTime);
-            Log.i(TAG, "Height = " + getMeasuredHeight() + " Width = " + getMeasuredWidth());
+            Ln.d("real time :: %d", relTime);
+            Ln.i("Height = %d Width = %d", getMeasuredHeight(), getMeasuredWidth());
             mMovie.setTime(relTime);
             mMovie.draw(canvas, getWidth() - mMovie.width(), getHeight() - mMovie.height());
             invalidate();

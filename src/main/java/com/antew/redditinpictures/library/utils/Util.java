@@ -20,8 +20,8 @@ import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
-import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
+import com.antew.redditinpictures.library.ui.RedditFragmentActivity;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -55,15 +55,14 @@ public class Util {
         return (int) (px / (context.getResources().getDisplayMetrics().densityDpi / 160f) + 0.5f);
     }
 
-    @TargetApi(11)
-    public static void enableStrictMode() {
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public static void enableStrictMode() {
         if (Util.hasGingerbread()) {
             StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
             StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
 
             if (Util.hasHoneycomb()) {
                 threadPolicyBuilder.penaltyFlashScreen();
-                vmPolicyBuilder.setClassInstanceLimit(ImageGridActivity.class, 1)
+                vmPolicyBuilder.setClassInstanceLimit(RedditFragmentActivity.class, 1)
                                .setClassInstanceLimit(ImageDetailActivity.class, 1)
                                .setClassInstanceLimit(ImgurAlbumActivity.class, 1);
             }

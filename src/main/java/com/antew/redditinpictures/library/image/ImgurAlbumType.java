@@ -6,14 +6,13 @@ import com.antew.redditinpictures.library.imgur.ImgurAlbumApi;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurApiCache;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class ImgurAlbumType extends Image {
-    public static final  String TAG                 = ImgurAlbumType.class.getSimpleName();
     private static final String URL_IMGUR_ALBUM_API = "http://api.imgur.com/2/album/";
     private static final String URL_REGEX           = "imgur.com/a/([A-Za-z0-9]+)";
     private              Album  mAlbum              = null;
@@ -25,9 +24,6 @@ public class ImgurAlbumType extends Image {
 
     /**
      * Resolve an Imgur album
-     *
-     * @param url
-     *     The input url to use in resolving
      *
      * @return An {@link Album} containing the individual {@link ImgurImage}s
      */
@@ -56,20 +52,20 @@ public class ImgurAlbumType extends Image {
      */
     public static ImgurAlbumApi resolveImgurAlbumFromHash(String hash) {
         if (hash == null) {
-            Log.e(TAG, "resolveImgurAlbumFromHash - hash was null");
+            Ln.e("resolveImgurAlbumFromHash - hash was null");
         }
 
-        Log.i(TAG, "resolveImgurAlbumFromHash, hash = " + hash);
+        Ln.i("resolveImgurAlbumFromHash, hash = %s", hash);
         ImgurAlbumApi album = null;
         Gson gson = new Gson();
         String json = null;
         String newUrl = URL_IMGUR_ALBUM_API + hash + Constants.JSON;
 
         if (ImgurApiCache.getInstance().containsImgurAlbum(hash)) {
-            Log.i(TAG, "cache - resolveImgurAlbumFromHash - " + hash + " found in cache");
+            Ln.i("cache - resolveImgurAlbumFromHash - %s found in cache", hash);
             album = ImgurApiCache.getInstance().getImgurAlbum(hash);
         } else {
-            Log.i(TAG, "cache - resolveImgurAlbumFromHash - " + hash + " NOT found in cache");
+            Ln.i("cache - resolveImgurAlbumFromHash - %s NOT found in cache", hash);
             try {
                 json = SynchronousNetworkApi.downloadUrl(newUrl);
 
@@ -80,7 +76,7 @@ public class ImgurAlbumType extends Image {
                 album = gson.fromJson(json, ImgurAlbumApi.class);
                 ImgurApiCache.getInstance().addImgurAlbum(hash, album);
             } catch (JsonSyntaxException e) {
-                Log.e(TAG, "resolveImgurAlbumFromHash", e);
+                Ln.e(e, "resolveImgurAlbumFromHash");
             }
         }
 

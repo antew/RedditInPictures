@@ -2,9 +2,6 @@ package com.antew.redditinpictures.library.modules;
 
 import android.content.Context;
 import com.antew.redditinpictures.library.annotations.ForActivity;
-import com.antew.redditinpictures.library.ui.ImageDetailActivity;
-import com.antew.redditinpictures.library.ui.ImageGridActivity;
-import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import dagger.Module;
 import dagger.Provides;
@@ -17,7 +14,6 @@ import javax.inject.Singleton;
  */
 @Module(
     injects = {
-        ImageGridActivity.class, ImageDetailActivity.class, ImgurAlbumActivity.class
     },
     addsTo = RootModule.class,
     library = true

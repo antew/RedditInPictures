@@ -24,7 +24,6 @@ import android.preference.PreferenceManager;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
-import com.antew.redditinpictures.library.ui.ImageGridActivity;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import java.util.ArrayList;
@@ -166,7 +165,7 @@ public class SharedPreferencesHelper {
 
     /**
      * Save the selected Age and Category to preferences. Used to save/restore the selected
-     * Category/Age combination from {@link ImageGridActivity}
+     * Category/Age combination
      *
      * @param age
      *     The age
@@ -256,24 +255,24 @@ public class SharedPreferencesHelper {
     }
 
     /**
-     * The saved {@link RedditUrl#Age}
+     * The saved {@link Age}
      *
      * @param context
      *     The context
      *
-     * @return The saved {@link RedditUrl#Age}
+     * @return The saved {@link Age}
      */
     public static Age getAge(Context context) {
         return Age.valueOf(context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(AGE, Age.TODAY.name()));
     }
 
     /**
-     * The saved {@link RedditUrl#Category}
+     * The saved {@link Category}
      *
      * @param context
      *     The context
      *
-     * @return The saved {@link RedditUrl#Category}
+     * @return The saved {@link Category}
      */
     public static Category getCategory(Context context) {
         return Category.valueOf(context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(CATEGORY, Category.HOT.name()));

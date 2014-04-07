@@ -7,14 +7,13 @@ import com.antew.redditinpictures.library.gson.BooleanDeserializer;
 import com.antew.redditinpictures.library.imageapi.Flickr;
 import com.antew.redditinpictures.library.imageapi.Flickr.FlickrImage;
 import com.antew.redditinpictures.library.imageapi.Flickr.FlickrSize;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
+import com.antew.redditinpictures.library.utils.Ln;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 public class FlickrImageType extends Image {
-    public static final  String TAG        = FlickrImageType.class.getSimpleName();
     private static final String FLICKR_URL = "http://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key="
                                              + FlickrApiKey.KEY
                                              + "&photo_id=%s&format=json&nojsoncallback=1";
@@ -34,7 +33,7 @@ public class FlickrImageType extends Image {
         }
 
         if (mFlickr == null) {
-            Log.i(TAG, "Received null Flickr object");
+            Ln.i("Received null Flickr object");
             return null;
         }
 
@@ -54,9 +53,6 @@ public class FlickrImageType extends Image {
     /**
      * Resolve the flickr image for the input URL
      *
-     * @param url
-     *     The URL to resolve an image from
-     *
      * @return An {@link Flickr} instance representing the image
      */
     private Flickr resolve() {
@@ -68,8 +64,8 @@ public class FlickrImageType extends Image {
     /**
      * Resolve an image from Flickr
      *
-     * @param url
-     *     The URL to resolve
+     * @param hash
+     *     The hash to resolve
      *
      * @return A {@link Flickr} instance
      */
@@ -82,7 +78,7 @@ public class FlickrImageType extends Image {
                 String json = SynchronousNetworkApi.downloadUrl(String.format(FLICKR_URL, hash));
                 flickr = gson.fromJson(json, Flickr.class);
             } catch (JsonSyntaxException e) {
-                Log.e(TAG, "Error parsing JSON in resolveFlickrImage", e);
+                Ln.e(e, "Error parsing JSON in resolveFlickrImage");
             }
         }
 

@@ -3,19 +3,17 @@ package com.antew.redditinpictures.library.reddit.json;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
-import com.antew.redditinpictures.library.logging.Log;
 import com.antew.redditinpictures.library.reddit.MySubreddits;
 import com.antew.redditinpictures.library.reddit.SubredditData;
-import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MySubredditsResponse extends RedditResponseHandler {
-
-    public static final String TAG = MySubredditsResponse.class.getSimpleName();
     private RedditResult result;
 
     public MySubredditsResponse(RedditResult result) {
@@ -29,13 +27,12 @@ public class MySubredditsResponse extends RedditResponseHandler {
         // Don't wipe out the default subreddits
         int userRowsDeleted = resolver.delete(RedditContract.Subreddits.CONTENT_URI, "isDefaultSubreddit = ?", new String[] { "0" });
 
-        Log.i(TAG, "MySubreddits complete! = " + result.getJson());
+        Ln.i("MySubreddits complete! = %s", result.getJson());
         MySubreddits mySubreddits = JsonDeserializer.deserialize(result.getJson(), MySubreddits.class);
 
         if (mySubreddits == null) {
-            Log.e("MySubreddits", "Something went wrong on mySubreddits! status = " + result.getHttpStatusCode() +
-                                  ", json = " + result.getJson() == null ? "null" : result.getJson()
-                 );
+            Ln.e("Something went wrong on mySubreddits! status = %d, json = %s", result.getHttpStatusCode(),
+                 Strings.toString(result.getJson()));
             return;
         }
 
@@ -54,7 +51,7 @@ public class MySubredditsResponse extends RedditResponseHandler {
         int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI,
                                                operations.toArray(new ContentValues[operations.size()]));
 
-        Log.i(TAG, "Inserted " + rowsInserted + " rows");
+        Ln.i("Inserted %d rows", rowsInserted);
     }
 
     public enum DefaultSubreddit {
