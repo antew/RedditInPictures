@@ -123,7 +123,8 @@
     <string name="share_image">Share Image</string>
     <string name="open_post_on_reddit">Open Post on Reddit</string>
     <string name="hot">Hot</string>
-    <string name="new">New</string>
+    <!-- The string "new" can't be used as the name for a string as it is reserved. -->
+    <string name="new_text_value">New</string>
     <string name="rising">Rising</string>
     <string name="top_hour">Top: Hour</string>
     <string name="top_today">Top: Today</string>

@@ -21,7 +21,7 @@
                     android:title="@string/hot" />
                 <item
                     android:id="@+id/category_new"
-                    android:title="@string/new" />
+                    android:title="@string/new_text_value" />
                 <item
                     android:id="@+id/category_rising"
                     android:title="@string/rising" />
