@@ -1,12 +1,13 @@
 package com.antew.redditinpictures.library.ui.base;
 
 import android.os.Bundle;
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.android.debug.hv.ViewServer;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
 import com.antew.redditinpictures.library.modules.ActivityModule;
-import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.BuildConfig;
@@ -83,13 +84,17 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
         activityGraph.inject(object);
     }
 
-    @Override public void setActionBarTitle(String title) {
+    @Override public void setActionBarTitle(String title, String subtitle) {
+        ActionBar actionBar = getSupportActionBar();
+
         if (Strings.isEmpty(title)) {
-            getSupportActionBar().setTitle(getString(R.string.app_name));
+            actionBar.setTitle(getString(R.string.app_name));
         } else if (title.equals(Constants.REDDIT_FRONTPAGE)) {
-            getSupportActionBar().setTitle(getString(R.string.frontpage));
+            actionBar.setTitle(getString(R.string.frontpage));
+            actionBar.setSubtitle(subtitle);
         } else {
-            getSupportActionBar().setTitle(title);
+            actionBar.setTitle(title);
+            actionBar.setSubtitle(subtitle);
         }
     }
 }

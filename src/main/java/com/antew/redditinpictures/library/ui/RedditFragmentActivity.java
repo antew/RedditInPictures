@@ -37,6 +37,7 @@ import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivityWithMenu;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.utils.RedditUtils;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
@@ -449,7 +450,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                 break;
         }
 
-        setActionBarTitle(mSelectedSubreddit);
+        setActionBarTitle(mSelectedSubreddit, RedditUtils.getSortDisplayString(mCategory, mAge));
     }
 
     public Class<? extends PreferenceActivity> getPreferencesClass() {
