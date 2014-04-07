@@ -320,7 +320,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
                     if (mNoImages.getVisibility() == View.VISIBLE) {
                         mNoImages.setVisibility(View.GONE);
                     }
-                    productRequestCompletedEvent();
+                    produceRequestCompletedEvent();
                 }
                 break;
             default:
@@ -341,7 +341,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
             case Constants.LOADER_REDDIT:
                 break;
             case Constants.LOADER_POSTS:
-                productRequestCompletedEvent();
+                produceRequestCompletedEvent();
                 mAdapter.swapCursor(null);
                 break;
             default:
@@ -349,7 +349,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
         }
     }
 
-    protected void productRequestCompletedEvent() {
+    protected void produceRequestCompletedEvent() {
         mRequestInProgress = false;
         mBus.post(new RequestCompletedEvent());
     }
