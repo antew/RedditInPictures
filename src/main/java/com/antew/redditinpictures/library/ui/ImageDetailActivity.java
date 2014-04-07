@@ -46,6 +46,7 @@ import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ImageDetailActivity extends ImageViewerActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -417,7 +418,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                     selectionArgs = selectionArgsList.toArray(new String[] { });
                 }
 
-                Ln.d("Retrieveing Posts For %s %s", selection, selectionArgs.toString());
+                Ln.d("Retrieving posts For %s %s", selection, Arrays.toString(selectionArgs));
 
                 return new CursorLoader(this, RedditContract.Posts.CONTENT_URI,  // uri
                                         RedditContract.Posts.LISTVIEW_PROJECTION, // projection
