@@ -17,17 +17,6 @@
         app:spb_interpolator="spb_interpolator_acceleratedecelerate"
         app:spb_sections_count="5" />
 
-    <TextView
-        android:id="@+id/error_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:gravity="center"
-        android:text="@string/no_images_were_returned"
-        android:visibility="gone" />
-
     <FrameLayout
         android:id="@+id/content_fragment"
         android:layout_width="match_parent"
