@@ -63,6 +63,8 @@ public class SubredditUtils {
             return;
         }
 
+        ContentValues[] operations = mySubreddits.getContentValuesArray();
+
         List<ContentValues> defaultSubredditOperations = new ArrayList<ContentValues>();
         MySubredditsResponse.DefaultSubreddit[] defaultSubreddits = MySubredditsResponse.DefaultSubreddit.values();
         for (MySubredditsResponse.DefaultSubreddit subreddit : defaultSubreddits) {
@@ -70,6 +72,8 @@ public class SubredditUtils {
                 mySubreddits.getContentValues(new SubredditData(subreddit.getDisplayName(), subreddit.getPriority())));
         }
 
+        int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI, operations);
+        Ln.d("Inserted %d subreddits", rowsInserted);
         int defaultRowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI,
                                                       defaultSubredditOperations.toArray(new ContentValues[] { }));
         Ln.d("Inserted %d default subreddits", defaultRowsInserted);
