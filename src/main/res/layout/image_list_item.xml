@@ -18,28 +18,35 @@
             android:id="@+id/ib_view"
             android:src="@drawable/ic_action_picture_dark"
             android:contentDescription="@string/view_subreddit"
-            style="@style/SubredditMenuItem"
+            style="@style/ImageListItemMenuItem"
             android:layout_gravity="center_vertical"/>
 
         <ImageButton
             android:id="@+id/ib_save"
             android:src="@drawable/ic_action_save_dark"
             android:contentDescription="@string/save_image"
-            style="@style/SubredditMenuItem"
+            style="@style/ImageListItemMenuItem"
+            android:layout_gravity="center_vertical"/>
+
+        <ImageButton
+            android:id="@+id/ib_share"
+            android:src="@drawable/ic_action_share_dark"
+            android:contentDescription="@string/share_image"
+            style="@style/ImageListItemMenuItem"
             android:layout_gravity="center_vertical"/>
 
         <ImageButton
             android:id="@+id/ib_open"
             android:src="@drawable/ic_action_globe_dark"
             android:contentDescription="@string/open_post_on_reddit"
-            style="@style/SubredditMenuItem"
+            style="@style/ImageListItemMenuItem"
             android:layout_gravity="center_vertical"/>
 
         <ImageButton
             android:id="@+id/ib_report"
             android:src="@drawable/ic_action_warning_dark"
             android:contentDescription="@string/report_image_display_issue"
-            style="@style/SubredditMenuItem"
+            style="@style/ImageListItemMenuItem"
             android:layout_gravity="center_vertical"/>
 
     </LinearLayout>

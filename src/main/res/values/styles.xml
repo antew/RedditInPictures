@@ -94,4 +94,13 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="ImageListItemMenuItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/abs__item_background_holo_dark</item>
+        <item name="android:layout_weight">.2</item>
+        <item name="android:paddingTop">@dimen/subreddit_menu_item_padding</item>
+        <item name="android:paddingBottom">@dimen/subreddit_menu_item_padding</item>
+    </style>
+
 </resources>

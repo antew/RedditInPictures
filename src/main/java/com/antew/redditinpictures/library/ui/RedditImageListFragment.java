@@ -1,16 +1,22 @@
 package com.antew.redditinpictures.library.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.Toast;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.ImageListCursorAdapter;
+import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
+import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
+import com.antew.redditinpictures.library.reddit.PostData;
+import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
@@ -20,7 +26,7 @@ import com.fortysevendeg.swipelistview.SwipeListViewListener;
 import com.squareup.otto.Subscribe;
 
 public class RedditImageListFragment extends RedditImageAdapterViewFragment<ListView, ImageListCursorAdapter>
-    implements SwipeListViewListener {
+    implements SwipeListViewListener, ImageListCursorAdapter.ImageListItemMenuActionListener {
     //8 is a good number, the kind of number that you could say take home to your parents and not be worried about what they might think about it.
     private static final int                          POST_LOAD_OFFSET    = 8;
     private              AbsListView.OnScrollListener mListScrollListener = new AbsListView.OnScrollListener() {
@@ -77,6 +83,18 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
         mImageListView.setSwipeListViewListener(this);
     }
 
+    private void openImageAtPosition(int position) {
+        final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
+        Bundle b = new Bundle();
+        b.putString(Constants.EXTRA_SELECTED_SUBREDDIT, mCurrentSubreddit);
+        b.putString(Constants.EXTRA_CATEGORY, mCategory.name());
+        b.putString(Constants.EXTRA_AGE, mAge.name());
+        i.putExtra(Constants.EXTRA_IMAGE, position);
+        i.putExtras(b);
+
+        startActivity(i);
+    }
+
     @Override
     protected int getLayoutId() {
         return R.layout.image_list_fragment;
@@ -89,7 +107,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
 
     @Override
     protected ImageListCursorAdapter getNewAdapter() {
-        return new ImageListCursorAdapter(getActivity());
+        return new ImageListCursorAdapter(getActivity(), this);
     }
 
     @Override
@@ -123,15 +141,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
 
     @Override
     public void onClickFrontView(int position) {
-        final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
-        Bundle b = new Bundle();
-        b.putString(Constants.EXTRA_SELECTED_SUBREDDIT, mCurrentSubreddit);
-        b.putString(Constants.EXTRA_CATEGORY, mCategory.name());
-        b.putString(Constants.EXTRA_AGE, mAge.name());
-        i.putExtra(Constants.EXTRA_IMAGE, position);
-        i.putExtras(b);
-
-        startActivity(i);
+        openImageAtPosition(position);
     }
 
     @Override
@@ -165,5 +175,69 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
 
     @Override
     public void onLastListItem() {
+    }
+
+    /**
+     * Request to view the given image.
+     *
+     * @param postData
+     *     The PostData of the image to open
+     * @param position
+     */
+    @Override
+    public void viewImage(PostData postData, int position) {
+        openImageAtPosition(position);
+    }
+
+    /**
+     * Request to save the given image.
+     *
+     * @param postData
+     *     The PostData of the image.
+     */
+    @Override
+    public void saveImage(PostData postData) {
+        SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(StringUtil.sanitizeFileName(postData.getTitle()));
+        saveImageDialog.show(getFragmentManager(), Constants.DIALOG_GET_FILENAME);
+    }
+
+    /**
+     * Request to share the given image.
+     *
+     * @param postData
+     *     The PostData of the image.
+     */
+    @Override
+    public void shareImage(PostData postData) {
+        String subject = getString(R.string.check_out_this_image);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, subject + " " + postData.getUrl());
+        startActivity(Intent.createChooser(intent, getString(R.string.share_using_)));
+    }
+
+    /**
+     * Request to open the given image in an external application.
+     *
+     * @param postData
+     *     The PostData of the image.
+     */
+    @Override
+    public void openPostExternal(PostData postData) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+            postData.getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(getActivity()))));
+        startActivity(browserIntent);
+    }
+
+    /**
+     * Request to report the given image.
+     *
+     * @param postData
+     *     The PostData of the image.
+     */
+    @Override
+    public void reportImage(PostData postData) {
+        Toast.makeText(getActivity(), "Reporting Images Isn't Implemented Yet. :(", Toast.LENGTH_LONG).show();
     }
 }

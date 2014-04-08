@@ -50,17 +50,59 @@ import java.util.regex.Pattern;
  * @author Antew
  */
 public class ImageListCursorAdapter extends CursorAdapter {
-    private LayoutInflater mInflater;
+    private LayoutInflater                  mInflater;
+    private ImageListItemMenuActionListener mActionListener;
     private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
     private Pattern mImgurAlbumPattern    = Pattern.compile("^https?://imgur.com/a/.*$");
 
-    /**
-     * @param context
-     *     The context
-     */
-    public ImageListCursorAdapter(Context context) {
+    public interface ImageListItemMenuActionListener {
+        /**
+         * Request to view the given image.
+         *
+         * @param postData
+         *     The PostData of the image to open
+         * @param position
+         *     The position in the cursor of the image to open
+         */
+        public void viewImage(PostData postData, int position);
+
+        /**
+         * Request to save the given image.
+         *
+         * @param postData
+         *     The PostData of the image.
+         */
+        public void saveImage(PostData postData);
+
+        /**
+         * Request to share the given image.
+         *
+         * @param postData
+         *     The PostData of the image.
+         */
+        public void shareImage(PostData postData);
+
+        /**
+         * Request to open the given image in an external application.
+         *
+         * @param postData
+         *     The PostData of the image.
+         */
+        public void openPostExternal(PostData postData);
+
+        /**
+         * Request to report the given image.
+         *
+         * @param postData
+         *     The PostData of the image.
+         */
+        public void reportImage(PostData postData);
+    }
+
+    public ImageListCursorAdapter(Context context, ImageListItemMenuActionListener actionListener) {
         super(context, null, 0);
         mContext = context;
+        mActionListener = actionListener;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -76,7 +118,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, final Cursor cursor) {
+    public void bindView(View view, Context context, Cursor cursor) {
         final ViewHolder holder;
         if (view != null && view.getTag() != null) {
             holder = (ViewHolder) view.getTag();
@@ -98,6 +140,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
         }
 
         final PostData postData = PostData.fromListViewProjection(cursor);
+        final int position = cursor.getPosition();
 
         // If we have a thumbnail from Reddit use that, otherwise use the full URL
         // Reddit will send 'default' for one of the default alien icons, which we want to avoid using
@@ -176,22 +219,47 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { viewImage(cursor.getPosition()); }
+            public void onClick(View v) {
+                if (mActionListener != null) {
+                    mActionListener.viewImage(postData, position);
+                }
+            }
         });
 
         holder.save.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { saveImage(postData); }
+            public void onClick(View v) {
+                if (mActionListener != null) {
+                    mActionListener.saveImage(postData);
+                }
+            }
+        });
+
+        holder.share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mActionListener != null) {
+                    mActionListener.shareImage(postData);
+                }
+            }
         });
 
         holder.open.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { saveImage(postData); }
+            public void onClick(View v) {
+                if (mActionListener != null) {
+                    mActionListener.openPostExternal(postData);
+                }
+            }
         });
 
         holder.report.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { saveImage(postData); }
+            public void onClick(View v) {
+                if (mActionListener != null) {
+                    mActionListener.reportImage(postData);
+                }
+            }
         });
     }
 
@@ -296,22 +364,6 @@ public class ImageListCursorAdapter extends CursorAdapter {
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 
-    protected void viewImage(int position) {
-        // Send a request to the Activity that created this adapter (and implements the listener interface) to open the image.
-    }
-
-    protected void saveImage(PostData postData) {
-        // Open up the Save dialog for the image and go through the normal process.
-    }
-
-    protected void openPost(PostData postData) {
-        // Fire off an intent to open the post in a browser.
-    }
-
-    protected void reportImage(PostData postData) {
-        // Do something to report an image not loading.
-    }
-
     protected class ViewHolder {
         @InjectView(R.id.iv_image)
         ImageView   imageView;
@@ -329,6 +381,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
         ImageButton view;
         @InjectView(R.id.ib_save)
         ImageButton save;
+        @InjectView(R.id.ib_share)
+        ImageButton share;
         @InjectView(R.id.ib_open)
         ImageButton open;
         @InjectView(R.id.ib_report)
@@ -338,7 +392,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
             ButterKnife.inject(this, view);
         }
 
-        @OnLongClick({ R.id.ib_view, R.id.ib_save, R.id.ib_open, R.id.ib_report })
+        @OnLongClick({ R.id.ib_view, R.id.ib_save, R.id.ib_share, R.id.ib_open, R.id.ib_report })
         protected boolean onLongClickMenuOption(View view) {
             if (view != null) {
                 String description = Strings.toString(view.getContentDescription());
