@@ -28,8 +28,8 @@ public class SubredditsSearchResponse extends RedditResponseHandler {
             return;
         }
 
-        Intent intent = new Intent(Constants.BROADCAST_SUBREDDIT_SEARCH);
-        intent.putStringArrayListExtra(Constants.EXTRA_SUBREDDIT_NAMES, (ArrayList<String>) subredditsSearch.getNames());
+        Intent intent = new Intent(Constants.Broadcast.BROADCAST_SUBREDDIT_SEARCH);
+        intent.putStringArrayListExtra(Constants.Extra.EXTRA_SUBREDDIT_NAMES, (ArrayList<String>) subredditsSearch.getNames());
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 }

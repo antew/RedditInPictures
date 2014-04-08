@@ -104,9 +104,9 @@ public class AddSubredditDialogFragment extends DialogFragment {
     private BroadcastReceiver mSubredditsSearch = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra(Constants.EXTRA_SUBREDDIT_NAMES)) {
+            if (intent.hasExtra(Constants.Extra.EXTRA_SUBREDDIT_NAMES)) {
                 Ln.d("Got Back Subreddit Search Result");
-                final ArrayList<String> subredditNames = intent.getStringArrayListExtra(Constants.EXTRA_SUBREDDIT_NAMES);
+                final ArrayList<String> subredditNames = intent.getStringArrayListExtra(Constants.Extra.EXTRA_SUBREDDIT_NAMES);
 
                 if (subredditNames != null) {
                     handleSubredditSearchResults(subredditNames);
@@ -136,7 +136,7 @@ public class AddSubredditDialogFragment extends DialogFragment {
                                                                          .create();
 
         LocalBroadcastManager.getInstance(getActivity())
-                             .registerReceiver(mSubredditsSearch, new IntentFilter(Constants.BROADCAST_SUBREDDIT_SEARCH));
+                             .registerReceiver(mSubredditsSearch, new IntentFilter(Constants.Broadcast.BROADCAST_SUBREDDIT_SEARCH));
         return dialog;
     }
 

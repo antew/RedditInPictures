@@ -61,8 +61,8 @@ public class SubredditUtils {
     }
 
     public static boolean isAggregateSubreddit(String subreddit) {
-        if (subreddit.equals(Constants.REDDIT_FRONTPAGE) || subreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME) || subreddit.equals(
-            Constants.REDDIT_FRONTPAGE_DISPLAY_NAME)) {
+        if (subreddit.equals(Constants.Reddit.REDDIT_FRONTPAGE) || subreddit.equals(Constants.Reddit.REDDIT_ALL_DISPLAY_NAME) || subreddit.equals(
+            Constants.Reddit.REDDIT_FRONTPAGE_DISPLAY_NAME)) {
             return true;
         }
 

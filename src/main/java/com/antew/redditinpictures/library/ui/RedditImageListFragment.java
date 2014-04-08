@@ -52,10 +52,10 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
         final Fragment f = new RedditImageListFragment();
 
         final Bundle args = new Bundle();
-        args.putString(Constants.EXTRA_SELECTED_SUBREDDIT, subreddit);
-        args.putString(Constants.EXTRA_CATEGORY, category.toString());
+        args.putString(Constants.Extra.EXTRA_SUBREDDIT, subreddit);
+        args.putString(Constants.Extra.EXTRA_CATEGORY, category.toString());
         // Age is null when we're sorting as 'New' or 'Rising'
-        args.putString(Constants.EXTRA_AGE, Strings.toString(age));
+        args.putString(Constants.Extra.EXTRA_AGE, Strings.toString(age));
         f.setArguments(args);
 
         return f;
@@ -86,10 +86,10 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
     private void openImageAtPosition(int position) {
         final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
         Bundle b = new Bundle();
-        b.putString(Constants.EXTRA_SELECTED_SUBREDDIT, mCurrentSubreddit);
-        b.putString(Constants.EXTRA_CATEGORY, mCategory.name());
-        b.putString(Constants.EXTRA_AGE, mAge.name());
-        i.putExtra(Constants.EXTRA_IMAGE, position);
+        b.putString(Constants.Extra.EXTRA_SUBREDDIT, mCurrentSubreddit);
+        b.putString(Constants.Extra.EXTRA_CATEGORY, mCategory.name());
+        b.putString(Constants.Extra.EXTRA_AGE, mAge.name());
+        i.putExtra(Constants.Extra.EXTRA_IMAGE, position);
         i.putExtras(b);
 
         startActivity(i);
@@ -198,7 +198,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
     @Override
     public void saveImage(PostData postData) {
         SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(StringUtil.sanitizeFileName(postData.getTitle()));
-        saveImageDialog.show(getFragmentManager(), Constants.DIALOG_GET_FILENAME);
+        saveImageDialog.show(getFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
     }
 
     /**

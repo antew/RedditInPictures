@@ -42,6 +42,6 @@ public class AboutResponse extends RedditResponseHandler {
         resolver.insert(RedditContract.Subreddits.CONTENT_URI, aboutSubreddit.getContentValues());
         Ln.v("Inserted row");
 
-        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Constants.BROADCAST_ABOUT_SUBREDDIT));
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Constants.Broadcast.BROADCAST_ABOUT_SUBREDDIT));
     }
 }

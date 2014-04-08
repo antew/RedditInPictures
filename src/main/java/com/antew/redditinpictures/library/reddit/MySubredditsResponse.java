@@ -55,8 +55,8 @@ public class MySubredditsResponse extends RedditResponseHandler {
     }
 
     public enum DefaultSubreddit {
-        FRONTPAGE(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME, 99999),
-        ALL(Constants.REDDIT_ALL_DISPLAY_NAME, 99998);
+        FRONTPAGE(Constants.Reddit.REDDIT_FRONTPAGE_DISPLAY_NAME, 99999),
+        ALL(Constants.Reddit.REDDIT_ALL_DISPLAY_NAME, 99998);
 
         private final String displayName;
         private final int    priority;

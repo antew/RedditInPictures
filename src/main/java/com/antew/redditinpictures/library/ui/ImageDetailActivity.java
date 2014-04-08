@@ -34,14 +34,16 @@ import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.Vote;
-import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.model.reddit.RedditUrl;
+import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
+import com.antew.redditinpictures.library.utils.BundleUtil;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.StringUtil;
 import com.antew.redditinpictures.library.utils.Strings;
+import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import java.util.ArrayList;
@@ -67,28 +69,19 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         super.onCreate(savedInstanceState);
         displayVote();
 
-        getSupportLoaderManager().initLoader(Constants.LOADER_REDDIT, null, this);
-        getSupportLoaderManager().initLoader(Constants.LOADER_POSTS, null, this);
+        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_REDDIT, null, this);
+        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_POSTS, null, this);
         // Put the current page / total pages text in the ActionBar
         updateDisplay(mPager.getCurrentItem());
     }
 
     public void getExtras() {
-        Intent i = getIntent();
-
-        if (i.hasExtra(Constants.EXTRA_AGE)) {
-            mAge = Age.fromString(i.getStringExtra(Constants.EXTRA_AGE));
-        }
-
-        if (i.hasExtra(Constants.EXTRA_CATEGORY)) {
-            mCategory = Category.fromString(i.getStringExtra(Constants.EXTRA_CATEGORY));
-        }
-
-        if (i.hasExtra(Constants.EXTRA_SELECTED_SUBREDDIT)) {
-            mSubreddit = i.getStringExtra(Constants.EXTRA_SELECTED_SUBREDDIT);
-        }
-
-        mRequestedPage = getIntent().getIntExtra(Constants.EXTRA_IMAGE, -1);
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        mSubreddit = BundleUtil.getString(extras, Constants.Extra.EXTRA_SUBREDDIT, Constants.Reddit.REDDIT_FRONTPAGE);
+        mCategory = Category.fromString(BundleUtil.getString(extras, Constants.Extra.EXTRA_CATEGORY, Category.HOT.getName()));
+        mAge = Age.fromString(BundleUtil.getString(extras, Constants.Extra.EXTRA_AGE, Age.TODAY.getAge()));
+        mRequestedPage = BundleUtil.getInt(extras, Constants.Extra.EXTRA_IMAGE, -1);
 
         Ln.d("Got Extras: Age %s Category %s Subreddit %s", mAge, mCategory, mSubreddit);
     }
@@ -133,7 +126,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(Constants.EXTRA_REDDIT_URL, mRedditUrl);
+        outState.putParcelable(Constants.Extra.EXTRA_REDDIT_URL, mRedditUrl);
         super.onSaveInstanceState(outState);
     }
 
@@ -141,8 +134,8 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        if (savedInstanceState.containsKey(Constants.EXTRA_REDDIT_URL)) {
-            mRedditUrl = savedInstanceState.getParcelable(Constants.EXTRA_REDDIT_URL);
+        if (savedInstanceState.containsKey(Constants.Extra.EXTRA_REDDIT_URL)) {
+            mRedditUrl = savedInstanceState.getParcelable(Constants.Extra.EXTRA_REDDIT_URL);
         }
     }
 
@@ -183,7 +176,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         // Only needs to be shown if they aren't currently logged in.
         if (!RedditLoginInformation.isLoggedIn()) {
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGIN);
+            loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
         }
     }
 
@@ -227,8 +220,8 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
             return;
         }
 
-        Intent intent = new Intent(Constants.BROADCAST_UPDATE_SCORE);
-        intent.putExtra(Constants.EXTRA_PERMALINK, p.getPermalink());
+        Intent intent = new Intent(Constants.Broadcast.BROADCAST_UPDATE_SCORE);
+        intent.putExtra(Constants.Extra.EXTRA_PERMALINK, p.getPermalink());
 
         switch (whichVoteButton) {
             case DOWN:
@@ -277,7 +270,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         }
 
         // Broadcast the intent to update the score in the ImageDetailFragment
-        intent.putExtra(Constants.EXTRA_SCORE, p.getScore());
+        intent.putExtra(Constants.Extra.EXTRA_SCORE, p.getScore());
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -322,9 +315,9 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     @Override
     public void onFinishSaveImageDialog(String filename) {
         PostData p = getAdapter().getPost(mPager.getCurrentItem());
-        Intent intent = new Intent(Constants.BROADCAST_DOWNLOAD_IMAGE);
-        intent.putExtra(Constants.EXTRA_PERMALINK, p.getPermalink());
-        intent.putExtra(Constants.EXTRA_FILENAME, filename);
+        Intent intent = new Intent(Constants.Broadcast.BROADCAST_DOWNLOAD_IMAGE);
+        intent.putExtra(Constants.Extra.EXTRA_PERMALINK, p.getPermalink());
+        intent.putExtra(Constants.Extra.EXTRA_FILENAME, filename);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -376,19 +369,17 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
         switch (id) {
-            case Constants.LOADER_REDDIT:
+            case Constants.Loader.LOADER_REDDIT:
                 return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, null, null, null,
                                         RedditContract.RedditData.DEFAULT_SORT);
 
-            case Constants.LOADER_POSTS:
+            case Constants.Loader.LOADER_POSTS:
                 String selection = null;
                 String[] selectionArgs = null;
                 List<String> selectionArgsList = new ArrayList<String>();
 
                 // If we have an aggregate subreddit we want to return relevant things.
-                if (mSubreddit.equals(Constants.REDDIT_FRONTPAGE)
-                    || mSubreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME)
-                    || mSubreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
+                if (SubredditUtils.isAggregateSubreddit(mSubreddit)) {
                     selection = null;
                     selectionArgs = null;
                 } else if (mSubreddit.contains("+")) {
@@ -439,14 +430,14 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         switch (loader.getId()) {
-            case Constants.LOADER_REDDIT:
+            case Constants.Loader.LOADER_REDDIT:
                 if (cursor != null && cursor.moveToFirst()) {
                     mAfter = cursor.getString(cursor.getColumnIndex(RedditContract.RedditData.AFTER));
                     mBefore = cursor.getString(cursor.getColumnIndex(RedditContract.RedditData.BEFORE));
                 }
                 break;
 
-            case Constants.LOADER_POSTS:
+            case Constants.Loader.LOADER_POSTS:
                 setRequestInProgress(false);
                 getAdapter().swapCursor(cursor);
 

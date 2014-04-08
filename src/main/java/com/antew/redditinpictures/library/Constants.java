@@ -16,23 +16,75 @@
 package com.antew.redditinpictures.library;
 
 public class Constants {
-    public static final String PACKAGE_PREFIX      = "com.antew.redditinpictures";
-    public static final int    POSTS_CACHE_TIMEOUT = 5 * 1000 * 60; //5 Minutes.
+    public static final String PACKAGE_PREFIX = "com.antew.redditinpictures";
 
     public static class Extra {
-        private static final String EXTRA_PREFIX         = PACKAGE_PREFIX + ".extra.";
-        public static final  String EXTRA_TITLE          = EXTRA_PREFIX + "title";
-        public static final  String EXTRA_SUBREDDIT_DATA = EXTRA_PREFIX + "subredditData";
+        private static final String EXTRA_PREFIX                   = PACKAGE_PREFIX + ".extra.";
+        public static final  String EXTRA_TITLE                    = EXTRA_PREFIX + "title";
+        public static final  String EXTRA_SUBREDDIT_DATA           = EXTRA_PREFIX + "subredditData";
+        public static final  String EXTRA_ACTIVE_VIEW              = EXTRA_PREFIX + "activeView";
+        public static final  String EXTRA_AGE                      = EXTRA_PREFIX + "age";
+        public static final  String EXTRA_CATEGORY                 = EXTRA_PREFIX + "category";
+        public static final  String EXTRA_ENTRIES                  = EXTRA_PREFIX + "Entries";
+        public static final  String EXTRA_ERROR_MESSAGE            = EXTRA_PREFIX + "errorMessage";
+        public static final  String EXTRA_FILENAME                 = EXTRA_PREFIX + "filenameExtra";
+        public static final  String EXTRA_IMAGE                    = EXTRA_PREFIX + "image";
+        public static final  String EXTRA_IMAGE_HASH               = EXTRA_PREFIX + "imageHash";
+        public static final  String EXTRA_IS_SYSTEM_UI_VISIBLE     = EXTRA_PREFIX + "isSystemUiVisible";
+        public static final  String EXTRA_MY_SUBREDDITS            = EXTRA_PREFIX + "mySubreddits";
+        public static final  String EXTRA_SUBREDDIT_NAMES          = EXTRA_PREFIX + "subredditNames";
+        public static final  String EXTRA_NAV_POSITION             = EXTRA_PREFIX + "navPosition";
+        public static final  String EXTRA_NEWLY_SELECTED_SUBREDDIT = EXTRA_PREFIX + "newSelectedSubreddit";
+        public static final  String EXTRA_PERMALINK                = EXTRA_PREFIX + "permalink";
+        public static final  String EXTRA_REDDIT_API               = EXTRA_PREFIX + "redditApi";
+        public static final  String EXTRA_REDDIT_URL               = EXTRA_PREFIX + "redditUrl";
+        public static final  String EXTRA_SCORE                    = EXTRA_PREFIX + "score";
+        public static final  String EXTRA_SUCCESS                  = EXTRA_PREFIX + "success";
+        public static final  String EXTRA_SUBREDDIT                = EXTRA_PREFIX + "subreddit";
+        public static final  String EXTRA_SHOW_NSFW_IMAGES         = EXTRA_PREFIX + "showNsfwImages";
+        public static final  String EXTRA_SHOW_NSFW_IMAGES_CHANGED = EXTRA_PREFIX + "showNsfwImagesChanged";
+        public static final  String EXTRA_USERNAME                 = EXTRA_PREFIX + "username";
+        public static final  String EXTRA_QUERY                    = EXTRA_PREFIX + "query";
     }
 
     public static class Dialog {
-        public static final String DIALOG_DEFAULT_SUBREDDITS = "defaultSubreddits";
-        public static final String DIALOG_ADD_SUBREDDIT      = "addSubreddit";
-        public static final String DIALOG_ABOUT_SUBREDDIT    = "aboutSubreddit";
+        private static final String DIALOG_PREFIX             = PACKAGE_PREFIX + ".dialog.";
+        public static final  String DIALOG_DEFAULT_SUBREDDITS = DIALOG_PREFIX + "defaultSubreddits";
+        public static final  String DIALOG_ADD_SUBREDDIT      = DIALOG_PREFIX + "addSubreddit";
+        public static final  String DIALOG_ABOUT_SUBREDDIT    = DIALOG_PREFIX + "aboutSubreddit";
+        public static final  String DIALOG_GET_FILENAME       = DIALOG_PREFIX + "getFilename";
+        public static final  String DIALOG_LOGIN              = DIALOG_PREFIX + "login";
+        public static final  String DIALOG_LOGOUT             = DIALOG_PREFIX + "logout";
+    }
+
+    public static class Broadcast {
+        private static final String BROADCAST_PREFIX             = PACKAGE_PREFIX + ".broadcast.";
+        public static final  String BROADCAST_DOWNLOAD_IMAGE     = BROADCAST_PREFIX + "download-image";
+        public static final  String BROADCAST_ABOUT_SUBREDDIT    = BROADCAST_PREFIX + "about-subreddit";
+        public static final  String BROADCAST_HTTP_FINISHED      = BROADCAST_PREFIX + "http-finished";
+        public static final  String BROADCAST_LOGIN_COMPLETE     = BROADCAST_PREFIX + "login-complete";
+        public static final  String BROADCAST_MY_SUBREDDITS      = BROADCAST_PREFIX + "my-subreddits";
+        public static final  String BROADCAST_SUBREDDIT_SELECTED = BROADCAST_PREFIX + "subreddit-selected";
+        public static final  String BROADCAST_SUBSCRIBE          = BROADCAST_PREFIX + "subscribe";
+        public static final  String BROADCAST_REMOVE_NSFW_IMAGES = BROADCAST_PREFIX + "remove-nsfw-images";
+        public static final  String BROADCAST_TOGGLE_FULLSCREEN  = BROADCAST_PREFIX + "fullscreen-toggle";
+        public static final  String BROADCAST_UPDATE_SCORE       = BROADCAST_PREFIX + "update-score";
+        public static final  String BROADCAST_SUBREDDIT_SEARCH   = BROADCAST_PREFIX + "subreddit-search";
+    }
+
+    public static class Loader {
+        public static final int LOADER_REDDIT     = 10;
+        public static final int LOADER_POSTS      = 20;
+        public static final int LOADER_LOGIN      = 30;
+        public static final int LOADER_SUBREDDITS = 40;
     }
 
     public static class Reddit {
-        public static final String USER_AGENT = "Reddit In Pictures Android by /u/antew";
+        public static final String USER_AGENT                    = "Reddit In Pictures Android by /u/antew";
+        public static final int    POSTS_TO_FETCH                = 100;
+        public static final String REDDIT_FRONTPAGE              = "REDDIT_FRONTPAGE";
+        public static final String REDDIT_FRONTPAGE_DISPLAY_NAME = "Frontpage";
+        public static final String REDDIT_ALL_DISPLAY_NAME       = "All";
 
         public static class Endpoint {
             public static final String REDDIT_BASE_URL              = "http://www.reddit.com";
@@ -52,63 +104,6 @@ public class Constants {
         // TODO: Replace with Flickr API key.
         public static final String API_KEY = "REPLACE_THIS_WITH_YOUR_FLICKR_API_KEY";
     }
-
-    // Constants for extras
-    public static final String ACTIVE_VIEW                    = "activeView";
-    public static final String EXTRA_AGE                      = "age";
-    public static final String EXTRA_CATEGORY                 = "category";
-    public static final String EXTRA_ENTRIES                  = "Entries";
-    public static final String EXTRA_ERROR_MESSAGE            = "errorMessage";
-    public static final String EXTRA_FILENAME                 = "filenameExtra";
-    public static final String EXTRA_IMAGE                    = "image";
-    public static final String EXTRA_IMAGE_HASH               = "imageHash";
-    public static final String EXTRA_IS_SYSTEM_UI_VISIBLE     = "isSystemUiVisible";
-    public static final String EXTRA_MY_SUBREDDITS            = "mySubreddits";
-    public static final String EXTRA_SUBREDDIT_NAMES          = "subredditNames";
-    public static final String EXTRA_NAV_POSITION             = "navPosition";
-    public static final String EXTRA_NEWLY_SELECTED_SUBREDDIT = "newSelectedSubreddit";
-    public static final String EXTRA_PERMALINK                = "permalink";
-    public static final String EXTRA_REDDIT_API               = "redditApi";
-    public static final String EXTRA_REDDIT_URL               = "redditUrl";
-    public static final String EXTRA_SCORE                    = "score";
-    public static final String EXTRA_SUCCESS                  = "success";
-    public static final String EXTRA_SELECTED_SUBREDDIT       = "selectedSubreddit";
-    public static final String EXTRA_SHOW_NSFW_IMAGES         = "showNsfwImages";
-    public static final String EXTRA_SHOW_NSFW_IMAGES_CHANGED = "showNsfwImagesChanged";
-    public static final String EXTRA_USERNAME                 = "username";
-    public static final String EXTRA_QUERY                    = "query";
-
-    public static final String REDDIT_FRONTPAGE              = "REDDIT_FRONTPAGE";
-    public static final String REDDIT_FRONTPAGE_DISPLAY_NAME = "Frontpage";
-    public static final String REDDIT_ALL_DISPLAY_NAME       = "All";
-
-    // Constants for dialog tags
-    public static final String DIALOG_GET_FILENAME = "getFilename";
-    public static final String DIALOG_LOGIN        = "login";
-    public static final String DIALOG_LOGOUT       = "logout";
-
-    // Constants for broadcast messages
-    public static final String BROADCAST_DOWNLOAD_IMAGE     = "download-image";
-    public static final String BROADCAST_ABOUT_SUBREDDIT    = "about-subreddit";
-    public static final String BROADCAST_HTTP_FINISHED      = "http-finished";
-    public static final String BROADCAST_LOGIN_COMPLETE     = "login-complete";
-    public static final String BROADCAST_MY_SUBREDDITS      = "my-subreddits";
-    public static final String BROADCAST_SUBREDDIT_SELECTED = "subreddit-selected";
-    public static final String BROADCAST_SUBSCRIBE          = "subscribe";
-    public static final String BROADCAST_REMOVE_NSFW_IMAGES = "remove-nsfw-images";
-    public static final String BROADCAST_TOGGLE_FULLSCREEN  = "fullscreen-toggle";
-    public static final String BROADCAST_UPDATE_SCORE       = "update-score";
-    public static final String BROADCAST_SUBREDDIT_SEARCH   = "subreddit-search";
-
-    public static final int LOADER_REDDIT     = 10;
-    public static final int LOADER_POSTS      = 20;
-    public static final int LOADER_LOGIN      = 30;
-    public static final int LOADER_SUBREDDITS = 40;
-
-    public static final String COMPACT_URL     = "/.compact";
-    public static final String REDDIT_BASE_URL = "http://www.reddit.com";
-
-    public static final int POSTS_TO_FETCH = 100;
 
     public static final float  IMAGE_CACHE_SIZE = 0.25f;
     public static final String JSON             = ".json";

@@ -32,7 +32,7 @@ public class LogoutDialogFragment extends DialogFragment {
 
     public static LogoutDialogFragment newInstance(String username) {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.EXTRA_USERNAME, username);
+        bundle.putString(Constants.Extra.EXTRA_USERNAME, username);
 
         LogoutDialogFragment logoutDialogFragment = new LogoutDialogFragment();
         logoutDialogFragment.setArguments(bundle);
@@ -65,7 +65,7 @@ public class LogoutDialogFragment extends DialogFragment {
                                                                                                   }
                                                                                               });
 
-        String username = BundleUtil.getString(getArguments(), Constants.EXTRA_USERNAME, null);
+        String username = BundleUtil.getString(getArguments(), Constants.Extra.EXTRA_USERNAME, null);
         if (!Strings.isEmpty(username)) {
             dialog.setMessage(String.format(getString(R.string.are_you_sure_you_want_to_log_out_with_username), username));
         }

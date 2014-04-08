@@ -95,7 +95,7 @@ public class RedditUrl implements Parcelable {
     public String getUrl() {
 
         StringBuffer url = new StringBuffer();
-        if (subreddit.equals(Constants.REDDIT_FRONTPAGE)) {
+        if (subreddit.equals(Constants.Reddit.REDDIT_FRONTPAGE)) {
             url.append(Constants.Reddit.Endpoint.REDDIT_BASE_URL);
             url.append(URL_SEPARATOR);
         } else {

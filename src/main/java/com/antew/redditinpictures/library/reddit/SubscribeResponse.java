@@ -17,6 +17,6 @@ public class SubscribeResponse extends RedditResponseHandler {
     @Override
     public void processHttpResponse(Context context) {
         Ln.i("Got back from subscribe! = %s", Strings.toString(result.getJson()));
-        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Constants.BROADCAST_SUBSCRIBE));
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Constants.Broadcast.BROADCAST_SUBSCRIBE));
     }
 }

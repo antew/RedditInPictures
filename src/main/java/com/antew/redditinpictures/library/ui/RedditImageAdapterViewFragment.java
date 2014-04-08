@@ -18,13 +18,13 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.model.Age;
-import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
+import com.antew.redditinpictures.library.model.Age;
+import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
@@ -32,6 +32,7 @@ import com.antew.redditinpictures.library.utils.BundleUtil;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.RedditUtils;
 import com.antew.redditinpictures.library.utils.Strings;
+import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
@@ -59,9 +60,9 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     protected TextView mNoImages;
     protected boolean  mRequestInProgress;
     private   String   mAfter;
-    protected String   mCurrentSubreddit = Constants.REDDIT_FRONTPAGE;
-    protected Category mCategory = Category.HOT;
-    protected Age mAge = Age.TODAY;
+    protected String   mCurrentSubreddit = Constants.Reddit.REDDIT_FRONTPAGE;
+    protected Category mCategory         = Category.HOT;
+    protected Age      mAge              = Age.TODAY;
 
     /**
      * Called to do initial creation of a fragment.  This is called after
@@ -128,8 +129,8 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_REDDIT, null, this);
-        getActivity().getSupportLoaderManager().restartLoader(Constants.LOADER_POSTS, null, this);
+        getActivity().getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_REDDIT, null, this);
+        getActivity().getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_POSTS, null, this);
         fetchPostsIfNeeded();
     }
 
@@ -141,8 +142,8 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onPause() {
         super.onPause();
-        getActivity().getSupportLoaderManager().destroyLoader(Constants.LOADER_REDDIT);
-        getActivity().getSupportLoaderManager().destroyLoader(Constants.LOADER_POSTS);
+        getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_REDDIT);
+        getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_POSTS);
     }
 
     protected abstract int getLayoutId();
@@ -171,9 +172,9 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     public void handleArguments(Bundle arguments) {
-        mCurrentSubreddit = BundleUtil.getString(arguments, Constants.EXTRA_SELECTED_SUBREDDIT, Constants.REDDIT_FRONTPAGE);
-        mCategory = Category.fromString(BundleUtil.getString(arguments, Constants.EXTRA_CATEGORY, Category.HOT.getName()));
-        mAge = Age.fromString(BundleUtil.getString(arguments, Constants.EXTRA_AGE, Age.TODAY.getAge()));
+        mCurrentSubreddit = BundleUtil.getString(arguments, Constants.Extra.EXTRA_SUBREDDIT, Constants.Reddit.REDDIT_FRONTPAGE);
+        mCategory = Category.fromString(BundleUtil.getString(arguments, Constants.Extra.EXTRA_CATEGORY, Category.HOT.getName()));
+        mAge = Age.fromString(BundleUtil.getString(arguments, Constants.Extra.EXTRA_AGE, Age.TODAY.getAge()));
     }
 
     protected abstract T getAdapterView();
@@ -211,21 +212,20 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
-            case Constants.LOADER_REDDIT:
+            case Constants.Loader.LOADER_REDDIT:
                 return new CursorLoader(getActivity(), RedditContract.RedditData.CONTENT_URI, // uri
                                         null,                                  // projection
                                         "subreddit = ?",                       // selection
-                                        new String[] {mCurrentSubreddit},      // selectionArgs[]
+                                        new String[] { mCurrentSubreddit },      // selectionArgs[]
                                         RedditContract.Posts.DEFAULT_SORT);    // sort
-            case Constants.LOADER_POSTS:
+            case Constants.Loader.LOADER_POSTS:
                 QueryCriteria queryCriteria = getPostsQueryCriteria();
                 String selection = null;
                 String[] selectionArgs = null;
                 List<String> selectionArgsList = new ArrayList<String>();
 
                 // If we have an aggregate subreddit we want to return relevant things.
-                if (mCurrentSubreddit.equals(Constants.REDDIT_FRONTPAGE) || mCurrentSubreddit.equals(
-                    Constants.REDDIT_FRONTPAGE_DISPLAY_NAME) || mCurrentSubreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
+                if (SubredditUtils.isAggregateSubreddit(mCurrentSubreddit)) {
                     selection = null;
                     selectionArgs = null;
                 } else if (mCurrentSubreddit.contains("+")) {
@@ -317,12 +317,12 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
-            case Constants.LOADER_REDDIT:
+            case Constants.Loader.LOADER_REDDIT:
                 if (data != null && data.moveToFirst()) {
                     mAfter = data.getString(data.getColumnIndex(RedditContract.RedditData.AFTER));
                 }
                 break;
-            case Constants.LOADER_POSTS:
+            case Constants.Loader.LOADER_POSTS:
                 mAdapter.swapCursor(data);
 
                 if (data.getCount() == 0) {
@@ -350,9 +350,9 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
-            case Constants.LOADER_REDDIT:
+            case Constants.Loader.LOADER_REDDIT:
                 break;
-            case Constants.LOADER_POSTS:
+            case Constants.Loader.LOADER_POSTS:
                 produceRequestCompletedEvent();
                 mAdapter.swapCursor(null);
                 break;
@@ -390,10 +390,10 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
         Bundle b = new Bundle();
-        b.putString(Constants.EXTRA_SELECTED_SUBREDDIT, mCurrentSubreddit);
-        b.putString(Constants.EXTRA_CATEGORY, mCategory.name());
-        b.putString(Constants.EXTRA_AGE, mAge.name());
-        i.putExtra(Constants.EXTRA_IMAGE, position);
+        b.putString(Constants.Extra.EXTRA_SUBREDDIT, mCurrentSubreddit);
+        b.putString(Constants.Extra.EXTRA_CATEGORY, mCategory.name());
+        b.putString(Constants.Extra.EXTRA_AGE, mAge.name());
+        i.putExtra(Constants.Extra.EXTRA_IMAGE, position);
         i.putExtras(b);
 
         if (Util.hasJellyBean()) {

@@ -56,7 +56,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            boolean isSystemUiVisible = intent.getBooleanExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
+            boolean isSystemUiVisible = intent.getBooleanExtra(Constants.Extra.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
             if (mPager != null) {
                 if (isSystemUiVisible) {
                     goFullscreen();
@@ -113,7 +113,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     private void registerLocalBroadcastReceivers() {
         LocalBroadcastManager.getInstance(this)
-                             .registerReceiver(mToggleFullscreenReceiver, new IntentFilter(Constants.BROADCAST_TOGGLE_FULLSCREEN));
+                             .registerReceiver(mToggleFullscreenReceiver, new IntentFilter(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN));
     }
 
     /**
@@ -204,7 +204,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * Set the current item based on the extra passed in to this activity
      */
     private void moveViewPagerToSelectedIndex() {
-        final int extraCurrentItem = getIntent().getIntExtra(Constants.EXTRA_IMAGE, -1);
+        final int extraCurrentItem = getIntent().getIntExtra(Constants.Extra.EXTRA_IMAGE, -1);
         if (extraCurrentItem != -1) {
             mPager.setCurrentItem(extraCurrentItem);
         }
@@ -290,15 +290,15 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(Constants.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
+        outState.putParcelableArrayList(Constants.Extra.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState.containsKey(Constants.EXTRA_ENTRIES)) {
-            mImages = savedInstanceState.getParcelableArrayList(Constants.EXTRA_ENTRIES);
+        if (savedInstanceState.containsKey(Constants.Extra.EXTRA_ENTRIES)) {
+            mImages = savedInstanceState.getParcelableArrayList(Constants.Extra.EXTRA_ENTRIES);
         }
     }
 
@@ -405,7 +405,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     public void handleSaveImage() {
         SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(getFilenameForSave());
-        saveImageDialog.show(getSupportFragmentManager(), Constants.DIALOG_GET_FILENAME);
+        saveImageDialog.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
     }
 
     /**

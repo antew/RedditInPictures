@@ -150,9 +150,9 @@ public class PostData implements Parcelable, ContentValuesOperation {
     public Album getAlbum() { return album; }
 
     public String getFullPermalink(boolean useMobileInterface) {
-        String url = Constants.REDDIT_BASE_URL + permalink;
+        String url = Constants.Reddit.Endpoint.REDDIT_BASE_URL + permalink;
         if (useMobileInterface) {
-            url += Constants.COMPACT_URL;
+            url += Constants.Reddit.Endpoint.COMPACT_URL;
         }
 
         return url;

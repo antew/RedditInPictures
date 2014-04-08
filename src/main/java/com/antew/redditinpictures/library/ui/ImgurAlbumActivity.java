@@ -88,9 +88,9 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
     @Override
     public void onFinishSaveImageDialog(String filename) {
         ImgurImage p = getAdapter().getImage(mPager.getCurrentItem());
-        Intent intent = new Intent(Constants.BROADCAST_DOWNLOAD_IMAGE);
-        intent.putExtra(Constants.EXTRA_IMAGE_HASH, p.getImage().getHash());
-        intent.putExtra(Constants.EXTRA_FILENAME, filename);
+        Intent intent = new Intent(Constants.Broadcast.BROADCAST_DOWNLOAD_IMAGE);
+        intent.putExtra(Constants.Extra.EXTRA_IMAGE_HASH, p.getImage().getHash());
+        intent.putExtra(Constants.Extra.EXTRA_FILENAME, filename);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 

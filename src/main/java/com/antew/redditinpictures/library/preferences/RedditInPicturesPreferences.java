@@ -51,8 +51,8 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getIntent().hasExtra(Constants.EXTRA_SHOW_NSFW_IMAGES)) {
-            showNsfwImagesOldValue = getIntent().getBooleanExtra(Constants.EXTRA_SHOW_NSFW_IMAGES, false);
+        if (getIntent().hasExtra(Constants.Extra.EXTRA_SHOW_NSFW_IMAGES)) {
+            showNsfwImagesOldValue = getIntent().getBooleanExtra(Constants.Extra.EXTRA_SHOW_NSFW_IMAGES, false);
             showNsfwImagesNewValue = showNsfwImagesOldValue;
         }
 
@@ -91,7 +91,7 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
     @Override
     public void onBackPressed() {
         Intent i = new Intent();
-        i.putExtra(Constants.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
+        i.putExtra(Constants.Extra.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
         setResult(RESULT_OK, i);
         super.onBackPressed();
     }
@@ -107,7 +107,7 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
         int itemId = item.getItemId();
         if (itemId == android.R.id.home) {
             Intent i = new Intent();
-            i.putExtra(Constants.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
+            i.putExtra(Constants.Extra.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
             setResult(RESULT_OK, i);
             finish();
         }

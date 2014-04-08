@@ -291,8 +291,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
             return;
         }
 
-        Intent intent = new Intent(Constants.BROADCAST_UPDATE_SCORE);
-        intent.putExtra(Constants.EXTRA_PERMALINK, p.getPermalink());
+        Intent intent = new Intent(Constants.Broadcast.BROADCAST_UPDATE_SCORE);
+        intent.putExtra(Constants.Extra.EXTRA_PERMALINK, p.getPermalink());
 
         Ln.d("Vote is: %s", p.getVote());
         Ln.d("Vote Button is: %s", whichVoteButton);
@@ -360,7 +360,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
         }
 
         // Broadcast the intent to update the score in the ImageDetailFragment
-        intent.putExtra(Constants.EXTRA_SCORE, p.getScore());
+        intent.putExtra(Constants.Extra.EXTRA_SCORE, p.getScore());
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 

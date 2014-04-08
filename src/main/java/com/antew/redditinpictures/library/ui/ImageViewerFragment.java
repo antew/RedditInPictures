@@ -93,13 +93,13 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra(Constants.EXTRA_PERMALINK) &&
-                intent.hasExtra(Constants.EXTRA_SCORE) &&
+            if (intent.hasExtra(Constants.Extra.EXTRA_PERMALINK) &&
+                intent.hasExtra(Constants.Extra.EXTRA_SCORE) &&
                 mImage != null &&
-                mImage.getPermalink().equals(intent.getStringExtra(Constants.EXTRA_PERMALINK))) {
+                mImage.getPermalink().equals(intent.getStringExtra(Constants.Extra.EXTRA_PERMALINK))) {
 
                 if (mPostVotes != null) {
-                    mPostVotes.setText("" + intent.getIntExtra(Constants.EXTRA_SCORE, 0));
+                    mPostVotes.setText("" + intent.getIntExtra(Constants.Extra.EXTRA_SCORE, 0));
                 }
             }
         }
@@ -116,7 +116,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            boolean isSystemUiVisible = intent.getBooleanExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
+            boolean isSystemUiVisible = intent.getBooleanExtra(Constants.Extra.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
             if (isSystemUiVisible) {
                 hidePostDetails();
             } else {
@@ -223,9 +223,9 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
         final Activity act = getActivity();
 
-        LocalBroadcastManager.getInstance(act).registerReceiver(mScoreUpdateReceiver, new IntentFilter(Constants.BROADCAST_UPDATE_SCORE));
+        LocalBroadcastManager.getInstance(act).registerReceiver(mScoreUpdateReceiver, new IntentFilter(Constants.Broadcast.BROADCAST_UPDATE_SCORE));
         LocalBroadcastManager.getInstance(act)
-                             .registerReceiver(mToggleFullscreenIntent, new IntentFilter(Constants.BROADCAST_TOGGLE_FULLSCREEN));
+                             .registerReceiver(mToggleFullscreenIntent, new IntentFilter(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN));
 
         // Set up on our tap listener for the PhotoView which we use to toggle between fullscreen
         // and windowed mode
@@ -269,8 +269,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
             @Override
             public void onPhotoTap(View view, float x, float y) {
-                Intent intent = new Intent(Constants.BROADCAST_TOGGLE_FULLSCREEN);
-                intent.putExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
+                Intent intent = new Intent(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN);
+                intent.putExtra(Constants.Extra.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
                 LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
             }
         };
@@ -374,8 +374,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
                     case MotionEvent.ACTION_UP:
                         if (!mCancelClick) {
 
-                            Intent intent = new Intent(Constants.BROADCAST_TOGGLE_FULLSCREEN);
-                            intent.putExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
+                            Intent intent = new Intent(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN);
+                            intent.putExtra(Constants.Extra.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
                             LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
                         }
                         break;

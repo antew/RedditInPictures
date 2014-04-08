@@ -67,7 +67,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
 
         if (Strings.isEmpty(title)) {
             actionBar.setTitle(getString(R.string.app_name));
-        } else if (title.equals(Constants.REDDIT_FRONTPAGE)) {
+        } else if (title.equals(Constants.Reddit.REDDIT_FRONTPAGE)) {
             actionBar.setTitle(getString(R.string.frontpage));
             actionBar.setSubtitle(subtitle);
         } else {

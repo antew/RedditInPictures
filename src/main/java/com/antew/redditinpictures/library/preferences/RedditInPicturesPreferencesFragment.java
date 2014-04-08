@@ -44,8 +44,8 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getIntent().hasExtra(Constants.EXTRA_SHOW_NSFW_IMAGES)) {
-            showNsfwImagesOldValue = getIntent().getBooleanExtra(Constants.EXTRA_SHOW_NSFW_IMAGES, false);
+        if (getIntent().hasExtra(Constants.Extra.EXTRA_SHOW_NSFW_IMAGES)) {
+            showNsfwImagesOldValue = getIntent().getBooleanExtra(Constants.Extra.EXTRA_SHOW_NSFW_IMAGES, false);
             showNsfwImagesNewValue = showNsfwImagesOldValue;
         }
         getFragmentManager().beginTransaction().replace(android.R.id.content, getPrefsFragment()).commit();
@@ -68,7 +68,7 @@ public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
         showNsfwImagesNewValue = PreferenceManager.getDefaultSharedPreferences(this)
                                                   .getBoolean(getString(R.string.pref_show_nsfw_images), false);
         Intent i = new Intent();
-        i.putExtra(Constants.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
+        i.putExtra(Constants.Extra.EXTRA_SHOW_NSFW_IMAGES_CHANGED, showNsfwImagesNewValue != showNsfwImagesOldValue);
         setResult(RESULT_OK, i);
         super.onBackPressed();
     }

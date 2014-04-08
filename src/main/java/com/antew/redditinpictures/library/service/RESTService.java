@@ -92,7 +92,7 @@ public class RESTService extends IntentService {
         Bundle passThrough = extras.getBundle(EXTRA_PASS_THROUGH);
 
         HttpEntity responseEntity = null;
-        Intent result = new Intent(Constants.BROADCAST_HTTP_FINISHED);
+        Intent result = new Intent(Constants.Broadcast.BROADCAST_HTTP_FINISHED);
         result.putExtra(EXTRA_PASS_THROUGH, passThrough);
         Bundle resultData = new Bundle();
 

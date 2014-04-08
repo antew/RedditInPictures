@@ -39,7 +39,7 @@ public class RedditService extends RESTService {
 
     public static void getPosts(Context context, String subreddit, Age age, Category category, String after) {
         if (subreddit == null) {
-            subreddit = Constants.REDDIT_FRONTPAGE;
+            subreddit = Constants.Reddit.REDDIT_FRONTPAGE;
         }
 
         if (age == null) {
@@ -52,7 +52,7 @@ public class RedditService extends RESTService {
 
         Ln.d("Retrieving Posts For %s %s %s After %s", subreddit, category.toString(), age.toString(), after);
 
-        RedditUrl url = new RedditUrl.Builder(subreddit).age(age).category(category).count(Constants.POSTS_TO_FETCH).after(after).build();
+        RedditUrl url = new RedditUrl.Builder(subreddit).age(age).category(category).count(Constants.Reddit.POSTS_TO_FETCH).after(after).build();
 
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
@@ -202,7 +202,7 @@ public class RedditService extends RESTService {
             mContext = context;
 
             if (Strings.isEmpty(subreddit)) {
-                subreddit = Constants.REDDIT_FRONTPAGE;
+                subreddit = Constants.Reddit.REDDIT_FRONTPAGE;
             }
 
             if (category == null) {

@@ -58,7 +58,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @InjectView(R.id.ib_refresh)
     protected ImageButton                      mRefreshSubreddits;
 
-    protected String   mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
+    protected String   mSelectedSubreddit = Constants.Reddit.REDDIT_FRONTPAGE;
     protected Category mCategory          = Category.HOT;
     protected Age      mAge               = Age.TODAY;
 
@@ -118,7 +118,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             // TODO: Make this less hacky...
             // Load the actual frontpage of reddit if selected
             if (priority == MySubredditsResponse.DefaultSubreddit.FRONTPAGE.getPriority()) {
-                subredditName = Constants.REDDIT_FRONTPAGE;
+                subredditName = Constants.Reddit.REDDIT_FRONTPAGE;
             }
 
             mMenuDrawer.setActiveView(view, position);
@@ -166,7 +166,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             mSortSubreddits.setContentDescription(getString(R.string.sort_by_popularity));
         }
 
-        getSupportLoaderManager().restartLoader(Constants.LOADER_SUBREDDITS, null, this);
+        getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_SUBREDDITS, null, this);
     }
 
     @OnClick(R.id.ib_refresh)
@@ -235,7 +235,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     private void initializeLoaders() {
-        getSupportLoaderManager().initLoader(Constants.LOADER_SUBREDDITS, null, this);
+        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_SUBREDDITS, null, this);
     }
 
     private SubredditMenuDrawerCursorAdapter getSubredditMenuAdapter() {
@@ -253,8 +253,8 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     protected void filterSubreddits(String filterText) {
         LoaderManager loaderManager = getSupportLoaderManager();
         Bundle filterBundle = new Bundle();
-        filterBundle.putString(Constants.EXTRA_QUERY, filterText);
-        loaderManager.restartLoader(Constants.LOADER_SUBREDDITS, filterBundle, this);
+        filterBundle.putString(Constants.Extra.EXTRA_QUERY, filterText);
+        loaderManager.restartLoader(Constants.Loader.LOADER_SUBREDDITS, filterBundle, this);
     }
 
     protected abstract void subscribeToSubreddit(String subredditName);
@@ -263,7 +263,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         // Only needs to be shown if they aren't currently logged in.
         if (!RedditLoginInformation.isLoggedIn()) {
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGIN);
+            loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
         }
     }
 
@@ -306,12 +306,12 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
-            case Constants.LOADER_SUBREDDITS:
+            case Constants.Loader.LOADER_SUBREDDITS:
                 String selection = null;
                 String[] selectionArgs = null;
 
-                if (args != null && args.containsKey(Constants.EXTRA_QUERY)) {
-                    String query = args.getString(Constants.EXTRA_QUERY);
+                if (args != null && args.containsKey(Constants.Extra.EXTRA_QUERY)) {
+                    String query = args.getString(Constants.Extra.EXTRA_QUERY);
 
                     if (Strings.notEmpty(query)) {
                         selection = RedditContract.SubredditColumns.DISPLAY_NAME + " LIKE ?";
@@ -369,7 +369,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
-            case Constants.LOADER_SUBREDDITS:
+            case Constants.Loader.LOADER_SUBREDDITS:
                 mSubredditAdapter.swapCursor(data);
                 break;
         }
@@ -386,7 +386,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
-            case Constants.LOADER_SUBREDDITS:
+            case Constants.Loader.LOADER_SUBREDDITS:
                 mSubredditAdapter.swapCursor(null);
                 break;
         }

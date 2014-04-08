@@ -75,20 +75,20 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString(Constants.ACTIVE_VIEW, mActiveViewType.toString());
-        outState.putString(Constants.EXTRA_SELECTED_SUBREDDIT, mSelectedSubreddit);
-        outState.putString(Constants.EXTRA_CATEGORY, Strings.toString(mCategory));
-        outState.putString(Constants.EXTRA_AGE, Strings.toString(mAge));
+        outState.putString(Constants.Extra.EXTRA_ACTIVE_VIEW, mActiveViewType.toString());
+        outState.putString(Constants.Extra.EXTRA_SUBREDDIT, mSelectedSubreddit);
+        outState.putString(Constants.Extra.EXTRA_CATEGORY, Strings.toString(mCategory));
+        outState.putString(Constants.Extra.EXTRA_AGE, Strings.toString(mAge));
         super.onSaveInstanceState(outState);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     private void restoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mActiveViewType = ViewType.valueOf(BundleUtil.getString(savedInstanceState, Constants.ACTIVE_VIEW, ViewType.LIST.toString()));
-            mSelectedSubreddit = BundleUtil.getString(savedInstanceState, Constants.EXTRA_SELECTED_SUBREDDIT, Constants.REDDIT_FRONTPAGE);
-            mCategory = Category.fromString(BundleUtil.getString(savedInstanceState, Constants.EXTRA_CATEGORY, Category.HOT.getName()));
-            mAge = Age.fromString(BundleUtil.getString(savedInstanceState, Constants.EXTRA_AGE, Age.TODAY.getAge()));
+            mActiveViewType = ViewType.valueOf(BundleUtil.getString(savedInstanceState, Constants.Extra.EXTRA_ACTIVE_VIEW, ViewType.LIST.toString()));
+            mSelectedSubreddit = BundleUtil.getString(savedInstanceState, Constants.Extra.EXTRA_SUBREDDIT, Constants.Reddit.REDDIT_FRONTPAGE);
+            mCategory = Category.fromString(BundleUtil.getString(savedInstanceState, Constants.Extra.EXTRA_CATEGORY, Category.HOT.getName()));
+            mAge = Age.fromString(BundleUtil.getString(savedInstanceState, Constants.Extra.EXTRA_AGE, Age.TODAY.getAge()));
         }
     }
 
@@ -108,11 +108,11 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     }
 
     private void initalizeReceivers() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Constants.BROADCAST_LOGIN_COMPLETE));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mLoginComplete, new IntentFilter(Constants.Broadcast.BROADCAST_LOGIN_COMPLETE));
     }
 
     private void initializeLoaders() {
-        getSupportLoaderManager().initLoader(Constants.LOADER_LOGIN, null, this);
+        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_LOGIN, null, this);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     public void startPreferences() {
         Intent intent = new Intent(this, getPreferencesClass());
-        intent.putExtra(Constants.EXTRA_SHOW_NSFW_IMAGES, SharedPreferencesHelper.getShowNsfwImages(this));
+        intent.putExtra(Constants.Extra.EXTRA_SHOW_NSFW_IMAGES, SharedPreferencesHelper.getShowNsfwImages(this));
         startActivityForResult(intent, SETTINGS_REQUEST);
     }
 
@@ -234,17 +234,17 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     public void handleLoginAndLogout() {
         if (!RedditLoginInformation.isLoggedIn()) {
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGIN);
+            loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
         } else {
             DialogFragment logoutFragment = LogoutDialogFragment.newInstance(RedditLoginInformation.getUsername());
-            logoutFragment.show(getSupportFragmentManager(), Constants.DIALOG_LOGOUT);
+            logoutFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGOUT);
         }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle paramBundle) {
         switch (id) {
-            case Constants.LOADER_LOGIN:
+            case Constants.Loader.LOADER_LOGIN:
                 return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
             default:
                 return super.onCreateLoader(id, paramBundle);
@@ -254,7 +254,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         switch (loader.getId()) {
-            case Constants.LOADER_LOGIN:
+            case Constants.Loader.LOADER_LOGIN:
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
                         String username = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
@@ -420,9 +420,9 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     private void handleLoginComplete(Intent intent) {
         requestCompleted(null);
-        boolean successful = intent.getBooleanExtra(Constants.EXTRA_SUCCESS, false);
+        boolean successful = intent.getBooleanExtra(Constants.Extra.EXTRA_SUCCESS, false);
         if (!successful) {
-            String errorMessage = intent.getStringExtra(Constants.EXTRA_ERROR_MESSAGE);
+            String errorMessage = intent.getStringExtra(Constants.Extra.EXTRA_ERROR_MESSAGE);
             Toast.makeText(this, getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT).show();
         }
     }
@@ -436,8 +436,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     }
 
     private void loadSubreddit(String subreddit, Category category, Age age) {
-        if (subreddit.equals(Constants.REDDIT_FRONTPAGE) || subreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME)) {
-            mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
+        if (subreddit.equals(Constants.Reddit.REDDIT_FRONTPAGE) || subreddit.equals(Constants.Reddit.REDDIT_FRONTPAGE_DISPLAY_NAME)) {
+            mSelectedSubreddit = Constants.Reddit.REDDIT_FRONTPAGE;
         } else {
             mSelectedSubreddit = subreddit;
         }

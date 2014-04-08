@@ -35,4 +35,12 @@ public class BundleUtil {
 
         return bundle.getBoolean(key, defaultValue);
     }
+
+    public static int getInt(Bundle bundle, String key, int defaultValue) {
+        if (bundle == null || Strings.isEmpty(key)) {
+            return defaultValue;
+        }
+
+        return bundle.getInt(key, defaultValue);
+    }
 }

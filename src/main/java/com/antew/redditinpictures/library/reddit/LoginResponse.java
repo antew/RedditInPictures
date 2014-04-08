@@ -42,14 +42,14 @@ public class LoginResponse extends RedditResponseHandler {
         }
 
         ContentValues loginValues = response.getContentValues();
-        Intent loginNotify = new Intent(Constants.BROADCAST_LOGIN_COMPLETE);
-        loginNotify.putExtra(Constants.EXTRA_USERNAME, username);
+        Intent loginNotify = new Intent(Constants.Broadcast.BROADCAST_LOGIN_COMPLETE);
+        loginNotify.putExtra(Constants.Extra.EXTRA_USERNAME, username);
         if (loginValues.getAsBoolean(RedditContract.Login.SUCCESS)) {
-            loginNotify.putExtra(Constants.EXTRA_SUCCESS, true);
+            loginNotify.putExtra(Constants.Extra.EXTRA_SUCCESS, true);
             resolver.insert(RedditContract.Login.CONTENT_URI, loginValues);
         } else {
-            loginNotify.putExtra(Constants.EXTRA_SUCCESS, false);
-            loginNotify.putExtra(Constants.EXTRA_ERROR_MESSAGE, loginValues.getAsString(RedditContract.Login.ERROR_MESSAGE));
+            loginNotify.putExtra(Constants.Extra.EXTRA_SUCCESS, false);
+            loginNotify.putExtra(Constants.Extra.EXTRA_ERROR_MESSAGE, loginValues.getAsString(RedditContract.Login.ERROR_MESSAGE));
         }
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(loginNotify);
