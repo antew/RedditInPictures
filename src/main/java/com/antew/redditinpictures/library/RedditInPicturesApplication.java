@@ -5,9 +5,7 @@ import android.app.Instrumentation;
 import android.content.Context;
 import com.antew.redditinpictures.ApplicationModulePro;
 import com.antew.redditinpictures.Injector;
-import com.antew.redditinpictures.Modules;
 import com.antew.redditinpictures.library.modules.RootModule;
-import dagger.ObjectGraph;
 
 public class RedditInPicturesApplication extends Application {
     private static RedditInPicturesApplication instance;

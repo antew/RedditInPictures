@@ -15,9 +15,6 @@ import com.antew.redditinpictures.pro.BuildConfig;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Picasso;
-import dagger.ObjectGraph;
-import java.util.Arrays;
-import java.util.List;
 import javax.inject.Inject;
 
 /**

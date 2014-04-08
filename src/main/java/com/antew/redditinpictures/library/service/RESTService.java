@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.utils.Ln;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -69,18 +69,15 @@ public class RESTService extends IntentService {
 
     public RESTService() {
         super(TAG);
-        Log.i(TAG, "constructor");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.i(TAG, "onHandleIntent");
-
         Uri action = intent.getData();
         Bundle extras = intent.getExtras();
 
         if (extras == null || action == null) {
-            Log.e(TAG, "You did not pass extras or data with the Intent.");
+            Ln.e("You did not pass extras or data with the Intent.");
             return;
         }
 
@@ -177,7 +174,7 @@ public class RESTService extends IntentService {
 
                 // Let's send some useful debug information so we can monitor things
                 // in LogCat.
-                Log.d(TAG, "Executing request: " + verbToString(verb) + ": " + action.toString());
+                Ln.d("Executing request: %s %s ", verbToString(verb), action.toString());
 
                 // Finally, we send our request using HTTP. This is the synchronous
                 // long operation that we need to run on this thread.
@@ -199,16 +196,16 @@ public class RESTService extends IntentService {
                 }
             }
         } catch (URISyntaxException e) {
-            Log.e(TAG, "URI syntax was incorrect. " + verbToString(verb) + ": " + action.toString(), e);
+            Ln.e(e, "URI syntax was incorrect. %s %s ", verbToString(verb), action.toString());
             onRequestFailed(result, 0);
         } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "A UrlEncodedFormEntity was created with an unsupported encoding.", e);
+            Ln.e(e, "A UrlEncodedFormEntity was created with an unsupported encoding.");
             onRequestFailed(result, 0);
         } catch (ClientProtocolException e) {
-            Log.e(TAG, "There was a problem when sending the request.", e);
+            Ln.e(e, "There was a problem when sending the request.");
             onRequestFailed(result, 0);
         } catch (IOException e) {
-            Log.e(TAG, "There was a problem when sending the request.", e);
+            Ln.e(e, "There was a problem when sending the request.");
             onRequestFailed(result, 0);
         } finally {
             if (responseEntity != null) {
@@ -238,7 +235,7 @@ public class RESTService extends IntentService {
                 request.setURI(new URI(uri.toString()));
             }
         } catch (URISyntaxException e) {
-            Log.e(TAG, "URI syntax was incorrect: " + uri.toString(), e);
+            Ln.e(e, "URI syntax was incorrect: %s", uri.toString());
         }
     }
 
