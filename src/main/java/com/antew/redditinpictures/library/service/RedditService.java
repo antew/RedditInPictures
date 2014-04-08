@@ -17,6 +17,7 @@ import com.antew.redditinpictures.library.reddit.json.RedditResult;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.SafeAsyncTask;
 import com.antew.redditinpictures.library.utils.Strings;
+import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.antew.redditinpictures.sqlite.RedditDatabase;
 import java.util.Calendar;
@@ -53,9 +54,13 @@ public class RedditService extends RESTService {
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.POSTS);
         intent.putExtra(RedditService.EXTRA_REPLACE_ALL, Strings.isEmpty(after));
-        intent.putExtra(RedditService.EXTRA_SUBREDDIT, subreddit);
-        intent.putExtra(RedditService.EXTRA_CATEGORY, Strings.toString(category));
-        intent.putExtra(RedditService.EXTRA_AGE, Strings.toString(age));
+
+        Bundle extraPassthru = new Bundle();
+        extraPassthru.putString(RedditService.EXTRA_SUBREDDIT, subreddit);
+        extraPassthru.putString(RedditService.EXTRA_CATEGORY, Strings.toString(category));
+        extraPassthru.putString(RedditService.EXTRA_AGE, Strings.toString(age));
+
+        intent.putExtra(EXTRA_PASS_THROUGH, extraPassthru);
         intent.setData(Uri.parse(url.getUrl()));
 
         context.startService(intent);
@@ -198,6 +203,22 @@ public class RedditService extends RESTService {
             RedditDatabase databaseHelper = new RedditDatabase(mContext);
             SQLiteDatabase database = databaseHelper.getReadableDatabase();
 
+            // If we have an aggregate subreddit, we just want to see if other stuff has been saved if so we need a full refresh.
+            // TODO: Make this handle caching better...
+            if (SubredditUtils.isAggregateSubreddit(mSubreddit)) {
+                long numRecords = DatabaseUtils.queryNumEntries(database, RedditDatabase.Tables.REDDIT_DATA);
+
+                Ln.d("%s is an Aggregate Subreddit and We Have %d Rows of Reddit Data", mSubreddit, numRecords);
+
+                // If we have more than 1 record it is safe to assume that we need to do a full refresh.
+                if (numRecords > 1) {
+                    database.close();
+                    getPosts(mContext, mSubreddit, mAge, mCategory);
+                    return null;
+                }
+                // Otherwise, we want to carry on like normal.
+            }
+
             Date currentDate = new Date();
 
             Calendar cal = Calendar.getInstance();
@@ -208,14 +229,17 @@ public class RedditService extends RESTService {
             // TODO: Make this work for < API 11.
             long numUpdates = DatabaseUtils.queryNumEntries(database, RedditDatabase.Tables.REDDIT_DATA,
                                                             "subreddit = ? AND retrievedDate BETWEEN ? AND ?", new String[] {
-                mSubreddit, String.valueOf(fiveMinutesAgoDate.getTime()), String.valueOf(currentDate.getTime())
-            });
-            Ln.d("There Are %d Rows In 5 Minutes For %s", numUpdates, mSubreddit);
+                    mSubreddit, String.valueOf(fiveMinutesAgoDate.getTime()), String.valueOf(currentDate.getTime())
+                }
+                                                           );
+
             database.close();
+            Ln.d("There Are %d Rows In 5 Minutes For %s", numUpdates, mSubreddit);
 
             if (numUpdates <= 0) {
                 getPosts(mContext, mSubreddit, mAge, mCategory);
             }
+
             return null;
         }
     }

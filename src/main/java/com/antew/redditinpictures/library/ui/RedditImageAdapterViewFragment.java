@@ -24,6 +24,7 @@ import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
+import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
@@ -153,6 +154,13 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
         handleArguments(getArguments());
         if (getActivity() instanceof ActionBarTitleChanger) {
             ((ActionBarTitleChanger) getActivity()).setActionBarTitle(mCurrentSubreddit, RedditUtils.getSortDisplayString(mCategory, mAge));
+        }
+
+        if (getActivity() instanceof RedditDataProvider) {
+            RedditDataProvider redditDataProvider = (RedditDataProvider) getActivity();
+            redditDataProvider.setSubreddit(mCurrentSubreddit);
+            redditDataProvider.setCategory(mCategory);
+            redditDataProvider.setAge(mAge);
         }
 
         if (getAdapterView() != null) {

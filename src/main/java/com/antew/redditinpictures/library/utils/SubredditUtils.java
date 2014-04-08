@@ -60,16 +60,12 @@ public class SubredditUtils {
         Ln.d("Inserted %d default subreddits", defaultRowsInserted);
     }
 
-    public static boolean isDefaultSubreddit(String subreddit) {
-        if (subreddit.equals(Constants.REDDIT_FRONTPAGE)) {
+    public static boolean isAggregateSubreddit(String subreddit) {
+        if (subreddit.equals(Constants.REDDIT_FRONTPAGE) || subreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME) || subreddit.equals(
+            Constants.REDDIT_FRONTPAGE_DISPLAY_NAME)) {
             return true;
         }
 
-        for (MySubredditsResponse.DefaultSubreddit defaultSubreddit : MySubredditsResponse.DefaultSubreddit.values()) {
-            if (defaultSubreddit.getDisplayName().equals(subreddit)) {
-                return true;
-            }
-        }
         return false;
     }
 
@@ -77,12 +73,13 @@ public class SubredditUtils {
         ContentResolver resolver = context.getContentResolver();
 
         // If we have an aggregate subreddit we need to clear out everything.
-        if (subreddit.equals(Constants.REDDIT_FRONTPAGE)
-            || subreddit.equals(Constants.REDDIT_FRONTPAGE_DISPLAY_NAME)
-            || subreddit.equals(Constants.REDDIT_ALL_DISPLAY_NAME)) {
+        if (isAggregateSubreddit(subreddit)) {
+            Ln.d("%s is an Aggregate Subreddit, Cleaning Out Everything", subreddit);
             // Remove all of the post rows.
             resolver.delete(RedditContract.Posts.CONTENT_URI, null, null);
+            resolver.delete(RedditContract.RedditData.CONTENT_URI, null, null);
         } else if (subreddit.contains("+")) {
+            Ln.d("%s is a Mutli, Clearing Out Contained Subreddits", subreddit);
             // Poor mans checking for multis. If we have a multi, we want to handle all of them appropriately.
             String[] subredditArray = subreddit.split("\\+");
 
@@ -102,12 +99,15 @@ public class SubredditUtils {
 
             // Only delete records for the subreddits contained in the multi.
             resolver.delete(RedditContract.Posts.CONTENT_URI, where, selectionArgsList.toArray(new String[] { }));
+            resolver.delete(RedditContract.RedditData.CONTENT_URI, "subreddit = ?", new String[] { subreddit });
         } else {
+            Ln.d("%s is Neither an Aggregate or Multi, Clearing Out It Only", subreddit);
             String where = RedditContract.PostColumns.SUBREDDIT + " = ?";
             String[] selectionArgs = new String[] { subreddit };
 
             // Otherwise we have a single subreddit, so we want to remove only posts for that subreddit.
             resolver.delete(RedditContract.Posts.CONTENT_URI, where, selectionArgs);
+            resolver.delete(RedditContract.RedditData.CONTENT_URI, where, selectionArgs);
         }
     }
 

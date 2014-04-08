@@ -36,14 +36,14 @@ class PostResponse extends RedditResponseHandler {
             return;
         }
 
-        Bundle arguments = result.getArguments();
+        Bundle arguments = result.getExtraData();
         String subreddit = Constants.REDDIT_FRONTPAGE;
         if (arguments.containsKey(RedditService.EXTRA_SUBREDDIT)) {
             subreddit = arguments.getString(RedditService.EXTRA_SUBREDDIT);
         }
 
         // If we are replacing all, go ahead and clear out the old posts.
-        if (result.isReplaceAll() && Strings.notEmpty(subreddit)) {
+        if (result.isReplaceAll()) {
             SubredditUtils.deletePostsForSubreddit(context, subreddit);
         }
 
