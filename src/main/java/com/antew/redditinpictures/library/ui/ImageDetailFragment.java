@@ -26,7 +26,7 @@ import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.image.ImgurGalleryType;
 import com.antew.redditinpictures.library.model.reddit.PostData;
-import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.util.Ln;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.

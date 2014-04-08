@@ -1,7 +1,7 @@
 package com.antew.redditinpictures.library.network;
 
 import android.os.Build;
-import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.util.Ln;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

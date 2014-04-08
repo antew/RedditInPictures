@@ -10,7 +10,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.util.ConstsFree;
 
@@ -56,7 +56,7 @@ public class RedditInPicturesFreePreferences extends RedditInPicturesPreferences
                                              })
                                              .setNegativeButton(R.string.go_to_market, new DialogInterface.OnClickListener() {
                                                  public void onClick(DialogInterface dialog, int whichButton) {
-                                                     if (!Util.isUserAMonkey()) {
+                                                     if (!AndroidUtil.isUserAMonkey()) {
                                                          Intent intent = new Intent(Intent.ACTION_VIEW);
                                                          intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + getPackageName()));
                                                          startActivity(intent);

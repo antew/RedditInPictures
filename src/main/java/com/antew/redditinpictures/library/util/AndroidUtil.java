@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antew.redditinpictures.library.utils;
+package com.antew.redditinpictures.library.util;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -26,10 +26,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-public class Util {
-    public static final String TAG = Util.class.getSimpleName();
+public class AndroidUtil {
+    public static final String TAG = AndroidUtil.class.getSimpleName();
 
-    private Util() {
+    private AndroidUtil() {
     }
 
     ;
@@ -55,12 +55,13 @@ public class Util {
         return (int) (px / (context.getResources().getDisplayMetrics().densityDpi / 160f) + 0.5f);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public static void enableStrictMode() {
-        if (Util.hasGingerbread()) {
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static void enableStrictMode() {
+        if (AndroidUtil.hasGingerbread()) {
             StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
             StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
 
-            if (Util.hasHoneycomb()) {
+            if (AndroidUtil.hasHoneycomb()) {
                 threadPolicyBuilder.penaltyFlashScreen();
                 vmPolicyBuilder.setClassInstanceLimit(RedditFragmentActivity.class, 1)
                                .setClassInstanceLimit(ImageDetailActivity.class, 1)

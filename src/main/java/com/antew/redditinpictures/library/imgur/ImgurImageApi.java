@@ -18,7 +18,7 @@ package com.antew.redditinpictures.library.imgur;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.antew.redditinpictures.library.model.ImageSize;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 
 /**
  * Class used to parse the Imgur image JSON into POJOs
@@ -174,7 +174,7 @@ public class ImgurImageApi {
             dest.writeString(hash);
             dest.writeString(datetime);
             dest.writeString(type);
-            dest.writeByte(Util.parcelBoolean(animated));
+            dest.writeByte(AndroidUtil.parcelBoolean(animated));
             dest.writeInt(width);
             dest.writeInt(height);
             dest.writeInt(size);

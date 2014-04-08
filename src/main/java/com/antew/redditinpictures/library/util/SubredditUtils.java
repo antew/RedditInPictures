@@ -1,4 +1,4 @@
-package com.antew.redditinpictures.library.utils;
+package com.antew.redditinpictures.library.util;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;

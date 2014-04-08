@@ -10,7 +10,7 @@ import com.antew.redditinpictures.adapter.CursorPagerAdapterFree;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.util.ConstsFree;
 
 public class ImageDetailActivityFree extends ImageDetailActivity implements UpdateToFullVersionDialogListener {
@@ -33,7 +33,7 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
 
     @Override
     public void onFinishUpgradeDialog() {
-        if (!Util.isUserAMonkey()) {
+        if (!AndroidUtil.isUserAMonkey()) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
             startActivity(intent);        

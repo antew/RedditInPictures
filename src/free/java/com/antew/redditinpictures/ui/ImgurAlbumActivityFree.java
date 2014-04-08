@@ -9,7 +9,7 @@ import com.antew.redditinpictures.adapter.ImgurAlbumPagerAdapterFree;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.util.ConstsFree;
 
 public class ImgurAlbumActivityFree extends ImgurAlbumActivity implements UpdateToFullVersionDialogListener{
@@ -26,7 +26,7 @@ public class ImgurAlbumActivityFree extends ImgurAlbumActivity implements Update
 
     @Override
     public void onFinishUpgradeDialog() {
-        if (!Util.isUserAMonkey()) {
+        if (!AndroidUtil.isUserAMonkey()) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
             startActivity(intent);        

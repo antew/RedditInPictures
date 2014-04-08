@@ -1,4 +1,4 @@
-package com.antew.redditinpictures.library.utils;
+package com.antew.redditinpictures.library.util;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -12,7 +12,7 @@ public class BundleUtil {
             return defaultValue;
         }
 
-        if (Util.hasHoneycombMR1()) {
+        if (AndroidUtil.hasHoneycombMR1()) {
             return bundle.getString(key, defaultValue);
         } else {
             String value = defaultValue;

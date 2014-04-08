@@ -28,12 +28,12 @@ import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
-import com.antew.redditinpictures.library.utils.BundleUtil;
-import com.antew.redditinpictures.library.utils.Ln;
-import com.antew.redditinpictures.library.utils.RedditUtils;
-import com.antew.redditinpictures.library.utils.Strings;
-import com.antew.redditinpictures.library.utils.SubredditUtils;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.BundleUtil;
+import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.library.util.RedditUtils;
+import com.antew.redditinpictures.library.util.Strings;
+import com.antew.redditinpictures.library.util.SubredditUtils;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
@@ -396,7 +396,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
         i.putExtra(Constants.Extra.EXTRA_IMAGE, position);
         i.putExtras(b);
 
-        if (Util.hasJellyBean()) {
+        if (AndroidUtil.hasJellyBean()) {
             ActivityOptions options = ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
             getActivity().startActivity(i, options.toBundle());
         } else {

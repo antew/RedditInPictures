@@ -4,7 +4,7 @@ import android.os.Bundle;
 import butterknife.ButterKnife;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.android.debug.hv.ViewServer;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.pro.BuildConfig;
 import com.squareup.picasso.Picasso;
 
@@ -19,7 +19,7 @@ public abstract class BaseActivity extends SherlockActivity {
 
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).addWindow(this);
-            Util.enableStrictMode();
+            AndroidUtil.enableStrictMode();
             Picasso.with(this).setDebugging(true);
         }
     }

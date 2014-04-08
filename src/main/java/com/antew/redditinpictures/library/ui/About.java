@@ -8,8 +8,8 @@ import android.widget.TextView;
 import butterknife.InjectView;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.ui.base.BaseActivity;
-import com.antew.redditinpictures.library.utils.Ln;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Picasso;
 import java.util.Calendar;
@@ -29,7 +29,7 @@ public class About extends BaseActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        int size = Util.dpToPx(this, 100);
+        int size = AndroidUtil.dpToPx(this, 100);
 
         Picasso.with(this)
                .load(R.drawable.market_icon)

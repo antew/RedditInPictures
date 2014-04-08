@@ -23,7 +23,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.pro.R;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +73,7 @@ public class SharedPreferencesHelper {
      */
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public static void save(SharedPreferences.Editor editor) {
-        if (Util.hasGingerbread()) {
+        if (AndroidUtil.hasGingerbread()) {
             editor.apply();
         } else {
             editor.commit();

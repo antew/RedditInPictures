@@ -21,8 +21,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.utils.BundleUtil;
-import com.antew.redditinpictures.library.utils.Strings;
+import com.antew.redditinpictures.library.util.BundleUtil;
+import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 
 public class LogoutDialogFragment extends DialogFragment {

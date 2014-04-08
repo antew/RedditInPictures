@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antew.redditinpictures.library.widgets;
+package com.antew.redditinpictures.library.widget;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

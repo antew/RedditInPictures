@@ -20,8 +20,8 @@ import android.os.Parcelable;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
-import com.antew.redditinpictures.library.utils.Ln;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.Ln;
 
 public class RedditUrl implements Parcelable {
     public static final  Parcelable.Creator<RedditUrl> CREATOR         = new Parcelable.Creator<RedditUrl>() {
@@ -154,7 +154,7 @@ public class RedditUrl implements Parcelable {
         dest.writeInt(count);
         dest.writeString(after);
         dest.writeString(before);
-        dest.writeByte(Util.parcelBoolean(isLoggedIn));
+        dest.writeByte(AndroidUtil.parcelBoolean(isLoggedIn));
     }
 
     public static class Builder {

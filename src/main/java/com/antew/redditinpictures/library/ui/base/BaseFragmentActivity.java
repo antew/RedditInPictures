@@ -9,8 +9,8 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
 import com.antew.redditinpictures.library.modules.ActivityModule;
-import com.antew.redditinpictures.library.utils.Strings;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.BuildConfig;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.otto.Bus;
@@ -30,7 +30,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
 
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).addWindow(this);
-            Util.enableStrictMode();
+            AndroidUtil.enableStrictMode();
             Picasso.with(this).setDebugging(true);
         }
 

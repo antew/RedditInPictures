@@ -1,4 +1,4 @@
-package com.antew.redditinpictures.library.widgets;
+package com.antew.redditinpictures.library.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import com.antew.redditinpictures.library.model.ImageSize;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
-import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.util.Ln;
 
 public class GifView extends View {
     private Movie mMovie;

@@ -1,4 +1,4 @@
-package com.antew.redditinpictures.library.utils;
+package com.antew.redditinpictures.library.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

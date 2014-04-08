@@ -32,7 +32,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import com.antew.redditinpictures.library.utils.ImageUtil;
+import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.pro.R;
 
 public class LoginDialogFragment extends DialogFragment implements OnEditorActionListener, TextWatcher {

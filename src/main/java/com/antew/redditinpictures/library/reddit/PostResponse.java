@@ -12,9 +12,9 @@ import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.model.reddit.RedditApi;
 import com.antew.redditinpictures.library.model.reddit.RedditApiData;
 import com.antew.redditinpictures.library.service.RedditService;
-import com.antew.redditinpictures.library.utils.BundleUtil;
-import com.antew.redditinpictures.library.utils.Ln;
-import com.antew.redditinpictures.library.utils.SubredditUtils;
+import com.antew.redditinpictures.library.util.BundleUtil;
+import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.library.util.SubredditUtils;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import java.util.Date;
 

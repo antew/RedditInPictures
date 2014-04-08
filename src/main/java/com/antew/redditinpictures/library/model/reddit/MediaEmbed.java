@@ -2,7 +2,7 @@ package com.antew.redditinpictures.library.model.reddit;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 
 public class MediaEmbed implements Parcelable {
     public static final Parcelable.Creator<MediaEmbed> CREATOR = new Parcelable.Creator<MediaEmbed>() {
@@ -36,6 +36,6 @@ public class MediaEmbed implements Parcelable {
         dest.writeString(content);
         dest.writeInt(width);
         dest.writeInt(height);
-        dest.writeByte(Util.parcelBoolean(scrolling));
+        dest.writeByte(AndroidUtil.parcelBoolean(scrolling));
     }
 }

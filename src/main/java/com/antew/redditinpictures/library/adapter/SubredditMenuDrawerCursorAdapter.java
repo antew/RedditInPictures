@@ -17,8 +17,8 @@ import butterknife.OnLongClick;
 import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.model.reddit.SubredditData;
-import com.antew.redditinpictures.library.utils.Strings;
-import com.antew.redditinpictures.library.utils.ViewUtils;
+import com.antew.redditinpictures.library.util.Strings;
+import com.antew.redditinpictures.library.util.ViewUtils;
 import com.antew.redditinpictures.pro.R;
 
 /**

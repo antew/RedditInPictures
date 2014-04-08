@@ -17,7 +17,7 @@ package com.antew.redditinpictures.library.model.imgur;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import java.util.List;
 
 /**
@@ -51,7 +51,7 @@ public class ImgurGallery implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(data, 0);
-        dest.writeByte(Util.parcelBoolean(success));
+        dest.writeByte(AndroidUtil.parcelBoolean(success));
         dest.writeInt(status);
     }
 
@@ -222,8 +222,8 @@ public class ImgurGallery implements Parcelable {
             dest.writeFloat(virality);
             dest.writeInt(size);
             dest.writeLong(views);
-            dest.writeByte(Util.parcelBoolean(is_hot));
-            dest.writeByte(Util.parcelBoolean(is_album));
+            dest.writeByte(AndroidUtil.parcelBoolean(is_hot));
+            dest.writeByte(AndroidUtil.parcelBoolean(is_album));
             dest.writeString(album_cover);
             dest.writeString(mimetype);
             dest.writeString(ext);
@@ -333,8 +333,8 @@ public class ImgurGallery implements Parcelable {
             dest.writeInt(points);
             dest.writeString(datetime);
             dest.writeLong(parent_id);
-            dest.writeByte(Util.parcelBoolean(deleted));
-            dest.writeByte(Util.parcelBoolean(on_album));
+            dest.writeByte(AndroidUtil.parcelBoolean(deleted));
+            dest.writeByte(AndroidUtil.parcelBoolean(on_album));
             dest.writeString(album_cover);
         }
 
@@ -451,7 +451,7 @@ public class ImgurGallery implements Parcelable {
             dest.writeInt(height);
             dest.writeInt(size);
             dest.writeString(ext);
-            dest.writeByte(Util.parcelBoolean(animated));
+            dest.writeByte(AndroidUtil.parcelBoolean(animated));
             dest.writeString(datetime);
         }
 

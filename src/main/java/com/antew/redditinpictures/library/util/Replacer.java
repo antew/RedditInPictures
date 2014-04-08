@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antew.redditinpictures.library.textcolor;
+package com.antew.redditinpictures.library.util;
 
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;

@@ -13,7 +13,7 @@ import com.antew.redditinpictures.library.event.LoadSubredditEvent;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.ui.RedditFragmentActivity;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.preferences.RedditInPicturesFreePreferences;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
 import com.antew.redditinpictures.util.ConstsFree;
@@ -79,7 +79,7 @@ public class RedditFragmentActivityFree extends RedditFragmentActivity
 
     @Override
     public void onFinishUpgradeDialog() {
-        if (!Util.isUserAMonkey()) {
+        if (!AndroidUtil.isUserAMonkey()) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
             startActivity(intent);

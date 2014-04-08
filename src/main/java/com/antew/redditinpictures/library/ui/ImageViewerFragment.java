@@ -36,9 +36,9 @@ import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
-import com.antew.redditinpictures.library.utils.ImageUtil;
-import com.antew.redditinpictures.library.utils.Ln;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.ImageUtil;
+import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -333,7 +333,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
         settings.setBuiltInZoomControls(true);
-        if (Util.hasHoneycomb()) {
+        if (AndroidUtil.hasHoneycomb()) {
             settings.setDisplayZoomControls(false);
         }
         webview.setBackgroundColor(Color.BLACK);

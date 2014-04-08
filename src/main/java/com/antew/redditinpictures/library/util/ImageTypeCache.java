@@ -1,4 +1,4 @@
-package com.antew.redditinpictures.library.utils;
+package com.antew.redditinpictures.library.util;
 
 import com.antew.redditinpictures.library.model.ImageType;
 import java.util.HashMap;

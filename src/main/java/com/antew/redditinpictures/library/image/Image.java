@@ -1,7 +1,7 @@
 package com.antew.redditinpictures.library.image;
 
 import com.antew.redditinpictures.library.interfaces.ImageInformation;
-import com.antew.redditinpictures.library.utils.RegexUtil;
+import com.antew.redditinpictures.library.util.RegexUtil;
 
 public abstract class Image implements ImageInformation {
     private String url;

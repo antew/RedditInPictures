@@ -22,7 +22,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
 import com.antew.redditinpictures.library.interfaces.RedditPostFilter;
-import com.antew.redditinpictures.library.utils.ImageUtil;
+import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import java.util.ArrayList;
 import java.util.List;

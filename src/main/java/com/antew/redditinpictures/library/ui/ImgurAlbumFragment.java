@@ -21,8 +21,8 @@ import android.text.Html;
 import android.view.View;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.Image;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.utils.ImageUtil;
-import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.util.ImageUtil;
+import com.antew.redditinpictures.library.util.Ln;
 import com.squareup.picasso.Picasso;
 
 /**

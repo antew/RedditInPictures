@@ -7,7 +7,7 @@ import com.antew.redditinpictures.library.imgur.ImgurApiCache;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
-import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.util.Ln;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 

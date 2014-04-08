@@ -12,7 +12,7 @@ import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.model.imgur.SimpleImgurGallery;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
-import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.util.Ln;
 
 public class ImgurGalleryType extends Image {
     private static final String URL_IMGUR_GALLERY_API = "http://imgur.com/gallery/";

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antew.redditinpictures.library.utils;
+package com.antew.redditinpictures.library.util;
 
 import java.util.Comparator;
 import java.util.Scanner;

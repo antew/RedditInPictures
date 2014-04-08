@@ -9,7 +9,7 @@ import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class PostData implements Parcelable, ContentValuesOperation {
@@ -224,20 +224,20 @@ public class PostData implements Parcelable, ContentValuesOperation {
         dest.writeString(selftext_html);
         dest.writeString(selftext);
         dest.writeString(likes.name());
-        dest.writeByte(Util.parcelBoolean(saved));
+        dest.writeByte(AndroidUtil.parcelBoolean(saved));
         dest.writeString(id);
-        dest.writeByte(Util.parcelBoolean(clicked));
+        dest.writeByte(AndroidUtil.parcelBoolean(clicked));
         dest.writeString(title);
         dest.writeInt(num_comments);
         dest.writeInt(score);
         dest.writeString(approved_by);
-        dest.writeByte(Util.parcelBoolean(over_18));
-        dest.writeByte(Util.parcelBoolean(hidden));
+        dest.writeByte(AndroidUtil.parcelBoolean(over_18));
+        dest.writeByte(AndroidUtil.parcelBoolean(hidden));
         dest.writeString(thumbnail);
         dest.writeString(subreddit_id);
         dest.writeString(author_flair_css_class);
         dest.writeInt(downs);
-        dest.writeByte(Util.parcelBoolean(is_self));
+        dest.writeByte(AndroidUtil.parcelBoolean(is_self));
         dest.writeString(permalink);
         dest.writeString(name);
         dest.writeLong(created);

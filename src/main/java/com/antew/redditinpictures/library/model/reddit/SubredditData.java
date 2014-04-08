@@ -3,7 +3,7 @@ package com.antew.redditinpictures.library.model.reddit;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.sqlite.RedditContract;
 
 public class SubredditData implements Parcelable {
@@ -166,13 +166,13 @@ public class SubredditData implements Parcelable {
         dest.writeString(public_description);
         dest.writeIntArray(header_size);
         dest.writeInt(accounts_active);
-        dest.writeByte(Util.parcelBoolean(over18));
+        dest.writeByte(AndroidUtil.parcelBoolean(over18));
         dest.writeInt(subscribers);
         dest.writeString(header_title);
         dest.writeString(id);
         dest.writeString(header_img);
         dest.writeInt(priority);
-        dest.writeByte(Util.parcelBoolean(user_is_subscriber));
+        dest.writeByte(AndroidUtil.parcelBoolean(user_is_subscriber));
     }
 
     public static final Parcelable.Creator<SubredditData> CREATOR = new Parcelable.Creator<SubredditData>() {

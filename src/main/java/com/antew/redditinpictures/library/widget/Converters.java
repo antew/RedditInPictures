@@ -1,4 +1,4 @@
-package com.antew.redditinpictures.library.widgets;
+package com.antew.redditinpictures.library.widget;
 
 import android.content.Context;
 import android.content.res.AssetManager;

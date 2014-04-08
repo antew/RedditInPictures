@@ -28,8 +28,8 @@ import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
-import com.antew.redditinpictures.library.utils.Util;
-import com.antew.redditinpictures.library.widgets.CustomViewPager;
+import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.widget.CustomViewPager;
 import com.antew.redditinpictures.pro.R;
 import java.util.ArrayList;
 import java.util.List;
@@ -159,7 +159,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     private void initializeViewPager() {
         moveViewPagerToSelectedIndex();
         // Hide and show the ActionBar as the visibility changes
-        if (Util.hasHoneycomb()) {
+        if (AndroidUtil.hasHoneycomb()) {
             mPager.setOnSystemUiVisibilityChangeListener(getOnSystemUiVisibilityChangeListener());
         }
     }
@@ -429,7 +429,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void goFullscreen() {
-        if (Util.hasHoneycomb()) {
+        if (AndroidUtil.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         } else {
             getSupportActionBar().hide();
@@ -438,7 +438,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void exitFullscreen() {
-        if (Util.hasHoneycomb()) {
+        if (AndroidUtil.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         } else {
             getSupportActionBar().show();
@@ -448,7 +448,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public boolean isSystemUiVisible() {
-        if (Util.hasHoneycomb()) {
+        if (AndroidUtil.hasHoneycomb()) {
             final int vis = mPager.getSystemUiVisibility();
             if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) {
                 return false;

@@ -9,7 +9,7 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.ImgurAlbumPagerAdapter;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.utils.StringUtil;
+import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.pro.R;
 import java.util.List;
 

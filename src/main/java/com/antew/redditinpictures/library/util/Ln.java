@@ -1,4 +1,4 @@
-package com.antew.redditinpictures.library.utils;
+package com.antew.redditinpictures.library.util;
 
 import android.app.Application;
 import android.content.pm.ApplicationInfo;

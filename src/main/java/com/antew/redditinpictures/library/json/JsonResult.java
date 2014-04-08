@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.service.RequestCode;
-import com.antew.redditinpictures.library.utils.BundleUtil;
+import com.antew.redditinpictures.library.util.BundleUtil;
 
 public abstract class JsonResult {
     private Bundle      mExtraData;
