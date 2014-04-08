@@ -229,8 +229,8 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
             case Constants.LOADER_REDDIT:
                 return new CursorLoader(getActivity(), RedditContract.RedditData.CONTENT_URI, // uri
                                         null,                                  // projection
-                                        null,                                  // selection
-                                        null,                                  // selectionArgs[]
+                                        "subreddit = ?",                       // selection
+                                        new String[] {mCurrentSubreddit},      // selectionArgs[]
                                         RedditContract.Posts.DEFAULT_SORT);    // sort
             case Constants.LOADER_POSTS:
                 QueryCriteria queryCriteria = getPostsQueryCriteria();
