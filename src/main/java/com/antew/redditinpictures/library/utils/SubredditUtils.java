@@ -131,7 +131,7 @@ public class SubredditUtils {
                 RedditService.getMySubreddits(mContext);
             } else {
                 RedditDatabase mDatabaseHelper = new RedditDatabase(mContext);
-                SQLiteDatabase mDatabase = mDatabaseHelper.getWritableDatabase();
+                SQLiteDatabase mDatabase = mDatabaseHelper.getReadableDatabase();
 
                 // Using a separate variable here since I want to consolidate operations and not overwrite the control variable possibly causing more problems.
                 boolean terminateSubreddits = forceDefaults;
