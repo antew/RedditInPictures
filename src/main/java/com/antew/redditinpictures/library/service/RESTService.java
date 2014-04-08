@@ -90,7 +90,6 @@ public class RESTService extends IntentService {
         Bundle params = extras.getParcelable(EXTRA_PARAMS);
         String cookie = extras.getString(EXTRA_COOKIE);
         String userAgent = extras.getString(EXTRA_USER_AGENT);
-        boolean replaceAll = extras.getBoolean(EXTRA_REPLACE_ALL, false);
 
         // Items in this bundle are simply passed on in onRequestComplete
         Bundle passThrough = extras.getBundle(EXTRA_PASS_THROUGH);
@@ -192,8 +191,6 @@ public class RESTService extends IntentService {
                     resultData.putString(REST_RESULT, EntityUtils.toString(responseEntity));
                     resultData.putSerializable(EXTRA_REQUEST_CODE, requestCode);
                     resultData.putInt(EXTRA_STATUS_CODE, statusCode);
-                    resultData.putBoolean(EXTRA_REPLACE_ALL, replaceAll);
-
                     result.putExtra(EXTRA_BUNDLE, resultData);
 
                     onRequestComplete(result);

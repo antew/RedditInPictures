@@ -53,9 +53,9 @@ public class RedditService extends RESTService {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.POSTS);
-        intent.putExtra(RedditService.EXTRA_REPLACE_ALL, Strings.isEmpty(after));
 
         Bundle extraPassthru = new Bundle();
+        extraPassthru.putBoolean(RedditService.EXTRA_REPLACE_ALL, Strings.isEmpty(after));
         extraPassthru.putString(RedditService.EXTRA_SUBREDDIT, subreddit);
         extraPassthru.putString(RedditService.EXTRA_CATEGORY, Strings.toString(category));
         extraPassthru.putString(RedditService.EXTRA_AGE, Strings.toString(age));

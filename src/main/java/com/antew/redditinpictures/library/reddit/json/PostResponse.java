@@ -43,8 +43,12 @@ class PostResponse extends RedditResponseHandler {
         }
 
         // If we are replacing all, go ahead and clear out the old posts.
-        if (result.isReplaceAll()) {
-            SubredditUtils.deletePostsForSubreddit(context, subreddit);
+        boolean replaceAll = false;
+        if (arguments.containsKey(RedditService.EXTRA_REPLACE_ALL)) {
+            replaceAll = arguments.getBoolean(RedditService.EXTRA_REPLACE_ALL);
+            if (replaceAll) {
+                SubredditUtils.deletePostsForSubreddit(context, subreddit);
+            }
         }
 
         Category category = Category.HOT;

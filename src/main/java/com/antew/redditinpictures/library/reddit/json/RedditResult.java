@@ -10,20 +10,9 @@ import com.antew.redditinpictures.pro.BuildConfig;
 ;
 
 public class RedditResult extends JsonResult {
-    protected Bundle  mArguments;
-    protected boolean mReplaceAll;
-
     public RedditResult(Intent result) {
         super(result);
-        mArguments = result.getBundleExtra(RedditService.EXTRA_BUNDLE);
-        mReplaceAll = mArguments.getBoolean(RedditService.EXTRA_REPLACE_ALL);
     }
-
-    public boolean isReplaceAll() {
-        return mReplaceAll;
-    }
-
-    public Bundle getArguments() { return mArguments; }
 
     public void handleResponse(Context context) {
         RedditResponseHandler type = RedditResponseHandler.newInstance(this);
