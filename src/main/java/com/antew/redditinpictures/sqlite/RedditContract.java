@@ -35,6 +35,9 @@ public class RedditContract {
         String AFTER          = "after";
         String BEFORE         = "before";
         String RETRIEVED_DATE = "retrievedDate";
+        String SUBREDDIT      = "subreddit";
+        String CATEGORY       = "category";
+        String AGE            = "age";
     }
 
     public interface LoginColumns {

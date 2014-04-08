@@ -2,6 +2,8 @@ package com.antew.redditinpictures.library.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import com.antew.redditinpictures.library.Constants;
@@ -13,13 +15,17 @@ import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.json.RedditResult;
 import com.antew.redditinpictures.library.utils.Ln;
+import com.antew.redditinpictures.library.utils.SafeAsyncTask;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.sqlite.RedditContract;
+import com.antew.redditinpictures.sqlite.RedditDatabase;
+import java.util.Calendar;
+import java.util.Date;
 
 public class RedditService extends RESTService {
 
     public static void getPostsIfNeeded(Context context, String subreddit, Age age, Category category) {
-
+        new GetNewPostsIfNeededTask(context, subreddit, age, category).execute();
     }
 
     public static void getPosts(Context context, String subreddit, Age age, Category category) {
@@ -39,18 +45,18 @@ public class RedditService extends RESTService {
             category = Category.HOT;
         }
 
+        Ln.d("Retrieving Posts For %s %s %s After %s", subreddit, category.toString(), age.toString(), after);
+
         RedditUrl url = new RedditUrl.Builder(subreddit).age(age).category(category).count(Constants.POSTS_TO_FETCH).after(after).build();
 
-        getPosts(context, url.getUrl(), subreddit, after);
-    }
-
-    private static void getPosts(Context context, String url, String subreddit, String after) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.POSTS);
         intent.putExtra(RedditService.EXTRA_REPLACE_ALL, Strings.isEmpty(after));
         intent.putExtra(RedditService.EXTRA_SUBREDDIT, subreddit);
-        intent.setData(Uri.parse(url));
+        intent.putExtra(RedditService.EXTRA_CATEGORY, Strings.toString(category));
+        intent.putExtra(RedditService.EXTRA_AGE, Strings.toString(age));
+        intent.setData(Uri.parse(url.getUrl()));
 
         context.startService(intent);
     }
@@ -172,5 +178,45 @@ public class RedditService extends RESTService {
         }
 
         redditResult.handleResponse(getApplicationContext());
+    }
+
+    private static class GetNewPostsIfNeededTask extends SafeAsyncTask<Void> {
+        Context  mContext;
+        String   mSubreddit;
+        Category mCategory;
+        Age      mAge;
+
+        public GetNewPostsIfNeededTask(Context context, String subreddit, Age age, Category category) {
+            mContext = context;
+            mSubreddit = subreddit;
+            mCategory = category;
+            mAge = age;
+        }
+
+        @Override
+        public Void call() throws Exception {
+            RedditDatabase databaseHelper = new RedditDatabase(mContext);
+            SQLiteDatabase database = databaseHelper.getReadableDatabase();
+
+            Date currentDate = new Date();
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(currentDate);
+            cal.add(Calendar.MINUTE, -5);
+            Date fiveMinutesAgoDate = cal.getTime();
+
+            // TODO: Make this work for < API 11.
+            long numUpdates = DatabaseUtils.queryNumEntries(database, RedditDatabase.Tables.REDDIT_DATA,
+                                                            "subreddit = ? AND retrievedDate BETWEEN ? AND ?", new String[] {
+                mSubreddit, String.valueOf(fiveMinutesAgoDate.getTime()), String.valueOf(currentDate.getTime())
+            });
+            Ln.d("There Are %d Rows In 5 Minutes For %s", numUpdates, mSubreddit);
+            database.close();
+
+            if (numUpdates <= 0) {
+                getPosts(mContext, mSubreddit, mAge, mCategory);
+            }
+            return null;
+        }
     }
 }

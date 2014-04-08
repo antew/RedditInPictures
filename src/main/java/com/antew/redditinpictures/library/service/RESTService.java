@@ -47,23 +47,25 @@ import org.apache.http.util.EntityUtils;
  * article</a>
  */
 public class RESTService extends IntentService {
-    public static final int GET    = 0x1;
-    public static final int POST   = 0x2;
-    public static final int PUT    = 0x3;
-    public static final int DELETE = 0x4;
-    public static final String EXTRA_BUNDLE       = "EXTRA_BUNDLE";
-    public static final String EXTRA_HTTP_VERB    = "EXTRA_HTTP_VERB";
-    public static final String EXTRA_PARAMS       = "EXTRA_PARAMS";
-    public static final String EXTRA_COOKIE       = "EXTRA_COOKIE";
-    public static final String EXTRA_REPLACE_ALL  = "EXTRA_REPLACE_ALL";
-    public static final String EXTRA_SUBREDDIT    = "EXTRA_SUBREDDIT";
-    public static final String EXTRA_REQUEST_CODE = "EXTRA_REQUEST_CODE";
-    public static final String EXTRA_RESULT       = "EXTRA_RESULT";
-    public static final String EXTRA_STATUS_CODE  = "EXTRA_STATUS_CODE";
-    public static final String EXTRA_USER_AGENT   = "EXTRA_USER_AGENT";
-    public static final String EXTRA_PASS_THROUGH = "EXTRA_PASS_THROUGH";
-    public static final String REST_RESULT = "REST_RESULT";
-    private static final String TAG = RESTService.class.getSimpleName();
+    public static final  int    GET                = 0x1;
+    public static final  int    POST               = 0x2;
+    public static final  int    PUT                = 0x3;
+    public static final  int    DELETE             = 0x4;
+    public static final  String EXTRA_BUNDLE       = "EXTRA_BUNDLE";
+    public static final  String EXTRA_HTTP_VERB    = "EXTRA_HTTP_VERB";
+    public static final  String EXTRA_PARAMS       = "EXTRA_PARAMS";
+    public static final  String EXTRA_COOKIE       = "EXTRA_COOKIE";
+    public static final  String EXTRA_REPLACE_ALL  = "EXTRA_REPLACE_ALL";
+    public static final  String EXTRA_SUBREDDIT    = "EXTRA_SUBREDDIT";
+    public static final  String EXTRA_CATEGORY     = "EXTRA_CATEGORY";
+    public static final  String EXTRA_AGE          = "EXTRA_AGE";
+    public static final  String EXTRA_REQUEST_CODE = "EXTRA_REQUEST_CODE";
+    public static final  String EXTRA_RESULT       = "EXTRA_RESULT";
+    public static final  String EXTRA_STATUS_CODE  = "EXTRA_STATUS_CODE";
+    public static final  String EXTRA_USER_AGENT   = "EXTRA_USER_AGENT";
+    public static final  String EXTRA_PASS_THROUGH = "EXTRA_PASS_THROUGH";
+    public static final  String REST_RESULT        = "REST_RESULT";
+    private static final String TAG                = RESTService.class.getSimpleName();
 
     public RESTService() {
         super(TAG);

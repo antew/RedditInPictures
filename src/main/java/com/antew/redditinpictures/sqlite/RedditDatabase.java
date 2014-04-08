@@ -12,7 +12,7 @@ import com.antew.redditinpictures.sqlite.RedditContract.SubredditColumns;
 
 public class RedditDatabase extends SQLiteOpenHelper {
 
-    private static final int    DATABASE_VERSION = 5;
+    private static final int    DATABASE_VERSION = 6;
     private static final String DATABASE_NAME    = "redditinpictures.db";
 
     public RedditDatabase(Context context) {
@@ -67,6 +67,12 @@ public class RedditDatabase extends SQLiteOpenHelper {
             case 4:
                 //Database version 4 didn't have the 'retrievedDate' column.
                 db.execSQL("ALTER TABLE " + Tables.REDDIT_DATA + " ADD COLUMN " + RedditDataColumns.RETRIEVED_DATE + " INTEGER DEFAULT 0");
+                break;
+            case 5:
+                db.execSQL("ALTER TABLE " + Tables.REDDIT_DATA + " ADD COLUMN " + RedditDataColumns.SUBREDDIT + " TEXT");
+                db.execSQL("ALTER TABLE " + Tables.REDDIT_DATA + " ADD COLUMN " + RedditDataColumns.CATEGORY + " TEXT");
+                db.execSQL("ALTER TABLE " + Tables.REDDIT_DATA + " ADD COLUMN " + RedditDataColumns.AGE + " TEXT");
+                break;
         }
     }
 
@@ -220,7 +226,13 @@ public class RedditDatabase extends SQLiteOpenHelper {
                                  + RedditDataColumns.BEFORE
                                  + " TEXT, "
                                  + RedditDataColumns.RETRIEVED_DATE
-                                 + " INTEGER DEFAULT 0 "
+                                 + " INTEGER DEFAULT 0, "
+                                 + RedditDataColumns.SUBREDDIT
+                                 + " TEXT, "
+                                 + RedditDataColumns.CATEGORY
+                                 + " TEXT, "
+                                 + RedditDataColumns.AGE
+                                 + " TEXT "
                                  + ");";
         }
     }

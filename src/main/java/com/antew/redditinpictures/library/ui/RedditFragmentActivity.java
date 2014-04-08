@@ -434,8 +434,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         // This should really be done async, but we store a maximum of one row
         // on the table and it is reasonably fast as is, around 50ms in my tests.
         getContentResolver().delete(RedditContract.Login.CONTENT_URI, null, null);
-        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this, true);
-        defaultSubredditsTask.execute();
+        new SubredditUtils.SetDefaultSubredditsTask(this, true).execute();
         invalidateOptionsMenu();
     }
 
