@@ -1,7 +1,6 @@
 package com.antew.redditinpictures.library.enums;
 
 public enum Age {
-    //@formatter:off
     TODAY("today", "Today"),
     THIS_HOUR("hour", "This Hour"),
     THIS_WEEK("week", "This Week"),
@@ -28,7 +27,7 @@ public enum Age {
 
         return null;
     }
-    
+
     public String getAge() {
         return this.age;
     }
@@ -36,6 +35,5 @@ public enum Age {
     public String getSimpleName() {
         return this.simpleName;
     }
-    
-    //@formatter:off
+
 }

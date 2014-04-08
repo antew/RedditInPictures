@@ -28,6 +28,7 @@ import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
+import com.antew.redditinpictures.library.utils.BundleUtil;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.RedditUtils;
 import com.antew.redditinpictures.library.utils.Strings;
@@ -170,25 +171,9 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     public void handleArguments(Bundle arguments) {
-        if (arguments != null) {
-            if (Util.hasHoneycombMR1()) {
-                mCurrentSubreddit = arguments.getString(Constants.EXTRA_SELECTED_SUBREDDIT, Constants.REDDIT_FRONTPAGE);
-                mCategory = Category.valueOf(arguments.getString(Constants.EXTRA_CATEGORY, Category.HOT.toString()));
-                mAge = Age.valueOf(arguments.getString(Constants.EXTRA_AGE, Age.TODAY.toString()));
-            } else {
-                if (arguments.containsKey(Constants.EXTRA_SELECTED_SUBREDDIT)) {
-                    mCurrentSubreddit = arguments.getString(Constants.EXTRA_SELECTED_SUBREDDIT);
-                }
-
-                if (arguments.containsKey(Constants.EXTRA_CATEGORY)) {
-                    mCategory = Category.valueOf(arguments.getString(Constants.EXTRA_CATEGORY));
-                }
-
-                if (arguments.containsKey(Constants.EXTRA_AGE)) {
-                    mAge = Age.valueOf(arguments.getString(Constants.EXTRA_CATEGORY));
-                }
-            }
-        }
+        mCurrentSubreddit = BundleUtil.getString(arguments, Constants.EXTRA_SELECTED_SUBREDDIT, Constants.REDDIT_FRONTPAGE);
+        mCategory = Category.fromString(BundleUtil.getString(arguments, Constants.EXTRA_CATEGORY, Category.HOT.getName()));
+        mAge = Age.fromString(BundleUtil.getString(arguments, Constants.EXTRA_AGE, Age.TODAY.getAge()));
     }
 
     protected abstract T getAdapterView();

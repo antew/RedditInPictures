@@ -39,7 +39,7 @@ public class RedditApiData implements Parcelable {
         retrievedDate = new Date(source.readLong());
         subreddit = source.readString();
         category = Category.valueOf(source.readString());
-        age = Age.valueOf(source.readString());
+        age = Age.fromString(source.readString());
     }
 
     public void addChildren(List<Children> children) {
@@ -113,6 +113,6 @@ public class RedditApiData implements Parcelable {
         dest.writeLong(retrievedDate.getTime());
         dest.writeString(subreddit);
         dest.writeString(category.toString());
-        dest.writeString(age.toString());
+        dest.writeString(age.getAge());
     }
 }

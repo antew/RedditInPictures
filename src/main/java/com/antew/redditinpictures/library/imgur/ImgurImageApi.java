@@ -94,21 +94,19 @@ public class ImgurImageApi {
             dest.writeParcelable(image, 0);
         }
 
-        //@formatter:off
-        public static final Parcelable.Creator<ImgurImage> CREATOR
-            = new Parcelable.Creator<ImgurImage>() {
-            
+        public static final Parcelable.Creator<ImgurImage> CREATOR = new Parcelable.Creator<ImgurImage>() {
+
             @Override
             public ImgurImage createFromParcel(Parcel source) {
                 return new ImgurImage(source);
             }
-            
+
             public ImgurImage[] newArray(int size) {
                 return new ImgurImage[size];
-            };
-            
+            }
+
+            ;
         };
-        //@formatter:on
     }
 
     private static String r(String res) {
@@ -142,19 +140,27 @@ public class ImgurImageApi {
             bandwidth = source.readLong();
         }
 
-        //@formatter:off
-        public String getTitle()    { return title; }
-        public String getCaption()  { return caption; }
-        public String getHash()     { return hash; }
+        public String getTitle() { return title; }
+
+        public String getCaption() { return caption; }
+
+        public String getHash() { return hash; }
+
         public String getDatetime() { return datetime; }
-        public String getType()     { return type; }
+
+        public String getType() { return type; }
+
         public boolean isAnimated() { return animated; }
-        public int getWidth()       { return width; }
-        public int getHeight()      { return height; }
-        public int getSize()        { return size; }
-        public long getViews()      { return views; }
-        public long getBandwidth()  { return bandwidth; }
-        //@formatter:on
+
+        public int getWidth() { return width; }
+
+        public int getHeight() { return height; }
+
+        public int getSize() { return size; }
+
+        public long getViews() { return views; }
+
+        public long getBandwidth() { return bandwidth; }
 
         @Override
         public int describeContents() {
@@ -176,21 +182,19 @@ public class ImgurImageApi {
             dest.writeLong(bandwidth);
         }
 
-        //@formatter:off
-        public static final Parcelable.Creator<Image> CREATOR
-            = new Parcelable.Creator<Image>() {
-            
+        public static final Parcelable.Creator<Image> CREATOR = new Parcelable.Creator<Image>() {
+
             @Override
             public Image createFromParcel(Parcel source) {
                 return new Image(source);
             }
-            
+
             public Image[] newArray(int size) {
                 return new Image[size];
-            };
-            
+            }
+
+            ;
         };
-        //@formatter:on
     }
 
     public static class Link implements Parcelable {
@@ -206,12 +210,13 @@ public class ImgurImageApi {
             large_thumbnail = source.readString();
         }
 
-        //@formatter:off
-        public String getOriginal()        { return original; }
-        public String getImgur_page()      { return imgur_page; }
-        public String getSmall_square()    { return small_square; }
+        public String getOriginal() { return original; }
+
+        public String getImgur_page() { return imgur_page; }
+
+        public String getSmall_square() { return small_square; }
+
         public String getLarge_thumbnail() { return large_thumbnail; }
-        //@formatter:on
 
         @Override
         public int describeContents() {
@@ -226,20 +231,18 @@ public class ImgurImageApi {
             dest.writeString(large_thumbnail);
         }
 
-        //@formatter:off
-        public static final Parcelable.Creator<Link> CREATOR
-            = new Parcelable.Creator<Link>() {
-            
+        public static final Parcelable.Creator<Link> CREATOR = new Parcelable.Creator<Link>() {
+
             @Override
             public Link createFromParcel(Parcel source) {
                 return new Link(source);
             }
-            
+
             public Link[] newArray(int size) {
                 return new Link[size];
-            };
-            
+            }
+
+            ;
         };
-        //@formatter:on
     }
 }

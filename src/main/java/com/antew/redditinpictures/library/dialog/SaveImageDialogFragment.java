@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import com.antew.redditinpictures.library.utils.BundleUtil;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 import com.antew.redditinpictures.pro.R;
 
@@ -56,10 +57,8 @@ public class SaveImageDialogFragment extends DialogFragment implements OnEditorA
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        String initialFilename = "";
-        if (getArguments() != null && getArguments().containsKey(FILENAME)) {
-            initialFilename = getArguments().getString(FILENAME);
-        }
+        String initialFilename = BundleUtil.getString(getArguments(), FILENAME, null);
+
         LayoutInflater lf = LayoutInflater.from(getActivity());
         View dialogView = lf.inflate(R.layout.save_image_dialog, null);
 
@@ -68,15 +67,11 @@ public class SaveImageDialogFragment extends DialogFragment implements OnEditorA
         filename.selectAll();
         filename.setOnEditorActionListener(this);
         filename.requestFocus();
-        //@formatter:off
-        final AlertDialog dialog
-                = new AlertDialog.Builder(getActivity())
-                                 .setView(dialogView)
-                                 .setTitle(R.string.save_image)
-                                 .setPositiveButton(R.string.save_image, null)
-                                 .setNegativeButton(R.string.cancel, null)
-                                 .create();
-        //@formatter:on
+        final AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(dialogView)
+                                                                         .setTitle(R.string.save_image)
+                                                                         .setPositiveButton(R.string.save_image, null)
+                                                                         .setNegativeButton(R.string.cancel, null)
+                                                                         .create();
         // We have to override setOnShowListener here (min API level 8) in order to validate
         // the inputs before closing the dialog. Just overriding setPositiveButton closes the
         // automatically when the button is pressed

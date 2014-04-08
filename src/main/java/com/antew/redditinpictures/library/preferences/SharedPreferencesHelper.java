@@ -262,7 +262,7 @@ public class SharedPreferencesHelper {
      * @return The saved {@link Age}
      */
     public static Age getAge(Context context) {
-        return Age.valueOf(context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(AGE, Age.TODAY.name()));
+        return Age.fromString(context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(AGE, Age.TODAY.getAge()));
     }
 
     /**
@@ -274,6 +274,6 @@ public class SharedPreferencesHelper {
      * @return The saved {@link Category}
      */
     public static Category getCategory(Context context) {
-        return Category.valueOf(context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(CATEGORY, Category.HOT.name()));
+        return Category.fromString(context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(CATEGORY, Category.HOT.getName()));
     }
 }

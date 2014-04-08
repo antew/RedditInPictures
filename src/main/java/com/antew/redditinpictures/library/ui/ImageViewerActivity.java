@@ -52,16 +52,17 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     /**
      * This BroadcastReceiver handles toggling between fullscreen/windowed mode
      */
-    private BroadcastReceiver   mToggleFullscreenReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mToggleFullscreenReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean isSystemUiVisible = intent.getBooleanExtra(Constants.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
             if (mPager != null) {
-                if (isSystemUiVisible)
+                if (isSystemUiVisible) {
                     goFullscreen();
-                else
+                } else {
                     exitFullscreen();
+                }
             }
         }
     };
@@ -77,11 +78,11 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     /**
      * The 'crouton' TextView for displaying messages to the user.
      */
-    protected TextView mCrouton;
+    protected TextView       mCrouton;
     /**
      * The calculated height of the Action Bar
      */
-    protected int mActionBarHeight;
+    protected int            mActionBarHeight;
     /**
      * The wrapper view
      */
@@ -180,8 +181,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     protected OnPageChangeListener getViewPagerOnPageChangeListener() {
         OnPageChangeListener viewPagerOnPageChangeListener = new OnPageChangeListener() {
 
-            //@formatter:off
-            @Override public void onPageScrolled(int arg0, float arg1, int arg2) {}
+            @Override
+            public void onPageScrolled(int arg0, float arg1, int arg2) {}
 
             @Override
             public void onPageSelected(int position) {
@@ -192,8 +193,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
                 }
             }
 
-            @Override public void onPageScrollStateChanged(int arg0) {}
-            //@formatter:on
+            @Override
+            public void onPageScrollStateChanged(int arg0) {}
         };
 
         return viewPagerOnPageChangeListener;
@@ -426,18 +427,17 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     @Override
     public abstract void onFinishSaveImageDialog(String filename);
 
-    //@formatter:off
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public void goFullscreen() {
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void goFullscreen() {
         if (Util.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         } else {
             getSupportActionBar().hide();
         }
     }
-    //@formatter:on
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public void exitFullscreen() {
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void exitFullscreen() {
         if (Util.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         } else {
@@ -445,7 +445,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB) @Override
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @Override
     public boolean isSystemUiVisible() {
         if (Util.hasHoneycomb()) {
             final int vis = mPager.getSystemUiVisibility();

@@ -1,7 +1,6 @@
 package com.antew.redditinpictures.library.enums;
 
 public enum Category {
-    //@formatter:off
     HOT("hot", "Hot"), NEW("new", "New"), RISING("rising", "Rising"), CONTROVERSIAL("controversial", "Controversial"), TOP("top", "Top");
 
     private String name;
@@ -16,10 +15,10 @@ public enum Category {
 
         if (name != null) {
             for (Category c : Category.values()) {
-                if (name.equalsIgnoreCase(c.name))
+                if (name.equalsIgnoreCase(c.name)) {
                     return c;
+                }
             }
-
         }
 
         return null;
@@ -27,12 +26,10 @@ public enum Category {
 
     public String getName() {
         return this.name;
-
     }
 
     public String getSimpleName() {
         return this.simpleName;
     }
 
-    //@formatter:on
 }

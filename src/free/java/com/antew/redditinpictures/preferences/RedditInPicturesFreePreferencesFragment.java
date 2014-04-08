@@ -14,7 +14,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
-
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.util.ConstsFree;
@@ -26,27 +25,30 @@ public class RedditInPicturesFreePreferencesFragment extends RedditInPicturesPre
     public Fragment getPrefsFragment() {
         return new PrefsFragment();
     }
-    
-    public static class PrefsFragment extends com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment.PrefsFragment {
+
+    public static class PrefsFragment
+        extends com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment.PrefsFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences_free, false);
             addPreferencesFromResource(R.xml.preferences_free);
 
-            final CheckBoxPreference adsPreference = (CheckBoxPreference) getPreferenceManager().findPreference(getString(R.string.pref_disable_ads));
+            final CheckBoxPreference adsPreference = (CheckBoxPreference) getPreferenceManager().findPreference(
+                getString(R.string.pref_disable_ads));
             adsPreference.setOnPreferenceChangeListener(getAdsPreferenceOnChangeListener());
-            
-            getPreferenceManager().findPreference(getString(R.string.pref_get_pro_version)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
-                    startActivity(intent);
-                    return true;
-                }
-            });
+            getPreferenceManager().findPreference(getString(R.string.pref_get_pro_version))
+                                  .setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+                                      @Override
+                                      public boolean onPreferenceClick(Preference preference) {
+                                          Intent intent = new Intent(Intent.ACTION_VIEW);
+                                          intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
+                                          startActivity(intent);
+                                          return true;
+                                      }
+                                  });
         }
 
         private OnPreferenceChangeListener getAdsPreferenceOnChangeListener() {
@@ -54,25 +56,29 @@ public class RedditInPicturesFreePreferencesFragment extends RedditInPicturesPre
 
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if ((Boolean) newValue == true) {//@formatter:off
-                        new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.disable_ads)
-                        .setMessage(R.string.in_exchange_for_disabling_ads)
-                        .setPositiveButton(R.string.ive_rated_it, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton)
-                            {
-                                
-                            }
-                        }).setNegativeButton(R.string.go_to_market, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton)
-                            {
-                                Intent intent = new Intent(Intent.ACTION_VIEW);
-                                intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + getActivity().getPackageName()));
-                                startActivity(intent);
-                            }
-                        }).show();                
+                    if ((Boolean) newValue == true) {
+                        new AlertDialog.Builder(getActivity()).setTitle(R.string.disable_ads)
+                                                              .setMessage(R.string.in_exchange_for_disabling_ads)
+                                                              .setPositiveButton(R.string.ive_rated_it,
+                                                                                 new DialogInterface.OnClickListener() {
+                                                                                     public void onClick(DialogInterface dialog,
+                                                                                                         int whichButton) {
+
+                                                                                     }
+                                                                                 })
+                                                              .setNegativeButton(R.string.go_to_market,
+                                                                                 new DialogInterface.OnClickListener() {
+                                                                                     public void onClick(DialogInterface dialog,
+                                                                                                         int whichButton) {
+                                                                                         Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                                                         intent.setData(Uri.parse(ConstsFree.MARKET_INTENT
+                                                                                                                  + getActivity().getPackageName()));
+                                                                                         startActivity(intent);
+                                                                                     }
+                                                                                 })
+                                                              .show();
                     }
-                    
+
                     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
                     Editor editor = sp.edit();
                     editor.putBoolean(getString(R.string.pref_disable_ads), (Boolean) newValue);
@@ -82,5 +88,4 @@ public class RedditInPicturesFreePreferencesFragment extends RedditInPicturesPre
             };
         }
     }
-
 }

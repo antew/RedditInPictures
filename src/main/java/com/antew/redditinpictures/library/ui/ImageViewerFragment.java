@@ -71,14 +71,21 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected int   mActionBarHeight;
     protected Album mAlbum;
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
-    protected                                     SystemUiStateProvider mSystemUiStateProvider;
-    @InjectView(R.id.pb_progress)                 ProgressBar           mProgress;
-    @InjectView(R.id.rl_post_information_wrapper) RelativeLayout        mPostInformationWrapper;
-    @InjectView(R.id.tv_post_title)               TextView              mPostTitle;
-    @InjectView(R.id.tv_post_information)         TextView              mPostInformation;
-    @InjectView(R.id.btn_view_gallery)            Button                mBtnViewGallery;
-    @InjectView(R.id.webview_stub)                ViewStub              mViewStub;
-    @InjectView(R.id.tv_post_votes)               TextView              mPostVotes;
+    protected SystemUiStateProvider mSystemUiStateProvider;
+    @InjectView(R.id.pb_progress)
+              ProgressBar           mProgress;
+    @InjectView(R.id.rl_post_information_wrapper)
+              RelativeLayout        mPostInformationWrapper;
+    @InjectView(R.id.tv_post_title)
+              TextView              mPostTitle;
+    @InjectView(R.id.tv_post_information)
+              TextView              mPostInformation;
+    @InjectView(R.id.btn_view_gallery)
+              Button                mBtnViewGallery;
+    @InjectView(R.id.webview_stub)
+              ViewStub              mViewStub;
+    @InjectView(R.id.tv_post_votes)
+              TextView              mPostVotes;
     /**
      * This BroadcastReceiver handles updating the score when a vote is cast or changed
      */
@@ -97,8 +104,10 @@ public abstract class ImageViewerFragment extends BaseFragment {
             }
         }
     };
-    @InjectView(R.id.tv_error_message) TextView   mErrorMessage;
-    @Inject                            ScreenSize mScreenSize;
+    @InjectView(R.id.tv_error_message)
+    TextView   mErrorMessage;
+    @Inject
+    ScreenSize mScreenSize;
     private boolean           mExitTasksEarly         = false;
     private boolean           mCancelClick            = false;
     private float             mDownXPos               = 0;
@@ -178,7 +187,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
         if (mWebView != null) {
             mWebView.destroy();
         }
-
 
         if (mResolveImageTask != null) {
             if (mResolveImageTask.getStatus() != AsyncTask.Status.FINISHED) {
@@ -317,7 +325,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
         mImageView.setVisibility(View.GONE);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public void initializeWebView(WebView webview) {
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void initializeWebView(WebView webview) {
         assert webview != null : "WebView should not be null!";
 
         WebSettings settings = webview.getSettings();
@@ -331,8 +340,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
         webview.setVisibility(View.VISIBLE);
         webview.setOnTouchListener(getWebViewOnTouchListener());
     }
-
-    //@formatter:off
 
     public String getHtmlForImageDisplay(String imageUrl) {
         return Constants.WEBVIEW_IMAGE_HTML_BEGIN + imageUrl + Constants.WEBVIEW_IMAGE_HTML_END;
@@ -384,8 +391,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
             }
         };
     }
-
-    //@formatter:on
 
     /**
      * The actual AsyncTask that will asynchronously resolve the URL we should display.

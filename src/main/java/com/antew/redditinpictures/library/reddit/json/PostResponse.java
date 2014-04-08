@@ -12,8 +12,8 @@ import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.reddit.RedditApi;
 import com.antew.redditinpictures.library.reddit.RedditApiData;
 import com.antew.redditinpictures.library.service.RedditService;
+import com.antew.redditinpictures.library.utils.BundleUtil;
 import com.antew.redditinpictures.library.utils.Ln;
-import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import java.util.Date;
@@ -37,28 +37,14 @@ class PostResponse extends RedditResponseHandler {
         }
 
         Bundle arguments = result.getExtraData();
-        String subreddit = Constants.REDDIT_FRONTPAGE;
-        if (arguments.containsKey(RedditService.EXTRA_SUBREDDIT)) {
-            subreddit = arguments.getString(RedditService.EXTRA_SUBREDDIT);
-        }
+        boolean replaceAll = BundleUtil.getBoolean(arguments, RedditService.EXTRA_REPLACE_ALL, false);
+        String subreddit = BundleUtil.getString(arguments, Constants.REDDIT_FRONTPAGE, Constants.REDDIT_FRONTPAGE);
+        Category category = Category.fromString(BundleUtil.getString(arguments, RedditService.EXTRA_CATEGORY, Category.HOT.getName()));
+        Age age = Age.fromString(BundleUtil.getString(arguments, RedditService.EXTRA_AGE, Age.TODAY.getAge()));
 
         // If we are replacing all, go ahead and clear out the old posts.
-        boolean replaceAll = false;
-        if (arguments.containsKey(RedditService.EXTRA_REPLACE_ALL)) {
-            replaceAll = arguments.getBoolean(RedditService.EXTRA_REPLACE_ALL);
-            if (replaceAll) {
-                SubredditUtils.deletePostsForSubreddit(context, subreddit);
-            }
-        }
-
-        Category category = Category.HOT;
-        if (arguments.containsKey(RedditService.EXTRA_CATEGORY)) {
-            category = Category.valueOf(arguments.getString(RedditService.EXTRA_CATEGORY));
-        }
-
-        Age age = Age.TODAY;
-        if (arguments.containsKey(RedditService.EXTRA_AGE)) {
-            age = Age.valueOf(arguments.getString(RedditService.EXTRA_AGE));
+        if (replaceAll) {
+            SubredditUtils.deletePostsForSubreddit(context, subreddit);
         }
 
         RedditApiData data = redditApi.getData();
@@ -71,7 +57,7 @@ class PostResponse extends RedditResponseHandler {
 
         // Each time we want to remove the old before/after/modhash rows from the Reddit data
         // TODO: Update this to support category and age in the future. This will also require changes to how we handle storing results.
-        int redditRowsDeleted = resolver.delete(RedditContract.RedditData.CONTENT_URI, "subreddit = ?", new String[] {subreddit});
+        int redditRowsDeleted = resolver.delete(RedditContract.RedditData.CONTENT_URI, "subreddit = ?", new String[] { subreddit });
         Ln.i("Deleted %d reddit rows", redditRowsDeleted);
 
         ContentValues[] operations = redditApi.getPostDataContentValues(true);

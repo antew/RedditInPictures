@@ -37,11 +37,11 @@ import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditSort;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivityWithMenu;
+import com.antew.redditinpictures.library.utils.BundleUtil;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.RedditUtils;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
-import com.antew.redditinpictures.library.utils.Util;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -61,7 +61,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         }
     };
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reddit_fragment_activity);
         restoreInstanceState(savedInstanceState);
@@ -84,36 +85,10 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     private void restoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            if (Util.hasHoneycombMR1()) {
-                mActiveViewType = ViewType.valueOf(savedInstanceState.getString(Constants.ACTIVE_VIEW, ViewType.LIST.toString()));
-                mSelectedSubreddit = savedInstanceState.getString(Constants.EXTRA_SELECTED_SUBREDDIT, Constants.REDDIT_FRONTPAGE);
-                mCategory = Category.valueOf(savedInstanceState.getString(Constants.EXTRA_CATEGORY, Category.HOT.toString()));
-                mAge = Age.valueOf(savedInstanceState.getString(Constants.EXTRA_AGE, Age.TODAY.toString()));
-            } else {
-                if (savedInstanceState.containsKey(Constants.ACTIVE_VIEW)) {
-                    mActiveViewType = ViewType.valueOf(savedInstanceState.getString(Constants.ACTIVE_VIEW));
-                } else {
-                    mActiveViewType = ViewType.LIST;
-                }
-
-                if (savedInstanceState.containsKey(Constants.EXTRA_SELECTED_SUBREDDIT)) {
-                    mSelectedSubreddit = savedInstanceState.getString(Constants.EXTRA_SELECTED_SUBREDDIT);
-                } else {
-                    mSelectedSubreddit = Constants.REDDIT_FRONTPAGE;
-                }
-
-                if (savedInstanceState.containsKey(Constants.EXTRA_CATEGORY)) {
-                    mCategory = Category.valueOf(savedInstanceState.getString(Constants.EXTRA_CATEGORY));
-                } else {
-                    mCategory = Category.HOT;
-                }
-
-                if (savedInstanceState.containsKey(Constants.EXTRA_AGE)) {
-                    mAge = Age.valueOf(savedInstanceState.getString(Constants.EXTRA_AGE));
-                } else {
-                    mAge = Age.TODAY;
-                }
-            }
+            mActiveViewType = ViewType.valueOf(BundleUtil.getString(savedInstanceState, Constants.ACTIVE_VIEW, ViewType.LIST.toString()));
+            mSelectedSubreddit = BundleUtil.getString(savedInstanceState, Constants.EXTRA_SELECTED_SUBREDDIT, Constants.REDDIT_FRONTPAGE);
+            mCategory = Category.fromString(BundleUtil.getString(savedInstanceState, Constants.EXTRA_CATEGORY, Category.HOT.getName()));
+            mAge = Age.fromString(BundleUtil.getString(savedInstanceState, Constants.EXTRA_AGE, Age.TODAY.getAge()));
         }
     }
 
@@ -140,7 +115,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         getSupportLoaderManager().initLoader(Constants.LOADER_LOGIN, null, this);
     }
 
-    @Override protected void subscribeToSubreddit(String subredditName) {
+    @Override
+    protected void subscribeToSubreddit(String subredditName) {
         if (!RedditLoginInformation.isLoggedIn()) {
             showLogin();
         } else {
@@ -148,7 +124,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         }
     }
 
-    @Override protected void unsubscribeToSubreddit(String subredditName) {
+    @Override
+    protected void unsubscribeToSubreddit(String subredditName) {
         if (!RedditLoginInformation.isLoggedIn()) {
             showLogin();
         } else {
@@ -172,7 +149,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         return getNewImageListFragment(mSelectedSubreddit, mCategory, mAge);
     }
 
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         item.setChecked(true);
 
         switch (item.getItemId()) {
@@ -302,7 +280,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         }
     }
 
-    @Override protected void loadSubredditFromMenu(String subreddit) {
+    @Override
+    protected void loadSubredditFromMenu(String subreddit) {
         loadSubreddit(subreddit, mCategory, mAge);
     }
 
@@ -311,7 +290,8 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         ViewPropertyAnimator.animate(mProgressBar).setDuration(500).alpha(0);
     }
 
-    @Override public boolean onCreateOptionsMenu(Menu menu) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
         MenuInflater inflater = getSupportMenuInflater();

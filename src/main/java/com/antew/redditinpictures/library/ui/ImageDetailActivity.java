@@ -77,11 +77,11 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         Intent i = getIntent();
 
         if (i.hasExtra(Constants.EXTRA_AGE)) {
-            mAge = Age.valueOf(i.getStringExtra(Constants.EXTRA_AGE));
+            mAge = Age.fromString(i.getStringExtra(Constants.EXTRA_AGE));
         }
 
         if (i.hasExtra(Constants.EXTRA_CATEGORY)) {
-            mCategory = Category.valueOf(i.getStringExtra(Constants.EXTRA_CATEGORY));
+            mCategory = Category.fromString(i.getStringExtra(Constants.EXTRA_CATEGORY));
         }
 
         if (i.hasExtra(Constants.EXTRA_SELECTED_SUBREDDIT)) {

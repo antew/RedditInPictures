@@ -36,9 +36,7 @@ public class ImgurAlbumApi {
 
     public static class Album implements Parcelable {
 
-        //@formatter:off
-        public static final Parcelable.Creator<Album> CREATOR
-            = new Parcelable.Creator<Album>() {
+        public static final Parcelable.Creator<Album> CREATOR = new Parcelable.Creator<Album>() {
 
             @Override
             public Album createFromParcel(Parcel source) {
@@ -47,8 +45,9 @@ public class ImgurAlbumApi {
 
             public Album[] newArray(int size) {
                 return new Album[size];
-            };
+            }
 
+            ;
         };
         List<ImgurImage> images;
         private String title;
@@ -65,15 +64,13 @@ public class ImgurAlbumApi {
             source.readList(images, ImgurImage.class.getClassLoader());
         }
 
-        //@formatter:off
-        public String getTitle()            { return title; }
+        public String getTitle() { return title; }
 
-        public String getDescription()      { return description; }
+        public String getDescription() { return description; }
 
-        public String getCover()            { return cover; }
+        public String getCover() { return cover; }
 
-        public String getLayout()           { return layout; }
-        //@formatter:on
+        public String getLayout() { return layout; }
 
         public List<ImgurImage> getImages() { return images; }
 
@@ -90,6 +87,5 @@ public class ImgurAlbumApi {
             dest.writeString(layout);
             dest.writeList(images);
         }
-        //@formatter:on
     }
 }

@@ -24,33 +24,29 @@ import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.Util;
 
 public class RedditUrl implements Parcelable {
-    //@formatter:off
-    public static final Parcelable.Creator<RedditUrl> CREATOR
-        = new Parcelable.Creator<RedditUrl>() {
+    public static final  Parcelable.Creator<RedditUrl> CREATOR         = new Parcelable.Creator<RedditUrl>() {
 
-            @Override
-            public RedditUrl createFromParcel(Parcel source) {
-                return new RedditUrl(source);
-            }
+        @Override
+        public RedditUrl createFromParcel(Parcel source) {
+            return new RedditUrl(source);
+        }
 
-            @Override
-            public RedditUrl[] newArray(int size) {
-                return new RedditUrl[size];
-            }
-
-
+        @Override
+        public RedditUrl[] newArray(int size) {
+            return new RedditUrl[size];
+        }
     };
-    private static final String REDDIT_URL      = "http://www.reddit.com";
-    private static final String BASE_URL        = REDDIT_URL + "/r/";
-    private static final String URL_SEPARATOR   = "/";
-    private static final String QS_SEPARATOR    = "?";
-    private static final String SORT            = "sort=%s";
-    private static final String COUNT           = "limit=%d";
-    private static final String TIME            = "t=%s";
-    private static final String AFTER           = "after=%s";
-    private static final String BEFORE          = "before=%s";
-    private static final String JSON            = ".json";
-    private static final String PARAM_SEPARATOR = "&";
+    private static final String                        REDDIT_URL      = "http://www.reddit.com";
+    private static final String                        BASE_URL        = REDDIT_URL + "/r/";
+    private static final String                        URL_SEPARATOR   = "/";
+    private static final String                        QS_SEPARATOR    = "?";
+    private static final String                        SORT            = "sort=%s";
+    private static final String                        COUNT           = "limit=%d";
+    private static final String                        TIME            = "t=%s";
+    private static final String                        AFTER           = "after=%s";
+    private static final String                        BEFORE          = "before=%s";
+    private static final String                        JSON            = ".json";
+    private static final String                        PARAM_SEPARATOR = "&";
     public final String   subreddit;
     public final Age      age;
     public final Category category;
@@ -71,8 +67,8 @@ public class RedditUrl implements Parcelable {
 
     public RedditUrl(Parcel source) {
         subreddit = source.readString();
-        age = Age.valueOf(source.readString());
-        category = Category.valueOf(source.readString());
+        age = Age.fromString(source.readString());
+        category = Category.fromString(source.readString());
         count = source.readInt();
         after = source.readString();
         before = source.readString();
@@ -155,8 +151,8 @@ public class RedditUrl implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(subreddit);
-        dest.writeString(age.name());
-        dest.writeString(category.name());
+        dest.writeString(age.getAge());
+        dest.writeString(category.getName());
         dest.writeInt(count);
         dest.writeString(after);
         dest.writeString(before);
@@ -214,5 +210,4 @@ public class RedditUrl implements Parcelable {
             return new RedditUrl(this);
         }
     }
-    //@formatter:on
 }

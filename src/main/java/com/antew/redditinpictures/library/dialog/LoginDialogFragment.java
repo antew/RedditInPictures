@@ -58,15 +58,11 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
         password = (TextView) dialogView.findViewById(R.id.login_password);
         password.setOnEditorActionListener(this);
         username.requestFocus();
-        //@formatter:off
-        final AlertDialog dialog
-                = new AlertDialog.Builder(getActivity())
-                                 .setView(dialogView)
-                                 .setTitle(R.string.log_in_to_reddit)
-                                 .setPositiveButton(R.string.log_in, null)
-                                 .setNegativeButton(R.string.cancel, null)
-                                 .create();
-        //@formatter:on
+        final AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(dialogView)
+                                                                         .setTitle(R.string.log_in_to_reddit)
+                                                                         .setPositiveButton(R.string.log_in, null)
+                                                                         .setNegativeButton(R.string.cancel, null)
+                                                                         .create();
         // We have to override setOnShowListener here (min API level 8) in order to validate
         // the inputs before closing the dialog. Just overriding setPositiveButton closes the
         // automatically when the button is pressed

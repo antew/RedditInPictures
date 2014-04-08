@@ -4,12 +4,11 @@ package com.antew.redditinpictures.library.enums;
  * Types of images supported by the app
  */
 public enum ImageType {
-    //@formatter:off
-    IMGUR_ALBUM, 
-    IMGUR_IMAGE, 
+    IMGUR_ALBUM,
+    IMGUR_IMAGE,
     IMGUR_GALLERY,
-    EHOST_IMAGE, 
-    PICASARUS_IMAGE, 
+    EHOST_IMAGE,
+    PICASARUS_IMAGE,
     SNAGGY_IMAGE,
     PICSHD_IMAGE,
     MINUS_IMAGE,
@@ -21,8 +20,7 @@ public enum ImageType {
     MEMECRUNCH_IMAGE,
     LIVEMEME_IMAGE,
     MEMEFIVE_IMAGE,
-    OTHER_SUPPORTED_IMAGE, 
+    OTHER_SUPPORTED_IMAGE,
     UNSUPPORTED_IMAGE
-    //@formatter:on
 }
 

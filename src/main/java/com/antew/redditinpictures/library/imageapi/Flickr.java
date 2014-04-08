@@ -36,7 +36,7 @@ public class Flickr {
     public String getStat() {
         return stat;
     }
-    
+
     /**
      * The {@link FlickrSizes} class contains a list of sizes the image is available in
      *
@@ -62,7 +62,6 @@ public class Flickr {
         // So we try to walk forward/backward through the list until we find a suitable size
         boolean walkForward = imageSize.ordinal() < (flickrSizes.length / 2);
 
-
         while (result == null && !searchedAll) {
             String searchKey = imageSize.getKey();
             if (sizes != null) {
@@ -73,7 +72,6 @@ public class Flickr {
                     }
                 }
             }
-
 
             if (walkForward) {
                 if ((imageSize.ordinal() + 1) >= flickrSizes.length) {
@@ -88,22 +86,17 @@ public class Flickr {
                     imageSize = flickrSizes[imageSize.ordinal() - 1];
                 }
             }
-
-
-
         }
-
 
         return null;
     }
-    
+
     /**
      * Image sizes Flickr returns
      *
      * @author a
      */
     public enum FlickrSize {
-        //@formatter:off
         SQUARE("Square"),
         LARGE_SQUARE("Large Square"),
         THUMBNAIL("Thumbnail"),
@@ -116,6 +109,7 @@ public class Flickr {
         ORIGINAL("Original");
 
         private String key;
+
         FlickrSize(String key) {
             this.key = key;
         }
@@ -123,7 +117,6 @@ public class Flickr {
         public String getKey() {
             return key;
         }
-        //@formatter:off
     }
 
     public static final class FlickrSizes {
@@ -131,20 +124,22 @@ public class Flickr {
         private Boolean           canprint;
         private Boolean           candownload;
         private List<FlickrImage> size;
-        
+
         public boolean canBlog() {
             return canblog;
         }
+
         public boolean canPrint() {
             return canprint;
         }
+
         public boolean canDownload() {
             return candownload;
         }
+
         public List<FlickrImage> getSize() {
             return size;
         }
-        
     }
 
     public static final class FlickrImage {
@@ -154,7 +149,7 @@ public class Flickr {
         private String source;
         private String url;
         private String media;
-        
+
         /**
          * The label contains the {@link FlickrSize}
          *
@@ -163,21 +158,25 @@ public class Flickr {
         public String getLabel() {
             return label;
         }
+
         public int getWidth() {
             return width;
         }
+
         public int getHeight() {
             return height;
         }
+
         public String getSource() {
             return source;
         }
+
         public String getUrl() {
             return url;
         }
+
         public String getMedia() {
             return media;
         }
     }
-
 }

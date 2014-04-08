@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.service.RequestCode;
+import com.antew.redditinpictures.library.utils.BundleUtil;
 
 public abstract class JsonResult {
     private Bundle      mExtraData;
@@ -17,7 +18,7 @@ public abstract class JsonResult {
         Bundle args = result.getBundleExtra(RedditService.EXTRA_BUNDLE);
         mRequestCode = (RequestCode) args.getSerializable(RedditService.EXTRA_REQUEST_CODE);
         mHttpStatusCode = args.getInt(RedditService.EXTRA_STATUS_CODE);
-        mJson = args.getString(RedditService.REST_RESULT);
+        mJson = BundleUtil.getString(args, RedditService.REST_RESULT, null);
     }
 
     public Bundle getExtraData() {

@@ -69,51 +69,85 @@ public class PostData implements Parcelable, ContentValuesOperation {
      * and makes a video \"United Breaks Guitars.\""
      * , "ups" : 5062, "url" : "http://www.youtube.com/watch?v=5YGc4zOqozo" }, "kind" : "t3" }
      */
-    // Media media;
     int num_reports;
     int ups;
 
-    //@formatter:off
-    public String getDomain()                 { return domain; }
-    public String getBanned_by()              { return banned_by; }
-    public MediaEmbed getMedia_embed()        { return media_embed; }
-    public String getSubreddit()              { return subreddit; }
-    public String getSelftext_html()          { return selftext_html; }
-    public String getSelftext()               { return selftext; }
-    public Vote getLikes()                    { return likes; }
-    public boolean isSaved()                  { return saved; }
-    public String getId()                     { return id; }
-    public boolean isClicked()                { return clicked; }
-    public String getTitle()                  { return title; }
-    public int getNum_comments()              { return num_comments; }
-    public int getScore()                     { return score; }
-    public void setScore(int score)           { this.score = score; }
-    public String getApproved_by()            { return approved_by; }
-    public boolean isOver_18()                { return over_18; }
-    public boolean isHidden()                 { return hidden; }
-    public String getThumbnail()              { return thumbnail; }
-    public String getSubreddit_id()           { return subreddit_id; }
+    public String getDomain() { return domain; }
+
+    public String getBanned_by() { return banned_by; }
+
+    public MediaEmbed getMedia_embed() { return media_embed; }
+
+    public String getSubreddit() { return subreddit; }
+
+    public String getSelftext_html() { return selftext_html; }
+
+    public String getSelftext() { return selftext; }
+
+    public Vote getLikes() { return likes; }
+
+    public boolean isSaved() { return saved; }
+
+    public String getId() { return id; }
+
+    public boolean isClicked() { return clicked; }
+
+    public String getTitle() { return title; }
+
+    public int getNum_comments() { return num_comments; }
+
+    public int getScore() { return score; }
+
+    public void setScore(int score) { this.score = score; }
+
+    public String getApproved_by() { return approved_by; }
+
+    public boolean isOver_18() { return over_18; }
+
+    public boolean isHidden() { return hidden; }
+
+    public String getThumbnail() { return thumbnail; }
+
+    public String getSubreddit_id() { return subreddit_id; }
+
     public String getAuthor_flair_css_class() { return author_flair_css_class; }
-    public int getDowns()                     { return downs; }
-    public boolean isIs_self()                { return is_self; }
-    public String getPermalink()              { return permalink; }
-    public String getName()                   { return name; }
-    public long getCreated()                  { return created; }
-    public String getUrl()                    { return url; }
-    public String getAuthor_flair_text()      { return author_flair_text; }
-    public String getAuthor()                 { return author; }
-    public long getCreated_utc()              { return created_utc; }
-    public String getLink_flair_text()        { return link_flair_text; }
-  //public Media getMedia()                   { return media; }
-    public int getNum_reports()               { return num_reports; }
-    public int getUps()                       { return ups; }
-    public Vote getVote()                     { return likes; }
-    public void setVote(Vote vote)            { this.likes = vote; }
-    public void setDecodedUrl(String url)     { this.decoded_url = url; }
-    public String getDecodedUrl()             { return decoded_url; }
-    public ImgurImage getImgurImage()         { return image; }
-    public Album      getAlbum()              { return album; }
-    //@formatter:on
+
+    public int getDowns() { return downs; }
+
+    public boolean isIs_self() { return is_self; }
+
+    public String getPermalink() { return permalink; }
+
+    public String getName() { return name; }
+
+    public long getCreated() { return created; }
+
+    public String getUrl() { return url; }
+
+    public String getAuthor_flair_text() { return author_flair_text; }
+
+    public String getAuthor() { return author; }
+
+    public long getCreated_utc() { return created_utc; }
+
+    public String getLink_flair_text() { return link_flair_text; }
+
+    //public Media getMedia()                   { return media; }
+    public int getNum_reports() { return num_reports; }
+
+    public int getUps() { return ups; }
+
+    public Vote getVote() { return likes; }
+
+    public void setVote(Vote vote) { this.likes = vote; }
+
+    public void setDecodedUrl(String url) { this.decoded_url = url; }
+
+    public String getDecodedUrl() { return decoded_url; }
+
+    public ImgurImage getImgurImage() { return image; }
+
+    public Album getAlbum() { return album; }
 
     public String getFullPermalink(boolean useMobileInterface) {
         String url = Constants.REDDIT_BASE_URL + permalink;
@@ -217,56 +251,82 @@ public class PostData implements Parcelable, ContentValuesOperation {
         dest.writeParcelable(album, flags);
     }
 
-    //@formatter:off
-    public static final Parcelable.Creator<PostData> CREATOR
-        = new Parcelable.Creator<PostData>() {
+    public static final Parcelable.Creator<PostData> CREATOR = new Parcelable.Creator<PostData>() {
 
-            @Override
-            public PostData createFromParcel(Parcel source) {
-                return new PostData(source);
-            }
+        @Override
+        public PostData createFromParcel(Parcel source) {
+            return new PostData(source);
+        }
 
-            @Override
-            public PostData[] newArray(int size) {
-                return new PostData[size];
-            }
-
-
+        @Override
+        public PostData[] newArray(int size) {
+            return new PostData[size];
+        }
     };
 
-    public void setDomain(String domain)                                 { this.domain = domain; }
-    public void setBanned_by(String banned_by)                           { this.banned_by = banned_by; }
-    public void setMedia_embed(MediaEmbed media_embed)                   { this.media_embed = media_embed; }
-    public void setSubreddit(String subreddit)                           { this.subreddit = subreddit; }
-    public void setSelftext_html(String selftext_html)                   { this.selftext_html = selftext_html; }
-    public void setSelftext(String selftext)                             { this.selftext = selftext; }
-    public void setLikes(Vote likes)                                     { this.likes = likes; }
-    public void setSaved(boolean saved)                                  { this.saved = saved; }
-    public void setId(String id)                                         { this.id = id; }
-    public void setClicked(boolean clicked)                              { this.clicked = clicked; }
-    public void setTitle(String title)                                   { this.title = title; }
-    public void setNum_comments(int num_comments)                        { this.num_comments = num_comments; }
-    public void setApproved_by(String approved_by)                       { this.approved_by = approved_by; }
-    public void setOver_18(boolean over_18)                              { this.over_18 = over_18; }
-    public void setHidden(boolean hidden)                                { this.hidden = hidden; }
-    public void setThumbnail(String thumbnail)                           { this.thumbnail = thumbnail; }
-    public void setSubreddit_id(String subreddit_id)                     { this.subreddit_id = subreddit_id; }
+    public void setDomain(String domain) { this.domain = domain; }
+
+    public void setBanned_by(String banned_by) { this.banned_by = banned_by; }
+
+    public void setMedia_embed(MediaEmbed media_embed) { this.media_embed = media_embed; }
+
+    public void setSubreddit(String subreddit) { this.subreddit = subreddit; }
+
+    public void setSelftext_html(String selftext_html) { this.selftext_html = selftext_html; }
+
+    public void setSelftext(String selftext) { this.selftext = selftext; }
+
+    public void setLikes(Vote likes) { this.likes = likes; }
+
+    public void setSaved(boolean saved) { this.saved = saved; }
+
+    public void setId(String id) { this.id = id; }
+
+    public void setClicked(boolean clicked) { this.clicked = clicked; }
+
+    public void setTitle(String title) { this.title = title; }
+
+    public void setNum_comments(int num_comments) { this.num_comments = num_comments; }
+
+    public void setApproved_by(String approved_by) { this.approved_by = approved_by; }
+
+    public void setOver_18(boolean over_18) { this.over_18 = over_18; }
+
+    public void setHidden(boolean hidden) { this.hidden = hidden; }
+
+    public void setThumbnail(String thumbnail) { this.thumbnail = thumbnail; }
+
+    public void setSubreddit_id(String subreddit_id) { this.subreddit_id = subreddit_id; }
+
     public void setAuthor_flair_css_class(String author_flair_css_class) { this.author_flair_css_class = author_flair_css_class; }
-    public void setDowns(int downs)                                      { this.downs = downs; }
-    public void setIs_self(boolean is_self)                              { this.is_self = is_self; }
-    public void setPermalink(String permalink)                           { this.permalink = permalink; }
-    public void setName(String name)                                     { this.name = name; }
-    public void setCreated(long created)                                 { this.created = created; }
-    public void setUrl(String url)                                       { this.url = url; }
-    public void setAuthor_flair_text(String author_flair_text)           { this.author_flair_text = author_flair_text; }
-    public void setAuthor(String author)                                 { this.author = author; }
-    public void setCreated_utc(long created_utc)                         { this.created_utc = created_utc; }
-    public void setLink_flair_text(String link_flair_text)               { this.link_flair_text = link_flair_text; }
-    public void setDecoded_url(String decoded_url)                       { this.decoded_url = decoded_url; }
-    public void setImage(ImgurImage image)                               { this.image = image; }
-    public void setNum_reports(int num_reports)                          { this.num_reports = num_reports; }
-    public void setUps(int ups)                                          { this.ups = ups; }
-    //@formatter:on
+
+    public void setDowns(int downs) { this.downs = downs; }
+
+    public void setIs_self(boolean is_self) { this.is_self = is_self; }
+
+    public void setPermalink(String permalink) { this.permalink = permalink; }
+
+    public void setName(String name) { this.name = name; }
+
+    public void setCreated(long created) { this.created = created; }
+
+    public void setUrl(String url) { this.url = url; }
+
+    public void setAuthor_flair_text(String author_flair_text) { this.author_flair_text = author_flair_text; }
+
+    public void setAuthor(String author) { this.author = author; }
+
+    public void setCreated_utc(long created_utc) { this.created_utc = created_utc; }
+
+    public void setLink_flair_text(String link_flair_text) { this.link_flair_text = link_flair_text; }
+
+    public void setDecoded_url(String decoded_url) { this.decoded_url = decoded_url; }
+
+    public void setImage(ImgurImage image) { this.image = image; }
+
+    public void setNum_reports(int num_reports) { this.num_reports = num_reports; }
+
+    public void setUps(int ups) { this.ups = ups; }
 
     @Override
     public ContentValues getContentValues() {
@@ -306,55 +366,50 @@ public class PostData implements Parcelable, ContentValuesOperation {
 
     public static PostData fromListViewProjection(Cursor cursor) {
         PostData postData = new PostData();
-        //@formatter:off
-        postData.selftext     = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT));
-        postData.title        = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
-        postData.score        = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.SCORE));
-        postData.thumbnail    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL));
-        postData.permalink    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.PERMALINK));
-        postData.url          = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
+        postData.selftext = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT));
+        postData.title = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
+        postData.score = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.SCORE));
+        postData.thumbnail = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL));
+        postData.permalink = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.PERMALINK));
+        postData.url = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
         postData.num_comments = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.COMMENTS));
-        postData.subreddit    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));
-        postData.domain       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
-        postData.author       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR));
-        postData.likes        = Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE)));
-        postData.name         = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME));
-        postData.over_18      = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1;
-        //@formatter:on
+        postData.subreddit = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));
+        postData.domain = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
+        postData.author = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR));
+        postData.likes = Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE)));
+        postData.name = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME));
+        postData.over_18 = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1;
         return postData;
     }
 
     public PostData(Cursor cursor) {
-        //@formatter:off
-        domain                = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
-        banned_by             = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.BANNED_BY));
-        subreddit             = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));
-        selftext_html         = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT_HTML));
-        selftext              = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT));
-        likes    = Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE)));
-        saved                 = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.SAVED)) == 1;
-        id                    = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.POST_ID));
-        clicked               = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.CLICKED)) == 1;
-        title                 = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
-        num_comments          = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.COMMENTS));
-        score                 = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.SCORE));
-        approved_by           = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.APPROVED_BY));
-        over_18               = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1;
-        hidden                = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.HIDDEN)) == 1;
-        thumbnail             = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL));
-        subreddit_id          = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT_ID));
-        author_flair_css_class= cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR_FLAIR_CSS_CLASS));
-        downs                 = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.DOWNS));
-        is_self               = cursor.getInt   (cursor.getColumnIndex(RedditContract.Posts.IS_SELF)) == 1;
-        permalink             = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.PERMALINK));
-        name                  = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME));
-        created               = cursor.getLong  (cursor.getColumnIndex(RedditContract.Posts.CREATED));
-        url                   = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
-        author_flair_text     = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR_FLAIR_TEXT));
-        author                = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR));
-        created_utc           = cursor.getLong  (cursor.getColumnIndex(RedditContract.Posts.CREATED_UTC));
-        link_flair_text       = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.LINK_FLAIR_TEXT));
-      //decodedUrl            = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DECODED_URL));
-        //@formatter:on
+        domain = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.DOMAIN));
+        banned_by = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.BANNED_BY));
+        subreddit = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT));
+        selftext_html = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT_HTML));
+        selftext = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT));
+        likes = Vote.valueOf(cursor.getString(cursor.getColumnIndex(RedditContract.Posts.VOTE)));
+        saved = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.SAVED)) == 1;
+        id = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.POST_ID));
+        clicked = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.CLICKED)) == 1;
+        title = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
+        num_comments = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.COMMENTS));
+        score = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.SCORE));
+        approved_by = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.APPROVED_BY));
+        over_18 = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.OVER_18)) == 1;
+        hidden = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.HIDDEN)) == 1;
+        thumbnail = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.THUMBNAIL));
+        subreddit_id = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SUBREDDIT_ID));
+        author_flair_css_class = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR_FLAIR_CSS_CLASS));
+        downs = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.DOWNS));
+        is_self = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.IS_SELF)) == 1;
+        permalink = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.PERMALINK));
+        name = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.NAME));
+        created = cursor.getLong(cursor.getColumnIndex(RedditContract.Posts.CREATED));
+        url = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.URL));
+        author_flair_text = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR_FLAIR_TEXT));
+        author = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.AUTHOR));
+        created_utc = cursor.getLong(cursor.getColumnIndex(RedditContract.Posts.CREATED_UTC));
+        link_flair_text = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.LINK_FLAIR_TEXT));
     }
 }

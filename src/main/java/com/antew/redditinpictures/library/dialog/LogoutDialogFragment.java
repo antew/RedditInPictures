@@ -21,6 +21,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.utils.BundleUtil;
 import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.pro.R;
 
@@ -44,31 +45,30 @@ public class LogoutDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        //@formatter:off
-        AlertDialog.Builder dialog =
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.log_out)
-                        .setMessage(R.string.are_you_sure_you_want_to_log_out)
-                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                LogoutDialogListener activity = (LogoutDialogListener) getActivity();
-                                activity.onFinishLogoutDialog();
-                            }
-                        })
-                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                dialog.cancel();
-                            }
-                        });
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity()).setTitle(R.string.log_out)
+                                                                           .setMessage(R.string.are_you_sure_you_want_to_log_out)
+                                                                           .setPositiveButton(R.string.yes,
+                                                                                              new DialogInterface.OnClickListener() {
+                                                                                                  public void onClick(
+                                                                                                      DialogInterface dialog,
+                                                                                                      int whichButton) {
+                                                                                                      LogoutDialogListener activity = (LogoutDialogListener) getActivity();
+                                                                                                      activity.onFinishLogoutDialog();
+                                                                                                  }
+                                                                                              })
+                                                                           .setNegativeButton(R.string.no,
+                                                                                              new DialogInterface.OnClickListener() {
+                                                                                                  public void onClick(
+                                                                                                      DialogInterface dialog,
+                                                                                                      int whichButton) {
+                                                                                                      dialog.cancel();
+                                                                                                  }
+                                                                                              });
 
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            String username = arguments.getString(Constants.EXTRA_USERNAME);
-            if (!Strings.isEmpty(username)) {
-                dialog.setMessage(String.format(getString(R.string.are_you_sure_you_want_to_log_out_with_username), username));
-            }
+        String username = BundleUtil.getString(getArguments(), Constants.EXTRA_USERNAME, null);
+        if (!Strings.isEmpty(username)) {
+            dialog.setMessage(String.format(getString(R.string.are_you_sure_you_want_to_log_out_with_username), username));
         }
-        //@formatter:on
 
         return dialog.create();
     }
