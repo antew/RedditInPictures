@@ -4,6 +4,7 @@ import android.os.Bundle;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.android.debug.hv.ViewServer;
+import com.antew.redditinpictures.Injector;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
@@ -25,7 +26,6 @@ import javax.inject.Inject;
 public abstract class BaseFragmentActivity extends SherlockFragmentActivity implements ActionBarTitleChanger {
     @Inject
     protected Bus mBus;
-    private ObjectGraph activityGraph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +38,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
         }
 
         RedditInPicturesApplication application = (RedditInPicturesApplication) getApplication();
-        activityGraph = application.getApplicationGraph().plus(getModules().toArray());
-
-        // Inject ourselves so subclasses will have dependencies fulfilled when this method returns.
-        activityGraph.inject(this);
+        Injector.init(new ActivityModule(this), this);
     }
 
     @Override
@@ -53,15 +50,6 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
         mBus.register(this);
     }
 
-    /**
-     * A list of modules to use for the individual activity graph. Subclasses can override this
-     * method to provide additional modules provided they call and include the modules returned by
-     * calling {@code super.getModules()}.
-     */
-    protected List<Object> getModules() {
-        return Arrays.<Object>asList(new ActivityModule(this));
-    }
-
     @Override
     protected void onPause() {
         mBus.unregister(this);
@@ -70,18 +58,11 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
 
     @Override
     protected void onDestroy() {
-        activityGraph = null;
-
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).removeWindow(this);
         }
 
         super.onDestroy();
-    }
-
-    /** Inject the supplied {@code object} using the activity-specific graph. */
-    public void inject(Object object) {
-        activityGraph.inject(object);
     }
 
     @Override public void setActionBarTitle(String title, String subtitle) {

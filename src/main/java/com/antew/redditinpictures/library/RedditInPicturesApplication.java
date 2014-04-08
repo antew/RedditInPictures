@@ -3,12 +3,14 @@ package com.antew.redditinpictures.library;
 import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
+import com.antew.redditinpictures.ApplicationModulePro;
+import com.antew.redditinpictures.Injector;
 import com.antew.redditinpictures.Modules;
+import com.antew.redditinpictures.library.modules.RootModule;
 import dagger.ObjectGraph;
 
 public class RedditInPicturesApplication extends Application {
     private static RedditInPicturesApplication instance;
-    private        ObjectGraph                 applicationGraph;
 
     /**
      * Create main application
@@ -45,10 +47,7 @@ public class RedditInPicturesApplication extends Application {
         super.onCreate();
         instance = this;
 
-        applicationGraph = ObjectGraph.create(Modules.get(this));
-    }
-
-    public ObjectGraph getApplicationGraph() {
-        return applicationGraph;
+        Injector.init(new RootModule(this));
+        Injector.init(new ApplicationModulePro());
     }
 }
