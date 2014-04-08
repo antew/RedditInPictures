@@ -1,5 +1,6 @@
 package com.antew.redditinpictures;
 
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
@@ -14,7 +15,7 @@ import dagger.Module;
     overrides = true,
     injects = {
         ImageDetailActivity.class, ImageDetailFragment.class, ImgurAlbumActivity.class, RedditFragmentActivity.class,
-        RedditImageListFragment.class, RedditImageGridFragment.class, ImgurAlbumFragment.class
+        RedditImageListFragment.class, RedditImageGridFragment.class, ImgurAlbumFragment.class, RedditService.GetNewPostsIfNeededTask.class,
     }, library = true
 )
 public class ApplicationModulePro {

@@ -6,11 +6,13 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import com.antew.redditinpictures.Injector;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.enums.SubscribeAction;
 import com.antew.redditinpictures.library.enums.Vote;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.json.RedditResult;
@@ -20,8 +22,10 @@ import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.library.utils.SubredditUtils;
 import com.antew.redditinpictures.sqlite.RedditContract;
 import com.antew.redditinpictures.sqlite.RedditDatabase;
+import com.squareup.otto.Bus;
 import java.util.Calendar;
 import java.util.Date;
+import javax.inject.Inject;
 
 public class RedditService extends RESTService {
 
@@ -185,17 +189,20 @@ public class RedditService extends RESTService {
         redditResult.handleResponse(getApplicationContext());
     }
 
-    private static class GetNewPostsIfNeededTask extends SafeAsyncTask<Void> {
+    public static class GetNewPostsIfNeededTask extends SafeAsyncTask<Void> {
         Context  mContext;
         String   mSubreddit;
         Category mCategory;
         Age      mAge;
+        @Inject
+        Bus mBus;
 
         public GetNewPostsIfNeededTask(Context context, String subreddit, Age age, Category category) {
             mContext = context;
             mSubreddit = subreddit;
             mCategory = category;
             mAge = age;
+            Injector.inject(this);
         }
 
         @Override
@@ -213,6 +220,7 @@ public class RedditService extends RESTService {
                 // If we have more than 1 record it is safe to assume that we need to do a full refresh.
                 if (numRecords > 1) {
                     database.close();
+                    mBus.post(new RequestInProgressEvent());
                     getPosts(mContext, mSubreddit, mAge, mCategory);
                     return null;
                 }
@@ -237,6 +245,7 @@ public class RedditService extends RESTService {
             Ln.d("There Are %d Rows In 5 Minutes For %s", numUpdates, mSubreddit);
 
             if (numUpdates <= 0) {
+                mBus.post(new RequestInProgressEvent());
                 getPosts(mContext, mSubreddit, mAge, mCategory);
             }
 
