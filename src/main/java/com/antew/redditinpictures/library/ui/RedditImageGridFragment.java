@@ -13,8 +13,8 @@ import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
 import com.antew.redditinpictures.pro.R;
-import com.antew.redditinpictures.sqlite.QueryCriteria;
-import com.antew.redditinpictures.sqlite.RedditContract;
+import com.antew.redditinpictures.library.database.QueryCriteria;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.squareup.otto.Subscribe;
 
 public class RedditImageGridFragment extends RedditImageAdapterViewFragment<GridView, ImageCursorAdapter> {

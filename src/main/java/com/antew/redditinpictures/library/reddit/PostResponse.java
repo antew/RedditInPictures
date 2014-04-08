@@ -15,7 +15,7 @@ import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.SubredditUtils;
-import com.antew.redditinpictures.sqlite.RedditContract;
+import com.antew.redditinpictures.library.database.RedditContract;
 import java.util.Date;
 
 class PostResponse extends RedditResponseHandler {

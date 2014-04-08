@@ -9,15 +9,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import com.antew.redditinpictures.library.util.Ln;
-import com.antew.redditinpictures.sqlite.RedditContract;
-import com.antew.redditinpictures.sqlite.RedditContract.Login;
-import com.antew.redditinpictures.sqlite.RedditContract.LoginColumns;
-import com.antew.redditinpictures.sqlite.RedditContract.Posts;
-import com.antew.redditinpictures.sqlite.RedditContract.RedditData;
-import com.antew.redditinpictures.sqlite.RedditContract.RedditDataColumns;
-import com.antew.redditinpictures.sqlite.RedditContract.Subreddits;
-import com.antew.redditinpictures.sqlite.RedditDatabase;
-import com.antew.redditinpictures.sqlite.RedditDatabase.Tables;
+import com.antew.redditinpictures.library.database.RedditContract;
+import com.antew.redditinpictures.library.database.RedditContract.Login;
+import com.antew.redditinpictures.library.database.RedditContract.LoginColumns;
+import com.antew.redditinpictures.library.database.RedditContract.Posts;
+import com.antew.redditinpictures.library.database.RedditContract.RedditData;
+import com.antew.redditinpictures.library.database.RedditContract.RedditDataColumns;
+import com.antew.redditinpictures.library.database.RedditContract.Subreddits;
+import com.antew.redditinpictures.library.database.RedditDatabase;
+import com.antew.redditinpictures.library.database.RedditDatabase.Tables;
 
 public class RedditProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();

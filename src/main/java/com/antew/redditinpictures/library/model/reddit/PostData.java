@@ -10,7 +10,7 @@ import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
 import com.antew.redditinpictures.library.util.AndroidUtil;
-import com.antew.redditinpictures.sqlite.RedditContract;
+import com.antew.redditinpictures.library.database.RedditContract;
 
 public class PostData implements Parcelable, ContentValuesOperation {
 

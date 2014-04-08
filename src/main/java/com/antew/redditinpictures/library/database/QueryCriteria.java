@@ -1,4 +1,4 @@
-package com.antew.redditinpictures.sqlite;
+package com.antew.redditinpictures.library.database;
 
 public class QueryCriteria {
 

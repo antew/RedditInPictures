@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.antew.redditinpictures.library.util.AndroidUtil;
-import com.antew.redditinpictures.sqlite.RedditContract;
+import com.antew.redditinpictures.library.database.RedditContract;
 
 public class SubredditData implements Parcelable {
     private String  display_name;

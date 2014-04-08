@@ -4,7 +4,6 @@ import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
 import com.antew.redditinpictures.ApplicationModulePro;
-import com.antew.redditinpictures.Injector;
 import com.antew.redditinpictures.library.modules.RootModule;
 
 public class RedditInPicturesApplication extends Application {

@@ -9,7 +9,7 @@ import com.antew.redditinpictures.library.model.reddit.MySubreddits;
 import com.antew.redditinpictures.library.model.reddit.SubredditData;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
-import com.antew.redditinpictures.sqlite.RedditContract;
+import com.antew.redditinpictures.library.database.RedditContract;
 import java.util.ArrayList;
 import java.util.List;
 

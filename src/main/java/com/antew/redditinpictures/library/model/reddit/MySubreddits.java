@@ -17,7 +17,7 @@ package com.antew.redditinpictures.library.model.reddit;
 
 import android.content.ContentValues;
 import com.antew.redditinpictures.library.interfaces.ContentValuesArrayOperation;
-import com.antew.redditinpictures.sqlite.RedditContract;
+import com.antew.redditinpictures.library.database.RedditContract;
 import java.util.ArrayList;
 import java.util.List;
 

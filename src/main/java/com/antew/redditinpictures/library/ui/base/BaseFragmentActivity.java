@@ -4,7 +4,7 @@ import android.os.Bundle;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.android.debug.hv.ViewServer;
-import com.antew.redditinpictures.Injector;
+import com.antew.redditinpictures.library.Injector;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;

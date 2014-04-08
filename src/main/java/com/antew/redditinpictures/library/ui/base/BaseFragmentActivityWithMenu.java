@@ -36,7 +36,7 @@ import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.library.util.SubredditUtils;
 import com.antew.redditinpictures.pro.R;
-import com.antew.redditinpictures.sqlite.RedditContract;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.squareup.picasso.Picasso;
 import net.simonvt.menudrawer.MenuDrawer;
 

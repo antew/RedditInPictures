@@ -1,4 +1,4 @@
-package com.antew.redditinpictures;
+package com.antew.redditinpictures.library;
 
 import dagger.ObjectGraph;
 

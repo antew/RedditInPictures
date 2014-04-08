@@ -43,7 +43,7 @@ import com.antew.redditinpictures.library.util.RedditUtils;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.library.util.SubredditUtils;
 import com.antew.redditinpictures.pro.R;
-import com.antew.redditinpictures.sqlite.RedditContract;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.squareup.otto.Subscribe;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;

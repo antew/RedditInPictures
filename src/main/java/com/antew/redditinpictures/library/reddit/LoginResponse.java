@@ -10,7 +10,7 @@ import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginResponse;
 import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.Ln;
-import com.antew.redditinpictures.sqlite.RedditContract;
+import com.antew.redditinpictures.library.database.RedditContract;
 
 public class LoginResponse extends RedditResponseHandler {
     public static String TAG = LoginResponse.class.getSimpleName();

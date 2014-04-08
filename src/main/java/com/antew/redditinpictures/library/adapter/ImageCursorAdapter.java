@@ -28,7 +28,7 @@ import com.antew.redditinpictures.library.imgur.ResolveAlbumCoverWorkerTask;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
-import com.antew.redditinpictures.sqlite.RedditContract;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.squareup.picasso.Picasso;
 import java.util.regex.Pattern;
 
