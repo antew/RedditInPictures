@@ -1,6 +1,5 @@
 package com.antew.redditinpictures.library.ui;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,16 +11,16 @@ import com.antew.redditinpictures.library.adapter.ImageListCursorAdapter;
 import com.antew.redditinpictures.library.enums.Age;
 import com.antew.redditinpictures.library.enums.Category;
 import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
-import com.antew.redditinpictures.library.utils.Util;
+import com.antew.redditinpictures.library.utils.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.sqlite.QueryCriteria;
 import com.antew.redditinpictures.sqlite.RedditContract;
-import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
 import com.fortysevendeg.swipelistview.SwipeListView;
 import com.fortysevendeg.swipelistview.SwipeListViewListener;
 import com.squareup.otto.Subscribe;
 
-public class RedditImageListFragment extends RedditImageAdapterViewFragment<ListView, ImageListCursorAdapter> implements SwipeListViewListener {
+public class RedditImageListFragment extends RedditImageAdapterViewFragment<ListView, ImageListCursorAdapter>
+    implements SwipeListViewListener {
     //8 is a good number, the kind of number that you could say take home to your parents and not be worried about what they might think about it.
     private static final int                          POST_LOAD_OFFSET    = 8;
     private              AbsListView.OnScrollListener mListScrollListener = new AbsListView.OnScrollListener() {
@@ -50,7 +49,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
         args.putString(Constants.EXTRA_SELECTED_SUBREDDIT, subreddit);
         args.putString(Constants.EXTRA_CATEGORY, category.toString());
         // Age is null when we're sorting as 'New' or 'Rising'
-        args.putString(Constants.EXTRA_AGE, age == null ? null : age.toString());
+        args.putString(Constants.EXTRA_AGE, Strings.toString(age));
         f.setArguments(args);
 
         return f;
