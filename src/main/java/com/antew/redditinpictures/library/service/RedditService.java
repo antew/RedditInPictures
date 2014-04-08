@@ -199,6 +199,19 @@ public class RedditService extends RESTService {
 
         public GetNewPostsIfNeededTask(Context context, String subreddit, Age age, Category category) {
             mContext = context;
+
+            if (Strings.isEmpty(subreddit)) {
+                subreddit = Constants.REDDIT_FRONTPAGE;
+            }
+
+            if (category == null) {
+                category = Category.HOT;
+            }
+
+            if (age == null) {
+                age = Age.TODAY;
+            }
+
             mSubreddit = subreddit;
             mCategory = category;
             mAge = age;
@@ -236,8 +249,8 @@ public class RedditService extends RESTService {
 
             // TODO: Make this work for < API 11.
             long numUpdates = DatabaseUtils.queryNumEntries(database, RedditDatabase.Tables.REDDIT_DATA,
-                                                            "subreddit = ? AND retrievedDate BETWEEN ? AND ?", new String[] {
-                    mSubreddit, String.valueOf(fiveMinutesAgoDate.getTime()), String.valueOf(currentDate.getTime())
+                                                            "subreddit = ? AND category = ? AND age = ? AND retrievedDate BETWEEN ? AND ?", new String[] {
+                    mSubreddit, mCategory.getName(), mAge.getAge(), String.valueOf(fiveMinutesAgoDate.getTime()), String.valueOf(currentDate.getTime())
                 }
                                                            );
 
