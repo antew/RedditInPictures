@@ -1,6 +1,6 @@
 package com.antew.redditinpictures.library.utils;
 
-import com.antew.redditinpictures.library.enums.ImageType;
+import com.antew.redditinpictures.library.model.ImageType;
 import java.util.HashMap;
 
 public class ImageTypeCache {

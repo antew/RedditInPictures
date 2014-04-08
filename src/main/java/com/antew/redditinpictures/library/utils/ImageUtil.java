@@ -18,7 +18,7 @@ package com.antew.redditinpictures.library.utils;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.widget.EditText;
-import com.antew.redditinpictures.library.enums.ImageType;
+import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.pro.R;
 import java.util.Locale;
 

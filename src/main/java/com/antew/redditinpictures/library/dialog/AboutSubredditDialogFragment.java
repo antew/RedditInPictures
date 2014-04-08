@@ -13,7 +13,7 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.reddit.SubredditData;
+import com.antew.redditinpictures.library.model.reddit.SubredditData;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Picasso;
 

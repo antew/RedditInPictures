@@ -1,8 +1,8 @@
 package com.antew.redditinpictures.library.image;
 
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.enums.ImageSize;
-import com.antew.redditinpictures.library.enums.ImageType;
+import com.antew.redditinpictures.library.model.ImageSize;
+import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.imgur.ImgurApiCache;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;

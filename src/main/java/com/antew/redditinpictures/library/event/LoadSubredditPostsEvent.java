@@ -1,7 +1,7 @@
 package com.antew.redditinpictures.library.event;
 
-import com.antew.redditinpictures.library.enums.Age;
-import com.antew.redditinpictures.library.enums.Category;
+import com.antew.redditinpictures.library.model.Age;
+import com.antew.redditinpictures.library.model.Category;
 
 public class LoadSubredditPostsEvent {
     private String   mSubreddit;

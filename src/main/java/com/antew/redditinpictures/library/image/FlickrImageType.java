@@ -1,8 +1,8 @@
 package com.antew.redditinpictures.library.image;
 
-import com.antew.redditinpictures.library.apikeys.FlickrApiKey;
-import com.antew.redditinpictures.library.enums.ImageSize;
-import com.antew.redditinpictures.library.enums.ImageType;
+import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.model.ImageSize;
+import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.gson.BooleanDeserializer;
 import com.antew.redditinpictures.library.imageapi.Flickr;
 import com.antew.redditinpictures.library.imageapi.Flickr.FlickrImage;
@@ -15,8 +15,7 @@ import com.google.gson.JsonSyntaxException;
 
 public class FlickrImageType extends Image {
     private static final String FLICKR_URL = "http://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key="
-                                             + FlickrApiKey.KEY
-                                             + "&photo_id=%s&format=json&nojsoncallback=1";
+                                             + Constants.Flickr.API_KEY + "&photo_id=%s&format=json&nojsoncallback=1";
     private static final String URL_REGEX  = "^http://(?:\\w+).?flickr.com/(?:.*)/([\\d]{10})/?(?:.*)?$";
     private              Flickr mFlickr    = null;
 

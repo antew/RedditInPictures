@@ -1,6 +1,6 @@
 package com.antew.redditinpictures.library.json;
 
-import com.antew.redditinpictures.library.enums.Vote;
+import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.gson.VoteAdapter;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.google.gson.Gson;

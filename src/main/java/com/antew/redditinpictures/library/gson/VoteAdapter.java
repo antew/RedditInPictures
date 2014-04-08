@@ -15,7 +15,7 @@
  */
 package com.antew.redditinpictures.library.gson;
 
-import com.antew.redditinpictures.library.enums.Vote;
+import com.antew.redditinpictures.library.model.Vote;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;

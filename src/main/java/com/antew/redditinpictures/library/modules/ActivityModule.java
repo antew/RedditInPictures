@@ -1,7 +1,7 @@
 package com.antew.redditinpictures.library.modules;
 
 import android.content.Context;
-import com.antew.redditinpictures.library.annotations.ForActivity;
+import com.antew.redditinpictures.library.annotation.ForActivity;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import dagger.Module;
 import dagger.Provides;

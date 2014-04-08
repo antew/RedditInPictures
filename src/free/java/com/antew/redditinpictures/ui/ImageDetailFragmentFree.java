@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.antew.redditinpictures.library.image.Image;
-import com.antew.redditinpictures.library.reddit.PostData;
+import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;

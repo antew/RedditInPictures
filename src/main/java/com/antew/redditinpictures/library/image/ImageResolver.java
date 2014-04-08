@@ -1,6 +1,6 @@
 package com.antew.redditinpictures.library.image;
 
-import com.antew.redditinpictures.library.enums.ImageSize;
+import com.antew.redditinpictures.library.model.ImageSize;
 
 public class ImageResolver {
 

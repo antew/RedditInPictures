@@ -1,7 +1,7 @@
 package com.antew.redditinpictures.library.interfaces;
 
-import com.antew.redditinpictures.library.enums.ImageSize;
-import com.antew.redditinpictures.library.enums.ImageType;
+import com.antew.redditinpictures.library.model.ImageSize;
+import com.antew.redditinpictures.library.model.ImageType;
 
 public interface ImageInformation {
     public String getHash();

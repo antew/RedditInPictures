@@ -1,13 +1,13 @@
 package com.antew.redditinpictures.library.utils;
 
-import com.antew.redditinpictures.library.enums.Age;
-import com.antew.redditinpictures.library.enums.Category;
+import com.antew.redditinpictures.library.model.Age;
+import com.antew.redditinpictures.library.model.Category;
 
 public class RedditUtils {
     /**
      * Get the sort string to display in the ActionBar subtitle, e.g. 'Top: All Time"
-     * @param category The current {@link com.antew.redditinpictures.library.enums.Category}
-     * @param age The current {@link com.antew.redditinpictures.library.enums.Age}
+     * @param category The current {@link com.antew.redditinpictures.library.model.Category}
+     * @param age The current {@link com.antew.redditinpictures.library.model.Age}
      * @return A simple description of the category + age combination.
      */
     public static String getSortDisplayString(Category category, Age age) {

@@ -1,6 +1,6 @@
 package com.antew.redditinpictures.library.image;
 
-import com.antew.redditinpictures.library.enums.ImageType;
+import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.utils.ImageUtil;
 
 public class ImageFactory {

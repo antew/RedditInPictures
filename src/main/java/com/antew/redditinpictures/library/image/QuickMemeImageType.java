@@ -1,7 +1,7 @@
 package com.antew.redditinpictures.library.image;
 
-import com.antew.redditinpictures.library.enums.ImageSize;
-import com.antew.redditinpictures.library.enums.ImageType;
+import com.antew.redditinpictures.library.model.ImageSize;
+import com.antew.redditinpictures.library.model.ImageType;
 
 public class QuickMemeImageType extends Image {
     private static final String TAG           = QuickMemeImageType.class.getSimpleName();

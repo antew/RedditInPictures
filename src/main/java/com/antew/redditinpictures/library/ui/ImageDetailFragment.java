@@ -21,11 +21,11 @@ import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
-import com.antew.redditinpictures.library.enums.ImageType;
+import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.image.ImgurGalleryType;
-import com.antew.redditinpictures.library.reddit.PostData;
+import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.utils.Ln;
 
 /**
@@ -57,7 +57,7 @@ public class ImageDetailFragment extends ImageViewerFragment {
 
     /**
      * Populate image using a url from extras, use the convenience factory method
-     * {@link ImageDetailFragment#newInstance(com.antew.redditinpictures.library.reddit.PostData)} to create this fragment.
+     * {@link ImageDetailFragment#newInstance(com.antew.redditinpictures.library.model.reddit.PostData)} to create this fragment.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {

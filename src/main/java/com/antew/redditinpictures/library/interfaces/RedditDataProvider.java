@@ -1,7 +1,7 @@
 package com.antew.redditinpictures.library.interfaces;
 
-import com.antew.redditinpictures.library.enums.Age;
-import com.antew.redditinpictures.library.enums.Category;
+import com.antew.redditinpictures.library.model.Age;
+import com.antew.redditinpictures.library.model.Category;
 
 public interface RedditDataProvider {
     public Age getAge();

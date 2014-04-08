@@ -32,16 +32,25 @@ public class Constants {
     }
 
     public static class Reddit {
-        public static final String USER_AGENT                   = "Reddit In Pictures Android by /u/antew";
-        public static final String REDDIT_LOGIN_URL             = "https://ssl.reddit.com/api/login/";
-        public static final String REDDIT_SUBSCRIBE_URL         = "http://www.reddit.com/api/subscribe";
-        public static final String REDDIT_VOTE_URL              = "http://www.reddit.com/api/vote";
-        public static final String REDDIT_ABOUT_URL             = "http://www.reddit.com/r/%s/about.json";
-        public static final String REDDIT_SEARCH_SUBREDDITS_URL = "http://www.reddit.com/api/search_reddit_names.json";
-        public static final String REDDIT_SESSION               = "reddit_session";
-        public static final String REDDIT_MY_SUBREDDITS_URL     = "http://www.reddit.com/reddits/mine/subscriber.json";
-        public static final String COMPACT_URL                  = "/.compact";
-        public static final String REDDIT_BASE_URL              = "http://www.reddit.com";
+        public static final String USER_AGENT = "Reddit In Pictures Android by /u/antew";
+
+        public static class Endpoint {
+            public static final String REDDIT_BASE_URL              = "http://www.reddit.com";
+            public static final String REDDIT_LOGIN_URL             = "https://ssl.reddit.com/api/login/";
+            public static final String REDDIT_SUBSCRIBE_URL         = REDDIT_BASE_URL + "/api/subscribe";
+            public static final String REDDIT_VOTE_URL              = REDDIT_BASE_URL + "/api/vote";
+            public static final String SUBREDDIT_BASE_URL           = REDDIT_BASE_URL + "/r/";
+            public static final String REDDIT_ABOUT_URL             = REDDIT_BASE_URL + "/r/%s/about.json";
+            public static final String REDDIT_SEARCH_SUBREDDITS_URL = REDDIT_BASE_URL + "/api/search_reddit_names.json";
+            public static final String REDDIT_MY_SUBREDDITS_URL     = REDDIT_BASE_URL + "/reddits/mine/subscriber.json";
+            public static final String REDDIT_SESSION               = "reddit_session";
+            public static final String COMPACT_URL                  = "/.compact";
+        }
+    }
+
+    public static class Flickr {
+        // TODO: Replace with Flickr API key.
+        public static final String API_KEY = "REPLACE_THIS_WITH_YOUR_FLICKR_API_KEY";
     }
 
     // Constants for extras

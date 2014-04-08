@@ -15,6 +15,7 @@
  */
 package com.antew.redditinpictures.library.imgur;
 
+import com.antew.redditinpictures.library.model.imgur.ImgurGallery;
 import java.util.HashMap;
 
 /**
@@ -25,7 +26,7 @@ import java.util.HashMap;
 public class ImgurApiCache {
     private static HashMap<String, ImgurImageApi> imgurImages    = null;
     private static HashMap<String, ImgurAlbumApi> imgurAlbums    = null;
-    private static HashMap<String, ImgurGallery>  imgurGalleries = null;
+    private static HashMap<String, ImgurGallery> imgurGalleries = null;
 
     private ImgurApiCache() {}
 

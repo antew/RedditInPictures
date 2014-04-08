@@ -23,7 +23,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.anim.FadeInThenOut;
+import com.antew.redditinpictures.library.animation.FadeInThenOut;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;

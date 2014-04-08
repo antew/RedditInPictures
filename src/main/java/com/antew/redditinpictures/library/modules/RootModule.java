@@ -13,7 +13,7 @@ import android.util.DisplayMetrics;
 import android.view.inputmethod.InputMethodManager;
 import com.antew.redditinpictures.device.ScreenSize;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
-import com.antew.redditinpictures.library.annotations.ForApplication;
+import com.antew.redditinpictures.library.annotation.ForApplication;
 import com.antew.redditinpictures.library.utils.MainThreadBus;
 import com.squareup.otto.Bus;
 import dagger.Module;

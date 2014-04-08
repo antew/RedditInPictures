@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 /**
  * Fix this very annoying crash:
 <br>E/AndroidRuntime(28989): FATAL EXCEPTION: main
-<br>E/AndroidRuntime(28989): android.os.BadParcelableException: ClassNotFoundException when unmarshalling: com.antew.redditinpictures.library.reddit.RedditApi$PostData
+<br>E/AndroidRuntime(28989): android.os.BadParcelableException: ClassNotFoundException when unmarshalling: com.antew.redditinpictures.library.model.reddit.RedditApi$PostData
 <br>E/AndroidRuntime(28989):    at android.os.Parcel.readParcelable(Parcel.java:2077)
 <br>E/AndroidRuntime(28989):    at android.os.Parcel.readValue(Parcel.java:1965)
 <br>E/AndroidRuntime(28989):    at android.os.Parcel.readMapInternal(Parcel.java:2226)

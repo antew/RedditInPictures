@@ -8,14 +8,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import com.antew.redditinpictures.Injector;
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.enums.Age;
-import com.antew.redditinpictures.library.enums.Category;
-import com.antew.redditinpictures.library.enums.SubscribeAction;
-import com.antew.redditinpictures.library.enums.Vote;
+import com.antew.redditinpictures.library.model.Age;
+import com.antew.redditinpictures.library.model.Category;
+import com.antew.redditinpictures.library.model.SubscribeAction;
+import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
-import com.antew.redditinpictures.library.reddit.RedditLoginInformation;
-import com.antew.redditinpictures.library.reddit.RedditUrl;
-import com.antew.redditinpictures.library.reddit.json.RedditResult;
+import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
+import com.antew.redditinpictures.library.model.reddit.RedditUrl;
+import com.antew.redditinpictures.library.reddit.RedditResult;
 import com.antew.redditinpictures.library.utils.Ln;
 import com.antew.redditinpictures.library.utils.SafeAsyncTask;
 import com.antew.redditinpictures.library.utils.Strings;
@@ -74,7 +74,7 @@ public class RedditService extends RESTService {
         intent.putExtra(EXTRA_USER_AGENT, Constants.Reddit.USER_AGENT);
 
         if (RedditLoginInformation.isLoggedIn()) {
-            intent.putExtra(EXTRA_COOKIE, Constants.Reddit.REDDIT_SESSION + "=" + RedditLoginInformation.getCookie());
+            intent.putExtra(EXTRA_COOKIE, Constants.Reddit.Endpoint.REDDIT_SESSION + "=" + RedditLoginInformation.getCookie());
         }
 
         return intent;
@@ -83,7 +83,7 @@ public class RedditService extends RESTService {
     public static void vote(Context context, String name, Vote vote) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
-        intent.setData(Uri.parse(Constants.Reddit.REDDIT_VOTE_URL));
+        intent.setData(Uri.parse(Constants.Reddit.Endpoint.REDDIT_VOTE_URL));
         intent.putExtra(EXTRA_HTTP_VERB, POST);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.VOTE);
 
@@ -98,7 +98,7 @@ public class RedditService extends RESTService {
     }
 
     public static void login(Context context, String username, String password) {
-        String url = Constants.Reddit.REDDIT_LOGIN_URL + username;
+        String url = Constants.Reddit.Endpoint.REDDIT_LOGIN_URL + username;
 
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
@@ -123,7 +123,7 @@ public class RedditService extends RESTService {
     public static void getMySubreddits(Context context) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
-        intent.setData(Uri.parse(Constants.Reddit.REDDIT_MY_SUBREDDITS_URL));
+        intent.setData(Uri.parse(Constants.Reddit.Endpoint.REDDIT_MY_SUBREDDITS_URL));
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.MY_SUBREDDITS);
         intent.putExtra(EXTRA_HTTP_VERB, GET);
 
@@ -134,7 +134,7 @@ public class RedditService extends RESTService {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.ABOUT_SUBREDDIT);
-        intent.setData(Uri.parse(String.format(Constants.Reddit.REDDIT_ABOUT_URL, subreddit)));
+        intent.setData(Uri.parse(String.format(Constants.Reddit.Endpoint.REDDIT_ABOUT_URL, subreddit)));
 
         context.startService(intent);
     }
@@ -147,7 +147,7 @@ public class RedditService extends RESTService {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.SUBSCRIBE);
-        intent.setData(Uri.parse(Constants.Reddit.REDDIT_SUBSCRIBE_URL));
+        intent.setData(Uri.parse(Constants.Reddit.Endpoint.REDDIT_SUBSCRIBE_URL));
         intent.putExtra(EXTRA_HTTP_VERB, POST);
 
         Bundle bundle = new Bundle();
@@ -167,8 +167,9 @@ public class RedditService extends RESTService {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.SEARCH_SUBREDDITS);
-        String url = Constants.Reddit.REDDIT_SEARCH_SUBREDDITS_URL + "?query=" + query + "&include_over_18=" + (searchNsfw == true ? "true"
-                                                                                                                                   : "false");
+        String url = Constants.Reddit.Endpoint.REDDIT_SEARCH_SUBREDDITS_URL + "?query=" + query + "&include_over_18=" + (searchNsfw == true
+                                                                                                                         ? "true"
+                                                                                                                         : "false");
         intent.setData(Uri.parse(url));
         intent.putExtra(EXTRA_HTTP_VERB, POST);
 
@@ -249,9 +250,12 @@ public class RedditService extends RESTService {
 
             // TODO: Make this work for < API 11.
             long numUpdates = DatabaseUtils.queryNumEntries(database, RedditDatabase.Tables.REDDIT_DATA,
-                                                            "subreddit = ? AND category = ? AND age = ? AND retrievedDate BETWEEN ? AND ?", new String[] {
-                    mSubreddit, mCategory.getName(), mAge.getAge(), String.valueOf(fiveMinutesAgoDate.getTime()), String.valueOf(currentDate.getTime())
-                }
+                                                            "subreddit = ? AND category = ? AND age = ? AND retrievedDate BETWEEN ? AND ?",
+                                                            new String[] {
+                                                                mSubreddit, mCategory.getName(), mAge.getAge(),
+                                                                String.valueOf(fiveMinutesAgoDate.getTime()),
+                                                                String.valueOf(currentDate.getTime())
+                                                            }
                                                            );
 
             database.close();
