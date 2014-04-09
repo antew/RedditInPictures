@@ -29,11 +29,11 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.device.ScreenSize;
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.model.ImageSize;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
+import com.antew.redditinpictures.library.model.ImageSize;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
 import com.antew.redditinpictures.library.util.AndroidUtil;
@@ -73,19 +73,21 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
     protected SystemUiStateProvider mSystemUiStateProvider;
     @InjectView(R.id.pb_progress)
-              ProgressBar           mProgress;
+    ProgressBar    mProgress;
     @InjectView(R.id.rl_post_information_wrapper)
-              RelativeLayout        mPostInformationWrapper;
+    RelativeLayout mPostInformationWrapper;
     @InjectView(R.id.tv_post_title)
-              TextView              mPostTitle;
+    TextView       mPostTitle;
     @InjectView(R.id.tv_post_information)
-              TextView              mPostInformation;
+    TextView       mPostInformation;
     @InjectView(R.id.btn_view_gallery)
-              Button                mBtnViewGallery;
+    Button         mBtnViewGallery;
     @InjectView(R.id.webview_stub)
-              ViewStub              mViewStub;
+    ViewStub       mViewStub;
     @InjectView(R.id.tv_post_votes)
-              TextView              mPostVotes;
+    TextView       mPostVotes;
+    @InjectView(R.id.b_retry)
+    Button         mRetry;
     /**
      * This BroadcastReceiver handles updating the score when a vote is cast or changed
      */
@@ -149,6 +151,14 @@ public abstract class ImageViewerFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.image_detail_fragment, container, false);
         ButterKnife.inject(this, view);
+
+        mRetry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadImage(mResolvedImage);
+            }
+        });
+
         return view;
     }
 
@@ -223,7 +233,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
         final Activity act = getActivity();
 
-        LocalBroadcastManager.getInstance(act).registerReceiver(mScoreUpdateReceiver, new IntentFilter(Constants.Broadcast.BROADCAST_UPDATE_SCORE));
+        LocalBroadcastManager.getInstance(act)
+                             .registerReceiver(mScoreUpdateReceiver, new IntentFilter(Constants.Broadcast.BROADCAST_UPDATE_SCORE));
         LocalBroadcastManager.getInstance(act)
                              .registerReceiver(mToggleFullscreenIntent, new IntentFilter(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN));
 
@@ -283,6 +294,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
             Ln.e("Received null url in loadImage(String imageUrl)");
             mProgress.setVisibility(View.GONE);
             mErrorMessage.setVisibility(View.VISIBLE);
+            mRetry.setVisibility(View.VISIBLE);
             return;
         }
 
@@ -309,6 +321,9 @@ public abstract class ImageViewerFragment extends BaseFragment {
                        public void onError() {
                            if (mErrorMessage != null) {
                                mErrorMessage.setVisibility(View.VISIBLE);
+                           }
+                           if (mRetry != null) {
+                               mRetry.setVisibility(View.VISIBLE);
                            }
                        }
                    });

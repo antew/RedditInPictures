@@ -18,7 +18,17 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="@string/error_loading_image"
-        android:visibility="gone" />
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/b_retry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Retry"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        android:layout_below="@id/tv_error_message"/>
 
     <uk.co.senab.photoview.PhotoView
         android:id="@+id/iv_imageView"
