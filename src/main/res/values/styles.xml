@@ -101,6 +101,7 @@
         <item name="android:layout_weight">.2</item>
         <item name="android:paddingTop">@dimen/subreddit_menu_item_padding</item>
         <item name="android:paddingBottom">@dimen/subreddit_menu_item_padding</item>
+        <item name="android:layout_gravity">center_vertical</item>
     </style>
 
 </resources>
