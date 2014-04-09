@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -30,6 +31,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.CursorPagerAdapter;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
@@ -45,7 +47,6 @@ import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.library.util.SubredditUtils;
 import com.antew.redditinpictures.pro.R;
-import com.antew.redditinpictures.library.database.RedditContract;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -289,7 +290,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
      */
     @Override
     protected void refreshCurentImage() {
-
+        //TODO: Code this.
     }
 
     /**

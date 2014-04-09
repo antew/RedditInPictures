@@ -18,6 +18,7 @@ package com.antew.redditinpictures.library.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,14 +46,14 @@ public class ImageDetailFragment extends ImageViewerFragment {
      *
      * @return A new instance of ImageDetailFragment with imageNum extras
      */
-    public static ImageDetailFragment newInstance(PostData image) {
-        final ImageDetailFragment f = new ImageDetailFragment();
+    public static Fragment newInstance(PostData image) {
+        final ImageDetailFragment fragment = new ImageDetailFragment();
 
         final Bundle args = new Bundle();
         args.putParcelable(IMAGE_DATA_EXTRA, image);
-        f.setArguments(args);
+        fragment.setArguments(args);
 
-        return f;
+        return fragment;
     }
 
     /**
