@@ -33,9 +33,9 @@ public class RedditImageGridFragmentFree extends RedditImageGridFragment {
         final Fragment f = new RedditImageGridFragmentFree();
 
         final Bundle args = new Bundle();
-        args.putString(Constants.EXTRA_SELECTED_SUBREDDIT, subreddit);
-        args.putString(Constants.EXTRA_CATEGORY, category.toString());
-        args.putString(Constants.EXTRA_AGE, age.toString());
+        args.putString(Constants.Extra.EXTRA_SUBREDDIT, subreddit);
+        args.putString(Constants.Extra.EXTRA_CATEGORY, category.toString());
+        args.putString(Constants.Extra.EXTRA_AGE, age.toString());
         f.setArguments(args);
 
         return f;

@@ -1,5 +1,6 @@
 package com.antew.redditinpictures;
 
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.ui.ImageDetailActivityFree;
 import com.antew.redditinpictures.ui.ImageDetailFragmentFree;
 import com.antew.redditinpictures.ui.ImgurAlbumActivityFree;

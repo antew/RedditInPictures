@@ -30,10 +30,10 @@ public class RedditImageListFragmentFree extends RedditImageListFragment {
         final Fragment f = new RedditImageListFragmentFree();
 
         final Bundle args = new Bundle();
-        args.putString(Constants.EXTRA_SELECTED_SUBREDDIT, subreddit);
-        args.putString(Constants.EXTRA_CATEGORY, category.toString());
+        args.putString(Constants.Extra.EXTRA_SUBREDDIT, subreddit);
+        args.putString(Constants.Extra.EXTRA_CATEGORY, category.toString());
         // Age is null when we're sorting as 'New' or 'Rising'
-        args.putString(Constants.EXTRA_AGE, age == null ? null : age.toString());
+        args.putString(Constants.Extra.EXTRA_AGE, age == null ? null : age.toString());
         f.setArguments(args);
 
         return f;

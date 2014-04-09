@@ -11,6 +11,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
 import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.util.ConstsFree;
 
@@ -44,7 +45,7 @@ public class RedditInPicturesFreePreferences extends RedditInPicturesPreferences
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         super.onSharedPreferenceChanged(sharedPreferences, key);
-        String disableAdsKey = getString(R.string.disable_ads);
+        String disableAdsKey = getString(R.string.pref_disable_ads);
         if (key.equals(disableAdsKey)) {
             if (sharedPreferences.getBoolean(key, false) == true && !isFinishing()) {
                 new AlertDialog.Builder(this).setTitle(R.string.disable_ads)
@@ -65,7 +66,7 @@ public class RedditInPicturesFreePreferences extends RedditInPicturesPreferences
                                              })
                                              .show();
             }
-            Log.d("Disable Ads Changed to", "" + sharedPreferences.getBoolean(disableAdsKey, false));
+            Ln.d("Disable Ads Changed to %s", sharedPreferences.getBoolean(disableAdsKey, false));
         }
     }
 }
