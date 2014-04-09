@@ -61,6 +61,21 @@ public class ImgurGalleryType extends Image {
         if (cache.containsImgurGallery(hash)) {
             Ln.d("cache - getImgurGalleryFromHash - %s found in cache", hash);
             gallery = cache.getImgurGallery(hash);
+
+            String imageHash = gallery.getData().getImage().getHash();
+
+            if (gallery.getData().getImage().isAlbum()) {
+                album = ImgurAlbumType.resolveImgurAlbumFromHash(imageHash);
+                if (album != null && album.getAlbum() != null) {
+                    simpleGallery = new SimpleImgurGallery(album.getAlbum());
+                }
+            } else {
+                image = ImgurImageType.resolveImgurImageFromHash(imageHash);
+                if (image != null && image.getImage() != null) {
+                    simpleGallery = new SimpleImgurGallery(image);
+                }
+            }
+
         } else {
             Ln.d("cache - getImgurGalleryFromHash - %s NOT found in cache", hash);
 

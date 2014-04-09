@@ -155,7 +155,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
         mRetry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadImage(mResolvedImage);
+                resolveImage();
             }
         });
 
