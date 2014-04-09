@@ -15,7 +15,7 @@ import dagger.Module;
     overrides = true,
     injects = {
         ImageDetailActivity.class, ImageDetailFragment.class, ImgurAlbumActivity.class, RedditFragmentActivity.class,
-        RedditImageListFragment.class, RedditImageGridFragment.class, ImgurAlbumFragment.class, RedditService.GetNewPostsIfNeededTask.class,
+        RedditImageListFragment.class, RedditImageGridFragment.class, ImgurAlbumFragment.class, RedditService.GetNewPostsIfNeededTask.class
     }, library = true
 )
 public class ApplicationModulePro {
