@@ -42,6 +42,7 @@ import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.library.util.PostUtil;
 import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.library.util.SubredditUtil;
@@ -186,92 +187,11 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         } else {
             int itemId = item.getItemId();
             if (itemId == R.id.upvote) {
-                vote(Vote.UP, item, getAdapter().getPost(mPager.getCurrentItem()));
+                PostUtil.votePost(this, getAdapter().getPost(mPager.getCurrentItem()), Vote.UP);
             } else if (itemId == R.id.downvote) {
-                vote(Vote.DOWN, item, getAdapter().getPost(mPager.getCurrentItem()));
+                PostUtil.votePost(this, getAdapter().getPost(mPager.getCurrentItem()), Vote.DOWN);
             }
         }
-    }
-
-    /**
-     * Handles updating the vote based on the action bar vote icon that was clicked, broadcasts a
-     * message to have the fragment update the score.
-     * <p>
-     * If the user is not logged in, we return immediately.
-     * </p>
-     * <p>
-     * If the current vote is UP and the new vote is UP, the vote is changed to NEUTRAL.<br>
-     * If the current vote is UP and the new vote is DOWN, the vote is changed to DOWN.
-     * </p>
-     * <p>
-     * If the current vote is DOWN and the new vote is DOWN, the vote is changed to NEUTRAL<br>
-     * If the current vote is DOWN and the new vote is UP, the vote is changed to UP.
-     * </p>
-     *
-     * @param whichVoteButton
-     *     The vote representing the menu item which was clicked
-     * @param item
-     *     The menu item which was clicked
-     * @param p
-     *     The post this vote is for
-     */
-    private void vote(Vote whichVoteButton, MenuItem item, PostData p) {
-        if (!RedditLoginInformation.isLoggedIn()) {
-            return;
-        }
-
-        Intent intent = new Intent(Constants.Broadcast.BROADCAST_UPDATE_SCORE);
-        intent.putExtra(Constants.Extra.EXTRA_PERMALINK, p.getPermalink());
-
-        switch (whichVoteButton) {
-            case DOWN:
-                switch (p.getVote()) {
-                    case DOWN:
-                        RedditService.vote(this, p.getName(), Vote.NEUTRAL);
-                        item.setIcon(R.drawable.ic_action_downvote);
-                        p.setVote(Vote.NEUTRAL);
-                        p.setScore(p.getScore() + 1);
-                        break;
-
-                    case NEUTRAL:
-                    case UP:
-                        RedditService.vote(this, p.getName(), Vote.DOWN);
-                        item.setIcon(R.drawable.ic_action_downvote_highlighted);
-                        p.setVote(Vote.DOWN);
-                        mUpvoteMenuItem.setIcon(R.drawable.ic_action_upvote);
-                        p.setScore(p.getScore() - 1);
-                        break;
-                }
-                break;
-
-            case UP:
-                switch (p.getVote()) {
-                    case NEUTRAL:
-                    case DOWN:
-                        RedditService.vote(this, p.getName(), Vote.UP);
-                        item.setIcon(R.drawable.ic_action_upvote_highlighted);
-                        p.setVote(Vote.UP);
-                        p.setScore(p.getScore() + 1);
-                        mDownvoteMenuItem.setIcon(R.drawable.ic_action_downvote);
-                        break;
-
-                    case UP:
-                        RedditService.vote(this, p.getName(), Vote.NEUTRAL);
-                        item.setIcon(R.drawable.ic_action_upvote);
-                        p.setVote(Vote.NEUTRAL);
-                        p.setScore(p.getScore() - 1);
-                        break;
-                }
-
-                break;
-
-            default:
-                break;
-        }
-
-        // Broadcast the intent to update the score in the ImageDetailFragment
-        intent.putExtra(Constants.Extra.EXTRA_SCORE, p.getScore());
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     /**

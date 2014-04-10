@@ -39,6 +39,7 @@ import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.RedditFragmentActivity;
 import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.library.util.PostUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Picasso;
@@ -122,18 +123,6 @@ public class ImageListCursorAdapter extends CursorAdapter {
         final ViewHolder holder;
         if (view != null && view.getTag() != null) {
             holder = (ViewHolder) view.getTag();
-
-            // Make sure to reset the upvote/downvote state
-            // if we're recycling views.
-            if (holder.upVote.getTag() != null) {
-                holder.upVote.setImageResource(R.drawable.arrow_up);
-                holder.upVote.setTag(null);
-            }
-
-            if (holder.downVote.getTag() != null) {
-                holder.downVote.setImageResource(R.drawable.arrow_down);
-                holder.downVote.setTag(null);
-            }
         } else {
             holder = new ViewHolder(view);
             view.setTag(holder);
@@ -198,22 +187,34 @@ public class ImageListCursorAdapter extends CursorAdapter {
         if (postData.getVote() == Vote.UP) {
             holder.upVote.setTag(Vote.UP);
             holder.upVote.setImageResource(R.drawable.arrow_up_highlighted);
+
+            holder.downVote.setTag(null);
+            holder.downVote.setImageResource(R.drawable.arrow_down);
         } else if (postData.getVote() == Vote.DOWN) {
+            holder.upVote.setTag(null);
+            holder.upVote.setImageResource(R.drawable.arrow_up);
+
             holder.upVote.setTag(Vote.DOWN);
             holder.downVote.setImageResource(R.drawable.arrow_down_highlighted);
+        } else {
+            holder.upVote.setTag(null);
+            holder.upVote.setImageResource(R.drawable.arrow_up);
+
+            holder.downVote.setTag(null);
+            holder.downVote.setImageResource(R.drawable.arrow_down);
         }
 
         holder.upVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                vote(Vote.UP, postData, holder);
+                PostUtil.votePost(mContext, postData, Vote.UP);
             }
         });
 
         holder.downVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                vote(Vote.DOWN, postData, holder);
+                PostUtil.votePost(mContext, postData, Vote.DOWN);
             }
         });
 
@@ -261,107 +262,6 @@ public class ImageListCursorAdapter extends CursorAdapter {
                 }
             }
         });
-    }
-
-    /**
-     * Handles updating the vote based on the action bar vote icon that was clicked, broadcasts a
-     * message to have the fragment update the score.
-     * <p>
-     * If the user is not logged in, we return immediately.
-     * </p>
-     * <p>
-     * If the current vote is UP and the new vote is UP, the vote is changed to NEUTRAL.<br>
-     * If the current vote is UP and the new vote is DOWN, the vote is changed to DOWN.
-     * </p>
-     * <p>
-     * If the current vote is DOWN and the new vote is DOWN, the vote is changed to NEUTRAL<br>
-     * If the current vote is DOWN and the new vote is UP, the vote is changed to UP.
-     * </p>
-     *
-     * @param whichVoteButton
-     *     The vote representing the menu item which was clicked
-     * @param p
-     *     The post this vote is for
-     */
-    private void vote(Vote whichVoteButton, PostData p, ViewHolder holder) {
-        if (!RedditLoginInformation.isLoggedIn()) {
-            if (mContext instanceof RedditFragmentActivity) {
-                ((RedditFragmentActivity) mContext).handleLoginAndLogout();
-            }
-            return;
-        }
-
-        Intent intent = new Intent(Constants.Broadcast.BROADCAST_UPDATE_SCORE);
-        intent.putExtra(Constants.Extra.EXTRA_PERMALINK, p.getPermalink());
-
-        Ln.d("Vote is: %s", p.getVote());
-        Ln.d("Vote Button is: %s", whichVoteButton);
-
-        // If the user hasn't voted on this post yet, put it through no matter what.
-        if (p.getVote() == null || p.getVote() == Vote.NEUTRAL) {
-            switch (whichVoteButton) {
-                case UP:
-                    Ln.d("Voting Up Post");
-                    RedditService.vote(mContext, p.getName(), Vote.UP);
-                    p.setVote(Vote.UP);
-                    p.setScore(p.getScore() + 1);
-                    holder.postVotes.setText("" + p.getScore());
-                    holder.upVote.setImageResource(R.drawable.arrow_up_highlighted);
-                    break;
-                case DOWN:
-                    Ln.d("Voting Down Post");
-                    RedditService.vote(mContext, p.getName(), Vote.DOWN);
-                    p.setVote(Vote.DOWN);
-                    p.setScore(p.getScore() - 1);
-                    holder.postVotes.setText("" + p.getScore());
-                    holder.downVote.setImageResource(R.drawable.arrow_down_highlighted);
-                    break;
-            }
-        } else if (p.getVote() == Vote.UP) {
-            switch (whichVoteButton) {
-                case UP:
-                    Ln.d("Voting Neutral Post");
-                    RedditService.vote(mContext, p.getName(), Vote.NEUTRAL);
-                    p.setVote(Vote.NEUTRAL);
-                    p.setScore(p.getScore() - 1);
-                    holder.postVotes.setText("" + p.getScore());
-                    holder.upVote.setImageResource(R.drawable.arrow_up);
-                    break;
-                case DOWN:
-                    Ln.d("Voting Down Post");
-                    RedditService.vote(mContext, p.getName(), Vote.DOWN);
-                    p.setVote(Vote.DOWN);
-                    p.setScore(p.getScore() - 2);
-                    holder.postVotes.setText("" + p.getScore());
-                    holder.upVote.setImageResource(R.drawable.arrow_up);
-                    holder.downVote.setImageResource(R.drawable.arrow_down_highlighted);
-                    break;
-            }
-        } else if (p.getVote() == Vote.DOWN) {
-            switch (whichVoteButton) {
-                case UP:
-                    Ln.d("Voting Up Post");
-                    RedditService.vote(mContext, p.getName(), Vote.UP);
-                    p.setVote(Vote.UP);
-                    p.setScore(p.getScore() + 2);
-                    holder.postVotes.setText("" + p.getScore());
-                    holder.downVote.setImageResource(R.drawable.arrow_down);
-                    holder.upVote.setImageResource(R.drawable.arrow_up_highlighted);
-                    break;
-                case DOWN:
-                    Ln.d("Voting Neutral Post");
-                    RedditService.vote(mContext, p.getName(), Vote.NEUTRAL);
-                    p.setVote(Vote.NEUTRAL);
-                    p.setScore(p.getScore() + 1);
-                    holder.postVotes.setText("" + p.getScore());
-                    holder.downVote.setImageResource(R.drawable.arrow_down);
-                    break;
-            }
-        }
-
-        // Broadcast the intent to update the score in the ImageDetailFragment
-        intent.putExtra(Constants.Extra.EXTRA_SCORE, p.getScore());
-        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 
     protected class ViewHolder {
