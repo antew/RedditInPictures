@@ -34,7 +34,7 @@ import com.antew.redditinpictures.library.model.reddit.SubredditData;
 import com.antew.redditinpictures.library.reddit.MySubredditsResponse;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.Strings;
-import com.antew.redditinpictures.library.util.SubredditUtils;
+import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.squareup.picasso.Picasso;
@@ -173,7 +173,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     protected void onRefreshSubreddits() {
         if (RedditLoginInformation.isLoggedIn()) {
             // Since the user is logged in we can just run the task to update their subreddits.
-            SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this, true);
+            SubredditUtil.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtil.SetDefaultSubredditsTask(this, true);
             defaultSubredditsTask.execute();
         } else {
             // If they aren't logged in, we want to make sure that they understand this will set the subreddits back to default.
@@ -394,7 +394,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
     @Override
     public void onSetDefaultSubreddits() {
-        SubredditUtils.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtils.SetDefaultSubredditsTask(this, true);
+        SubredditUtil.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtil.SetDefaultSubredditsTask(this, true);
         defaultSubredditsTask.execute();
     }
 

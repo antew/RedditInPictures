@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SubredditUtils {
+public class SubredditUtil {
     public static void setDefaultSubreddits(Context context) {
         if (context == null) {
             Ln.e("Got a Null Context");
@@ -151,7 +151,7 @@ public class SubredditUtils {
 
                 // If we either don't have any subreddits or we want to force them to defaults.
                 if (terminateSubreddits) {
-                    SubredditUtils.setDefaultSubreddits(mContext);
+                    SubredditUtil.setDefaultSubreddits(mContext);
                 }
             }
             return null;

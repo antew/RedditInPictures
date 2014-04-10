@@ -31,9 +31,9 @@ import com.antew.redditinpictures.library.ui.base.BaseFragment;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.Ln;
-import com.antew.redditinpictures.library.util.RedditUtils;
+import com.antew.redditinpictures.library.util.RedditUtil;
 import com.antew.redditinpictures.library.util.Strings;
-import com.antew.redditinpictures.library.util.SubredditUtils;
+import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.database.QueryCriteria;
 import com.antew.redditinpictures.library.database.RedditContract;
@@ -155,7 +155,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
         super.onActivityCreated(savedInstanceState);
         handleArguments(getArguments());
         if (getActivity() instanceof ActionBarTitleChanger) {
-            ((ActionBarTitleChanger) getActivity()).setActionBarTitle(mCurrentSubreddit, RedditUtils.getSortDisplayString(mCategory, mAge));
+            ((ActionBarTitleChanger) getActivity()).setActionBarTitle(mCurrentSubreddit, RedditUtil.getSortDisplayString(mCategory, mAge));
         }
 
         if (getActivity() instanceof RedditDataProvider) {
@@ -225,7 +225,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
                 List<String> selectionArgsList = new ArrayList<String>();
 
                 // If we have an aggregate subreddit we want to return relevant things.
-                if (SubredditUtils.isAggregateSubreddit(mCurrentSubreddit)) {
+                if (SubredditUtil.isAggregateSubreddit(mCurrentSubreddit)) {
                     selection = null;
                     selectionArgs = null;
                 } else if (mCurrentSubreddit.contains("+")) {

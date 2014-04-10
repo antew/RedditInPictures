@@ -39,9 +39,9 @@ import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivityWithMenu;
 import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.Ln;
-import com.antew.redditinpictures.library.util.RedditUtils;
+import com.antew.redditinpictures.library.util.RedditUtil;
 import com.antew.redditinpictures.library.util.Strings;
-import com.antew.redditinpictures.library.util.SubredditUtils;
+import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -70,7 +70,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         initalizeReceivers();
         initializeLoaders();
 
-        new SubredditUtils.SetDefaultSubredditsTask(this).execute();
+        new SubredditUtil.SetDefaultSubredditsTask(this).execute();
     }
 
     @Override
@@ -269,7 +269,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                         requestCompleted(null);
                         invalidateOptionsMenu();
 
-                        new SubredditUtils.SetDefaultSubredditsTask(this).execute();
+                        new SubredditUtil.SetDefaultSubredditsTask(this).execute();
                         forceRefreshCurrentSubreddit();
                     }
                 }
@@ -414,7 +414,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         // This should really be done async, but we store a maximum of one row
         // on the table and it is reasonably fast as is, around 50ms in my tests.
         getContentResolver().delete(RedditContract.Login.CONTENT_URI, null, null);
-        new SubredditUtils.SetDefaultSubredditsTask(this, true).execute();
+        new SubredditUtil.SetDefaultSubredditsTask(this, true).execute();
         invalidateOptionsMenu();
     }
 
@@ -460,7 +460,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                 break;
         }
 
-        setActionBarTitle(mSelectedSubreddit, RedditUtils.getSortDisplayString(mCategory, mAge));
+        setActionBarTitle(mSelectedSubreddit, RedditUtil.getSortDisplayString(mCategory, mAge));
     }
 
     public Class<? extends PreferenceActivity> getPreferencesClass() {

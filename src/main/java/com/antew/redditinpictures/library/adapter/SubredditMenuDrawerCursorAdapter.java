@@ -18,7 +18,7 @@ import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.model.reddit.SubredditData;
 import com.antew.redditinpictures.library.util.Strings;
-import com.antew.redditinpictures.library.util.ViewUtils;
+import com.antew.redditinpictures.library.util.ViewUtil;
 import com.antew.redditinpictures.pro.R;
 
 /**
@@ -167,7 +167,7 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
 
         @OnClick(R.id.ib_more)
         protected void onMore() {
-            ViewUtils.toggleVisibility(back);
+            ViewUtil.toggleVisibility(back);
         }
 
         @OnLongClick({ R.id.ib_more, R.id.ib_view, R.id.ib_subscribe, R.id.ib_unsubscribe, R.id.ib_info, R.id.ib_delete })

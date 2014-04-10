@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -45,7 +44,7 @@ import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.library.util.Strings;
-import com.antew.redditinpictures.library.util.SubredditUtils;
+import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -380,7 +379,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                 List<String> selectionArgsList = new ArrayList<String>();
 
                 // If we have an aggregate subreddit we want to return relevant things.
-                if (SubredditUtils.isAggregateSubreddit(mSubreddit)) {
+                if (SubredditUtil.isAggregateSubreddit(mSubreddit)) {
                     selection = null;
                     selectionArgs = null;
                 } else if (mSubreddit.contains("+")) {

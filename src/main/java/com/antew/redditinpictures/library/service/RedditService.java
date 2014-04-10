@@ -19,7 +19,7 @@ import com.antew.redditinpictures.library.reddit.RedditResult;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.SafeAsyncTask;
 import com.antew.redditinpictures.library.util.Strings;
-import com.antew.redditinpictures.library.util.SubredditUtils;
+import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.database.RedditDatabase;
 import com.squareup.otto.Bus;
@@ -226,7 +226,7 @@ public class RedditService extends RESTService {
 
             // If we have an aggregate subreddit, we just want to see if other stuff has been saved if so we need a full refresh.
             // TODO: Make this handle caching better...
-            if (SubredditUtils.isAggregateSubreddit(mSubreddit)) {
+            if (SubredditUtil.isAggregateSubreddit(mSubreddit)) {
                 long numRecords = DatabaseUtils.queryNumEntries(database, RedditDatabase.Tables.REDDIT_DATA);
 
                 Ln.d("%s is an Aggregate Subreddit and We Have %d Rows of Reddit Data", mSubreddit, numRecords);

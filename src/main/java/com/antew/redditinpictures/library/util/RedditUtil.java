@@ -3,7 +3,7 @@ package com.antew.redditinpictures.library.util;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 
-public class RedditUtils {
+public class RedditUtil {
     /**
      * Get the sort string to display in the ActionBar subtitle, e.g. 'Top: All Time"
      * @param category The current {@link com.antew.redditinpictures.library.model.Category}

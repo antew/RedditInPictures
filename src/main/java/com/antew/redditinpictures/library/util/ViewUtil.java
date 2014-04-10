@@ -2,7 +2,7 @@ package com.antew.redditinpictures.library.util;
 
 import android.view.View;
 
-public class ViewUtils {
+public class ViewUtil {
     public static void toggleVisibility(View view) {
         switch (view.getVisibility()) {
             case View.VISIBLE:

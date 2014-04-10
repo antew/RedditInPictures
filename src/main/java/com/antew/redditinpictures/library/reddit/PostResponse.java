@@ -14,7 +14,7 @@ import com.antew.redditinpictures.library.model.reddit.RedditApiData;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.Ln;
-import com.antew.redditinpictures.library.util.SubredditUtils;
+import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.library.database.RedditContract;
 import java.util.Date;
 
@@ -44,7 +44,7 @@ class PostResponse extends RedditResponseHandler {
 
         // If we are replacing all, go ahead and clear out the old posts.
         if (replaceAll) {
-            SubredditUtils.deletePostsForSubreddit(context, subreddit);
+            SubredditUtil.deletePostsForSubreddit(context, subreddit);
         }
 
         RedditApiData data = redditApi.getData();
