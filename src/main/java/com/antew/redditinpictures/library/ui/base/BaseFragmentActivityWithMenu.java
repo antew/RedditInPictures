@@ -41,6 +41,7 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.picasso.Picasso;
 import net.simonvt.menudrawer.MenuDrawer;
+import net.simonvt.menudrawer.Position;
 
 public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     implements LoaderManager.LoaderCallbacks<Cursor>, SetDefaultSubredditsDialogFragment.SetDefaultSubredditsDialogListener,
@@ -243,8 +244,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void setContentView(int layoutResId) {
+    public void setMenuDrawerContentView(int layoutResId) {
         initializeMenuDrawer();
         mMenuDrawer.setContentView(layoutResId);
         ButterKnife.inject(this);
@@ -252,7 +252,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     private void initializeMenuDrawer() {
-        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.Type.OVERLAY);
+        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.Type.OVERLAY, Position.LEFT, MenuDrawer.MENU_DRAG_WINDOW);
         mMenuDrawer.setMenuView(R.layout.subreddit_menudrawer);
         mMenuDrawer.setSlideDrawable(R.drawable.ic_drawer);
         mMenuDrawer.setDrawerIndicatorEnabled(true);

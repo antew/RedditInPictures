@@ -66,7 +66,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.reddit_fragment_activity);
+        setMenuDrawerContentView(R.layout.reddit_fragment_activity);
         restoreInstanceState(savedInstanceState);
         initializeActiveView();
         initalizeReceivers();
