@@ -30,7 +30,7 @@ import com.antew.redditinpictures.library.util.Ln;
  * once but create/destroy them on the fly.
  */
 public class CursorPagerAdapter extends FragmentStatePagerAdapter {
-    private Cursor mCursor;
+    protected Cursor mCursor;
 
     public CursorPagerAdapter(FragmentManager fm, Cursor cursor) {
         super(fm);
@@ -59,10 +59,22 @@ public class CursorPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         if (mCursor != null && mCursor.moveToPosition(position)) {
             Ln.d("Returning New Fragment");
-            return ImageDetailFragment.newInstance(PostData.fromListViewProjection(mCursor));
+            return getImageDetailFragment(PostData.fromListViewProjection(mCursor));
         }
 
         return null;
+    }
+
+    /**
+     * Returns an {@link ImageDetailFragment} for the input {@link PostData} object
+     *
+     * @param p
+     *     The {@link PostData} object to pass to the new {@link ImageDetailFragment}
+     *
+     * @return A new {@link ImageDetailFragment} for the input {@link PostData}
+     */
+    public Fragment getImageDetailFragment(PostData p) {
+        return ImageDetailFragment.newInstance(p);
     }
 
     /**

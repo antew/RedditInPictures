@@ -3,7 +3,6 @@ package com.antew.redditinpictures.adapter;
 import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-
 import com.antew.redditinpictures.library.adapter.CursorPagerAdapter;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.ui.ImageDetailFragmentFree;
