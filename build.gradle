@@ -76,7 +76,6 @@ dependencies {
     compile 'com.github.castorflex.smoothprogressbar:library:0.4.0'
     compile 'com.fortysevendeg.swipelistview:swipelistview:1.0-SNAPSHOT@aar'
     compile 'com.github.chrisbanes.photoview:photoview-library:1.2.3@aar'
-    proCompile files('lib/libGoogleAnalyticsServices.jar')
+    compile files('lib/libGoogleAnalyticsServices.jar')
     freeCompile files('lib/admob-6.2.1.jar')
-    freeCompile files('lib/GoogleAdMobAdsSdk-6.4.1.jar')
 }
