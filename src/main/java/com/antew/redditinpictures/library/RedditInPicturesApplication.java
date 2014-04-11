@@ -5,7 +5,6 @@ import android.app.Instrumentation;
 import android.content.Context;
 import com.antew.redditinpictures.ApplicationModulePro;
 import com.antew.redditinpictures.library.modules.RootModule;
-import com.google.analytics.tracking.android.GoogleAnalytics;
 
 public class RedditInPicturesApplication extends Application {
     private static RedditInPicturesApplication instance;
