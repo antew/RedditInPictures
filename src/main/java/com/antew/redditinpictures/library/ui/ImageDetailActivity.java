@@ -47,6 +47,8 @@ import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -166,11 +168,26 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         super.onOptionsItemSelected(item);
 
         int itemId = item.getItemId();
-        if (itemId == R.id.upvote || itemId == R.id.downvote) {
+        if (itemId == R.id.upvote) {
+            EasyTracker.getInstance(this)
+                       .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.POST_VOTE,
+                                                    Constants.Analytics.Label.UP, null).build()
+                            );
+            handleVote(item);
+        } else if (itemId == R.id.downvote) {
+            EasyTracker.getInstance(this)
+                       .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.POST_VOTE,
+                                                    Constants.Analytics.Label.DOWN, null).build()
+                            );
             handleVote(item);
         }
 
         return true;
+    }
+
+    @Override
+    public String getSubreddit() {
+        return mSubreddit;
     }
 
     protected void showLogin() {

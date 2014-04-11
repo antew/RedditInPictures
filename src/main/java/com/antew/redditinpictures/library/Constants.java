@@ -18,6 +18,67 @@ package com.antew.redditinpictures.library;
 public class Constants {
     public static final String PACKAGE_PREFIX = "com.antew.redditinpictures";
 
+    public static class Analytics {
+        public static class Category {
+            public static final String MENU_DRAWER_ACTION = "menu_drawer_action";
+            public static final String SUBREDDIT_MENU_ACTION = "subreddit_menu_action";
+            public static final String ACTION_BAR_ACTION = "action_bar_action";
+            public static final String POST_MENU_ACTION = "post_menu_action";
+            public static final String UI_ACTION = "ui_action";
+            public static final String INITIALIZE = "initialize";
+        }
+
+        public static class Action {
+            public static final String OPEN_SUBREDDIT = "open_subreddit";
+            public static final String ADD_SUBREDDIT = "add_subreddit";
+            public static final String SUBSCRIBE_TO_SUBREDDIT = "subscribe_subreddit";
+            public static final String UNSUBSCRIBE_FROM_SUBREDDIT = "unsubscribe_subreddit";
+            public static final String DISPLAY_SUBREDDIT_INFO = "subreddit_info";
+            public static final String DELETE_SUBREDDIT = "delete_subreddit";
+            public static final String SHOW_ADD_SUBREDDIT = "show_add_subreddit";
+            public static final String SHOW_SET_DEFAULTS = "show_set_defaults";
+            public static final String CLICK = "click";
+            public static final String LOGIN = "login";
+            public static final String LONG_PRESS = "long_press";
+            public static final String CLEAR = "clear";
+            public static final String SORT_SUBREDDITS = "sort_subreddits";
+            public static final String REFRESH_SUBREDDITS = "refresh_subreddits";
+            public static final String REFRESH_POSTS = "refresh_posts";
+            public static final String OPEN_SETTINGS = "open_settings";
+            public static final String IMAGE_VIEW = "image_view";
+            public static final String CHANGE_VIEW = "change_view";
+            public static final String HOME = "home";
+            public static final String TOGGLE_SWIPING = "toggle_swiping";
+            public static final String SHARE_POST = "share_post";
+            public static final String SAVE_POST = "save_post";
+            public static final String REFRESH_POST = "refresh_post";
+            public static final String OPEN_POST = "open_post";
+            public static final String OPEN_POST_EXTERNAL = "open_post_external";
+            public static final String TOGGLE_DETAILS = "toggle_details";
+            public static final String POST_VOTE = "post_vote";
+            public static final String REPORT_POST = "report_post";
+            public static final String OPEN_GALLERY = "open_gallery";
+        }
+
+        public static class Label {
+            public static final String SUBREDDIT_FILTER = "subreddit_filter";
+            public static final String ALPHABETICALLY = "alphabetically";
+            public static final String POPULARITY = "popularity";
+            public static final String LOGGED_IN = "logged_in";
+            public static final String NOT_LOGGED_IN = "not_logged_in";
+            public static final String LOGGED_OUT = "logged_out";
+            public static final String LIST = "list";
+            public static final String GRID = "grid";
+            public static final String ENABLED = "enabled";
+            public static final String DISABLED = "disabled";
+            public static final String GO_FULLSCREEN = "go_fullscreen";
+            public static final String EXIT_FULLSCREEN = "exit_fullscreen";
+            public static final String UP = "up";
+            public static final String DOWN = "down";
+            public static final String IMGUR = "imgur";
+        }
+    }
+
     public static class Extra {
         private static final String EXTRA_PREFIX                   = PACKAGE_PREFIX + ".extra.";
         public static final  String EXTRA_TITLE                    = EXTRA_PREFIX + "title";

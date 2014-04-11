@@ -10,19 +10,21 @@ import android.widget.Toast;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.ImageListCursorAdapter;
+import com.antew.redditinpictures.library.database.QueryCriteria;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
+import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
-import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
-import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.model.reddit.PostData;
+import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
-import com.antew.redditinpictures.library.database.QueryCriteria;
-import com.antew.redditinpictures.library.database.RedditContract;
 import com.fortysevendeg.swipelistview.SwipeListView;
 import com.fortysevendeg.swipelistview.SwipeListViewListener;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.otto.Subscribe;
 
 public class RedditImageListFragment extends RedditImageAdapterViewFragment<ListView, ImageListCursorAdapter>
@@ -141,6 +143,10 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
 
     @Override
     public void onClickFrontView(int position) {
+        EasyTracker.getInstance(getActivity())
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.UI_ACTION, Constants.Analytics.Action.OPEN_POST,
+                                                mCurrentSubreddit, null).build()
+                        );
         openImageAtPosition(position);
     }
 
@@ -186,6 +192,10 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
      */
     @Override
     public void viewImage(PostData postData, int position) {
+        EasyTracker.getInstance(getActivity())
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.OPEN_POST,
+                                                mCurrentSubreddit, null).build()
+                        );
         openImageAtPosition(position);
     }
 
@@ -197,6 +207,10 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
      */
     @Override
     public void saveImage(PostData postData) {
+        EasyTracker.getInstance(getActivity())
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.SAVE_POST,
+                                                mCurrentSubreddit, null).build()
+                        );
         SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(StringUtil.sanitizeFileName(postData.getTitle()));
         saveImageDialog.show(getFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
     }
@@ -209,6 +223,10 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
      */
     @Override
     public void shareImage(PostData postData) {
+        EasyTracker.getInstance(getActivity())
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.SHARE_POST,
+                                                mCurrentSubreddit, null).build()
+                        );
         String subject = getString(R.string.check_out_this_image);
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
@@ -225,6 +243,10 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
      */
     @Override
     public void openPostExternal(PostData postData) {
+        EasyTracker.getInstance(getActivity())
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.OPEN_POST_EXTERNAL,
+                                                mCurrentSubreddit, null).build()
+                        );
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
             postData.getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(getActivity()))));
         startActivity(browserIntent);
@@ -238,6 +260,10 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
      */
     @Override
     public void reportImage(PostData postData) {
+        EasyTracker.getInstance(getActivity())
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.REPORT_POST,
+                                                mCurrentSubreddit, null).build()
+                        );
         Toast.makeText(getActivity(), "Reporting Images Isn't Implemented Yet. :(", Toast.LENGTH_LONG).show();
     }
 }

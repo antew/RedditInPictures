@@ -21,14 +21,15 @@ import butterknife.OnLongClick;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.SubredditMenuDrawerCursorAdapter;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.AboutSubredditDialogFragment;
 import com.antew.redditinpictures.library.dialog.AddSubredditDialogFragment;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.SetDefaultSubredditsDialogFragment;
-import com.antew.redditinpictures.library.model.Age;
-import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
 import com.antew.redditinpictures.library.listener.OnSubredditActionListener;
+import com.antew.redditinpictures.library.model.Age;
+import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.model.reddit.SubredditData;
 import com.antew.redditinpictures.library.reddit.MySubredditsResponse;
@@ -36,7 +37,8 @@ import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
-import com.antew.redditinpictures.library.database.RedditContract;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.picasso.Picasso;
 import net.simonvt.menudrawer.MenuDrawer;
 
@@ -70,19 +72,39 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         public void onAction(SubredditData subredditData, SubredditAction action) {
             switch (action) {
                 case View:
+                    EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                               .send(MapBuilder.createEvent(Constants.Analytics.Category.SUBREDDIT_MENU_ACTION,
+                                                            Constants.Analytics.Action.OPEN_SUBREDDIT, subredditData.getDisplay_name(),
+                                                            null).build());
                     mMenuDrawer.closeMenu(true);
                     loadSubredditFromMenu(subredditData.getDisplay_name());
                     break;
                 case Subscribe:
+                    EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                               .send(MapBuilder.createEvent(Constants.Analytics.Category.SUBREDDIT_MENU_ACTION,
+                                                            Constants.Analytics.Action.SUBSCRIBE_TO_SUBREDDIT,
+                                                            subredditData.getDisplay_name(), null).build());
                     subscribeToSubreddit(subredditData.getName());
                     break;
                 case Unsubscribe:
+                    EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                               .send(MapBuilder.createEvent(Constants.Analytics.Category.SUBREDDIT_MENU_ACTION,
+                                                            Constants.Analytics.Action.UNSUBSCRIBE_FROM_SUBREDDIT,
+                                                            subredditData.getDisplay_name(), null).build());
                     unsubscribeToSubreddit(subredditData.getName());
                     break;
                 case Info:
+                    EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                               .send(MapBuilder.createEvent(Constants.Analytics.Category.SUBREDDIT_MENU_ACTION,
+                                                            Constants.Analytics.Action.DISPLAY_SUBREDDIT_INFO,
+                                                            subredditData.getDisplay_name(), null).build());
                     displaySubredditInfo(subredditData);
                     break;
                 case Delete:
+                    EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                               .send(MapBuilder.createEvent(Constants.Analytics.Category.SUBREDDIT_MENU_ACTION,
+                                                            Constants.Analytics.Action.DELETE_SUBREDDIT, subredditData.getDisplay_name(),
+                                                            null).build());
                     deleteSubreddit(subredditData.getName());
                     break;
             }
@@ -115,6 +137,10 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             String subredditName = cursor.getString(cursor.getColumnIndex(RedditContract.SubredditColumns.DISPLAY_NAME));
             int priority = cursor.getInt(cursor.getColumnIndex(RedditContract.SubredditColumns.PRIORITY));
 
+            EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                       .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION,
+                                                    Constants.Analytics.Action.OPEN_SUBREDDIT, subredditName, null).build());
+
             // TODO: Make this less hacky...
             // Load the actual frontpage of reddit if selected
             if (priority == MySubredditsResponse.DefaultSubreddit.FRONTPAGE.getPriority()) {
@@ -130,6 +156,9 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
     @OnClick(R.id.ib_add)
     protected void onAddSubreddit() {
+        EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION,
+                                                Constants.Analytics.Action.SHOW_ADD_SUBREDDIT, null, null).build());
         AddSubredditDialogFragment.newInstance().show(getSupportFragmentManager(), Constants.Dialog.DIALOG_ADD_SUBREDDIT);
     }
 
@@ -137,8 +166,10 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     protected boolean onLongClickMenuOption(View view) {
         if (view != null) {
             String description = Strings.toString(view.getContentDescription());
-            ;
             if (Strings.notEmpty(description)) {
+                EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                           .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION,
+                                                        Constants.Analytics.Action.LONG_PRESS, description, null).build());
                 Toast.makeText(this, description, Toast.LENGTH_SHORT).show();
                 return true;
             }
@@ -149,6 +180,9 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
     @OnClick(R.id.ib_clear)
     protected void onClearSubredditFilter() {
+        EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION, Constants.Analytics.Action.CLEAR,
+                                                Constants.Analytics.Label.SUBREDDIT_FILTER, null).build());
         if (mSubredditFilter != null) {
             mSubredditFilter.setText(null);
         }
@@ -157,10 +191,18 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @OnClick(R.id.ib_sort)
     protected void onSortSubreddits() {
         if (mSubredditSort.equals(RedditContract.Subreddits.SORT_ALPHABETICALLY)) {
+            EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                       .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION,
+                                                    Constants.Analytics.Action.SORT_SUBREDDITS, Constants.Analytics.Label.POPULARITY, null)
+                                       .build());
             mSubredditSort = RedditContract.Subreddits.SORT_BY_POPULARITY;
             Picasso.with(this).load(R.drawable.ic_action_sort_2_dark).into(mSortSubreddits);
             mSortSubreddits.setContentDescription(getString(R.string.sort_alphabetically));
         } else {
+            EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                       .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION,
+                                                    Constants.Analytics.Action.SORT_SUBREDDITS, Constants.Analytics.Label.ALPHABETICALLY,
+                                                    null).build());
             mSubredditSort = RedditContract.Subreddits.SORT_ALPHABETICALLY;
             Picasso.with(this).load(R.drawable.ic_action_sort_1_dark).into(mSortSubreddits);
             mSortSubreddits.setContentDescription(getString(R.string.sort_by_popularity));
@@ -172,10 +214,17 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @OnClick(R.id.ib_refresh)
     protected void onRefreshSubreddits() {
         if (RedditLoginInformation.isLoggedIn()) {
+            EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                       .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION,
+                                                    Constants.Analytics.Action.REFRESH_SUBREDDITS, Constants.Analytics.Label.LOGGED_IN, null)
+                                       .build());
             // Since the user is logged in we can just run the task to update their subreddits.
             SubredditUtil.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtil.SetDefaultSubredditsTask(this, true);
             defaultSubredditsTask.execute();
         } else {
+            EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                       .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION,
+                                                    Constants.Analytics.Action.SHOW_SET_DEFAULTS, null, null).build());
             // If they aren't logged in, we want to make sure that they understand this will set the subreddits back to default.
             SetDefaultSubredditsDialogFragment fragment = SetDefaultSubredditsDialogFragment.newInstance();
             fragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_DEFAULT_SUBREDDITS);
@@ -394,6 +443,9 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
     @Override
     public void onSetDefaultSubreddits() {
+        EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION, Constants.Analytics.Action.REFRESH_SUBREDDITS,
+                                                Constants.Analytics.Label.NOT_LOGGED_IN, null).build());
         SubredditUtil.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtil.SetDefaultSubredditsTask(this, true);
         defaultSubredditsTask.execute();
     }
@@ -401,6 +453,11 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @Override
     public void onAddSubreddit(String subreddit) {
         if (Strings.notEmpty(subreddit)) {
+            EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
+                       .send(
+                           MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION, Constants.Analytics.Action.ADD_SUBREDDIT,
+                                                  subreddit, null).build()
+                            );
             RedditService.aboutSubreddit(this, subreddit);
             loadSubredditFromMenu(subreddit);
             closeMenuDrawerIfNeeded();

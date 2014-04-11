@@ -31,6 +31,8 @@ import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.widget.CustomViewPager;
 import com.antew.redditinpictures.pro.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,7 +115,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     private void registerLocalBroadcastReceivers() {
         LocalBroadcastManager.getInstance(this)
-                             .registerReceiver(mToggleFullscreenReceiver, new IntentFilter(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN));
+                             .registerReceiver(mToggleFullscreenReceiver,
+                                               new IntentFilter(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN));
     }
 
     /**
@@ -335,12 +338,33 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                EasyTracker.getInstance(this)
+                           .send(
+                               MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.HOME, null,
+                                                      null).build()
+                                );
                 finish();
                 return true;
             case R.id.lock_viewpager:
+                if (mPager.isSwipingEnabled()) {
+                    EasyTracker.getInstance(this)
+                               .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
+                                                            Constants.Analytics.Action.TOGGLE_SWIPING, Constants.Analytics.Label.DISABLED,
+                                                            null).build());
+                } else {
+                    EasyTracker.getInstance(this)
+                               .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
+                                                            Constants.Analytics.Action.TOGGLE_SWIPING, Constants.Analytics.Label.ENABLED,
+                                                            null).build());
+                }
                 toggleViewPagerLock();
                 return true;
             case R.id.share_post:
+                EasyTracker.getInstance(this)
+                           .send(
+                               MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.SHARE_POST,
+                                                      getSubreddit(), null).build()
+                                );
                 String subject = getString(R.string.check_out_this_image);
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
@@ -349,13 +373,24 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
                 startActivity(Intent.createChooser(intent, getString(R.string.share_using_)));
                 return true;
             case R.id.view_post:
+                EasyTracker.getInstance(this)
+                           .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
+                                                        Constants.Analytics.Action.OPEN_POST_EXTERNAL, getSubreddit(), null).build());
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, getPostUri());
                 startActivity(browserIntent);
                 return true;
             case R.id.save_post:
+                EasyTracker.getInstance(this)
+                           .send(
+                               MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.SAVE_POST,
+                                                      getSubreddit(), null).build()
+                                );
                 handleSaveImage();
                 return true;
             case R.id.refresh:
+                EasyTracker.getInstance(this)
+                           .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
+                                                        Constants.Analytics.Action.REFRESH_POST, getSubreddit(), null).build());
                 refreshCurentImage();
                 return true;
             default:
@@ -375,6 +410,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
             FadeInThenOut.fadeInThenOut(mCrouton, 1500);
         }
     }
+
+    public abstract String getSubreddit();
 
     /**
      * Get the URL of the current image in the ViewPager. Used in
@@ -429,6 +466,9 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void goFullscreen() {
+        EasyTracker.getInstance(this)
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.UI_ACTION, Constants.Analytics.Action.TOGGLE_DETAILS,
+                                                Constants.Analytics.Label.GO_FULLSCREEN, null).build());
         if (AndroidUtil.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         } else {
@@ -438,6 +478,9 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void exitFullscreen() {
+        EasyTracker.getInstance(this)
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.UI_ACTION, Constants.Analytics.Action.TOGGLE_DETAILS,
+                                                Constants.Analytics.Label.EXIT_FULLSCREEN, null).build());
         if (AndroidUtil.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         } else {

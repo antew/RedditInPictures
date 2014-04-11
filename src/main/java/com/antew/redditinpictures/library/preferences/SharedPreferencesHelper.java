@@ -37,6 +37,7 @@ public class SharedPreferencesHelper {
     private static final String COOKIE            = "cookie";
     private static final String MOD_HASH          = "modHash";
     private static final String USERNAME          = "username";
+    private static final String ANALYTICS_OPT_OUT = "analyticsOptOut";
 
     /**
      * Save an array to {@link SharedPreferences}

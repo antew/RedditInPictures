@@ -22,12 +22,15 @@ import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
+import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.image.ImgurGalleryType;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.util.Ln;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
@@ -121,6 +124,11 @@ public class ImageDetailFragment extends ImageViewerFragment {
             @Override
             public void onClick(View v) {
                 Ln.i("View Gallery");
+                EasyTracker.getInstance(getActivity())
+                           .send(
+                               MapBuilder.createEvent(Constants.Analytics.Category.UI_ACTION, Constants.Analytics.Action.OPEN_GALLERY,
+                                                      Constants.Analytics.Label.IMGUR, (long) mAlbum.getImages().size()).build()
+                                );
                 Intent intent = new Intent(getActivity(), getImgurAlbumActivity());
                 intent.putExtra(ImgurAlbumActivity.EXTRA_ALBUM, mAlbum);
                 startActivity(intent);

@@ -50,6 +50,11 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
     }
 
     @Override
+    public String getSubreddit() {
+        return "ImgurAlbum";
+    }
+
+    @Override
     public String getUrlForSharing() {
         ImgurImage image = getAdapter().getImage(mPager.getCurrentItem());
         return image.getLinks().getImgur_page();

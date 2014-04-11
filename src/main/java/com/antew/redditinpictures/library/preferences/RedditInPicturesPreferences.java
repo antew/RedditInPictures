@@ -28,6 +28,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.pro.R;
+import com.google.analytics.tracking.android.GoogleAnalytics;
 
 /**
  * Preferences screen used for Pre-Honeycomb, this can be subclassed to add additional preferences.
@@ -117,9 +118,10 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        String showNsfwImagesKey = getString(R.string.pref_show_nsfw_images);
-        if (key.equals(showNsfwImagesKey)) {
-            showNsfwImagesNewValue = sharedPreferences.getBoolean(showNsfwImagesKey, false);
+        if (key.equals(getString(R.string.pref_show_nsfw_images))) {
+            showNsfwImagesNewValue = sharedPreferences.getBoolean(key, false);
+        } else if (key.equals(getString(R.string.pref_analytics_opt_in))) {
+            GoogleAnalytics.getInstance(getApplicationContext()).setAppOptOut(!sharedPreferences.getBoolean(key, false));
         }
     }
 }

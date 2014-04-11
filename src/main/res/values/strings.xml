@@ -68,6 +68,7 @@
     <string name="upgrade_to_full_version">Upgrade to pro version</string>
     <string name="username">Username:</string>
     <string name="uses_more_bandwidth">Uses more bandwidth</string>
+    <string name="help_make_better">Help make Reddit in Pictures better by allowing us to track anonymous usage data.</string>
     <string name="you_must_be_logged_in_to_vote">You must be logged in to vote!</string>
 
     <string name="default_subreddits_title">Reset to default subreddits?</string>
@@ -113,6 +114,7 @@
     <string name="pref_show_nsfw_images">Show NSFW Images</string>
     <string name="pref_load_high_quality_thumbnails">Load high quality thumbnails</string>
     <string name="pref_use_mobile_interface">Use Mobile Interface</string>
+    <string name="pref_analytics_opt_in">Send Anonymous Usage Data</string>
     <string name="pref_about">about</string>
     <!-- End Shared Preferences keys -->
 

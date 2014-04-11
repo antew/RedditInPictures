@@ -17,6 +17,11 @@
             android:key="@string/pref_load_high_quality_thumbnails"
             android:summary="@string/uses_more_bandwidth"
             android:title="@string/pref_load_high_quality_thumbnails" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_analytics_opt_in"
+            android:summary="@string/help_make_better"
+            android:title="@string/pref_analytics_opt_in" />
     </PreferenceCategory>
     <PreferenceCategory android:title="About">
         <Preference
