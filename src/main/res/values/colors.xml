@@ -5,6 +5,7 @@
     <color name="grid_state_pressed">#BB7dbcd3</color>
     <color name="grid_state_focused">#777dbcd3</color>
     <color name="translucent_black">#80000000</color>
+    <color name="listview_background">#ff1b1b1b</color>
     <color name="dark_gray">#FF202020</color>
     <color name="post_information_background">#99000000</color>
 </resources>
