@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.antew.redditinpictures.library.database.RedditContract;
+import com.antew.redditinpictures.library.database.RedditDatabase;
 import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;

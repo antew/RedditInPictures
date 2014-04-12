@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.antew.redditinpictures.library.image.Image;
+import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.ui.ImgurAlbumFragment;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
