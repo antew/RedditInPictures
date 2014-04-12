@@ -170,7 +170,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
         }
 
         String separator = " " + "\u2022" + " ";
-        String titleText = postData.getTitle() + " <font color='#BEBEBE'>(" + postData.getDomain() + ")</font>";
+        String titleText = "<font color='#ffffff'>" + postData.getTitle() + "</font><font color='#BEBEBE'> (" + postData.getDomain() + ")</font>";
         holder.postTitle.setText(Html.fromHtml(titleText));
         String postInformation = "";
 
