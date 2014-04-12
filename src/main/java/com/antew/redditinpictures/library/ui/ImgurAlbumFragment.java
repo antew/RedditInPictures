@@ -16,6 +16,7 @@
 
 package com.antew.redditinpictures.library.ui;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.antew.redditinpictures.library.imgur.ImgurImageApi.Image;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -101,7 +103,32 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         if (ImageUtil.isGif(imageUrl)) {
             super.loadGifInWebView(imageUrl);
         } else {
-            Picasso.with(getActivity()).load(imageUrl).into(mImageView);
+            Picasso.with(getActivity())
+                   .load(Uri.parse(imageUrl))
+                   .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
+                   .centerInside()
+                   .into(mImageView, new Callback() {
+                       @Override
+                       public void onSuccess() {
+                           if (mProgress != null) {
+                               mProgress.setVisibility(View.GONE);
+                           }
+                       }
+
+                       @Override
+                       public void onError() {
+                           if (mProgress != null) {
+                               mProgress.setVisibility(View.GONE);
+                           }
+
+                           if (mErrorMessage != null) {
+                               mErrorMessage.setVisibility(View.VISIBLE);
+                           }
+                           if (mRetry != null) {
+                               mRetry.setVisibility(View.VISIBLE);
+                           }
+                       }
+                   });
         }
     }
 
