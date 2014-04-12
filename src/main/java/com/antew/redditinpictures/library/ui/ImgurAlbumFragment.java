@@ -110,28 +110,24 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
                    .into(mImageView, new Callback() {
                        @Override
                        public void onSuccess() {
-                           if (mProgress != null) {
-                               mProgress.setVisibility(View.GONE);
-                           }
+                           changeVisibility(mProgress, View.GONE);
                        }
 
                        @Override
                        public void onError() {
-                           if (mProgress != null) {
-                               mProgress.setVisibility(View.GONE);
-                           }
-
-                           if (mErrorMessage != null) {
-                               mErrorMessage.setVisibility(View.VISIBLE);
-                           }
-                           if (mRetry != null) {
-                               mRetry.setVisibility(View.VISIBLE);
-                           }
+                           changeVisibility(mProgress, View.GONE);
+                           changeVisibility(mErrorMessage, View.VISIBLE);
+                           changeVisibility(mRetry, View.VISIBLE);
                        }
                    });
         }
     }
 
+    private void changeVisibility(View v, int visibility) {
+        if (v != null) {
+            v.setVisibility(visibility);
+        }
+    }
     private boolean hasTitle() {
         return mImage.getImage().getTitle() != null && !mImage.getImage().getTitle().trim().equals("");
     }
