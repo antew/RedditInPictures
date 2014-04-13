@@ -11,6 +11,7 @@ public class AdUtil {
         adRequest.addTestDevice("3F7DDA2355EFDDDC846D539EDEE73AFD");
         adRequest.addTestDevice("1B09EC5B49C938E43B2E18F10DBBB90B");
         adRequest.addTestDevice("EB9E2DFDF8AB7AAFB29C8E6F225F749C");
+        adRequest.addTestDevice("F17DF10B08F6975718BB6A3218756F45");
 
         return adRequest;
     }
