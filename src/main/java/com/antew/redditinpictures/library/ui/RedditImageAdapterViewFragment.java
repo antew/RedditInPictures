@@ -18,6 +18,8 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.database.QueryCriteria;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
@@ -35,8 +37,8 @@ import com.antew.redditinpictures.library.util.RedditUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
-import com.antew.redditinpictures.library.database.QueryCriteria;
-import com.antew.redditinpictures.library.database.RedditContract;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
@@ -388,6 +390,9 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        EasyTracker.getInstance(getActivity())
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.UI_ACTION, Constants.Analytics.Action.OPEN_POST,
+                                                mCurrentSubreddit, null).build());
         final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
         Bundle b = new Bundle();
         b.putString(Constants.Extra.EXTRA_SUBREDDIT, mCurrentSubreddit);
