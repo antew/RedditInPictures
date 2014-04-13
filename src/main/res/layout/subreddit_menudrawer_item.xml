@@ -28,7 +28,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/tv_subreddit"
-            android:textStyle="bold"
             android:textAllCaps="true"
             android:layout_marginLeft="10dp"
             android:textSize="@dimen/text_size_medium"
@@ -45,8 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/back"
-        android:background="#1A1A1A">
+        android:id="@+id/back">
 
         <ImageButton
             android:id="@+id/ib_view"

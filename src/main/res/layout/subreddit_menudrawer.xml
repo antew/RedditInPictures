@@ -3,8 +3,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:background="@drawable/background_menudrawer">
+                android:focusableInTouchMode="true" >
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -26,6 +25,7 @@
             android:layout_gravity="right|center_vertical"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_action_cancel_dark"
+            android:visibility="invisible"
             android:contentDescription="@string/clear"
             android:padding="5dp" />
 
@@ -36,8 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ll_menudrawer_menu"
-        android:layout_alignParentBottom="true"
-        android:background="#1A1A1A">
+        android:layout_alignParentBottom="true" >
 
         <ImageButton
             android:id="@+id/ib_add"

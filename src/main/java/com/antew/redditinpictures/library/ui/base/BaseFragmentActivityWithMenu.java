@@ -260,6 +260,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     private void initializeMenuDrawer() {
         mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.Type.OVERLAY, Position.LEFT, MenuDrawer.MENU_DRAG_WINDOW);
         mMenuDrawer.setMenuView(R.layout.subreddit_menudrawer);
+        mMenuDrawer.getMenuContainer().setBackgroundColor(0xf51b1b1b);
         mMenuDrawer.setSlideDrawable(R.drawable.ic_drawer);
         mMenuDrawer.setDrawerIndicatorEnabled(true);
     }
