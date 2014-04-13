@@ -22,9 +22,9 @@ import com.antew.redditinpictures.library.util.ViewUtil;
 import com.antew.redditinpictures.pro.R;
 
 /**
- * This is the Adapter for the drop down in the Action Bar of {@link
- * com.antew.redditinpictures.library.ui.ImageGridActivity}. It displays
- * the current Subreddit along with the selected Category and Age
+ * This is the Adapter for the MenuDrawer in  {@link
+ * com.antew.redditinpictures.library.ui.RedditFragmentActivity}
+ * which displays Subreddits.
  *
  * @author Antew
  */
