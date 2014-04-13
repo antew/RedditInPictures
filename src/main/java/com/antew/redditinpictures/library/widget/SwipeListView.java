@@ -23,12 +23,16 @@ public class SwipeListView extends ListView {
     private State mState     = State.IDLE;
     private int   mViewWidth = 1;
 
-    private int               mFrontViewId;
-    private int               mBackViewId;
-    private SwipeableViewPair mViewPair;
+    // Configurable attributes.
+    private int     mFrontViewId;
+    private int     mBackViewId;
+    private int     mSwipeDirection;
+    private boolean mCloseAllOnScroll;
+    private boolean mSwipeOpenOnLongPress;
 
-    private float           mDownX;
-    private VelocityTracker mVelocityTracker;
+    private float             mDownX;
+    private VelocityTracker   mVelocityTracker;
+    private SwipeableViewPair mViewPair;
 
     private int  mTouchSlop;
     private int  mMinFlingVelocity;
@@ -37,34 +41,55 @@ public class SwipeListView extends ListView {
 
     private WeakHashMap<Integer, SwipeableViewPair> mSwipedViews = new WeakHashMap<Integer, SwipeableViewPair>();
 
+    private enum State {
+        IDLE, SWIPING, SCROLLING;
+    }
+
+    /**
+     * Attribute that can be passed via XML with R.styleable.SwipeListView_swipeDirection or set via #setSwipeDirection to allow swiping to
+     * the left or right
+     */
+    public static final int SWIPE_DIRECTION_BOTH  = 0;
+    /**
+     * Attribute that can be passed via XML with R.styleable.SwipeListView_swipeDirection or set via #setSwipeDirection to only allow
+     * swiping to the left
+     */
+    public static final int SWIPE_DIRECTION_LEFT  = 1;
+    /**
+     * Attribute that can be passed via XML with R.styleable.SwipeListView_swipeDirection or set via #setSwipeDirection to only allow
+     * swiping to the right
+     */
+    public static final int SWIPE_DIRECTION_RIGHT = 2;
+
     private OnItemLongClickListener mOnLongClickListener;
     private OnItemLongClickListener mInternalOnLongClickListener = new OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            Ln.d("Position %d", position);
-            View frontView = view.findViewById(mFrontViewId);
-            View backView = view.findViewById(mBackViewId);
+            if (mSwipeOpenOnLongPress) {
+                View frontView = view.findViewById(mFrontViewId);
+                View backView = view.findViewById(mBackViewId);
 
-            if (frontView != null && backView != null) {
-                mViewPair = new SwipeableViewPair(frontView, backView);
+                if (frontView != null && backView != null) {
+                    mViewPair = new SwipeableViewPair(frontView, backView);
 
-                // If the view we are looking at has alrady been swiped, reset it.
-                if (mSwipedViews.containsKey(mViewPair.hashCode())) {
-                    mViewPair.mBackView.setVisibility(View.GONE);
-                    ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
-                } else {
-                    ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(mViewWidth).alpha(0).setDuration(mAnimationTime);
-                    mViewPair.mBackView.setVisibility(View.VISIBLE);
-                    ViewPropertyAnimator.animate(mViewPair.mBackView).alpha(1).setDuration(mAnimationTime);
-                    mSwipedViews.put(mViewPair.hashCode(), mViewPair);
-                    resetState();
+                    // If the view we are looking at has alrady been swiped, reset it.
+                    if (mSwipedViews.containsKey(mViewPair.hashCode())) {
+                        mViewPair.mBackView.setVisibility(View.GONE);
+                        ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
+                    } else {
+                        ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(mSwipeDirection == SWIPE_DIRECTION_LEFT ? -mViewWidth : mViewWidth).alpha(0).setDuration(mAnimationTime);
+                        mViewPair.mBackView.setVisibility(View.VISIBLE);
+                        ViewPropertyAnimator.animate(mViewPair.mBackView).alpha(1).setDuration(mAnimationTime);
+                        mSwipedViews.put(mViewPair.hashCode(), mViewPair);
+                        resetState();
+                    }
+
+                    if (mOnLongClickListener != null) {
+                        mOnLongClickListener.onItemLongClick(parent, view, position, id);
+                    }
+
+                    return true;
                 }
-
-                if (mOnLongClickListener != null) {
-                    mOnLongClickListener.onItemLongClick(parent, view, position, id);
-                }
-
-                return true;
             }
 
             if (mOnLongClickListener != null) {
@@ -97,12 +122,13 @@ public class SwipeListView extends ListView {
                     break;
                 case SCROLL_STATE_TOUCH_SCROLL:
                     changeState(State.SCROLLING);
-                    // Close any open views.
-                    for (SwipeableViewPair viewPair : mSwipedViews.values()) {
-                        viewPair.mBackView.setVisibility(View.GONE);
-                        ViewPropertyAnimator.animate(viewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
+                    if (mCloseAllOnScroll) {
+                        for (SwipeableViewPair viewPair : mSwipedViews.values()) {
+                            viewPair.mBackView.setVisibility(View.GONE);
+                            ViewPropertyAnimator.animate(viewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
+                        }
+                        mSwipedViews.clear();
                     }
-                    mSwipedViews.clear();
                     break;
             }
 
@@ -132,10 +158,6 @@ public class SwipeListView extends ListView {
             }
         }
     };
-
-    private enum State {
-        IDLE, SWIPING, SCROLLING;
-    }
 
     /**
      * If you create a View programmatically you need send the front and back identifiers
@@ -179,8 +201,11 @@ public class SwipeListView extends ListView {
 
         if (attrs != null) {
             TypedArray styled = getContext().obtainStyledAttributes(attrs, R.styleable.SwipeListView);
-            mFrontViewId = styled.getResourceId(R.styleable.SwipeListView_swipeFrontView, 0);
-            mBackViewId = styled.getResourceId(R.styleable.SwipeListView_swipeBackView, 0);
+            mFrontViewId = styled.getResourceId(R.styleable.SwipeListView_frontViewId, 0);
+            mBackViewId = styled.getResourceId(R.styleable.SwipeListView_backViewId, 0);
+            mCloseAllOnScroll = styled.getBoolean(R.styleable.SwipeListView_closeAllWhenScrolling, true);
+            mSwipeOpenOnLongPress = styled.getBoolean(R.styleable.SwipeListView_openOnLongPress, true);
+            setSwipeDirection(styled.getInt(R.styleable.SwipeListView_swipeDirection, SWIPE_DIRECTION_BOTH));
         }
 
         if (mFrontViewId == 0 || mBackViewId == 0) {
@@ -204,13 +229,20 @@ public class SwipeListView extends ListView {
         }
     }
 
-    public SwipeListView setFrontViewId(int frontViewId) {
-        mFrontViewId = frontViewId;
-        return this;
-    }
-
-    public SwipeListView setBackViewId(int backViewId) {
-        mBackViewId = backViewId;
+    public SwipeListView setSwipeDirection(int swipeDirection) {
+        switch (swipeDirection) {
+            case SWIPE_DIRECTION_LEFT:
+                mSwipeDirection = SWIPE_DIRECTION_LEFT;
+                break;
+            case SWIPE_DIRECTION_RIGHT:
+                mSwipeDirection = SWIPE_DIRECTION_RIGHT;
+                break;
+            // Fall through to default to Both.
+            case SWIPE_DIRECTION_BOTH:
+            default:
+                mSwipeDirection = SWIPE_DIRECTION_BOTH;
+                break;
+        }
         return this;
     }
 
@@ -268,7 +300,25 @@ public class SwipeListView extends ListView {
                     float velocityY = Math.abs(mVelocityTracker.getYVelocity());
 
                     if (mViewPair != null) {
-                        if (mMinFlingVelocity <= velocityX && velocityX <= mMaxFlingVelocity && velocityX > velocityY) {
+                        boolean shouldSwipe = false;
+
+                        // If the view has been moved a significant enough distance or if the view was flung, check to see if we should swipe it.
+                        if ((Math.abs(deltaX) > mViewWidth / 2 && mState == State.SWIPING) || (mMinFlingVelocity <= velocityX
+                                                                                               && velocityX <= mMaxFlingVelocity
+                                                                                               && velocityX > velocityY)) {
+                            if (mSwipeDirection == SWIPE_DIRECTION_BOTH) {
+                                // If the list is setup to swipe in either direction, just let it go.
+                                shouldSwipe = true;
+                            } else if (mSwipeDirection == SWIPE_DIRECTION_LEFT && deltaX < 0) {
+                                // If the list is only setup to swipe left, then only allow swiping to the left.
+                                shouldSwipe = true;
+                            } else if (mSwipeDirection == SWIPE_DIRECTION_RIGHT && deltaX > 0) {
+                                // If the list is only setup to swipe right, then only allow swiping to the right.
+                                shouldSwipe = true;
+                            }
+                        }
+
+                        if (shouldSwipe) {
                             ViewPropertyAnimator.animate(mViewPair.mFrontView)
                                                 .translationX(deltaX >= 0 ? mViewWidth : -mViewWidth)
                                                 .alpha(0)
@@ -277,9 +327,9 @@ public class SwipeListView extends ListView {
                             Ln.d("Swipe! %d", mViewPair.hashCode());
                             mSwipedViews.put(mViewPair.hashCode(), mViewPair);
                             resetState();
-                        } else if (mState == State.SWIPING) {
+                        } else {
+                            //If the user stopped swiping but we don't think the swipe was intended to occur (it was cancelled basically) reset the views.
                             Ln.d("Cancel Swipe");
-                            //If the user stopped swiping but we don't think we should hide the view (it was cancelled basically) reset the views.
                             mViewPair.mBackView.setVisibility(View.GONE);
                             ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
                             resetState();
@@ -297,19 +347,38 @@ public class SwipeListView extends ListView {
                     float velocityY = Math.abs(mVelocityTracker.getYVelocity());
 
                     if (Math.abs(deltaX) > mTouchSlop && velocityX > velocityY) {
-                        ViewParent parent = getParent();
-                        if (parent != null) {
-                            // Don't allow parent to intercept touch (e.g. like NavigationDrawer does)
-                            parent.requestDisallowInterceptTouchEvent(true);
-                        }
-                        changeState(State.SWIPING);
-                        requestDisallowInterceptTouchEvent(true);
+                        boolean initiateSwiping = false;
 
-                        // Cancel ListView's touch (un-highlighting the item)
-                        MotionEvent cancelEvent = MotionEvent.obtain(event);
-                        cancelEvent.setAction(
-                            MotionEvent.ACTION_CANCEL | (event.getActionIndex() << MotionEvent.ACTION_POINTER_INDEX_SHIFT));
-                        super.onTouchEvent(cancelEvent);
+                        if (mSwipeDirection == SWIPE_DIRECTION_BOTH) {
+                            // If the list is setup to swipe in either direction, just let it go.
+                            initiateSwiping = true;
+                        } else if (mSwipeDirection == SWIPE_DIRECTION_LEFT && deltaX < 0) {
+                            // If the list is only setup to swipe left, then only allow swiping to the left.
+                            initiateSwiping = true;
+                        } else if (mSwipeDirection == SWIPE_DIRECTION_RIGHT && deltaX > 0) {
+                            // If the list is only setup to swipe right, then only allow swiping to the right.
+                            initiateSwiping = true;
+                        }
+
+                        if (initiateSwiping) {
+                            ViewParent parent = getParent();
+                            if (parent != null) {
+                                // Don't allow parent to intercept touch (e.g. like NavigationDrawer does)
+                                parent.requestDisallowInterceptTouchEvent(true);
+                            }
+                            changeState(State.SWIPING);
+                            requestDisallowInterceptTouchEvent(true);
+
+                            // Cancel ListView's touch (un-highlighting the item)
+                            MotionEvent cancelEvent = MotionEvent.obtain(event);
+                            cancelEvent.setAction(MotionEvent.ACTION_CANCEL | (event.getActionIndex() << MotionEvent.ACTION_POINTER_INDEX_SHIFT));
+                            super.onTouchEvent(cancelEvent);
+                        } else {
+                            // Otherwise we need to cancel the touch event to prevent accidentally selecting the item.
+                            MotionEvent cancelEvent = MotionEvent.obtain(event);
+                            cancelEvent.setAction(MotionEvent.ACTION_CANCEL | (event.getActionIndex() << MotionEvent.ACTION_POINTER_INDEX_SHIFT));
+                            super.onTouchEvent(cancelEvent);
+                        }
                     }
 
                     if (mState == State.SWIPING && mViewPair != null) {

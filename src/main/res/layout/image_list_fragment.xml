@@ -18,7 +18,10 @@
         android:layout_height="fill_parent"
         style="@style/PhotoGridLayout"
         android:listSelector="@drawable/list_selector"
-        swipeListView:swipeFrontView="@+id/front"
-        swipeListView:swipeBackView="@+id/back" />
+        swipeListView:frontViewId="@+id/front"
+        swipeListView:backViewId="@+id/back"
+        swipeListView:closeAllWhenScrolling="true"
+        swipeListView:openOnLongPress="true"
+        swipeListView:swipeDirection="both"/>
 
 </RelativeLayout>

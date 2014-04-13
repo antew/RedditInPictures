@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="SwipeListView">
-        <attr name="swipeFrontView" format="reference"/>
-        <attr name="swipeBackView" format="reference"/>
+        <attr name="frontViewId" format="reference"/>
+        <attr name="backViewId" format="reference"/>
+        <attr name="openOnLongPress" format="boolean"/>
+        <attr name="closeAllWhenScrolling" format="boolean"/>
+        <attr name="swipeDirection" format="enum">
+            <enum name="both" value="0"/>
+            <enum name="left" value="1"/>
+            <enum name="right" value="2"/>
+        </attr>
     </declare-styleable>
 </resources>
