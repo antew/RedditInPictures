@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:swipe="http://schemas.android.com/apk/res-auto"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
@@ -12,19 +13,17 @@
         android:visibility="gone" />
 
     <com.fortysevendeg.swipelistview.SwipeListView
-        xmlns:swipe="http://schemas.android.com/apk/res-auto"
+
         android:id="@+id/image_list"
-        android:listSelector="#00000000"
+        android:listSelector="@drawable/list_selector"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        style="@style/PhotoGridLayout"
         swipe:swipeFrontView="@+id/front"
         swipe:swipeBackView="@+id/back"
         swipe:swipeActionLeft="reveal"
         swipe:swipeActionRight="reveal"
         swipe:swipeMode="both"
         swipe:swipeCloseAllItemsWhenMoveList="true"
-        swipe:swipeOpenOnLongPress="true"
-        />
+        swipe:swipeOpenOnLongPress="true" />
 
 </RelativeLayout>
