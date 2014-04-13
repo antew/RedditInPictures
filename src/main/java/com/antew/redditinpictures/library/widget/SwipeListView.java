@@ -192,14 +192,11 @@ public class SwipeListView extends ListView {
                 int touchX = (int) event.getRawX() - viewCoords[0];
                 int touchY = (int) event.getRawY() - viewCoords[1];
 
-                //TODO: Account for headers/footers.
-                int firstVisibleChild = getFirstVisiblePosition();
-                int lastVisibleChild = getLastVisiblePosition();
-
                 Rect rect = new Rect();
                 View child;
 
-                for (int i = firstVisibleChild; i <= lastVisibleChild; i++) {
+                int childCount = getChildCount();
+                for (int i = getHeaderViewsCount(); i <= childCount; i++) {
                     child = getChildAt(i);
 
                     if (child != null) {
