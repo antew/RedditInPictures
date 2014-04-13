@@ -199,7 +199,7 @@ public class SwipeListView extends ListView {
                 Rect rect = new Rect();
                 View child;
 
-                for (int i = firstVisibleChild; i < lastVisibleChild; i++) {
+                for (int i = firstVisibleChild; i <= lastVisibleChild; i++) {
                     child = getChildAt(i);
 
                     if (child != null) {

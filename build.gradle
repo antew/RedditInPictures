@@ -56,7 +56,6 @@ android {
 
 repositories {
     mavenCentral()
-    maven { url 'http://clinker.47deg.com/nexus/content/groups/public' }
     flatDir {
         dirs 'lib'
     }
