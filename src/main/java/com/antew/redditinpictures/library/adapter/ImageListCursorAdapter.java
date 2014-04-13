@@ -16,9 +16,7 @@
 package com.antew.redditinpictures.library.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -32,16 +30,17 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnLongClick;
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.imgur.ResolveAlbumCoverWorkerTask;
+import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
-import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.RedditFragmentActivity;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.PostUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.picasso.Picasso;
 import java.util.regex.Pattern;
 
@@ -170,7 +169,11 @@ public class ImageListCursorAdapter extends CursorAdapter {
         }
 
         String separator = " " + "\u2022" + " ";
-        String titleText = "<font color='#ffffff'>" + postData.getTitle() + "</font><font color='#BEBEBE'> (" + postData.getDomain() + ")</font>";
+        String titleText = "<font color='#ffffff'>"
+                           + postData.getTitle()
+                           + "</font><font color='#BEBEBE'> ("
+                           + postData.getDomain()
+                           + ")</font>";
         holder.postTitle.setText(Html.fromHtml(titleText));
         String postInformation = "";
 
@@ -267,12 +270,31 @@ public class ImageListCursorAdapter extends CursorAdapter {
     private void vote(Context context, PostData postData, Vote vote) {
         if (!RedditLoginInformation.isLoggedIn()) {
             if (mContext instanceof RedditFragmentActivity) {
+                EasyTracker.getInstance(mContext)
+                           .send(MapBuilder.createEvent(Constants.Analytics.Category.LIST_UI_ACTION, Constants.Analytics.Action.POST_VOTE,
+                                                        Constants.Analytics.Label.NOT_LOGGED_IN, null).build()
+                                );
                 ((RedditFragmentActivity) mContext).handleLoginAndLogout();
                 return;
             }
         }
 
-        PostUtil.votePost( context, postData, vote);
+        switch (vote) {
+            case UP:
+                EasyTracker.getInstance(mContext)
+                           .send(MapBuilder.createEvent(Constants.Analytics.Category.LIST_UI_ACTION, Constants.Analytics.Action.POST_VOTE,
+                                                        Constants.Analytics.Label.UP, null).build()
+                                );
+                break;
+            case DOWN:
+                EasyTracker.getInstance(mContext)
+                           .send(MapBuilder.createEvent(Constants.Analytics.Category.LIST_UI_ACTION, Constants.Analytics.Action.POST_VOTE,
+                                                        Constants.Analytics.Label.DOWN, null).build()
+                                );
+                break;
+        }
+
+        PostUtil.votePost(context, postData, vote);
     }
 
     protected class ViewHolder {

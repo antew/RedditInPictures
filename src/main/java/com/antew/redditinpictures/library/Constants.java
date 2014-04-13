@@ -25,6 +25,7 @@ public class Constants {
             public static final String ACTION_BAR_ACTION = "action_bar_action";
             public static final String POST_MENU_ACTION = "post_menu_action";
             public static final String UI_ACTION = "ui_action";
+            public static final String LIST_UI_ACTION = "list_ui_action";
             public static final String INITIALIZE = "initialize";
         }
 
