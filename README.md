@@ -1,4 +1,4 @@
-# Reddit In Pictures [![Build Status](https://travis-ci.org/antew/RedditInPictures.svg?branch=travis)](https://travis-ci.org/antew/RedditInPictures)
+# Reddit In Pictures [![Build Status](https://travis-ci.org/antew/RedditInPictures.svg)](https://travis-ci.org/antew/RedditInPictures)
 
 * Reddit In Pictures is a personal image viewer for Reddit which supports most image galleries and types of images on Android.
 * [Reddit In Pictures](https://github.com/antew/RedditInPictures) is availble in both [Free](https://play.google.com/store/apps/details?id=com.antew.redditinpictures) and [Pro](https://play.google.com/store/apps/details?id=com.antew.redditinpictures.pro) versions on the Play Store.
