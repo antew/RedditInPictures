@@ -40,7 +40,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
         @Override
         public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             // if we're are approaching the bottom of the listview, load more data.
-            if (firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET && totalItemCount > 0) {
+            if (!mRequestInProgress && (firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET) && totalItemCount > 0) {
                 fetchAdditionalImagesFromReddit();
             }
         }
