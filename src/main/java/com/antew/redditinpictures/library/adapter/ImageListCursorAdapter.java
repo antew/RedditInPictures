@@ -207,14 +207,14 @@ public class ImageListCursorAdapter extends CursorAdapter {
         holder.upVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PostUtil.votePost(mContext, postData, Vote.UP);
+                vote(mContext, postData, Vote.UP);
             }
         });
 
         holder.downVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PostUtil.votePost(mContext, postData, Vote.DOWN);
+                vote(mContext, postData, Vote.DOWN);
             }
         });
 
@@ -262,6 +262,17 @@ public class ImageListCursorAdapter extends CursorAdapter {
                 }
             }
         });
+    }
+
+    private void vote(Context context, PostData postData, Vote vote) {
+        if (!RedditLoginInformation.isLoggedIn()) {
+            if (mContext instanceof RedditFragmentActivity) {
+                ((RedditFragmentActivity) mContext).handleLoginAndLogout();
+                return;
+            }
+        }
+
+        PostUtil.votePost( context, postData, vote);
     }
 
     protected class ViewHolder {

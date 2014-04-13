@@ -81,7 +81,6 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
 
         mImageListView.setAdapter(mAdapter);
         mImageListView.setOnScrollListener(mListScrollListener);
-        //mImageListView.setSwipeListViewListener(this);
     }
 
     private void openImageAtPosition(int position) {
