@@ -11,13 +11,13 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewParent;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.pro.R;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.WeakHashMap;
 
 public class SwipeListView extends ListView {
     private State mState     = State.IDLE;
@@ -35,10 +35,46 @@ public class SwipeListView extends ListView {
     private int  mMaxFlingVelocity;
     private long mAnimationTime;
 
+    private WeakHashMap<Integer, SwipeableViewPair> mSwipedViews = new WeakHashMap<Integer, SwipeableViewPair>();
+
+    private OnItemLongClickListener mOnLongClickListener;
+    private OnItemLongClickListener mInternalOnLongClickListener = new OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            Ln.d("Position %d", position);
+            View frontView = view.findViewById(mFrontViewId);
+            View backView = view.findViewById(mBackViewId);
+
+            if (frontView != null && backView != null) {
+                mViewPair = new SwipeableViewPair(frontView, backView);
+
+                // If the view we are looking at has alrady been swiped, reset it.
+                if (mSwipedViews.containsKey(mViewPair.hashCode())) {
+                    mViewPair.mBackView.setVisibility(View.GONE);
+                    ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
+                } else {
+                    ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(mViewWidth).alpha(0).setDuration(mAnimationTime);
+                    mViewPair.mBackView.setVisibility(View.VISIBLE);
+                    ViewPropertyAnimator.animate(mViewPair.mBackView).alpha(1).setDuration(mAnimationTime);
+                    mSwipedViews.put(mViewPair.hashCode(), mViewPair);
+                    resetState();
+                }
+
+                if (mOnLongClickListener != null) {
+                    mOnLongClickListener.onItemLongClick(parent, view, position, id);
+                }
+
+                return true;
+            }
+
+            if (mOnLongClickListener != null) {
+                return mOnLongClickListener.onItemLongClick(parent, view, position, id);
+            }
+            return false;
+        }
+    };
+
     private OnScrollListener mOnScrollListener;
-
-    private List<SwipeableViewPair> mSwipedViews = new ArrayList<SwipeableViewPair>();
-
     private AbsListView.OnScrollListener mInternalOnScrollListener = new AbsListView.OnScrollListener() {
         /**
          * Callback method to be invoked while the list view or grid view is being scrolled. If the
@@ -62,7 +98,7 @@ public class SwipeListView extends ListView {
                 case SCROLL_STATE_TOUCH_SCROLL:
                     changeState(State.SCROLLING);
                     // Close any open views.
-                    for (SwipeableViewPair viewPair : mSwipedViews) {
+                    for (SwipeableViewPair viewPair : mSwipedViews.values()) {
                         viewPair.mBackView.setVisibility(View.GONE);
                         ViewPropertyAnimator.animate(viewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
                     }
@@ -158,6 +194,7 @@ public class SwipeListView extends ListView {
         mAnimationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         super.setOnScrollListener(mInternalOnScrollListener);
+        super.setOnItemLongClickListener(mInternalOnLongClickListener);
     }
 
     private void changeState(State state) {
@@ -237,9 +274,11 @@ public class SwipeListView extends ListView {
                                                 .alpha(0)
                                                 .setDuration(mAnimationTime);
                             ViewPropertyAnimator.animate(mViewPair.mBackView).alpha(1).setDuration(mAnimationTime);
-                            mSwipedViews.add(mViewPair);
+                            Ln.d("Swipe! %d", mViewPair.hashCode());
+                            mSwipedViews.put(mViewPair.hashCode(), mViewPair);
                             resetState();
                         } else if (mState == State.SWIPING) {
+                            Ln.d("Cancel Swipe");
                             //If the user stopped swiping but we don't think we should hide the view (it was cancelled basically) reset the views.
                             mViewPair.mBackView.setVisibility(View.GONE);
                             ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
@@ -307,6 +346,18 @@ public class SwipeListView extends ListView {
         mOnScrollListener = onScrollListener;
     }
 
+    /**
+     * Register a callback to be invoked when an item in this AdapterView has
+     * been clicked and held
+     *
+     * @param listener
+     *     The callback that will run
+     */
+    @Override
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        mOnLongClickListener = listener;
+    }
+
     private class SwipeableViewPair {
         View mFrontView;
         View mBackView;
@@ -314,6 +365,34 @@ public class SwipeListView extends ListView {
         private SwipeableViewPair(View mFrontView, View mBackView) {
             this.mFrontView = mFrontView;
             this.mBackView = mBackView;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            SwipeableViewPair that = (SwipeableViewPair) o;
+
+            if (!mBackView.equals(that.mBackView)) {
+                return false;
+            }
+            if (!mFrontView.equals(that.mFrontView)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = mFrontView.hashCode();
+            result = 31 * result + mBackView.hashCode();
+            return result;
         }
     }
 }
