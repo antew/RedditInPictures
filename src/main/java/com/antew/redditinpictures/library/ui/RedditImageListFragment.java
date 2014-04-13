@@ -20,15 +20,14 @@ import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.library.util.Strings;
+import com.antew.redditinpictures.library.widget.SwipeListView;
 import com.antew.redditinpictures.pro.R;
-import com.fortysevendeg.swipelistview.SwipeListView;
-import com.fortysevendeg.swipelistview.SwipeListViewListener;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.otto.Subscribe;
 
 public class RedditImageListFragment extends RedditImageAdapterViewFragment<ListView, ImageListCursorAdapter>
-    implements SwipeListViewListener, ImageListCursorAdapter.ImageListItemMenuActionListener {
+    implements ImageListCursorAdapter.ImageListItemMenuActionListener {
     //8 is a good number, the kind of number that you could say take home to your parents and not be worried about what they might think about it.
     private static final int                          POST_LOAD_OFFSET    = 8;
     private              AbsListView.OnScrollListener mListScrollListener = new AbsListView.OnScrollListener() {
@@ -82,7 +81,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
 
         mImageListView.setAdapter(mAdapter);
         mImageListView.setOnScrollListener(mListScrollListener);
-        mImageListView.setSwipeListViewListener(this);
+        //mImageListView.setSwipeListViewListener(this);
     }
 
     private void openImageAtPosition(int position) {
@@ -115,72 +114,6 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
     @Override
     protected QueryCriteria getPostsQueryCriteria() {
         return mQueryCriteria;
-    }
-
-    @Override
-    public void onOpened(int position, boolean toRight) {
-    }
-
-    @Override
-    public void onClosed(int position, boolean fromRight) {
-    }
-
-    @Override
-    public void onListChanged() {
-    }
-
-    @Override
-    public void onMove(int position, float x) {
-    }
-
-    @Override
-    public void onStartOpen(int position, int action, boolean right) {
-    }
-
-    @Override
-    public void onStartClose(int position, boolean right) {
-    }
-
-    @Override
-    public void onClickFrontView(int position) {
-        EasyTracker.getInstance(getActivity())
-                   .send(MapBuilder.createEvent(Constants.Analytics.Category.UI_ACTION, Constants.Analytics.Action.OPEN_POST,
-                                                mCurrentSubreddit, null).build()
-                        );
-        openImageAtPosition(position);
-    }
-
-    @Override
-    public void onClickBackView(int position) {
-    }
-
-    @Override
-    public void onDismiss(int[] reverseSortedPositions) {
-    }
-
-    @Override
-    public int onChangeSwipeMode(int position) {
-        return SwipeListView.SWIPE_MODE_DEFAULT;
-    }
-
-    @Override
-    public void onChoiceChanged(int position, boolean selected) {
-    }
-
-    @Override
-    public void onChoiceStarted() {
-    }
-
-    @Override
-    public void onChoiceEnded() {
-    }
-
-    @Override
-    public void onFirstListItem() {
-    }
-
-    @Override
-    public void onLastListItem() {
     }
 
     /**
@@ -244,8 +177,9 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
     @Override
     public void openPostExternal(PostData postData) {
         EasyTracker.getInstance(getActivity())
-                   .send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.OPEN_POST_EXTERNAL,
-                                                mCurrentSubreddit, null).build()
+                   .send(
+                       MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.OPEN_POST_EXTERNAL,
+                                              mCurrentSubreddit, null).build()
                         );
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
             postData.getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(getActivity()))));

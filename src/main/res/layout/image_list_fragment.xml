@@ -12,18 +12,14 @@
         android:text="@string/no_images_were_returned"
         android:visibility="gone" />
 
-    <com.fortysevendeg.swipelistview.SwipeListView
-
+    <com.antew.redditinpictures.library.widget.SwipeListView
+        xmlns:swipeListView="http://schemas.android.com/apk/res-auto"
         android:id="@+id/image_list"
-        android:listSelector="@drawable/list_selector"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        swipe:swipeFrontView="@+id/front"
-        swipe:swipeBackView="@+id/back"
-        swipe:swipeActionLeft="reveal"
-        swipe:swipeActionRight="reveal"
-        swipe:swipeMode="both"
-        swipe:swipeCloseAllItemsWhenMoveList="true"
-        swipe:swipeOpenOnLongPress="true" />
+        style="@style/PhotoGridLayout"
+        android:listSelector="@drawable/list_selector"
+        swipeListView:swipeFrontView="@+id/front"
+        swipeListView:swipeBackView="@+id/back"/>
 
 </RelativeLayout>
