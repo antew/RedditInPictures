@@ -6,11 +6,8 @@ import com.antew.redditinpictures.library.util.Ln;
 
 public class Modules {
 
-    public static Object[] get(RedditInPicturesApplication app) {
+    public static Object get(RedditInPicturesApplication app) {
         Ln.e("Called free 'Modules' class");
-        return new Object[]{
-                new RootModule(app),
-                new ApplicationModuleFree()
-        };
+        return new ApplicationModuleFree();
     }
 }

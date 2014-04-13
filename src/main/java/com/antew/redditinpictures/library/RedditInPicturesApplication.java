@@ -3,7 +3,7 @@ package com.antew.redditinpictures.library;
 import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
-import com.antew.redditinpictures.ApplicationModulePro;
+import com.antew.redditinpictures.Modules;
 import com.antew.redditinpictures.library.modules.RootModule;
 
 public class RedditInPicturesApplication extends Application {
@@ -45,6 +45,6 @@ public class RedditInPicturesApplication extends Application {
         instance = this;
 
         Injector.init(new RootModule(this));
-        Injector.init(new ApplicationModulePro());
+        Injector.init(Modules.get(this));
     }
 }
