@@ -123,6 +123,12 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
                 return;
             }
 
+            if (Strings.isEmpty(s) && mClearSubredditFilter.getVisibility() == View.VISIBLE) {
+                mClearSubredditFilter.setVisibility(View.INVISIBLE);
+            } else {
+                mClearSubredditFilter.setVisibility(View.VISIBLE);
+            }
+
             filterSubreddits(s.toString());
         }
 
