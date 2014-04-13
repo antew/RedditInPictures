@@ -10,6 +10,7 @@ public class AdUtil {
         adRequest.addTestDevice("F1B753A6DEEED0887495F26281CCDDA8");
         adRequest.addTestDevice("3F7DDA2355EFDDDC846D539EDEE73AFD");
         adRequest.addTestDevice("1B09EC5B49C938E43B2E18F10DBBB90B");
+        adRequest.addTestDevice("EB9E2DFDF8AB7AAFB29C8E6F225F749C");
 
         return adRequest;
     }
