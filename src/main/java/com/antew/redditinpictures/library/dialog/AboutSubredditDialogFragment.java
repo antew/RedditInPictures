@@ -3,6 +3,7 @@ package com.antew.redditinpictures.library.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Html;
@@ -19,11 +20,16 @@ import com.squareup.picasso.Picasso;
 
 public class AboutSubredditDialogFragment extends DialogFragment {
     SubredditData mSubredditData;
-    @InjectView(R.id.iv_header)            ImageView header;
-    @InjectView(R.id.tv_name)              TextView  name;
-    @InjectView(R.id.tv_info)              TextView  info;
-    @InjectView(R.id.tv_short_description) TextView  shortDescription;
-    @InjectView(R.id.tv_description)       TextView  description;
+    @InjectView(R.id.iv_header)
+    ImageView header;
+    @InjectView(R.id.tv_name)
+    TextView  name;
+    @InjectView(R.id.tv_info)
+    TextView  info;
+    @InjectView(R.id.tv_short_description)
+    TextView  shortDescription;
+    @InjectView(R.id.tv_description)
+    TextView  description;
 
     public static AboutSubredditDialogFragment newInstance(SubredditData subredditData) {
         Bundle bundle = new Bundle();
@@ -62,7 +68,7 @@ public class AboutSubredditDialogFragment extends DialogFragment {
             infoText += mSubredditData.getSubscribers() + getActivity().getString(R.string._subscribers);
 
             Picasso.with(getActivity())
-                   .load(mSubredditData.getHeader_img())
+                   .load(Uri.parse(mSubredditData.getHeader_img()))
                    .placeholder(R.drawable.loading_spinner_76)
                    .error(R.drawable.empty_photo)
                    .into(header);
