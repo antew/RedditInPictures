@@ -41,6 +41,7 @@ import com.antew.redditinpictures.library.model.reddit.RedditUrl;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.BundleUtil;
+import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.PostUtil;
 import com.antew.redditinpictures.library.util.StringUtil;
@@ -49,6 +50,7 @@ import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
+import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -251,11 +253,8 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
     @Override
     public void onFinishSaveImageDialog(String filename) {
-        PostData p = getAdapter().getPost(mPager.getCurrentItem());
-        Intent intent = new Intent(Constants.Broadcast.BROADCAST_DOWNLOAD_IMAGE);
-        intent.putExtra(Constants.Extra.EXTRA_PERMALINK, p.getPermalink());
-        intent.putExtra(Constants.Extra.EXTRA_FILENAME, filename);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        PostData postData = getAdapter().getPost(mPager.getCurrentItem());
+        ImageUtil.downloadImage(this, postData.getUrl(), filename);
     }
 
     public boolean isRequestInProgress() {

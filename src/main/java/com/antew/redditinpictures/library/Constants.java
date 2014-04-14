@@ -121,7 +121,6 @@ public class Constants {
 
     public static class Broadcast {
         private static final String BROADCAST_PREFIX             = PACKAGE_PREFIX + ".broadcast.";
-        public static final  String BROADCAST_DOWNLOAD_IMAGE     = BROADCAST_PREFIX + "download-image";
         public static final  String BROADCAST_ABOUT_SUBREDDIT    = BROADCAST_PREFIX + "about-subreddit";
         public static final  String BROADCAST_HTTP_FINISHED      = BROADCAST_PREFIX + "http-finished";
         public static final  String BROADCAST_LOGIN_COMPLETE     = BROADCAST_PREFIX + "login-complete";
