@@ -387,12 +387,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
                                 );
                 handleSaveImage();
                 return true;
-            case R.id.refresh:
-                EasyTracker.getInstance(this)
-                           .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
-                                                        Constants.Analytics.Action.REFRESH_POST, getSubreddit(), null).build());
-                refreshCurentImage();
-                return true;
             default:
                 return false;
         }

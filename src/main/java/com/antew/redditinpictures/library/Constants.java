@@ -52,7 +52,6 @@ public class Constants {
             public static final String TOGGLE_SWIPING = "toggle_swiping";
             public static final String SHARE_POST = "share_post";
             public static final String SAVE_POST = "save_post";
-            public static final String REFRESH_POST = "refresh_post";
             public static final String OPEN_POST = "open_post";
             public static final String OPEN_POST_EXTERNAL = "open_post_external";
             public static final String TOGGLE_DETAILS = "toggle_details";

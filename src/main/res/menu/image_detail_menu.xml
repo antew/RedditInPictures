@@ -4,13 +4,13 @@
     <item
         android:id="@+id/upvote"
         android:icon="@drawable/ic_action_upvote"
-        android:orderInCategory="1"
+        android:orderInCategory="11"
         android:showAsAction="ifRoom"
         android:title="@string/upvote" />
     <item
         android:id="@+id/downvote"
         android:icon="@drawable/ic_action_downvote"
-        android:orderInCategory="2"
+        android:orderInCategory="12"
         android:showAsAction="ifRoom"
         android:title="@string/downvote" />
 
