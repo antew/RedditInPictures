@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -306,7 +307,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
             loadGifInWebView(mResolvedImageUrl);
         } else {
             Picasso.with(getActivity())
-                   .load(mResolvedImageUrl)
+                   .load(Uri.parse(mResolvedImageUrl))
                    .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
                    .centerInside()
                    .into(mImageView, new Callback() {

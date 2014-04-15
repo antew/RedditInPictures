@@ -152,14 +152,10 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
         // We save the upvote and downvote icons so that we can change their icon later
         mUpvoteMenuItem = menu.findItem(R.id.upvote);
         mDownvoteMenuItem = menu.findItem(R.id.downvote);
-
-        // We save the icon for locking the view pager so that we can reference
-        // it when we receive a broadcast message to toggle the ViewPager lock state
-        lockViewPagerItem = menu.findItem(R.id.lock_viewpager);
-
         return true;
     }
 

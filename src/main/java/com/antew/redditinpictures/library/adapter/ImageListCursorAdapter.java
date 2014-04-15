@@ -17,6 +17,7 @@ package com.antew.redditinpictures.library.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -160,7 +161,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
         if (Strings.notEmpty(url)) {
             Picasso.with(mContext)
-                   .load(url)
+                   .load(Uri.parse(url))
                    .placeholder(R.drawable.loading_spinner_48)
                    .error(R.drawable.empty_photo)
                    .fit()
