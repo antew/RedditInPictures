@@ -35,6 +35,7 @@ import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.Vote;
+import com.antew.redditinpictures.library.model.reddit.LoginData;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.model.reddit.RedditUrl;
@@ -53,7 +54,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ImageDetailActivity extends ImageViewerActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ImageDetailActivity extends ImageViewerActivity implements LoaderManager.LoaderCallbacks<Cursor>,
+                                                                        LoginDialogFragment.LoginDialogListener {
     protected MenuItem  mUpvoteMenuItem;
     protected MenuItem  mDownvoteMenuItem;
     protected RedditUrl mRedditUrl;
@@ -73,6 +75,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         displayVote();
 
         getSupportLoaderManager().initLoader(Constants.Loader.LOADER_REDDIT, null, this);
+        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_LOGIN, null, this);
         getSupportLoaderManager().initLoader(Constants.Loader.LOADER_POSTS, null, this);
         // Put the current page / total pages text in the ActionBar
         updateDisplay(mPager.getCurrentItem());
@@ -305,7 +308,8 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
             case Constants.Loader.LOADER_REDDIT:
                 return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, null, null, null,
                                         RedditContract.RedditData.DEFAULT_SORT);
-
+            case Constants.Loader.LOADER_LOGIN:
+                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
             case Constants.Loader.LOADER_POSTS:
                 String selection = null;
                 String[] selectionArgs = null;
@@ -369,7 +373,21 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                     mBefore = cursor.getString(cursor.getColumnIndex(RedditContract.RedditData.BEFORE));
                 }
                 break;
+            case Constants.Loader.LOADER_LOGIN:
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        String username = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
+                        String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
+                        String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
 
+                        LoginData data = new LoginData(username, modhash, cookie);
+                        if (!data.equals(RedditLoginInformation.getLoginData())) {
+                            RedditLoginInformation.setLoginData(data);
+                        }
+                        new SubredditUtil.SetDefaultSubredditsTask(this).execute();
+                    }
+                }
+                break;
             case Constants.Loader.LOADER_POSTS:
                 setRequestInProgress(false);
                 getAdapter().swapCursor(cursor);
@@ -389,5 +407,10 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     @Override
     public void onLoaderReset(Loader<Cursor> cursor) {
         getAdapter().swapCursor(null);
+    }
+
+    @Override
+    public void onFinishLoginDialog(String username, String password) {
+        RedditService.login(this, username, password);
     }
 }
