@@ -37,6 +37,7 @@ public class PostUtil {
             Cursor cursor = resolver.query(RedditContract.Posts.CONTENT_URI, null, "name = ?", new String[] {mPostData.getName()}, RedditContract.Posts.DEFAULT_SORT);
             cursor.moveToFirst();
             PostData entirePostData = new PostData(cursor);
+            cursor.close();
             if (entirePostData.getVote() == null || entirePostData.getVote() == Vote.NEUTRAL) {
                 switch (mVote) {
                     case UP:
