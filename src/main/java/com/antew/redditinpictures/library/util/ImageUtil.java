@@ -15,11 +15,21 @@
  */
 package com.antew.redditinpictures.library.util;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.widget.EditText;
 import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.pro.R;
+import com.squareup.picasso.Picasso;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Locale;
 
 public class ImageUtil {
@@ -254,8 +264,67 @@ public class ImageUtil {
      * @return True if the input URL links directly to an image, otherwise false
      */
     private static boolean isSupportedImage(String url) {
-        return (url.endsWith(".png") || url.endsWith(".jpg") || url.endsWith(".gif") || url.endsWith(".bmp") || url.endsWith(".jpeg") || url
-            .endsWith(".webp"));
+        return (isPng(url) || isJpeg(url) || isGif(url) || isBitmap(url) || isWebp(url));
+    }
+
+    /**
+     * Determine if a given URL points to a png image file.
+     *
+     * @param url
+     *     The URL to evaluate
+     *
+     * @return true if the input URL links directly to a png image.
+     */
+    private static boolean isPng(String url) {
+        if (url.endsWith(".png")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Determine if a given URL points to a webp image file.
+     *
+     * @param url
+     *     The URL to evaluate
+     *
+     * @return true if the input URL links directly to a webp image.
+     */
+    private static boolean isWebp(String url) {
+        if (url.endsWith(".webp")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Determine if a given URL points to a JPEG or JPG image file.
+     *
+     * @param url
+     *     The URL to evaluate
+     *
+     * @return true if the input URL links directly to a JPEG or JPG image.
+     */
+    private static boolean isJpeg(String url) {
+        if (url.endsWith(".jpg") || url.endsWith(".jpeg")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Determine if a given URL points to a bitmap image file.
+     *
+     * @param url
+     *     The URL to evaluate
+     *
+     * @return true if the input URL links directly to a bitmap image.
+     */
+    private static boolean isBitmap(String url) {
+        if (url.endsWith(".bmp")) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -323,5 +392,83 @@ public class ImageUtil {
         dr.setBounds(0, 0, dr.getIntrinsicWidth(), dr.getIntrinsicHeight());
 
         return dr;
+    }
+
+    public static void downloadImage(Context context, String url, String filename) {
+        new DownloadImageTask(context, url, filename).execute();
+    }
+
+    private static class DownloadImageTask extends SafeAsyncTask<Void> {
+        Context mContext;
+        String  mUrl;
+        String  mFilename;
+
+        public DownloadImageTask(Context context, String url, String filename) {
+            mContext = context;
+            mUrl = url;
+            mFilename = filename;
+        }
+
+        @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+        @Override
+        public Void call() throws Exception {
+            if (Strings.isEmpty(mUrl) || Strings.isEmpty(mFilename) || mContext == null) {
+                return null;
+            }
+
+            OutputStream outputStream = null;
+            try {
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                if (isJpeg(mUrl)) {
+                    mFilename += ".jpg";
+                } else if (isPng(mUrl)) {
+                    mFilename += ".png";
+                } else if (isGif(mUrl)) {
+                    mFilename += ".gif";
+                } else if (isWebp(mUrl)) {
+                    mFilename += ".webp";
+                } else {
+                    mFilename += ".jpg";
+                }
+
+                File file = new File(path, mFilename);
+
+                // Make sure the Pictures directory exists.
+                path.mkdirs();
+
+                outputStream = new FileOutputStream(file);
+
+                Bitmap image = Picasso.with(mContext).load(Uri.parse(mUrl)).get();
+                if (image != null) {
+                    if (isJpeg(mUrl)) {
+                        image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+                    } else if (isPng(mUrl)) {
+                        //PNG is loseless and ignores the quality setting.
+                        image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                    } else if (isGif(mUrl)) {
+                        //No GIF support, treat it like a JPEG.
+                        image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+                    } else if (isWebp(mUrl) && AndroidUtil.hasIcs()) {
+                        // WEBP wasn't available until Ice Cream Sandwich
+                        image.compress(Bitmap.CompressFormat.WEBP, 90, outputStream);
+                    } else if (isBitmap(mUrl)) {
+                        image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+                    } else {
+                        image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+                    }
+
+                    outputStream.flush();
+                    image.recycle();
+                    Ln.d("Saved File to %s", file.getAbsolutePath());
+
+                    // Tell the media scanner about the new file so that it is
+                    // immediately available to the user.
+                    MediaScannerConnection.scanFile(mContext, new String[] { file.toString() }, null, null);
+                }
+            } finally {
+                AndroidUtil.closeQuietly(outputStream);
+            }
+            return null;
+        }
     }
 }
