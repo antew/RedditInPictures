@@ -416,11 +416,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     public abstract String getUrlForSharing();
 
     /**
-     * Get the currently displayed image fragment and cause it to refresh the currently displayed contents.
-     */
-    protected abstract void refreshCurentImage();
-
-    /**
      * Get the Uri for the page of the current post in the ViewPager.
      *
      * @return The Uri for the page

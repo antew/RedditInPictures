@@ -223,14 +223,6 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     }
 
     /**
-     * Get the currently displayed image fragment and cause it to refresh the currently displayed contents.
-     */
-    @Override
-    protected void refreshCurentImage() {
-        //TODO: Code this.
-    }
-
-    /**
      * Get the Uri for the Reddit page of the current post in the ViewPager.
      *
      * @return The Uri for the post on reddit
