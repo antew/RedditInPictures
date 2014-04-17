@@ -55,6 +55,8 @@ class PostResponse extends RedditResponseHandler {
             data.setAge(age);
         }
 
+        redditApi.setData(data);
+
         // Each time we want to remove the old before/after/modhash rows from the Reddit data
         // TODO: Update this to support category and age in the future. This will also require changes to how we handle storing results.
         int redditRowsDeleted = resolver.delete(RedditContract.RedditData.CONTENT_URI, "subreddit = ?", new String[] { subreddit });
