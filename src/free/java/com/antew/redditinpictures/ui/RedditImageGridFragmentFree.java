@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
@@ -24,6 +26,7 @@ import com.antew.redditinpictures.util.AdUtil;
 import com.antew.redditinpictures.util.ConstsFree;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
+import com.squareup.otto.Subscribe;
 
 public class RedditImageGridFragmentFree extends RedditImageGridFragment {
     private AdView mAdView;
@@ -123,5 +126,17 @@ public class RedditImageGridFragmentFree extends RedditImageGridFragment {
     @Override
     public Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
         return ImageDetailActivityFree.class;
+    }
+
+    @Subscribe
+    @Override
+    public void requestInProgress(RequestInProgressEvent event) {
+        super.requestInProgress(event);
+    }
+
+    @Subscribe
+    @Override
+    public void requestCompleted(RequestCompletedEvent event) {
+        super.requestCompleted(event);
     }
 }
