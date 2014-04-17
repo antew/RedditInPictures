@@ -16,6 +16,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.View;
 import android.widget.Toast;
 import butterknife.InjectView;
 import com.actionbarsherlock.view.Menu;
@@ -196,7 +197,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                 // Notify our image fragment(s) that they need
                 // to remove references to the now stale data
                 mBus.post(new ForcePostRefreshEvent());
-                requestInProgress(null);
+                produceRequestInProgressEvent();
                 forceRefreshCurrentSubreddit();
                 return true;
             case R.id.login:
@@ -232,7 +233,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
             case R.id.category_controversial_year:
             case R.id.category_controversial_all_time:
                 if (RedditSort.contains(item.getItemId())) {
-                    requestInProgress(null);
+                    produceRequestInProgressEvent();
                     RedditSort.SortCriteria sortCriteria = RedditSort.get(item.getItemId());
                     EasyTracker.getInstance(this)
                                .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
@@ -321,7 +322,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                             RedditLoginInformation.setLoginData(data);
                         }
 
-                        requestCompleted(null);
+                        produceRequestCompletedEvent();
                         invalidateOptionsMenu();
 
                         new SubredditUtil.SetDefaultSubredditsTask(this).execute();
@@ -456,7 +457,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     @Override
     public void onFinishLoginDialog(String username, String password) {
-        requestInProgress(null);
+        produceRequestInProgressEvent();
         RedditService.login(this, username, password);
         invalidateOptionsMenu();
     }
@@ -474,12 +475,20 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     }
 
     private void handleLoginComplete(Intent intent) {
-        requestCompleted(null);
+        produceRequestCompletedEvent();
         boolean successful = intent.getBooleanExtra(Constants.Extra.EXTRA_SUCCESS, false);
         if (!successful) {
             String errorMessage = intent.getStringExtra(Constants.Extra.EXTRA_ERROR_MESSAGE);
             Toast.makeText(this, getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    protected void produceRequestCompletedEvent() {
+        mBus.post(new RequestCompletedEvent());
+    }
+
+    protected void produceRequestInProgressEvent() {
+        mBus.post(new RequestInProgressEvent());
     }
 
     @Subscribe

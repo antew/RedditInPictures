@@ -14,6 +14,8 @@ import com.antew.redditinpictures.library.database.QueryCriteria;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.reddit.PostData;
@@ -73,7 +75,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
      */
     @Override
     @Subscribe
-    protected void handleForcePostRefreshEvent(ForcePostRefreshEvent event) {
+    public void handleForcePostRefreshEvent(ForcePostRefreshEvent event) {
         super.handleForcePostRefreshEvent(event);
     }
 
@@ -200,5 +202,17 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
                                                 mCurrentSubreddit, null).build()
                         );
         Toast.makeText(getActivity(), "Reporting Images Isn't Implemented Yet. :(", Toast.LENGTH_LONG).show();
+    }
+
+    @Subscribe
+    @Override
+    public void requestInProgress(RequestInProgressEvent event) {
+        super.requestInProgress(event);
+    }
+
+    @Subscribe
+    @Override
+    public void requestCompleted(RequestCompletedEvent event) {
+        super.requestCompleted(event);
     }
 }

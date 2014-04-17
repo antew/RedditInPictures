@@ -8,6 +8,8 @@ import android.widget.GridView;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.ImageCursorAdapter;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
@@ -106,7 +108,7 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
      *
      * @param event
      */
-    @Override @Subscribe protected void handleForcePostRefreshEvent(ForcePostRefreshEvent event) {
+    @Override @Subscribe public void handleForcePostRefreshEvent(ForcePostRefreshEvent event) {
         super.handleForcePostRefreshEvent(event);
     }
 
@@ -124,5 +126,17 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
 
     @Override protected QueryCriteria getPostsQueryCriteria() {
         return mQueryCriteria;
+    }
+
+    @Subscribe
+    @Override
+    public void requestInProgress(RequestInProgressEvent event) {
+        super.requestInProgress(event);
+    }
+
+    @Subscribe
+    @Override
+    public void requestCompleted(RequestCompletedEvent event) {
+        super.requestCompleted(event);
     }
 }

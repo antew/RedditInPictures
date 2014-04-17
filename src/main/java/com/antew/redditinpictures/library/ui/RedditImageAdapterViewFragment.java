@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -55,13 +56,15 @@ import javax.inject.Inject;
  */
 public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V extends CursorAdapter> extends BaseFragment
     implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
-    protected V        mAdapter;
+    protected V           mAdapter;
     @Inject
-    protected Bus      mBus;
+    protected Bus         mBus;
     @InjectView(R.id.no_images)
-    protected TextView mNoImages;
-    protected boolean  mRequestInProgress;
-    private   String   mAfter;
+    protected TextView    mNoImages;
+    @InjectView(R.id.pb_progress)
+    protected ProgressBar mProgress;
+    protected boolean     mRequestInProgress;
+    private   String      mAfter;
     protected String   mCurrentSubreddit = Constants.Reddit.REDDIT_FRONTPAGE;
     protected Category mCategory         = Category.HOT;
     protected Age      mAge              = Age.TODAY;
@@ -131,6 +134,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onResume() {
         super.onResume();
+        mBus.register(this);
         getActivity().getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_REDDIT, null, this);
         getActivity().getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_POSTS, null, this);
         fetchPostsIfNeeded();
@@ -144,6 +148,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onPause() {
         super.onPause();
+        mBus.unregister(this);
         getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_REDDIT);
         getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_POSTS);
     }
@@ -182,9 +187,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     protected abstract T getAdapterView();
 
     protected void produceRequestInProgressEvent() {
-        mRequestInProgress = true;
         mBus.post(new RequestInProgressEvent());
-        mNoImages.setVisibility(View.GONE);
     }
 
     /**
@@ -195,7 +198,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
      * @param event
      */
     @Subscribe
-    protected void handleForcePostRefreshEvent(ForcePostRefreshEvent event) {
+    public void handleForcePostRefreshEvent(ForcePostRefreshEvent event) {
         if (mAdapter != null) {
             mAdapter.swapCursor(null);
         }
@@ -327,12 +330,16 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
             case Constants.Loader.LOADER_POSTS:
                 mAdapter.swapCursor(data);
 
-                if (data.getCount() == 0) {
+                if (data.getCount() == 0 && !mRequestInProgress) {
                     mNoImages.setVisibility(View.VISIBLE);
+                    mProgress.setVisibility(View.GONE);
+                } else if (data.getCount() == 0 && mRequestInProgress) {
+                    mProgress.setVisibility(View.VISIBLE);
                 } else {
                     if (mNoImages.getVisibility() == View.VISIBLE) {
                         mNoImages.setVisibility(View.GONE);
                     }
+                    mProgress.setVisibility(View.GONE);
                     produceRequestCompletedEvent();
                 }
                 break;
@@ -364,7 +371,6 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     }
 
     protected void produceRequestCompletedEvent() {
-        mRequestInProgress = false;
         mBus.post(new RequestCompletedEvent());
     }
 
@@ -423,5 +429,17 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     protected void fetchPostsIfNeeded() {
         produceRequestInProgressEvent();
         RedditService.getPostsIfNeeded(getActivity(), mCurrentSubreddit, mAge, mCategory);
+    }
+
+    @Subscribe
+    public void requestInProgress(RequestInProgressEvent event) {
+        mRequestInProgress = true;
+        mNoImages.setVisibility(View.GONE);
+        mProgress.setVisibility(View.VISIBLE);
+    }
+
+    @Subscribe
+    public void requestCompleted(RequestCompletedEvent event) {
+        mRequestInProgress = false;
     }
 }

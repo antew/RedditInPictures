@@ -34,6 +34,7 @@ public class RedditService extends RESTService {
     }
 
     public static void getPosts(Context context, String subreddit, Age age, Category category) {
+        SubredditUtil.deletePostsForSubreddit(context, subreddit);
         getPosts(context, subreddit, age, category, null);
     }
 
