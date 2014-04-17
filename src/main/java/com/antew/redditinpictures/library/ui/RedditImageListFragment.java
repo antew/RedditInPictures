@@ -19,7 +19,6 @@ import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.util.StringUtil;
-import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.library.widget.SwipeListView;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
@@ -39,7 +38,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
         @Override
         public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             // if we're are approaching the bottom of the listview, load more data.
-            if (!mRequestInProgress && (firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET) && totalItemCount > 0) {
+            if (!mRequestInProgress && firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET && totalItemCount > 0) {
                 fetchAdditionalImagesFromReddit();
             }
         }
@@ -54,9 +53,12 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
 
         final Bundle args = new Bundle();
         args.putString(Constants.Extra.EXTRA_SUBREDDIT, subreddit);
-        args.putString(Constants.Extra.EXTRA_CATEGORY, category.toString());
-        // Age is null when we're sorting as 'New' or 'Rising'
-        args.putString(Constants.Extra.EXTRA_AGE, Strings.toString(age));
+        if (category != null) {
+            args.putString(Constants.Extra.EXTRA_CATEGORY, category.getName());
+        }
+        if (age != null) {
+            args.putString(Constants.Extra.EXTRA_AGE, age.getAge());
+        }
         f.setArguments(args);
 
         return f;

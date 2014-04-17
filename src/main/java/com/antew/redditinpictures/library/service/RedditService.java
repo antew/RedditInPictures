@@ -60,9 +60,9 @@ public class RedditService extends RESTService {
 
         Bundle extraPassthru = new Bundle();
         extraPassthru.putBoolean(RedditService.EXTRA_REPLACE_ALL, Strings.isEmpty(after));
-        extraPassthru.putString(RedditService.EXTRA_SUBREDDIT, subreddit);
-        extraPassthru.putString(RedditService.EXTRA_CATEGORY, Strings.toString(category));
-        extraPassthru.putString(RedditService.EXTRA_AGE, Strings.toString(age));
+        extraPassthru.putString(Constants.Extra.EXTRA_SUBREDDIT, subreddit);
+        extraPassthru.putString(Constants.Extra.EXTRA_CATEGORY, Strings.toString(category));
+        extraPassthru.putString(Constants.Extra.EXTRA_AGE, Strings.toString(age));
 
         intent.putExtra(EXTRA_PASS_THROUGH, extraPassthru);
         intent.setData(Uri.parse(url.getUrl()));

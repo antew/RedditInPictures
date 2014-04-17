@@ -39,8 +39,8 @@ class PostResponse extends RedditResponseHandler {
         Bundle arguments = result.getExtraData();
         boolean replaceAll = BundleUtil.getBoolean(arguments, RedditService.EXTRA_REPLACE_ALL, false);
         String subreddit = BundleUtil.getString(arguments, Constants.Extra.EXTRA_SUBREDDIT, Constants.Reddit.REDDIT_FRONTPAGE);
-        Category category = Category.fromString(BundleUtil.getString(arguments, RedditService.EXTRA_CATEGORY, Category.HOT.getName()));
-        Age age = Age.fromString(BundleUtil.getString(arguments, RedditService.EXTRA_AGE, Age.TODAY.getAge()));
+        Category category = Category.fromString(BundleUtil.getString(arguments, Constants.Extra.EXTRA_CATEGORY, Category.HOT.getName()));
+        Age age = Age.fromString(BundleUtil.getString(arguments, Constants.Extra.EXTRA_AGE, Age.TODAY.getAge()));
 
         // If we are replacing all, go ahead and clear out the old posts.
         if (replaceAll) {
