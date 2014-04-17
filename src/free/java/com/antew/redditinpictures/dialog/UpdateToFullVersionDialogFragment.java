@@ -27,7 +27,7 @@ public class UpdateToFullVersionDialogFragment extends DialogFragment {
 
         Dialog dialog = new AlertDialog.Builder(getActivity()).setTitle(R.string.upgrade_to_full_version)
                                                               .setMessage(
-                                                                  "Upgrading to the pro version will allow you to log in, cast votes, and save images to the gallery.")
+                                                                  "Upgrading to the pro version will allow you to log in, cast votes, load your subreddits, manage your subreddits, and more!")
                                                               .setPositiveButton(R.string.upgrade, new DialogInterface.OnClickListener() {
                                                                   public void onClick(DialogInterface dialog, int whichButton) {
                                                                       UpdateToFullVersionDialogListener activity = (UpdateToFullVersionDialogListener) getActivity();
