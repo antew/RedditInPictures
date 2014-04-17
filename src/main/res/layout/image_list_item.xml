@@ -7,13 +7,13 @@
 
     <LinearLayout
         android:id="@+id/back"
-        android:tag="back"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:background="@color/almost_black">
 
         <ImageButton
             android:id="@+id/ib_view"
@@ -49,7 +49,6 @@
 
     <LinearLayout
         android:id="@+id/front"
-        android:tag="front"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="5dp"
