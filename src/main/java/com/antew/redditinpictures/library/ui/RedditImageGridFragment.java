@@ -12,6 +12,8 @@ import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
+import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.database.QueryCriteria;
 import com.antew.redditinpictures.library.database.RedditContract;
@@ -34,7 +36,8 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
         @Override
         public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             // if we're are approaching the bottom of the gridview, load more data
-            if (firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET && totalItemCount > 0) {
+            Ln.d("First %d Visible %d Total %d", firstVisibleItem, visibleItemCount, totalItemCount);
+            if (!mRequestInProgress && firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET && totalItemCount > 0) {
                 fetchAdditionalImagesFromReddit();
             }
         }
@@ -50,15 +53,19 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
 
         final Bundle args = new Bundle();
         args.putString(Constants.Extra.EXTRA_SUBREDDIT, subreddit);
-        args.putString(Constants.Extra.EXTRA_CATEGORY, category.toString());
-        // Age is null when we're sorting as 'New' or 'Rising'
-        args.putString(Constants.Extra.EXTRA_AGE, age == null ? null : age.toString());
+        if (category != null) {
+            args.putString(Constants.Extra.EXTRA_CATEGORY, category.getName());
+        }
+        if (age != null) {
+            args.putString(Constants.Extra.EXTRA_AGE, age.getAge());
+        }
         f.setArguments(args);
 
         return f;
     }
 
-    @Override public void onActivityCreated(Bundle savedInstanceState) {
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mThumbnailInfo = ThumbnailInfo.getThumbnailInfo(getResources());
         mGridView.setAdapter(mAdapter);

@@ -42,7 +42,7 @@ public class About extends BaseActivity {
         try {
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             if (packageInfo != null) {
-                version += packageInfo.versionCode;
+                version += packageInfo.versionName + " (" + packageInfo.versionCode + ")";
             }
         } catch (PackageManager.NameNotFoundException e) {
             Ln.e(e, "Failed to get Package Info");

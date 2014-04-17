@@ -8,4 +8,10 @@
     <color name="listview_background">#ff1b1b1b</color>
     <color name="dark_gray">#FF202020</color>
     <color name="post_information_background">#99000000</color>
+
+    <color name="almost_black">#303030</color>
+    <color name="less_black">#3c3c3d</color>
+    <color name="lesser_black">#4c4c4c</color>
+    <color name="blue">#2d9fc9</color>
+    <color name="light_blue">#33b5e5</color>
 </resources>

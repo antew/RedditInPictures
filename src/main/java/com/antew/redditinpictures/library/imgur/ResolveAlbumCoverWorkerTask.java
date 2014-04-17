@@ -1,6 +1,7 @@
 package com.antew.redditinpictures.library.imgur;
 
 import android.content.Context;
+import android.net.Uri;
 import android.widget.ImageView;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;
@@ -46,7 +47,8 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
      * @throws Exception,
      *     captured on passed to onException() if present.
      */
-    @Override protected void onPreExecute() throws Exception {
+    @Override
+    protected void onPreExecute() throws Exception {
         super.onPreExecute();
         Picasso.with(mContext).load(R.drawable.loading_spinner_48).error(R.drawable.empty_photo).into(mImageView);
     }
@@ -58,12 +60,13 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
      * @throws Exception,
      *     captured on passed to onException() if present.
      */
-    @Override protected void onSuccess(String imageUrl) throws Exception {
+    @Override
+    protected void onSuccess(String imageUrl) throws Exception {
         if (mImageView != null) {
             ResolveAlbumCoverWorkerTask albumCoverResolverWorkerTask = getAlbumCoverResolverTask(mImageView);
             if (this == albumCoverResolverWorkerTask) {
                 Picasso.with(mContext)
-                       .load(imageUrl)
+                       .load(Uri.parse(imageUrl))
                        .placeholder(R.drawable.loading_spinner_48)
                        .error(R.drawable.empty_photo)
                        .into(mImageView);
@@ -90,7 +93,8 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
      * @throws Exception
      *     if unable to compute a result
      */
-    @Override public String call() throws Exception {
+    @Override
+    public String call() throws Exception {
         Ln.d("Resolving url: %s", mImageUrl);
         Image imageAlbum = ImageResolver.resolve(mImageUrl);
         if (imageAlbum instanceof ImgurAlbumType) {

@@ -387,12 +387,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
                                 );
                 handleSaveImage();
                 return true;
-            case R.id.refresh:
-                EasyTracker.getInstance(this)
-                           .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
-                                                        Constants.Analytics.Action.REFRESH_POST, getSubreddit(), null).build());
-                refreshCurentImage();
-                return true;
             default:
                 return false;
         }
@@ -420,11 +414,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * @return The URL of the current image in the ViewPager.
      */
     public abstract String getUrlForSharing();
-
-    /**
-     * Get the currently displayed image fragment and cause it to refresh the currently displayed contents.
-     */
-    protected abstract void refreshCurentImage();
 
     /**
      * Get the Uri for the page of the current post in the ViewPager.

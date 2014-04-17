@@ -56,9 +56,6 @@ public class RESTService extends IntentService {
     public static final  String EXTRA_PARAMS       = "EXTRA_PARAMS";
     public static final  String EXTRA_COOKIE       = "EXTRA_COOKIE";
     public static final  String EXTRA_REPLACE_ALL  = "EXTRA_REPLACE_ALL";
-    public static final  String EXTRA_SUBREDDIT    = "EXTRA_SUBREDDIT";
-    public static final  String EXTRA_CATEGORY     = "EXTRA_CATEGORY";
-    public static final  String EXTRA_AGE          = "EXTRA_AGE";
     public static final  String EXTRA_REQUEST_CODE = "EXTRA_REQUEST_CODE";
     public static final  String EXTRA_RESULT       = "EXTRA_RESULT";
     public static final  String EXTRA_STATUS_CODE  = "EXTRA_STATUS_CODE";

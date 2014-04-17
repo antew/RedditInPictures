@@ -17,6 +17,7 @@ package com.antew.redditinpictures.library.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +25,11 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.GridView;
 import android.widget.ImageView;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.imgur.ResolveAlbumCoverWorkerTask;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
-import com.antew.redditinpictures.library.database.RedditContract;
 import com.squareup.picasso.Picasso;
 import java.util.regex.Pattern;
 
@@ -109,7 +110,7 @@ public class ImageCursorAdapter extends CursorAdapter {
 
         if (Strings.notEmpty(url)) {
             Picasso.with(mContext)
-                   .load(url)
+                   .load(Uri.parse(url))
                    .placeholder(R.drawable.loading_spinner_76)
                    .error(R.drawable.empty_photo)
                    .fit()

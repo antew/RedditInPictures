@@ -9,6 +9,7 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.ImgurAlbumPagerAdapter;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
+import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.pro.R;
 import java.util.List;
@@ -60,14 +61,6 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
         return image.getLinks().getImgur_page();
     }
 
-    /**
-     * Get the currently displayed image fragment and cause it to refresh the currently displayed contents.
-     */
-    @Override
-    protected void refreshCurentImage() {
-
-    }
-
     @Override
     protected Uri getPostUri() {
         ImgurImage image = getAdapter().getImage(mPager.getCurrentItem());
@@ -92,11 +85,8 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
 
     @Override
     public void onFinishSaveImageDialog(String filename) {
-        ImgurImage p = getAdapter().getImage(mPager.getCurrentItem());
-        Intent intent = new Intent(Constants.Broadcast.BROADCAST_DOWNLOAD_IMAGE);
-        intent.putExtra(Constants.Extra.EXTRA_IMAGE_HASH, p.getImage().getHash());
-        intent.putExtra(Constants.Extra.EXTRA_FILENAME, filename);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        ImgurImage image = getAdapter().getImage(mPager.getCurrentItem());
+        ImageUtil.downloadImage(this, image.getLinks().getOriginal(), filename);
     }
 
     private ImgurAlbumPagerAdapter getAdapter() {

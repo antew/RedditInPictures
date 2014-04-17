@@ -27,11 +27,6 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
     }
     
     @Override
-    public void handleSaveImage() {
-        showUpgradeDialog();
-    }
-
-    @Override
     public void onFinishUpgradeDialog() {
         if (!AndroidUtil.isUserAMonkey()) {
             Intent intent = new Intent(Intent.ACTION_VIEW);

@@ -3,36 +3,29 @@
 
     <group android:menuCategory="system">
         <item
-            android:id="@+id/lock_viewpager"
-            android:icon="@drawable/ic_action_lock_open_dark"
-            android:orderInCategory="1"
-            android:showAsAction="ifRoom"
-            android:title="@string/disable_swiping" />
-        <item
             android:id="@+id/save_post"
             android:icon="@drawable/ic_action_save_dark"
-            android:orderInCategory="2"
+            android:orderInCategory="10"
             android:showAsAction="ifRoom"
             android:title="@string/save_image" />
         <item
             android:id="@+id/share_post"
             android:icon="@drawable/ic_action_share_dark"
-            android:orderInCategory="3"
+            android:orderInCategory="20"
             android:showAsAction="ifRoom"
             android:title="@string/share_image" />
         <item
-            android:id="@+id/refresh"
-            android:icon="@drawable/ic_action_reload_dark"
-            android:orderInCategory="4"
-            android:showAsAction="ifRoom"
-            android:title="@string/refresh"
-            android:visible="false"/>
-        <item
             android:id="@+id/view_post"
             android:icon="@drawable/ic_action_globe_dark"
-            android:orderInCategory="5"
+            android:orderInCategory="30"
             android:showAsAction="ifRoom"
             android:title="@string/open_post_on_reddit" />
+        <item
+            android:id="@+id/lock_viewpager"
+            android:icon="@drawable/ic_action_lock_open_dark"
+            android:orderInCategory="40"
+            android:showAsAction="ifRoom"
+            android:title="@string/disable_swiping" />
     </group>
 
 </menu>
