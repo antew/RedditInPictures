@@ -63,6 +63,9 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
         return kind;
     }
 
+    public void setData(RedditApiData data) {
+        this.data = data;
+    }
     public RedditApiData getData() {
         return data;
     }
