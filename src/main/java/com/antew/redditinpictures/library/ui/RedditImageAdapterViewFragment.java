@@ -137,13 +137,12 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     }
 
     /**
-     * Called when the Fragment is no longer resumed.  This is generally
-     * tied to {@link android.app.Activity#onPause() Activity.onPause} of the containing
-     * Activity's lifecycle.
+     * Called when the fragment is no longer in use.  This is called
+     * after {@link #onStop()} and before {@link #onDetach()}.
      */
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onDestroy() {
+        super.onDestroy();
         getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_REDDIT);
         getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_POSTS);
     }
