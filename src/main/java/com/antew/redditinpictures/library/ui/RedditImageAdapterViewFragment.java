@@ -148,7 +148,6 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onPause() {
         super.onPause();
-        mBus.unregister(this);
         getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_REDDIT);
         getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_POSTS);
     }
