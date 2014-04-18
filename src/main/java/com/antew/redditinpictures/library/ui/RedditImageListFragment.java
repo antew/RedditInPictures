@@ -16,6 +16,7 @@ import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
+import com.antew.redditinpictures.library.event.SaveImageEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.reddit.PostData;
@@ -147,8 +148,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
                    .send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.SAVE_POST,
                                                 mCurrentSubreddit, null).build()
                         );
-        SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(StringUtil.sanitizeFileName(postData.getTitle()));
-        saveImageDialog.show(getFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
+        mBus.post(new SaveImageEvent(postData));
     }
 
     /**

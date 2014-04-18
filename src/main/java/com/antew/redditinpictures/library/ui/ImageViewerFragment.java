@@ -38,6 +38,7 @@ import com.antew.redditinpictures.library.model.ImageSize;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
 import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.pro.R;
@@ -89,6 +90,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
     TextView       mPostVotes;
     @InjectView(R.id.b_retry)
     Button         mRetry;
+    @Inject
+    ImageDownloader mImageDownloader;
     /**
      * This BroadcastReceiver handles updating the score when a vote is cast or changed
      */

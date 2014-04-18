@@ -6,7 +6,12 @@ import android.preference.PreferenceActivity;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.widget.Toast;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
+import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
+import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
+import com.antew.redditinpictures.library.event.SaveImageEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.event.LoadSubredditEvent;
@@ -14,6 +19,8 @@ import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.ui.RedditFragmentActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.preferences.RedditInPicturesFreePreferences;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
 import com.antew.redditinpictures.util.ConstsFree;
@@ -45,6 +52,15 @@ public class RedditFragmentActivityFree extends RedditFragmentActivity
     @Subscribe
     public void onLoadSubredditEvent(LoadSubredditEvent event) {
         super.onLoadSubredditEvent(event);
+    }
+
+    @Subscribe
+    public void onSaveImageEvent(SaveImageEvent event) {
+        super.onSaveImageEvent(event);
+    }
+
+    @Subscribe public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
+        super.onDownloadImageComplete(event);
     }
 
     @Override

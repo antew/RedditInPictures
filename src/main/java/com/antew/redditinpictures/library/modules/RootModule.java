@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.antew.redditinpictures.device.ScreenSize;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.annotation.ForApplication;
+import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.MainThreadBus;
 import com.squareup.otto.Bus;
 import dagger.Module;
@@ -84,4 +85,9 @@ public class RootModule {
         final DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return new ScreenSize(displayMetrics.widthPixels, displayMetrics.heightPixels);
     }
+
+    @Provides @Singleton @ForApplication ImageDownloader provideImageDownloader(@ForApplication final Context context) {
+        return new ImageDownloader(context);
+    }
+
 }

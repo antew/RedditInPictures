@@ -23,14 +23,16 @@ import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.model.ImageType;
+import com.antew.redditinpictures.library.event.DownloadImageEvent;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.image.ImgurGalleryType;
+import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.util.Ln;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
+import com.squareup.otto.Subscribe;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
@@ -182,6 +184,18 @@ public class ImageDetailFragment extends ImageViewerFragment {
             mBtnViewGallery.setVisibility(View.VISIBLE);
             mBtnViewGallery.setOnClickListener(getViewGalleryOnClickListener());
         }
+    }
+
+    @Subscribe
+    public void downloadImage(DownloadImageEvent event) {
+        Ln.e("Received downloadImage event in ImageDetailFragment!");
+        if (!mImage.getPermalink().equals(event.getUniqueId())) {
+            // One of the other fragments has been notified to download
+            // their image, ignore.
+            return;
+        }
+
+        mImageDownloader.downloadImage(mResolvedImageUrl, event.getFilename());
     }
 
     private OnClickListener getViewGalleryOnClickListener() {

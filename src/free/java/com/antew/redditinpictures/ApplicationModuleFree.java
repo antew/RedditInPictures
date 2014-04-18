@@ -1,6 +1,7 @@
 package com.antew.redditinpictures;
 
 import com.antew.redditinpictures.library.service.RedditService;
+import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.ui.ImageDetailActivityFree;
 import com.antew.redditinpictures.ui.ImageDetailFragmentFree;
 import com.antew.redditinpictures.ui.ImgurAlbumActivityFree;
@@ -20,7 +21,7 @@ import dagger.Module;
     injects = {
         RedditImageGridFragmentFree.class, RedditImageListFragmentFree.class, RedditFragmentActivityFree.class,
         ImageDetailActivityFree.class, ImageDetailFragmentFree.class, ImgurAlbumActivityFree.class, ImgurAlbumFragmentFree.class,
-        RedditService.GetNewPostsIfNeededTask.class
+        RedditService.GetNewPostsIfNeededTask.class, ImageDownloader.class
     }, library = true)
 public class ApplicationModuleFree {
 

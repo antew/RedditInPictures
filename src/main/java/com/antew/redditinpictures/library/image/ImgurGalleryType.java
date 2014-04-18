@@ -121,6 +121,10 @@ public class ImgurGalleryType extends Image {
         return null;
     }
 
+    public boolean isSingleImage() {
+        return mSimpleImgurGallery != null && mSimpleImgurGallery.isImgurImage();
+    }
+
     public Album getAlbum() {
         if (mSimpleImgurGallery != null) {
             return mSimpleImgurGallery.getImgurAlbum();

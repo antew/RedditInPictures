@@ -26,13 +26,17 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.LogoutDialogFragment;
+import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
+import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
 import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.event.LoadSubredditEvent;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
+import com.antew.redditinpictures.library.event.SaveImageEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.reddit.LoginData;
+import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.model.reddit.RedditSort;
 import com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences;
@@ -40,8 +44,10 @@ import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivityWithMenu;
 import com.antew.redditinpictures.library.util.BundleUtil;
+import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.RedditUtil;
+import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
@@ -50,9 +56,11 @@ import com.google.analytics.tracking.android.MapBuilder;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.squareup.otto.Subscribe;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import javax.inject.Inject;
 
 public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
-    implements LoginDialogFragment.LoginDialogListener, LogoutDialogFragment.LogoutDialogListener, LoaderManager.LoaderCallbacks<Cursor> {
+    implements LoginDialogFragment.LoginDialogListener, LogoutDialogFragment.LogoutDialogListener, LoaderManager.LoaderCallbacks<Cursor>,
+               SaveImageDialogFragment.SaveImageDialogListener {
     public static final int SETTINGS_REQUEST = 20;
     @InjectView(R.id.top_progressbar)
     protected SmoothProgressBar mProgressBar;
@@ -63,6 +71,9 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
             handleLoginComplete(intent);
         }
     };
+
+    @Inject ImageDownloader mImageDownloader;
+    private PostData mPostData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -527,8 +538,26 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         setActionBarTitle(mSelectedSubreddit, RedditUtil.getSortDisplayString(mCategory, mAge));
     }
 
+    @Subscribe
+    public void onSaveImageEvent(SaveImageEvent event) {
+        mPostData = event.getPostData();
+        SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(StringUtil.sanitizeFileName(mPostData.getTitle()));
+        saveImageDialog.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
+    }
+
+    @Subscribe public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
+        mPostData = null;
+        Ln.i("DownloadImageComplete - filename was: " + event.getFilename());
+        Toast.makeText(this, "Image saved as " + event.getFilename(), Toast.LENGTH_SHORT).show();
+    }
+
+
     public Class<? extends PreferenceActivity> getPreferencesClass() {
         return RedditInPicturesPreferences.class;
+    }
+
+    @Override public void onFinishSaveImageDialog(String filename) {
+        mImageDownloader.downloadImage(mPostData.getUrl(), filename);
     }
 
     private enum ViewType {LIST, GRID}

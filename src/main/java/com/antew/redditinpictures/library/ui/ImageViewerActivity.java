@@ -29,12 +29,14 @@ import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveIma
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.widget.CustomViewPager;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 
 ;
 
@@ -89,6 +91,9 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * The wrapper view
      */
     protected RelativeLayout mWrapper;
+
+    @Inject
+    public ImageDownloader mImageDownloader;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

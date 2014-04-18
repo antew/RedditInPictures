@@ -25,6 +25,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
@@ -32,6 +33,8 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.CursorPagerAdapter;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
+import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
+import com.antew.redditinpictures.library.event.DownloadImageEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.Vote;
@@ -51,6 +54,7 @@ import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -245,7 +249,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     @Override
     public void onFinishSaveImageDialog(String filename) {
         PostData postData = getAdapter().getPost(mPager.getCurrentItem());
-        ImageUtil.downloadImage(this, postData.getUrl(), filename);
+        mBus.post(new DownloadImageEvent(postData.getPermalink(), filename));
     }
 
     public boolean isRequestInProgress() {
@@ -291,6 +295,11 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                 mDownvoteMenuItem.setIcon(R.drawable.ic_action_downvote);
                 break;
         }
+    }
+
+    @Subscribe public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
+        Ln.i("DownloadImageComplete - filename was: " + event.getFilename());
+        Toast.makeText(this, "Image saved as " + event.getFilename(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
