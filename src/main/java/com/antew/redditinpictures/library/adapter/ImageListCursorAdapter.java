@@ -162,8 +162,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
         if (Strings.notEmpty(url)) {
             Picasso.with(mContext)
                    .load(Uri.parse(url))
-                   .placeholder(R.drawable.loading_spinner_48)
-                   .error(R.drawable.empty_photo)
+                   .placeholder(R.drawable.empty_photo)
+                   .error(R.drawable.error_photo)
                    .fit()
                    .centerCrop()
                    .into(holder.imageView);

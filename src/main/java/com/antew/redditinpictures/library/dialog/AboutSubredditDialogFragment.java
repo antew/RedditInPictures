@@ -69,8 +69,8 @@ public class AboutSubredditDialogFragment extends DialogFragment {
 
             Picasso.with(getActivity())
                    .load(Uri.parse(mSubredditData.getHeader_img()))
-                   .placeholder(R.drawable.loading_spinner_76)
-                   .error(R.drawable.empty_photo)
+                   .placeholder(R.drawable.empty_photo)
+                   .error(R.drawable.error_photo)
                    .into(header);
             name.setText(mSubredditData.getDisplay_name());
             info.setText(Html.fromHtml(infoText));

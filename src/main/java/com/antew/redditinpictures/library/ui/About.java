@@ -34,8 +34,8 @@ public class About extends BaseActivity {
         Picasso.with(this)
                .load(R.drawable.market_icon)
                .resize(size, size)
-               .placeholder(R.drawable.loading_spinner_76)
-               .error(R.drawable.empty_photo)
+               .placeholder(R.drawable.empty_photo)
+               .error(R.drawable.error_photo)
                .into(mImageView);
 
         String version = getString(R.string.version_);
