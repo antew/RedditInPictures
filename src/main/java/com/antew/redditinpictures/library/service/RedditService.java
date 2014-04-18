@@ -2,6 +2,7 @@ package com.antew.redditinpictures.library.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -222,52 +223,68 @@ public class RedditService extends RESTService {
 
         @Override
         public Void call() throws Exception {
-            RedditDatabase databaseHelper = new RedditDatabase(mContext);
-            SQLiteDatabase database = databaseHelper.getReadableDatabase();
+            SQLiteDatabase database = null;
+            Cursor rowCountCursor = null;
+            try {
 
-            // If we have an aggregate subreddit, we just want to see if other stuff has been saved if so we need a full refresh.
-            // TODO: Make this handle caching better...
-            if (SubredditUtil.isAggregateSubreddit(mSubreddit)) {
-                long numRecords = DatabaseUtils.queryNumEntries(database, RedditDatabase.Tables.REDDIT_DATA);
+                RedditDatabase databaseHelper = new RedditDatabase(mContext);
+                database = databaseHelper.getReadableDatabase();
 
-                Ln.d("%s is an Aggregate Subreddit and We Have %d Rows of Reddit Data", mSubreddit, numRecords);
+                // If we have an aggregate subreddit, we just want to see if other stuff has been saved if so we need a full refresh.
+                // TODO: Make this handle caching better...
+                if (SubredditUtil.isAggregateSubreddit(mSubreddit)) {
+                    long numRecords = DatabaseUtils.queryNumEntries(database, RedditDatabase.Tables.REDDIT_DATA);
 
-                // If we have more than 1 record it is safe to assume that we need to do a full refresh.
-                if (numRecords > 1) {
-                    database.close();
+                    Ln.d("%s is an Aggregate Subreddit and We Have %d Rows of Reddit Data", mSubreddit, numRecords);
+
+                    // If we have more than 1 record it is safe to assume that we need to do a full refresh.
+                    if (numRecords > 1) {
+                        database.close();
+                        mBus.post(new RequestInProgressEvent());
+                        getPosts(mContext, mSubreddit, mAge, mCategory);
+                        return null;
+                    }
+                    // Otherwise, we want to carry on like normal.
+                }
+
+                Date currentDate = new Date();
+
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(currentDate);
+                cal.add(Calendar.MINUTE, -5);
+                Date fiveMinutesAgoDate = cal.getTime();
+
+                // While we support < API 11 we can't use DatabaseUtils.queryNumEntries
+                rowCountCursor = database.rawQuery(
+                    "select count(*) from " + RedditDatabase.Tables.REDDIT_DATA +
+                    " where subreddit = '" + mSubreddit + "'" +
+                    " AND category = '" + mCategory.getName() + "'" +
+                    " AND age = '" + mAge.getAge() + "'" +
+                    " AND retrievedDate BETWEEN '" + String.valueOf(fiveMinutesAgoDate.getTime()) + "'" +
+                    " AND '" + String.valueOf(currentDate.getTime()) + "'"
+                    , null);
+                rowCountCursor.moveToFirst();
+                int numUpdates = rowCountCursor.getInt(0);
+
+                Ln.d("There Are %d Rows In 5 Minutes For %s", numUpdates, mSubreddit);
+
+                if (numUpdates <= 0) {
                     mBus.post(new RequestInProgressEvent());
                     getPosts(mContext, mSubreddit, mAge, mCategory);
-                    return null;
                 }
-                // Otherwise, we want to carry on like normal.
-            }
+            } finally {
+                if (database != null) {
+                    database.close();
+                }
 
-            Date currentDate = new Date();
-
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(currentDate);
-            cal.add(Calendar.MINUTE, -5);
-            Date fiveMinutesAgoDate = cal.getTime();
-
-            // TODO: Make this work for < API 11.
-            long numUpdates = DatabaseUtils.queryNumEntries(database, RedditDatabase.Tables.REDDIT_DATA,
-                                                            "subreddit = ? AND category = ? AND age = ? AND retrievedDate BETWEEN ? AND ?",
-                                                            new String[] {
-                                                                mSubreddit, mCategory.getName(), mAge.getAge(),
-                                                                String.valueOf(fiveMinutesAgoDate.getTime()),
-                                                                String.valueOf(currentDate.getTime())
-                                                            }
-                                                           );
-
-            database.close();
-            Ln.d("There Are %d Rows In 5 Minutes For %s", numUpdates, mSubreddit);
-
-            if (numUpdates <= 0) {
-                mBus.post(new RequestInProgressEvent());
-                getPosts(mContext, mSubreddit, mAge, mCategory);
+                if (rowCountCursor != null) {
+                    rowCountCursor.close();
+                }
             }
 
             return null;
         }
     }
+
+
 }
