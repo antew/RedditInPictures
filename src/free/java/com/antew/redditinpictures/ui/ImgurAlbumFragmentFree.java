@@ -122,6 +122,7 @@ public class ImgurAlbumFragmentFree extends ImgurAlbumFragment {
     private void removeAdIfNeeded() {
         if (mAdView != null) {
             mAdView.setVisibility(View.GONE);
+            mAdView.removeAllViews();
             mAdView.destroy();
             mAdView = null;
         }
