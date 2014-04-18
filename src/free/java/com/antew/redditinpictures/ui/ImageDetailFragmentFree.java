@@ -112,6 +112,7 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     private void removeAdIfNeeded() {
         if (mAdView != null) {
             mAdView.setVisibility(View.GONE);
+            mAdView.removeAllViews();
             mAdView.destroy();
             mAdView = null;
         }
