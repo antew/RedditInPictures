@@ -105,10 +105,76 @@ public class ImageDetailFragment extends ImageViewerFragment {
         if (ImageType.IMGUR_ALBUM.equals(image.getImageType())) {
             mAlbum = ((ImgurAlbumType) image).getAlbum();
         } else if (ImageType.IMGUR_GALLERY.equals(image.getImageType())) {
-            mAlbum = ((ImgurGalleryType) image).getAlbum();
+            //@formatter:off
+            /*
+             There are two types of galleries, one wraps a single image in
+             the gallery response, while the other wraps an album.
+
+
+             For a single image the JSON format is like:
+             {
+                 "data": {
+                     "image": {
+                       "hash": "X74W0",
+                       "album_cover": null,
+                       ...
+                     }
+                 }
+             }
+
+             While the album wrapping kind has an array of images under
+             'album_images'.
+
+             The cover image refers to one of the images in the set.
+
+             {
+               "data": {
+                   "image": {
+                     "hash": "X74W0",
+                     "album_cover": "li3gH5A",
+                     "album_images": {
+                       "count": 2,
+                       "images": [
+                           {
+                             "hash": "li3gH5A",
+                             "title": "",
+                             "description": "",
+                             "width": 350,
+                             "height": 350,
+                             "size": 1875308,
+                             "ext": ".gif",
+                             "animated": 1,
+                             "datetime": "2014-04-15 14:25:18",
+                             "ip": "1195885755"
+                           },
+                           {
+                             "hash": "SegdXoM",
+                             "title": "",
+                             "description": "",
+                             "width": 350,
+                             "height": 350,
+                             "size": 1069755,
+                             "ext": ".gif",
+                             "animated": 1,
+                             "datetime": "2014-04-15 14:25:26",
+                             "ip": "1195885755"
+                           }
+                       ]
+                     }
+                   }
+               }
+             }
+             */
+            //@formatter:on
+            ImgurGalleryType gallery = (ImgurGalleryType) image;
+            if (gallery.isSingleImage()) {
+                mResolvedImage = image;
+            } else {
+                mAlbum = gallery.getAlbum();
+            }
 
             if (mAlbum == null) {
-                super.loadImage(((ImgurGalleryType) image).getSingleImage());
+                Ln.e("Received imgur gallery without an album or image!");
             }
         }
 
