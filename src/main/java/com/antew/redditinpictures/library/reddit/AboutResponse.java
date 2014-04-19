@@ -18,14 +18,12 @@ package com.antew.redditinpictures.library.reddit;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.LocalBroadcastManager;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.model.reddit.About;
 import com.antew.redditinpictures.library.util.Ln;
-import com.antew.redditinpictures.library.database.RedditContract;
-import com.antew.redditinpictures.library.database.RedditDatabase;
 
 public class AboutResponse extends RedditResponseHandler {
 

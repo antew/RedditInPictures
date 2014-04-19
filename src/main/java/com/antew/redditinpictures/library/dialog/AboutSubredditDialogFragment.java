@@ -33,7 +33,6 @@ import com.antew.redditinpictures.library.model.reddit.SubredditData;
 import com.antew.redditinpictures.library.util.MarkdownUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
-import com.commonsware.cwac.anddown.AndDown;
 import com.squareup.picasso.Picasso;
 
 public class AboutSubredditDialogFragment extends DialogFragment {

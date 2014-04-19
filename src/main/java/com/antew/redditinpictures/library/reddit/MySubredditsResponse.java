@@ -19,12 +19,12 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.model.reddit.MySubreddits;
 import com.antew.redditinpictures.library.model.reddit.SubredditData;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
-import com.antew.redditinpictures.library.database.RedditContract;
 import java.util.ArrayList;
 import java.util.List;
 

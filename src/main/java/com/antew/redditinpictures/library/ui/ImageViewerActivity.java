@@ -43,7 +43,6 @@ import com.antew.redditinpictures.library.animation.FadeInThenOut;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
-import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.ImageDownloader;

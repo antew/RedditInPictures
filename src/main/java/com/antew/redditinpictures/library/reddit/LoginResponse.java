@@ -21,11 +21,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginResponse;
 import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.Ln;
-import com.antew.redditinpictures.library.database.RedditContract;
 
 public class LoginResponse extends RedditResponseHandler {
     private RedditResult result;

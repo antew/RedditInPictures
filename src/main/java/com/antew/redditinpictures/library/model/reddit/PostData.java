@@ -20,12 +20,12 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.model.Vote;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
+import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.util.AndroidUtil;
-import com.antew.redditinpictures.library.database.RedditContract;
 
 public class PostData implements Parcelable, ContentValuesOperation {
 

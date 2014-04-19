@@ -16,12 +16,12 @@
 package com.antew.redditinpictures.library.image;
 
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.model.ImageSize;
-import com.antew.redditinpictures.library.model.ImageType;
-import com.antew.redditinpictures.library.gson.BooleanDeserializer;
 import com.antew.redditinpictures.library.flickr.Flickr;
 import com.antew.redditinpictures.library.flickr.Flickr.FlickrImage;
 import com.antew.redditinpictures.library.flickr.Flickr.FlickrSize;
+import com.antew.redditinpictures.library.gson.BooleanDeserializer;
+import com.antew.redditinpictures.library.model.ImageSize;
+import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
 import com.antew.redditinpictures.library.util.Ln;
 import com.google.gson.Gson;

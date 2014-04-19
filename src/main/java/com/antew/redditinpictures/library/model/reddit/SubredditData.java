@@ -18,8 +18,8 @@ package com.antew.redditinpictures.library.model.reddit;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.database.RedditContract;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 
 public class SubredditData implements Parcelable {
     private String  display_name;

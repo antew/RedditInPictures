@@ -40,7 +40,6 @@ import com.antew.redditinpictures.library.widget.SwipeListView;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
-import com.google.gson.Gson;
 import com.squareup.otto.Subscribe;
 
 public class RedditImageListFragment extends RedditImageAdapterViewFragment<ListView, ImageListCursorAdapter>

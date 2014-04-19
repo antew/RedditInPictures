@@ -23,17 +23,16 @@ import android.widget.GridView;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.ImageCursorAdapter;
-import com.antew.redditinpictures.library.event.RequestCompletedEvent;
-import com.antew.redditinpictures.library.event.RequestInProgressEvent;
-import com.antew.redditinpictures.library.model.Age;
-import com.antew.redditinpictures.library.model.Category;
-import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
-import com.antew.redditinpictures.library.image.ThumbnailInfo;
-import com.antew.redditinpictures.library.util.Ln;
-import com.antew.redditinpictures.library.util.Strings;
-import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.library.database.QueryCriteria;
 import com.antew.redditinpictures.library.database.RedditContract;
+import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
+import com.antew.redditinpictures.library.image.ThumbnailInfo;
+import com.antew.redditinpictures.library.model.Age;
+import com.antew.redditinpictures.library.model.Category;
+import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.pro.R;
 import com.squareup.otto.Subscribe;
 
 public class RedditImageGridFragment extends RedditImageAdapterViewFragment<GridView, ImageCursorAdapter> {

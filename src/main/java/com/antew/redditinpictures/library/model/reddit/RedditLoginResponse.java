@@ -16,8 +16,8 @@
 package com.antew.redditinpictures.library.model.reddit;
 
 import android.content.ContentValues;
-import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
 import com.antew.redditinpictures.library.database.RedditContract;
+import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
 import com.google.gson.annotations.SerializedName;
 
 public class RedditLoginResponse implements ContentValuesOperation {

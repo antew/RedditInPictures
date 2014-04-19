@@ -19,11 +19,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
-import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.database.RedditContract.LoginColumns;
 import com.antew.redditinpictures.library.database.RedditContract.PostColumns;
 import com.antew.redditinpictures.library.database.RedditContract.RedditDataColumns;
 import com.antew.redditinpictures.library.database.RedditContract.SubredditColumns;
+import com.antew.redditinpictures.library.util.Ln;
 
 public class RedditDatabase extends SQLiteOpenHelper {
 

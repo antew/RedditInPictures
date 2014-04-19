@@ -23,7 +23,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.database.RedditContract.Login;
 import com.antew.redditinpictures.library.database.RedditContract.LoginColumns;
@@ -33,6 +32,7 @@ import com.antew.redditinpictures.library.database.RedditContract.RedditDataColu
 import com.antew.redditinpictures.library.database.RedditContract.Subreddits;
 import com.antew.redditinpictures.library.database.RedditDatabase;
 import com.antew.redditinpictures.library.database.RedditDatabase.Tables;
+import com.antew.redditinpictures.library.util.Ln;
 
 public class RedditProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
