@@ -303,7 +303,12 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     protected void forceRefreshCurrentSubreddit() {
-        RedditService.getPosts(this, mSelectedSubreddit, mAge, mCategory);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RedditService.getPosts(BaseFragmentActivityWithMenu.this, mSelectedSubreddit, mAge, mCategory);
+            }
+        }).start();
     }
 
     protected void filterSubreddits(String filterText) {
