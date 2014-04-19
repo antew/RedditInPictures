@@ -121,7 +121,8 @@
     <!-- Default Subreddits, grabbed image subreddits from the top 125 subreddits by activity -->
     <string name="default_subreddits_multi">pics+funny+gaming+aww+AdviceAnimals+EarthPorn+gifs+woahdude+mildlyinteresting+lifehacks+reactiongifs+photoshopbattles+FoodPorn+wheredidthesodago+HistoryPorn+cats+fffffffuuuuuuuuuuuu+standupshots+thewalkingdead+doctorwho+comics+QuotesPorn+carporn+SpacePorn</string>
     <string name="media_credits">Media Credits</string>
-    <string name="disable_swiping">Disable Swiping</string>
+    <string name="disable_swiping">Disable swiping</string>
+    <string name="enable_swiping">Enable swiping</string>
     <string name="share_image">Share Image</string>
     <string name="open_post_on_reddit">Open Post on Reddit</string>
     <string name="hot">Hot</string>
