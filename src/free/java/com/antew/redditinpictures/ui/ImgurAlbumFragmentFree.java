@@ -17,16 +17,10 @@ package com.antew.redditinpictures.ui;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.text.Html;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-
 import com.antew.redditinpictures.library.image.Image;
-import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.ui.ImgurAlbumFragment;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;

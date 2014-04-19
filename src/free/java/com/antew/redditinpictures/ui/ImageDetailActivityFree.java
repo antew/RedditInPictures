@@ -19,7 +19,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
-
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.adapter.CursorPagerAdapterFree;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;

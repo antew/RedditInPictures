@@ -17,7 +17,6 @@ package com.antew.redditinpictures.preferences;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
-
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.pro.R;
