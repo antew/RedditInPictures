@@ -141,13 +141,15 @@ public class SubredditUtil {
                     // See how many Subreddits are in the database. Only needed if not forcing defaults.
                     long numSubreddits = DatabaseUtils.queryNumEntries(mDatabase, RedditDatabase.Tables.SUBREDDITS);
                     Ln.d("Number of Subreddits is: %d", numSubreddits);
-                    mDatabase.close();
 
                     // Set the indicator to cause the subreddits to be overwritten if we have no records.
                     if (numSubreddits == 0) {
                         terminateSubreddits = true;
                     }
                 }
+
+                mDatabase.close();
+                mDatabaseHelper.close();
 
                 // If we either don't have any subreddits or we want to force them to defaults.
                 if (terminateSubreddits) {
