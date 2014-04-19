@@ -31,9 +31,6 @@ public class AboutResponse extends RedditResponseHandler {
             return;
         }
 
-        RedditDatabase mDatabaseHelper = new RedditDatabase(context);
-        SQLiteDatabase mDatabase = mDatabaseHelper.getWritableDatabase();
-
         ContentResolver resolver = context.getContentResolver();
         //TODO: Once API-11 is sunset, replace with an update instead of delete/insert.
         // Updates with parameters aren't supported prior to API-11 (Honeycomb). So instead we are just deleting the record if it exists and recreating it.
