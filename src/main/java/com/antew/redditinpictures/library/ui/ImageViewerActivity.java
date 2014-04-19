@@ -182,7 +182,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     /**
      * Get the page change listener for the ViewPager. By default it changes between
-     * fullscreen/windowed mode depending on the value of {@link ImageViewerActivity#mIsFullscreen}
+     * fullscreen/windowed mode
      *
      * @return
      */
@@ -405,6 +405,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
             mPager.toggleSwipingEnabled();
             lockViewPagerItem.setIcon(
                 mPager.isSwipingEnabled() ? R.drawable.ic_action_lock_open_dark : R.drawable.ic_action_lock_closed_dark);
+            lockViewPagerItem.setTitle(mPager.isSwipingEnabled() ? getString(R.string.disable_swiping) : getString(R.string.enable_swiping));
             mCrouton.setText(mPager.isSwipingEnabled() ? getString(R.string.swiping_enabled) : getString(R.string.swiping_disabled));
             FadeInThenOut.fadeInThenOut(mCrouton, 1500);
         }
