@@ -112,32 +112,6 @@ public class SharedPreferencesHelper {
     }
 
     /**
-     * Save the Reddit login information to preferences
-     *
-     * @param username
-     *            The username
-     * @param modHash
-     *            The mod hash
-     * @param cookie
-     *            The cookie
-     * @param json
-     *            The login json
-     * @param context
-     *            The context
-     */
-    // public static void saveLoginInformation(String username, String modHash, String cookie,
-    // Context context) {
-    // SharedPreferences prefs = context.getSharedPreferences(GLOBAL_PREFS_NAME, 0);
-    // SharedPreferences.Editor editor = prefs.edit();
-    //
-    // editor.putString(USERNAME, username);
-    // editor.putString(MOD_HASH, modHash);
-    // editor.putString(COOKIE, cookie);
-    //
-    // save(editor);
-    // }
-
-    /**
      * Load an array of Strings from {@link SharedPreferences}
      *
      * @param prefsName
@@ -161,72 +135,6 @@ public class SharedPreferencesHelper {
         }
 
         return returnList;
-    }
-
-    /**
-     * Save the selected Age and Category to preferences. Used to save/restore the selected
-     * Category/Age combination
-     *
-     * @param age
-     *     The age
-     * @param category
-     *     The category
-     * @param context
-     *     The context
-     */
-    public static void saveCategorySelectionLoginInformation(Age age, Category category, Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(GLOBAL_PREFS_NAME, 0);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        editor.putString(AGE, age.name());
-        editor.putString(CATEGORY, category.name());
-
-        save(editor);
-    }
-
-    // public static LoginData getLoginData(Context context) {
-    // SharedPreferences prefs = context.getSharedPreferences(GLOBAL_PREFS_NAME, 0);
-    //
-    // return new LoginData(prefs.getString(USERNAME, ""),
-    // prefs.getString(MOD_HASH, ""),
-    // prefs.getString(COOKIE, ""));
-    // }
-    //
-    // public static String getUsername(Context context) {
-    // return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(USERNAME, "");
-    // }
-    //
-    // public static String getModHash(Context context) {
-    // return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(MOD_HASH, "");
-    // }
-    //
-    // public static String getCookie(Context context) {
-    // return context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(COOKIE, "");
-    // }
-
-    /**
-     * Remove the saved login information
-     *
-     * @param context
-     *            The context
-     * @return True if the removal is successful
-     */
-    // public static boolean clearLoginInformation(Context context) {
-    // return context.getSharedPreferences(GLOBAL_PREFS_NAME,
-    // 0).edit().remove(USERNAME).remove(MOD_HASH).remove(COOKIE).commit();
-    // }
-
-    /**
-     * This is currently unused, I envisioned that it would be used to allow the user to toggle HW
-     * acceleration on/off
-     *
-     * @param context
-     *     The context
-     *
-     * @return True if the hardware acceleration should be enabled
-     */
-    public static boolean getEnableHwAccel(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(ENABLE_HW_ACCEL, false);
     }
 
     /**
