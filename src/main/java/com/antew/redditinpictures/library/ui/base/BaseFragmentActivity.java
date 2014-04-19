@@ -6,9 +6,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.android.debug.hv.ViewServer;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.Injector;
-import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.interfaces.ActionBarTitleChanger;
-import com.antew.redditinpictures.library.modules.ActivityModule;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.BuildConfig;
@@ -47,8 +45,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
             Picasso.with(this).setDebugging(true);
         }
 
-        RedditInPicturesApplication application = (RedditInPicturesApplication) getApplication();
-        Injector.init(new ActivityModule(this), this);
+        Injector.inject(this);
     }
 
     @Override
