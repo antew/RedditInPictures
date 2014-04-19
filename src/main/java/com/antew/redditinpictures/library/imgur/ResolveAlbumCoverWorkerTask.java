@@ -98,7 +98,10 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
         Ln.d("Resolving url: %s", mImageUrl);
         Image imageAlbum = ImageResolver.resolve(mImageUrl);
         if (imageAlbum instanceof ImgurAlbumType) {
-            return mImgurImagePrefix + ((ImgurAlbumType) imageAlbum).getAlbum().getCover() + mImgurImageSuffix;
+            ImgurAlbumType imgurAlbumType = (ImgurAlbumType) imageAlbum;
+            if (imgurAlbumType != null) {
+                return mImgurImagePrefix + imgurAlbumType.getAlbum().getCover() + mImgurImageSuffix;
+            }
         }
         return null;
     }
