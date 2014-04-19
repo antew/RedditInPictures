@@ -13,6 +13,7 @@ import android.view.ViewParent;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.pro.R;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -27,19 +28,22 @@ public class SwipeListView extends ListView {
      */
     public enum SwipeDirection {
         /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)} to {@link
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
          * #BOTH} will allow the user to swipe list items to
          * either the left or the right.
          */
         BOTH,
         /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)} to {@link
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
          * #LEFT} will only allow the user to swipe list items to
          * the left.
          */
         LEFT,
         /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)} to {@link
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
          * #LEFT} will only allow the user to swipe list items to
          * the right.
          */
@@ -574,7 +578,20 @@ public class SwipeListView extends ListView {
                 }
                 break;
         }
-        return super.onTouchEvent(event);
+        /**
+         * In older versions of Android MotionEvent will cause an ArrayIndexOutOfBoundsException when it
+         * attempts to access the Y coordinateunchecked if there hasn't been any motion in the Y direction.
+         * Can't extend MotionEvent since it is final, so catching the error is the best we can do.
+         */
+        if (!AndroidUtil.hasHoneycomb()) {
+            try {
+                return super.onTouchEvent(event);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                return true;
+            }
+        } else {
+            return super.onTouchEvent(event);
+        }
     }
 
     /**
