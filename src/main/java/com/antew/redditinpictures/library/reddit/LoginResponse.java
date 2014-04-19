@@ -43,7 +43,8 @@ public class LoginResponse extends RedditResponseHandler {
         ContentValues loginValues = response.getContentValues();
         Intent loginNotify = new Intent(Constants.Broadcast.BROADCAST_LOGIN_COMPLETE);
         loginNotify.putExtra(Constants.Extra.EXTRA_USERNAME, username);
-        if (loginValues.getAsBoolean(RedditContract.Login.SUCCESS)) {
+        Integer loginSuccess = loginValues.getAsInteger(RedditContract.Login.SUCCESS);
+        if (loginSuccess != null && loginSuccess == 1) {
             loginNotify.putExtra(Constants.Extra.EXTRA_SUCCESS, true);
             resolver.insert(RedditContract.Login.CONTENT_URI, loginValues);
         } else {
