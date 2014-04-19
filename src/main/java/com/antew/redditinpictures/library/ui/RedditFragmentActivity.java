@@ -81,7 +81,6 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         setMenuDrawerContentView(R.layout.reddit_fragment_activity);
         restoreInstanceState(savedInstanceState);
         initializeActiveView();
-        initalizeReceivers();
         initializeLoaders();
 
         new SubredditUtil.SetDefaultSubredditsTask(this).execute();
@@ -130,7 +129,23 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         }
     }
 
-    private void initalizeReceivers() {
+    @Override protected void onPause() {
+        super.onPause();
+        unregisterReceivers();
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        registerReceivers();
+    }
+
+    private void unregisterReceivers() {
+        if (mLoginComplete != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mLoginComplete);
+        }
+    }
+
+    private void registerReceivers() {
         LocalBroadcastManager.getInstance(this)
                              .registerReceiver(mLoginComplete, new IntentFilter(Constants.Broadcast.BROADCAST_LOGIN_COMPLETE));
     }
