@@ -20,10 +20,12 @@ import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.widget.SwipeListView;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
+import com.google.gson.Gson;
 import com.squareup.otto.Subscribe;
 
 public class RedditImageListFragment extends RedditImageAdapterViewFragment<ListView, ImageListCursorAdapter>
@@ -194,12 +196,19 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
      *     The PostData of the image.
      */
     @Override
-    public void reportImage(PostData postData) {
+    public void reportImage(final PostData postData) {
         EasyTracker.getInstance(getActivity())
                    .send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.REPORT_POST,
                                                 mCurrentSubreddit, null).build()
                         );
-        Toast.makeText(getActivity(), "Reporting Images Isn't Implemented Yet. :(", Toast.LENGTH_LONG).show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RedditService.reportPost(getActivity(), postData);
+            }
+        }).start();
+
+        Toast.makeText(getActivity(), R.string.image_display_issue_reported, Toast.LENGTH_LONG).show();
     }
 
     @Subscribe

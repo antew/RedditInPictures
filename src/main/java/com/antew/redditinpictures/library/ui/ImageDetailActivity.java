@@ -57,8 +57,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ImageDetailActivity extends ImageViewerActivity implements LoaderManager.LoaderCallbacks<Cursor>,
-                                                                        LoginDialogFragment.LoginDialogListener {
+public class ImageDetailActivity extends ImageViewerActivity
+    implements LoaderManager.LoaderCallbacks<Cursor>, LoginDialogFragment.LoginDialogListener {
     protected MenuItem  mUpvoteMenuItem;
     protected MenuItem  mDownvoteMenuItem;
     protected RedditUrl mRedditUrl;
@@ -187,6 +187,16 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         return true;
     }
 
+    /**
+     * Get the JSON representation of the current image/post in the ViewPager to report an error.
+     *
+     * @return The JSON representation of the currently viewed object.
+     */
+    @Override
+    protected void reportCurrentItem() {
+        RedditService.reportPost(this, getAdapter().getPost(mPager.getCurrentItem()));
+    }
+
     @Override
     public String getSubreddit() {
         return mSubreddit;
@@ -294,7 +304,8 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         }
     }
 
-    @Subscribe public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
+    @Subscribe
+    public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
         Ln.i("DownloadImageComplete - filename was: " + event.getFilename());
         Toast.makeText(this, "Image saved as " + event.getFilename(), Toast.LENGTH_SHORT).show();
     }

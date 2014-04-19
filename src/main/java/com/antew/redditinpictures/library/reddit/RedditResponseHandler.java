@@ -22,9 +22,9 @@ abstract class RedditResponseHandler {
                 return new VoteResponse(result);
             case SEARCH_SUBREDDITS:
                 return new SubredditsSearchResponse(result);
+            default:
+                return null;
         }
-
-        return null;
     }
 
     public abstract void processHttpResponse(Context context);

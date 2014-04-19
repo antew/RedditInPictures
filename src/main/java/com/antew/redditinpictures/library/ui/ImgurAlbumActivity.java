@@ -1,18 +1,14 @@
 package com.antew.redditinpictures.library.ui;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
-import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.ImgurAlbumPagerAdapter;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
-import com.antew.redditinpictures.library.event.DownloadImageEvent;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.util.ImageUtil;
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.pro.R;
@@ -20,7 +16,7 @@ import com.squareup.otto.Subscribe;
 import java.util.List;
 
 public class ImgurAlbumActivity extends ImageViewerActivity {
-    public static final String TAG = "ImgurAlbumActivity";
+    public static final String TAG         = "ImgurAlbumActivity";
     public static final String EXTRA_ALBUM = "Album";
     private Album mAlbum;
 
@@ -53,6 +49,16 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
     @Override
     protected void updateDisplay(int position) {
         getSupportActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
+    }
+
+    /**
+     * Get the JSON representation of the current image/post in the ViewPager to report an error.
+     *
+     * @return The JSON representation of the currently viewed object.
+     */
+    @Override
+    protected void reportCurrentItem() {
+        RedditService.reportImage(this, getAdapter().getImage(mPager.getCurrentItem()));
     }
 
     @Override
@@ -94,11 +100,11 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
         mImageDownloader.downloadImage(image.getLinks().getOriginal(), filename);
     }
 
-    @Subscribe public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
+    @Subscribe
+    public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
         Ln.i("DownloadImageComplete - filename was: " + event.getFilename());
         Toast.makeText(this, "Post saved as " + event.getFilename(), Toast.LENGTH_SHORT).show();
     }
-
 
     private ImgurAlbumPagerAdapter getAdapter() {
         return (ImgurAlbumPagerAdapter) mAdapter;

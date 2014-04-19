@@ -19,6 +19,7 @@ import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -27,6 +28,7 @@ import com.antew.redditinpictures.library.animation.FadeInThenOut;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.ImageDownloader;
@@ -339,7 +341,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * Handler for when the user selects an item from the ActionBar.
      * <p>
      * The default functionality implements:<br>
-     * - Toggling the swipe lock on the ViewPager via {@link #toggleViewPagerLock()}<br>
+     * - Toggling the swipe lock on the ViewPager via toggleViewPagerLock()<br>
      * - Sharing the post via the Android ACTION_SEND intent, the URL shared is provided by
      * subclasses via {@link #getUrlForSharing()}<br>
      * - Viewing the post in a Web browser (the URL is provided by subclasses from
@@ -403,6 +405,19 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
                                 );
                 handleSaveImage();
                 return true;
+            case R.id.report_image:
+                EasyTracker.getInstance(this)
+                           .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
+                                                        Constants.Analytics.Action.REPORT_POST, getSubreddit(), null).build()
+                                );
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        reportCurrentItem();
+                    }
+                }).start();
+                Toast.makeText(this, R.string.image_display_issue_reported, Toast.LENGTH_LONG).show();
+                return true;
             default:
                 return false;
         }
@@ -428,6 +443,13 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
             invalidateOptionsMenu();
         }
     }
+
+    /**
+     * Get the JSON representation of the current image/post in the ViewPager to report an error.
+     *
+     * @return The JSON representation of the currently viewed object.
+     */
+    protected abstract void reportCurrentItem();
 
     public abstract String getSubreddit();
 

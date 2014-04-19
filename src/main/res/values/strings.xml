@@ -147,4 +147,5 @@
     <string name="upvote">Upvote</string>
     <string name="downvote">Downvote</string>
     <string name="report_image_display_issue">Report Image Display Issue</string>
+    <string name="image_display_issue_reported">Image display issue reported. \nThanks for letting us know!</string>
 </resources>

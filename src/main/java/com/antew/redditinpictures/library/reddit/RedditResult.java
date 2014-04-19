@@ -16,10 +16,6 @@ public class RedditResult extends JsonResult {
         RedditResponseHandler type = RedditResponseHandler.newInstance(this);
         if (type != null) {
             type.processHttpResponse(context);
-        } else {
-            if (BuildConfig.DEBUG) {
-                throw new NullPointerException("ResponseType was null, is the requestCode defined in ResponseType.newInstance()?");
-            }
         }
     }
 }

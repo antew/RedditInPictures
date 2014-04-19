@@ -2,18 +2,24 @@ package com.antew.redditinpictures.library.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import com.antew.redditinpictures.library.Injector;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.Injector;
+import com.antew.redditinpictures.library.database.RedditContract;
+import com.antew.redditinpictures.library.database.RedditDatabase;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
+import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.SubscribeAction;
 import com.antew.redditinpictures.library.model.Vote;
-import com.antew.redditinpictures.library.event.RequestInProgressEvent;
+import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.model.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.RedditResult;
@@ -21,8 +27,7 @@ import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.SafeAsyncTask;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.library.util.SubredditUtil;
-import com.antew.redditinpictures.library.database.RedditContract;
-import com.antew.redditinpictures.library.database.RedditDatabase;
+import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,7 +59,11 @@ public class RedditService extends RESTService {
 
         Ln.d("Retrieving Posts For %s %s %s After %s", subreddit, category.toString(), age.toString(), after);
 
-        RedditUrl url = new RedditUrl.Builder(subreddit).age(age).category(category).count(Constants.Reddit.POSTS_TO_FETCH).after(after).build();
+        RedditUrl url = new RedditUrl.Builder(subreddit).age(age)
+                                                        .category(category)
+                                                        .count(Constants.Reddit.POSTS_TO_FETCH)
+                                                        .after(after)
+                                                        .build();
 
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
@@ -178,6 +187,62 @@ public class RedditService extends RESTService {
         context.startService(intent);
     }
 
+    public static void reportPost(Context context, PostData postData) {
+        String json = null;
+        if (postData != null) {
+            Gson gson = new Gson();
+            json = gson.toJson(postData);
+        }
+
+        reportIssue(context, Constants.REPORT_POST_URL, json);
+    }
+
+    public static void reportImage(Context context, ImgurImageApi.ImgurImage image) {
+        String json = null;
+        if (image != null) {
+            Gson gson = new Gson();
+            json = gson.toJson(image);
+        }
+
+        reportIssue(context, Constants.REPORT_IMAGE_URL, json);
+    }
+
+    private static void reportIssue(Context context, String url, String jsonData) {
+        Intent intent = new Intent(context, RedditService.class);
+        intent = getIntentBasics(intent);
+        intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.REPORT_IMAGE);
+        intent.setData(Uri.parse(url));
+        intent.putExtra(EXTRA_HTTP_VERB, POST);
+
+        String appVersion = null;
+        PackageInfo packageInfo = null;
+
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (packageInfo != null) {
+            appVersion = packageInfo.versionName + " (" + packageInfo.versionCode + ")";
+        }
+
+        if (Strings.isEmpty(appVersion)) {
+            appVersion = "null";
+        }
+
+        if (Strings.isEmpty(jsonData)) {
+            jsonData = "null";
+        }
+
+        Bundle params = new Bundle();
+        params.putString("appVersion", appVersion);
+        params.putString("json", jsonData);
+
+        intent.putExtra(EXTRA_PARAMS, params);
+        context.startService(intent);
+    }
+
     @Override
     public void onRequestComplete(Intent result) {
         super.onRequestComplete(result);
@@ -255,14 +320,13 @@ public class RedditService extends RESTService {
                 Date fiveMinutesAgoDate = cal.getTime();
 
                 // While we support < API 11 we can't use DatabaseUtils.queryNumEntries
-                rowCountCursor = database.rawQuery(
-                    "select count(*) from " + RedditDatabase.Tables.REDDIT_DATA +
-                    " where subreddit = '" + mSubreddit + "'" +
-                    " AND category = '" + mCategory.getName() + "'" +
-                    " AND age = '" + mAge.getAge() + "'" +
-                    " AND retrievedDate BETWEEN '" + String.valueOf(fiveMinutesAgoDate.getTime()) + "'" +
-                    " AND '" + String.valueOf(currentDate.getTime()) + "'"
-                    , null);
+                rowCountCursor = database.rawQuery("select count(*) from " + RedditDatabase.Tables.REDDIT_DATA +
+                                                   " where subreddit = '" + mSubreddit + "'" +
+                                                   " AND category = '" + mCategory.getName() + "'" +
+                                                   " AND age = '" + mAge.getAge() + "'" +
+                                                   " AND retrievedDate BETWEEN '" + String.valueOf(fiveMinutesAgoDate.getTime()) + "'" +
+                                                   " AND '" + String.valueOf(currentDate.getTime()) + "'", null
+                                                  );
                 rowCountCursor.moveToFirst();
                 int numUpdates = rowCountCursor.getInt(0);
 
@@ -285,6 +349,4 @@ public class RedditService extends RESTService {
             return null;
         }
     }
-
-
 }
