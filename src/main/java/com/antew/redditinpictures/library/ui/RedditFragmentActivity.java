@@ -16,7 +16,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.View;
 import android.widget.Toast;
 import butterknife.InjectView;
 import com.actionbarsherlock.view.Menu;
@@ -72,8 +71,9 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         }
     };
 
-    @Inject ImageDownloader mImageDownloader;
-    private PostData mPostData;
+    @Inject
+    protected ImageDownloader mImageDownloader;
+    private   PostData        mPostData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -333,9 +333,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                             RedditLoginInformation.setLoginData(data);
                         }
 
-                        produceRequestCompletedEvent();
                         invalidateOptionsMenu();
-
                         new SubredditUtil.SetDefaultSubredditsTask(this).execute();
                         forceRefreshCurrentSubreddit();
                     }
@@ -475,6 +473,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     @Override
     public void onFinishLogoutDialog() {
+        produceRequestInProgressEvent();
         // Clear out the login data, Reddit API doesn't incorporate sessions into how it works so simply clearing out the cached data does the trick.
         RedditLoginInformation.setLoginData(null);
 
@@ -483,10 +482,10 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         getContentResolver().delete(RedditContract.Login.CONTENT_URI, null, null);
         new SubredditUtil.SetDefaultSubredditsTask(this, true).execute();
         invalidateOptionsMenu();
+        forceRefreshCurrentSubreddit();
     }
 
     private void handleLoginComplete(Intent intent) {
-        produceRequestCompletedEvent();
         boolean successful = intent.getBooleanExtra(Constants.Extra.EXTRA_SUCCESS, false);
         if (!successful) {
             String errorMessage = intent.getStringExtra(Constants.Extra.EXTRA_ERROR_MESSAGE);
@@ -545,18 +544,19 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         saveImageDialog.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
     }
 
-    @Subscribe public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
+    @Subscribe
+    public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
         mPostData = null;
         Ln.i("DownloadImageComplete - filename was: " + event.getFilename());
         Toast.makeText(this, "Image saved as " + event.getFilename(), Toast.LENGTH_SHORT).show();
     }
 
-
     public Class<? extends PreferenceActivity> getPreferencesClass() {
         return RedditInPicturesPreferences.class;
     }
 
-    @Override public void onFinishSaveImageDialog(String filename) {
+    @Override
+    public void onFinishSaveImageDialog(String filename) {
         mImageDownloader.downloadImage(mPostData.getUrl(), filename);
     }
 
