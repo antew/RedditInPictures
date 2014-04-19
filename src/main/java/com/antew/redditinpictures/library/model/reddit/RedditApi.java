@@ -122,7 +122,9 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
         values.put(RedditContract.RedditData.RETRIEVED_DATE, data.getRetrievedDate().getTime());
         values.put(RedditContract.RedditData.SUBREDDIT, data.getSubreddit());
         values.put(RedditContract.RedditData.CATEGORY, data.getCategory().getName());
-        values.put(RedditContract.RedditData.AGE, data.getAge().getAge());
+        if (data.getAge() != null) {
+            values.put(RedditContract.RedditData.AGE, data.getAge().getAge());
+        }
 
         return values;
     }
