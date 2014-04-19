@@ -32,13 +32,17 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.ImageUtil;
+import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 
 public class LoginDialogFragment extends DialogFragment implements OnEditorActionListener, TextWatcher {
 
-    private TextView username;
-    private TextView password;
+    private String   mUsername;
+    private TextView mUsernameText;
+    private TextView mPasswordText;
 
     // Empty constructor required for DialogFragment
     public LoginDialogFragment() {}
@@ -47,17 +51,34 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
         return new LoginDialogFragment();
     }
 
-    ;
+    public static LoginDialogFragment newInstance(String username) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.Extra.EXTRA_USERNAME, username);
+
+        LoginDialogFragment fragment = new LoginDialogFragment();
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater lf = LayoutInflater.from(getActivity());
         View dialogView = lf.inflate(R.layout.login_dialog, null);
 
-        username = (TextView) dialogView.findViewById(R.id.login_username);
-        password = (TextView) dialogView.findViewById(R.id.login_password);
-        password.setOnEditorActionListener(this);
-        username.requestFocus();
+        if (getArguments() != null) {
+            mUsername = BundleUtil.getString(getArguments(), Constants.Extra.EXTRA_USERNAME, null);
+        }
+
+        mUsernameText = (TextView) dialogView.findViewById(R.id.login_username);
+        mPasswordText = (TextView) dialogView.findViewById(R.id.login_password);
+        mPasswordText.setOnEditorActionListener(this);
+        if (Strings.notEmpty(mUsername)) {
+            mUsernameText.setText(mUsername);
+            mPasswordText.requestFocus();
+        } else {
+            mUsernameText.requestFocus();
+        }
         final AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(dialogView)
                                                                          .setTitle(R.string.log_in_to_reddit)
                                                                          .setPositiveButton(R.string.log_in, null)
@@ -68,8 +89,8 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
         // automatically when the button is pressed
         dialog.setOnShowListener(getDialogOnShowListener());
         dialog.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        username.addTextChangedListener(this);
-        password.addTextChangedListener(this);
+        mUsernameText.addTextChangedListener(this);
+        mPasswordText.addTextChangedListener(this);
         return dialog;
     }
 
@@ -104,7 +125,7 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
     private void doLogin() {
         if (!hasErrors()) {
             LoginDialogListener activity = (LoginDialogListener) getActivity();
-            activity.onFinishLoginDialog(username.getText().toString(), password.getText().toString());
+            activity.onFinishLoginDialog(mUsernameText.getText().toString(), mPasswordText.getText().toString());
             this.dismiss();
         }
     }
@@ -116,13 +137,13 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
      */
     private boolean hasErrors() {
         boolean hasErrors = false;
-        if (username.getText().length() == 0) {
-            username.setError("Enter a username", ImageUtil.getErrorDrawable(getActivity()));
+        if (mUsernameText.getText().length() == 0) {
+            mUsernameText.setError("Enter a username", ImageUtil.getErrorDrawable(getActivity()));
             hasErrors = true;
         }
 
-        if (password.getText().length() == 0) {
-            password.setError("Enter a password", ImageUtil.getErrorDrawable(getActivity()));
+        if (mPasswordText.getText().length() == 0) {
+            mPasswordText.setError("Enter a password", ImageUtil.getErrorDrawable(getActivity()));
             hasErrors = true;
         }
 
@@ -153,12 +174,12 @@ public class LoginDialogFragment extends DialogFragment implements OnEditorActio
      */
     @Override
     public void afterTextChanged(Editable s) {
-        if (username.getText().length() > 0 && username.getError() != null) {
-            username.setError(null);
+        if (mUsernameText.getText().length() > 0 && mUsernameText.getError() != null) {
+            mUsernameText.setError(null);
         }
 
-        if (password.getText().length() > 0 && password.getError() != null) {
-            password.setError(null);
+        if (mPasswordText.getText().length() > 0 && mPasswordText.getError() != null) {
+            mPasswordText.setError(null);
         }
     }
 

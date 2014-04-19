@@ -503,6 +503,12 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     private void handleLoginComplete(Intent intent) {
         boolean successful = intent.getBooleanExtra(Constants.Extra.EXTRA_SUCCESS, false);
         if (!successful) {
+            String username = intent.getStringExtra(Constants.Extra.EXTRA_USERNAME);
+            if (Strings.notEmpty(username)) {
+                LoginDialogFragment loginFragment = LoginDialogFragment.newInstance(username);
+                loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
+            }
+
             String errorMessage = intent.getStringExtra(Constants.Extra.EXTRA_ERROR_MESSAGE);
             Toast.makeText(this, getString(R.string.error) + errorMessage, Toast.LENGTH_SHORT).show();
         }

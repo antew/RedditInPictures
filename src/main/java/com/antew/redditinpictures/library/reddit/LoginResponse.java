@@ -13,7 +13,6 @@ import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.database.RedditContract;
 
 public class LoginResponse extends RedditResponseHandler {
-    public static String TAG = LoginResponse.class.getSimpleName();
     private RedditResult result;
 
     public LoginResponse(RedditResult result) {
@@ -50,6 +49,7 @@ public class LoginResponse extends RedditResponseHandler {
         } else {
             loginNotify.putExtra(Constants.Extra.EXTRA_SUCCESS, false);
             loginNotify.putExtra(Constants.Extra.EXTRA_ERROR_MESSAGE, loginValues.getAsString(RedditContract.Login.ERROR_MESSAGE));
+            loginNotify.putExtra(Constants.Extra.EXTRA_USERNAME, username);
         }
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(loginNotify);
