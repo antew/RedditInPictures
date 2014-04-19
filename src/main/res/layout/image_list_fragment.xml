@@ -31,6 +31,6 @@
         swipeListView:backViewId="@+id/back"
         swipeListView:closeAllWhenScrolling="true"
         swipeListView:openOnLongPress="true"
-        swipeListView:swipeDirection="both"/>
+        swipeListView:swipeDirection="right"/>
 
 </RelativeLayout>
