@@ -1,5 +1,6 @@
 package com.antew.redditinpictures.library.service;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -8,6 +9,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.Injector;
@@ -23,6 +25,7 @@ import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.model.reddit.RedditUrl;
 import com.antew.redditinpictures.library.reddit.RedditResult;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.SafeAsyncTask;
 import com.antew.redditinpictures.library.util.Strings;
@@ -286,6 +289,7 @@ public class RedditService extends RESTService {
             Injector.inject(this);
         }
 
+        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
         @Override
         public Void call() throws Exception {
             SQLiteDatabase database = null;
@@ -319,16 +323,28 @@ public class RedditService extends RESTService {
                 cal.add(Calendar.MINUTE, -5);
                 Date fiveMinutesAgoDate = cal.getTime();
 
-                // While we support < API 11 we can't use DatabaseUtils.queryNumEntries
-                rowCountCursor = database.rawQuery("select count(*) from " + RedditDatabase.Tables.REDDIT_DATA +
-                                                   " where subreddit = '" + mSubreddit + "'" +
-                                                   " AND category = '" + mCategory.getName() + "'" +
-                                                   " AND age = '" + mAge.getAge() + "'" +
-                                                   " AND retrievedDate BETWEEN '" + String.valueOf(fiveMinutesAgoDate.getTime()) + "'" +
-                                                   " AND '" + String.valueOf(currentDate.getTime()) + "'", null
-                                                  );
-                rowCountCursor.moveToFirst();
-                int numUpdates = rowCountCursor.getInt(0);
+                int numUpdates;
+                if (AndroidUtil.hasHoneycomb()) {
+                    numUpdates = (int) DatabaseUtils.queryNumEntries(database, RedditDatabase.Tables.REDDIT_DATA,
+                                                                     "subreddit = ? AND category = ? AND age = ? AND retrievedDate BETWEEN ? AND ?",
+                                                                     new String[] {
+                                                                         mSubreddit, mCategory.getName(), mAge.getAge(),
+                                                                         String.valueOf(fiveMinutesAgoDate.getTime()),
+                                                                         String.valueOf(currentDate.getTime())
+                                                                     }
+                                                                    );
+                } else {
+                    // While we support < API 11 we can't use DatabaseUtils.queryNumEntries
+                    rowCountCursor = database.rawQuery("select count(*) from " + RedditDatabase.Tables.REDDIT_DATA +
+                                                       " where subreddit = '" + mSubreddit + "'" +
+                                                       " AND category = '" + mCategory.getName() + "'" +
+                                                       " AND age = '" + mAge.getAge() + "'" +
+                                                       " AND retrievedDate BETWEEN '" + fiveMinutesAgoDate.getTime() + "'" +
+                                                       " AND '" + currentDate.getTime() + "'", null
+                                                      );
+                    rowCountCursor.moveToFirst();
+                    numUpdates = rowCountCursor.getInt(0);
+                }
 
                 Ln.d("There Are %d Rows In 5 Minutes For %s", numUpdates, mSubreddit);
 
