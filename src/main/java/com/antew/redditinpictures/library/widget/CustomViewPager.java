@@ -61,9 +61,13 @@ public class CustomViewPager extends ViewPager {
         return false;
     }
 
-    public void toggleSwipingEnabled() {
-        mEnabled = !mEnabled;
+    public void setSwipingEnabled(boolean isEnabled) {
+        mEnabled = isEnabled;
         this.requestDisallowInterceptTouchEvent(mEnabled);
+    }
+
+    public void toggleSwipingEnabled() {
+        setSwipingEnabled(!mEnabled);
     }
 
     public boolean isSwipingEnabled() {

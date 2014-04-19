@@ -106,6 +106,7 @@ public class Constants {
         public static final  String EXTRA_SHOW_NSFW_IMAGES_CHANGED = EXTRA_PREFIX + "showNsfwImagesChanged";
         public static final  String EXTRA_USERNAME                 = EXTRA_PREFIX + "username";
         public static final  String EXTRA_QUERY                    = EXTRA_PREFIX + "query";
+        public static final  String EXTRA_IS_SWIPING_ENABLED       = EXTRA_PREFIX + "isSwipingEnabled";
     }
 
     public static class Dialog {

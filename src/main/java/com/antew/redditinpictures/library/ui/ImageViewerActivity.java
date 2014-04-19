@@ -95,6 +95,11 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     @Inject
     public ImageDownloader mImageDownloader;
 
+    /**
+     * Whether swiping on the ViewPager is enabled
+     */
+    private boolean mSwipingEnabled = true;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -251,6 +256,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     @Override
     public void onResume() {
         super.onResume();
+        setSwipingState(mSwipingEnabled, false);
     }
 
     @Override
@@ -286,19 +292,10 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         return longest;
     }
 
-    /**
-     * Fix for bug where orientation change on 2.x would cause the indeterminate progress bar to
-     * show
-     */
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        setSupportProgressBarIndeterminateVisibility(false);
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(Constants.Extra.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
+        outState.putBoolean(Constants.Extra.EXTRA_IS_SWIPING_ENABLED, mPager.isSwipingEnabled());
         super.onSaveInstanceState(outState);
     }
 
@@ -307,6 +304,10 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState.containsKey(Constants.Extra.EXTRA_ENTRIES)) {
             mImages = savedInstanceState.getParcelableArrayList(Constants.Extra.EXTRA_ENTRIES);
+        }
+
+        if (savedInstanceState.containsKey(Constants.Extra.EXTRA_IS_SWIPING_ENABLED)) {
+            mSwipingEnabled = savedInstanceState.getBoolean(Constants.Extra.EXTRA_IS_SWIPING_ENABLED);
         }
     }
 
@@ -323,6 +324,14 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         // it when we receive a broadcast message to toggle the ViewPager lock state
         lockViewPagerItem = menu.findItem(R.id.lock_viewpager);
 
+        // Update the icon depending on whether swiping is enabled or disabled
+        if (mSwipingEnabled) {
+            lockViewPagerItem.setTitle(R.string.disable_swiping);
+            lockViewPagerItem.setIcon(R.drawable.ic_action_lock_open_dark);
+        } else {
+            lockViewPagerItem.setTitle(R.string.enable_swiping);
+            lockViewPagerItem.setIcon(R.drawable.ic_action_lock_closed_dark);
+        }
         return true;
     }
 
@@ -362,7 +371,9 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
                                                             Constants.Analytics.Action.TOGGLE_SWIPING, Constants.Analytics.Label.ENABLED,
                                                             null).build());
                 }
-                toggleViewPagerLock();
+
+                // Lock or unlock swiping in the ViewPager
+                setSwipingState(!mPager.isSwipingEnabled(), true);
                 return true;
             case R.id.share_post:
                 EasyTracker.getInstance(this)
@@ -398,16 +409,23 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     }
 
     /**
-     * Toggle whether swiping is enabled in the ViewPager.
+     * Set whether swiping is enabled on the ViewPager.
+     *
+     * @param swipingEnabled
+     *     Whether swiping should be enabled
+     * @param showMessageToUser
+     *     Whether to display a message to the user, set this to true if the user took direct action to change the state.
      */
-    public void toggleViewPagerLock() {
+    private void setSwipingState(boolean swipingEnabled, boolean showMessageToUser) {
         if (mAdapter != null && mPager != null) {
-            mPager.toggleSwipingEnabled();
-            lockViewPagerItem.setIcon(
-                mPager.isSwipingEnabled() ? R.drawable.ic_action_lock_open_dark : R.drawable.ic_action_lock_closed_dark);
-            lockViewPagerItem.setTitle(mPager.isSwipingEnabled() ? getString(R.string.disable_swiping) : getString(R.string.enable_swiping));
-            mCrouton.setText(mPager.isSwipingEnabled() ? getString(R.string.swiping_enabled) : getString(R.string.swiping_disabled));
-            FadeInThenOut.fadeInThenOut(mCrouton, 1500);
+            mSwipingEnabled = swipingEnabled;
+            mPager.setSwipingEnabled(mSwipingEnabled);
+            if (showMessageToUser) {
+                mCrouton.setText(mSwipingEnabled ? getString(R.string.swiping_enabled) : getString(R.string.swiping_disabled));
+                FadeInThenOut.fadeInThenOut(mCrouton, 1500);
+            }
+
+            invalidateOptionsMenu();
         }
     }
 
