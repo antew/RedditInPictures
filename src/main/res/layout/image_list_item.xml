@@ -13,7 +13,9 @@
         android:paddingBottom="5dp"
         android:orientation="horizontal"
         android:visibility="gone"
-        android:background="@color/almost_black">
+        android:background="@color/almost_black"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
 
         <ImageButton
             android:id="@+id/ib_view"
