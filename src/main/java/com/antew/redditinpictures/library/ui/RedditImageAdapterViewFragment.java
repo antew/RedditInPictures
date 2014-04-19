@@ -57,8 +57,6 @@ import javax.inject.Inject;
 public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V extends CursorAdapter> extends BaseFragment
     implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     protected V           mAdapter;
-    @Inject
-    protected Bus         mBus;
     @InjectView(R.id.no_images)
     protected TextView    mNoImages;
     @InjectView(R.id.pb_progress)
@@ -134,7 +132,6 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onResume() {
         super.onResume();
-        mBus.register(this);
         getActivity().getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_REDDIT, null, this);
         getActivity().getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_POSTS, null, this);
         fetchPostsIfNeeded();
