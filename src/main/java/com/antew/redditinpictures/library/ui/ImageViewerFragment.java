@@ -75,21 +75,21 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
     protected SystemUiStateProvider mSystemUiStateProvider;
     @InjectView(R.id.pb_progress)
-    ProgressBar    mProgress;
+    ProgressBar     mProgress;
     @InjectView(R.id.rl_post_information_wrapper)
-    RelativeLayout mPostInformationWrapper;
+    RelativeLayout  mPostInformationWrapper;
     @InjectView(R.id.tv_post_title)
-    TextView       mPostTitle;
+    TextView        mPostTitle;
     @InjectView(R.id.tv_post_information)
-    TextView       mPostInformation;
+    TextView        mPostInformation;
     @InjectView(R.id.btn_view_gallery)
-    Button         mBtnViewGallery;
+    Button          mBtnViewGallery;
     @InjectView(R.id.webview_stub)
-    ViewStub       mViewStub;
+    ViewStub        mViewStub;
     @InjectView(R.id.tv_post_votes)
-    TextView       mPostVotes;
+    TextView        mPostVotes;
     @InjectView(R.id.b_retry)
-    Button         mRetry;
+    Button          mRetry;
     @Inject
     ImageDownloader mImageDownloader;
     /**
@@ -340,7 +340,16 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
 
         initializeWebView(mWebView);
-        mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
+        /**
+         * On earlier version of Android, {@link android.webkit.WebView#loadData(String, String, String)} decides to just show the HTML instead of actually display it.
+         *
+         * So, for older version we make it load from a base URL, which fixes it for some reason...
+         */
+        if (AndroidUtil.hasHoneycomb()) {
+            mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
+        } else {
+            mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
+        }
         mImageView.setVisibility(View.GONE);
     }
 
