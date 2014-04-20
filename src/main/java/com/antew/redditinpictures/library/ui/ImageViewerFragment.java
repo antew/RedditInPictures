@@ -56,6 +56,7 @@ import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -317,35 +318,48 @@ public abstract class ImageViewerFragment extends BaseFragment {
             return;
         }
 
-        mResolvedImage = image;
-        mResolvedImageUrl = image.getSize(ImageSize.ORIGINAL);
+        try {
 
-        if (ImageUtil.isGif(mResolvedImageUrl)) {
-            Picasso.with(getActivity()).load(R.drawable.loading_spinner_76).into(mImageView);
-            loadGifInWebView(mResolvedImageUrl);
-        } else {
-            Picasso.with(getActivity())
-                   .load(Uri.parse(mResolvedImageUrl))
-                   .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
-                   .centerInside()
-                   .into(mImageView, new Callback() {
-                       @Override
-                       public void onSuccess() {
-                           if (mProgress != null) {
-                               mProgress.setVisibility(View.GONE);
-                           }
-                       }
+            mResolvedImage = image;
+            mResolvedImageUrl = mResolvedImage.getSize(ImageSize.ORIGINAL);
 
-                       @Override
-                       public void onError() {
-                           if (mErrorMessage != null) {
-                               mErrorMessage.setVisibility(View.VISIBLE);
+            // Fallback to the URL if we can't resolve.
+            if (Strings.isEmpty(mResolvedImageUrl)) {
+                mResolvedImageUrl = mResolvedImage.getUrl();
+            }
+
+            if (ImageUtil.isGif(mResolvedImageUrl)) {
+                Picasso.with(getActivity()).load(R.drawable.loading_spinner_76).into(mImageView);
+                loadGifInWebView(mResolvedImageUrl);
+            } else {
+                Picasso.with(getActivity())
+                       .load(Uri.parse(mResolvedImageUrl))
+                       .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
+                       .centerInside()
+                       .into(mImageView, new Callback() {
+                           @Override
+                           public void onSuccess() {
+                               if (mProgress != null) {
+                                   mProgress.setVisibility(View.GONE);
+                               }
                            }
-                           if (mRetry != null) {
-                               mRetry.setVisibility(View.VISIBLE);
+
+                           @Override
+                           public void onError() {
+                               if (mErrorMessage != null) {
+                                   mErrorMessage.setVisibility(View.VISIBLE);
+                               }
+                               if (mRetry != null) {
+                                   mRetry.setVisibility(View.VISIBLE);
+                               }
                            }
-                       }
-                   });
+                       });
+            }
+        } catch (Exception e) {
+            Ln.e(e, "Failed to load image");
+            mProgress.setVisibility(View.GONE);
+            mErrorMessage.setVisibility(View.VISIBLE);
+            mRetry.setVisibility(View.VISIBLE);
         }
     }
 
