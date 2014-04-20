@@ -163,4 +163,6 @@
     <string name="downvote">Downvote</string>
     <string name="report_image_display_issue">Report Image Display Issue</string>
     <string name="image_display_issue_reported">Image display issue reported. \nThanks for letting us know!</string>
+    <string name="reddit_options">Reddit Options</string>
+    <string name="reddit_in_pictures_options">Reddit in Pictures Options</string>
 </resources>

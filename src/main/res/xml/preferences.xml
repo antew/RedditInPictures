@@ -18,7 +18,9 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Reddit Options">
+    <PreferenceCategory
+        android:title="@string/reddit_options"
+        android:order="10">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_use_mobile_interface"
@@ -34,13 +36,19 @@
             android:key="@string/pref_load_high_quality_thumbnails"
             android:summary="@string/uses_more_bandwidth"
             android:title="@string/pref_load_high_quality_thumbnails" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/reddit_in_pictures_options"
+        android:order="20">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pref_analytics_opt_in"
             android:summary="@string/help_make_better"
             android:title="@string/pref_analytics_opt_in" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="About">
+        </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/about"
+        android:order="30">
         <Preference
             android:key="@string/pref_about"
             android:title="@string/about_reddit_in_pictures">

@@ -17,20 +17,22 @@
 */
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-        <PreferenceCategory
-                android:title="@string/disable_ads">
-                <CheckBoxPreference
-                        android:title="@string/disable_ads"
-                        android:defaultValue="false"
-                        android:summary="@string/in_exchange_for_disabling_ads"
-                        android:key="@string/pref_disable_ads" />
-        </PreferenceCategory>
-        <PreferenceCategory
-                android:title="Upgrade">
-                <Preference
-                        android:title="@string/upgrade_to_pro"
-                        android:defaultValue="false"
-                        android:summary="@string/upgrade_value_prop_prefs"
-                        android:key="@string/pref_get_pro_version" />
-        </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/disable_ads"
+        android:order="35">
+        <CheckBoxPreference
+            android:title="@string/disable_ads"
+            android:defaultValue="false"
+            android:summary="@string/in_exchange_for_disabling_ads"
+            android:key="@string/pref_disable_ads" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Upgrade"
+        android:order="5">
+        <Preference
+            android:title="@string/upgrade_to_pro"
+            android:defaultValue="false"
+            android:summary="@string/upgrade_value_prop_prefs"
+            android:key="@string/pref_get_pro_version" />
+    </PreferenceCategory>
 </PreferenceScreen>
