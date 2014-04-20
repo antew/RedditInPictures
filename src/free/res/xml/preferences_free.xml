@@ -18,9 +18,9 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
         <PreferenceCategory
-                android:title="Disable Ads">
+                android:title="@string/disable_ads">
                 <CheckBoxPreference
-                        android:title="Disable Ads"
+                        android:title="@string/disable_ads"
                         android:defaultValue="false"
                         android:summary="@string/in_exchange_for_disabling_ads"
                         android:key="@string/pref_disable_ads" />
@@ -28,9 +28,9 @@
         <PreferenceCategory
                 android:title="Upgrade">
                 <Preference
-                        android:title="Upgrade to Pro"
+                        android:title="@string/upgrade_to_pro"
                         android:defaultValue="false"
-                        android:summary="Upgrade to the Pro version to log in, view your subscribed subreddits, vote, save images, and support future development."
+                        android:summary="@string/upgrade_value_prop_prefs"
                         android:key="@string/pref_get_pro_version" />
         </PreferenceCategory>
 </PreferenceScreen>

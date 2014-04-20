@@ -30,7 +30,6 @@
     <string name="clear_cache_complete_toast">Caches have been cleared</string>
     <string name="clear_cache_menu">Clear Caches</string>
     <string name="delete">Delete</string>
-    <string name="disable_ads">Disable Ads</string>
     <string name="edit_subreddits">Edit Subreddits</string>
     <string name="enter_a_password">Enter a password!</string>
     <string name="enter_a_username">Enter a username!</string>
@@ -82,7 +81,6 @@
     <string name="swiping_disabled">Swiping disabled</string>
     <string name="swiping_enabled">Swiping enabled</string>
     <string name="thank_you_for_your_support">Thank you for your support!</string>
-    <string name="upgrade_to_full_version">Upgrade to pro version</string>
     <string name="username">Username:</string>
     <string name="uses_more_bandwidth">Uses more bandwidth</string>
     <string name="help_make_better">Help make Reddit in Pictures better by allowing us to track anonymous usage data.</string>

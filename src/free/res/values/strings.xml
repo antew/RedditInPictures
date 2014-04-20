@@ -19,9 +19,12 @@
 
     <string name="app_name">Reddit In Pictures Free</string>
 
-    <string name="disable_ads">Disable Ads</string>
-
+    <string name="disable_ads">Disable ads</string>
+    <string name="upgrade_to_pro">Upgrade to pro</string>
+    <string name="feature_not_available">Feature not available</string>
+    <string name="upgrade_value_prop">Upgrading to the pro version will allow you to log in, cast votes, view and manage your subreddits, get access to new features first, and more!</string>
     <string name="in_exchange_for_disabling_ads">In exchange for disabling ads, we ask that you rate the application on the Google Play store. Thank you for your support!</string>
+    <string name="upgrade_value_prop_prefs">Upgrading to the pro version will help support future development and allow you to log in, cast votes, view and manage your subreddits, get access to new features first, and more!</string>
 
     <string name="ive_rated_it">I\'ve Rated It</string>
 

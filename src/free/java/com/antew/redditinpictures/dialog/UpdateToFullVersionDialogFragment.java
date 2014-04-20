@@ -40,9 +40,8 @@ public class UpdateToFullVersionDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        Dialog dialog = new AlertDialog.Builder(getActivity()).setTitle(R.string.upgrade_to_full_version)
-                                                              .setMessage(
-                                                                  "Upgrading to the pro version will allow you to log in, cast votes, load your subreddits, manage your subreddits, and more!")
+        Dialog dialog = new AlertDialog.Builder(getActivity()).setTitle(R.string.feature_not_available)
+                                                              .setMessage(R.string.upgrade_value_prop)
                                                               .setPositiveButton(R.string.upgrade, new DialogInterface.OnClickListener() {
                                                                   public void onClick(DialogInterface dialog, int whichButton) {
                                                                       UpdateToFullVersionDialogListener activity = (UpdateToFullVersionDialogListener) getActivity();
