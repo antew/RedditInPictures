@@ -144,12 +144,14 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         }
     }
 
-    @Override protected void onPause() {
+    @Override
+    protected void onPause() {
         super.onPause();
         unregisterReceivers();
     }
 
-    @Override protected void onResume() {
+    @Override
+    protected void onResume() {
         super.onResume();
         registerReceivers();
     }
