@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2014 Antew
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.antew.redditinpictures.library.ui.base;
 
 import android.content.ContentResolver;
@@ -24,6 +39,7 @@ import com.antew.redditinpictures.library.adapter.SubredditMenuDrawerCursorAdapt
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.AboutSubredditDialogFragment;
 import com.antew.redditinpictures.library.dialog.AddSubredditDialogFragment;
+import com.antew.redditinpictures.library.dialog.ExitDialogFragment;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.SetDefaultSubredditsDialogFragment;
 import com.antew.redditinpictures.library.interfaces.RedditDataProvider;
@@ -40,12 +56,13 @@ import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.picasso.Picasso;
+import java.util.Date;
 import net.simonvt.menudrawer.MenuDrawer;
 import net.simonvt.menudrawer.Position;
 
 public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     implements LoaderManager.LoaderCallbacks<Cursor>, SetDefaultSubredditsDialogFragment.SetDefaultSubredditsDialogListener,
-               AddSubredditDialogFragment.AddSubredditDialogListener, RedditDataProvider {
+               AddSubredditDialogFragment.AddSubredditDialogListener, RedditDataProvider, ExitDialogFragment.ExitDialogListener {
     protected MenuDrawer                       mMenuDrawer;
     protected SubredditMenuDrawerCursorAdapter mSubredditAdapter;
     @InjectView(R.id.et_subreddit_filter)
@@ -60,13 +77,11 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     protected ImageButton                      mSortSubreddits;
     @InjectView(R.id.ib_refresh)
     protected ImageButton                      mRefreshSubreddits;
-
     protected String   mSelectedSubreddit = Constants.Reddit.REDDIT_FRONTPAGE;
     protected Category mCategory          = Category.HOT;
     protected Age      mAge               = Age.TODAY;
-
-    protected String mSubredditSort = RedditContract.Subreddits.SORT_ALPHABETICALLY;
-
+    protected String   mSubredditSort     = RedditContract.Subreddits.SORT_ALPHABETICALLY;
+    private long mLastTimeBackPressed;
     private OnSubredditActionListener       mSubredditActionListener = new OnSubredditActionListener() {
 
         @Override
@@ -161,6 +176,11 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         }
     };
 
+    @Override
+    public void onFinishExitDialog() {
+        finish();
+    }
+
     @OnClick(R.id.ib_add)
     protected void onAddSubreddit() {
         EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
@@ -223,8 +243,8 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         if (RedditLoginInformation.isLoggedIn()) {
             EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
                        .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION,
-                                                    Constants.Analytics.Action.REFRESH_SUBREDDITS, Constants.Analytics.Label.LOGGED_IN, null)
-                                       .build());
+                                                    Constants.Analytics.Action.REFRESH_SUBREDDITS, Constants.Analytics.Label.LOGGED_IN,
+                                                    null).build());
             // Since the user is logged in we can just run the task to update their subreddits.
             SubredditUtil.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtil.SetDefaultSubredditsTask(this, true);
             defaultSubredditsTask.execute();
@@ -265,11 +285,6 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         mMenuDrawer.setDrawerIndicatorEnabled(true);
     }
 
-    protected void displaySubredditInfo(SubredditData subredditData) {
-        AboutSubredditDialogFragment fragment = AboutSubredditDialogFragment.newInstance(subredditData);
-        fragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_ABOUT_SUBREDDIT);
-    }
-
     private void setupMenuDrawer() {
         initializeSubredditFilter();
         initializeSubredditList();
@@ -302,8 +317,18 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         return mSubredditAdapter;
     }
 
+    protected void displaySubredditInfo(SubredditData subredditData) {
+        AboutSubredditDialogFragment fragment = AboutSubredditDialogFragment.newInstance(subredditData);
+        fragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_ABOUT_SUBREDDIT);
+    }
+
     protected void forceRefreshCurrentSubreddit() {
-        RedditService.getPosts(this, mSelectedSubreddit, mAge, mCategory);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RedditService.getPosts(BaseFragmentActivityWithMenu.this, mSelectedSubreddit, mAge, mCategory);
+            }
+        }).start();
     }
 
     protected void filterSubreddits(String filterText) {
@@ -341,12 +366,23 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
      */
     @Override
     public void onBackPressed() {
+        long currentTime = new Date().getTime();
+
+        // If the back button has been double clicked, finish the activity.
+        if (currentTime - Constants.DOUBLE_CLICK_TIMEOUT <= mLastTimeBackPressed) {
+            ExitDialogFragment.newInstance().show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
+        } else {
+            mLastTimeBackPressed = currentTime;
+        }
+
         // If the menu drawer is open, close it. Otherwise go about the normal business.
         if (mMenuDrawer != null && mMenuDrawer.isMenuVisible()) {
             mMenuDrawer.closeMenu();
             return;
+        } else if (!getSupportFragmentManager().popBackStackImmediate()) {
+            // Otherwise, let's pop the back stack. If that returns false then there is nothing left in the backstack so let's see if they want to exit.
+            ExitDialogFragment.newInstance().show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
         }
-        super.onBackPressed();
     }
 
     /**
@@ -451,8 +487,9 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     @Override
     public void onSetDefaultSubreddits() {
         EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
-                   .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION, Constants.Analytics.Action.REFRESH_SUBREDDITS,
-                                                Constants.Analytics.Label.NOT_LOGGED_IN, null).build());
+                   .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION,
+                                                Constants.Analytics.Action.REFRESH_SUBREDDITS, Constants.Analytics.Label.NOT_LOGGED_IN,
+                                                null).build());
         SubredditUtil.SetDefaultSubredditsTask defaultSubredditsTask = new SubredditUtil.SetDefaultSubredditsTask(this, true);
         defaultSubredditsTask.execute();
     }

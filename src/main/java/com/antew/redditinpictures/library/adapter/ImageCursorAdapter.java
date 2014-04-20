@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Antew | antewcode@gmail.com
+ * Copyright (C) 2014 Antew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import com.squareup.picasso.Picasso;
 import java.util.regex.Pattern;
 
 /**
- * This is used as the backing adapter for the {@link GridView} in {@link ImageGridFragment}
+ * This is used as the backing adapter for the {@link GridView}
  *
  * @author Antew
  */
@@ -111,8 +111,8 @@ public class ImageCursorAdapter extends CursorAdapter {
         if (Strings.notEmpty(url)) {
             Picasso.with(mContext)
                    .load(Uri.parse(url))
-                   .placeholder(R.drawable.loading_spinner_76)
-                   .error(R.drawable.empty_photo)
+                   .placeholder(R.drawable.empty_photo)
+                   .error(R.drawable.error_photo)
                    .fit()
                    .centerCrop()
                    .into(imageView);
@@ -140,8 +140,7 @@ public class ImageCursorAdapter extends CursorAdapter {
     }
 
     /**
-     * Sets the number of columns, this is currently used in the {@link OnGlobalLayoutListener} in
-     * {@link ImageGridFragment}
+     * Sets the number of columns, this is currently used in the {@link OnGlobalLayoutListener}
      *
      * @param numColumns
      *     The number of columns in the GridView

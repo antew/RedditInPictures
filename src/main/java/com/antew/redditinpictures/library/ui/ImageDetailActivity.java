@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2014 Antew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.antew.redditinpictures.library.ui;
 
 import android.content.Intent;
@@ -24,7 +23,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.content.LocalBroadcastManager;
+import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
@@ -32,6 +31,8 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.CursorPagerAdapter;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
+import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
+import com.antew.redditinpictures.library.event.DownloadImageEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.Vote;
@@ -42,7 +43,6 @@ import com.antew.redditinpictures.library.model.reddit.RedditUrl;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.BundleUtil;
-import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.PostUtil;
 import com.antew.redditinpictures.library.util.StringUtil;
@@ -51,13 +51,13 @@ import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
-import com.squareup.picasso.Picasso;
+import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ImageDetailActivity extends ImageViewerActivity implements LoaderManager.LoaderCallbacks<Cursor>,
-                                                                        LoginDialogFragment.LoginDialogListener {
+public class ImageDetailActivity extends ImageViewerActivity
+    implements LoaderManager.LoaderCallbacks<Cursor>, LoginDialogFragment.LoginDialogListener {
     protected MenuItem  mUpvoteMenuItem;
     protected MenuItem  mDownvoteMenuItem;
     protected RedditUrl mRedditUrl;
@@ -186,6 +186,16 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
         return true;
     }
 
+    /**
+     * Get the JSON representation of the current image/post in the ViewPager to report an error.
+     *
+     * @return The JSON representation of the currently viewed object.
+     */
+    @Override
+    protected void reportCurrentItem() {
+        RedditService.reportPost(this, getAdapter().getPost(mPager.getCurrentItem()));
+    }
+
     @Override
     public String getSubreddit() {
         return mSubreddit;
@@ -245,7 +255,7 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
     @Override
     public void onFinishSaveImageDialog(String filename) {
         PostData postData = getAdapter().getPost(mPager.getCurrentItem());
-        ImageUtil.downloadImage(this, postData.getUrl(), filename);
+        mBus.post(new DownloadImageEvent(postData.getPermalink(), filename));
     }
 
     public boolean isRequestInProgress() {
@@ -291,6 +301,12 @@ public class ImageDetailActivity extends ImageViewerActivity implements LoaderMa
                 mDownvoteMenuItem.setIcon(R.drawable.ic_action_downvote);
                 break;
         }
+    }
+
+    @Subscribe
+    public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
+        Ln.i("DownloadImageComplete - filename was: " + event.getFilename());
+        Toast.makeText(this, "Image saved as " + event.getFilename(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

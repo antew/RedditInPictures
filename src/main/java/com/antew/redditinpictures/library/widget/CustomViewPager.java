@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Antew | antewcode@gmail.com
+ * Copyright (C) 2014 Antew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,9 +61,13 @@ public class CustomViewPager extends ViewPager {
         return false;
     }
 
-    public void toggleSwipingEnabled() {
-        mEnabled = !mEnabled;
+    public void setSwipingEnabled(boolean isEnabled) {
+        mEnabled = isEnabled;
         this.requestDisallowInterceptTouchEvent(mEnabled);
+    }
+
+    public void toggleSwipingEnabled() {
+        setSwipingEnabled(!mEnabled);
     }
 
     public boolean isSwipingEnabled() {

@@ -1,19 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+** Copyright 2014 Antew
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
+-->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-        <PreferenceCategory
-                android:title="Disable Ads">
-                <CheckBoxPreference
-                        android:title="Disable Ads"
-                        android:defaultValue="false"
-                        android:summary="@string/in_exchange_for_disabling_ads"
-                        android:key="@string/pref_disable_ads" />
-        </PreferenceCategory>
-        <PreferenceCategory
-                android:title="Upgrade">
-                <Preference
-                        android:title="Upgrade to Pro"
-                        android:defaultValue="false"
-                        android:summary="Upgrade to the Pro version to log in, view your subscribed subreddits, vote, save images, and support future development."
-                        android:key="@string/pref_get_pro_version" />
-        </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/disable_ads"
+        android:order="35">
+        <CheckBoxPreference
+            android:title="@string/disable_ads"
+            android:defaultValue="false"
+            android:summary="@string/in_exchange_for_disabling_ads"
+            android:key="@string/pref_disable_ads" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Upgrade"
+        android:order="5">
+        <Preference
+            android:title="@string/upgrade_to_pro"
+            android:defaultValue="false"
+            android:summary="@string/upgrade_value_prop_prefs"
+            android:key="@string/pref_get_pro_version" />
+    </PreferenceCategory>
 </PreferenceScreen>

@@ -1,16 +1,31 @@
+/*
+ * Copyright (C) 2014 Antew
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.antew.redditinpictures.library.image;
 
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.library.model.ImageSize;
-import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurApiCache;
-import com.antew.redditinpictures.library.model.imgur.ImgurGallery;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
-import com.antew.redditinpictures.library.model.imgur.SimpleImgurGallery;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
+import com.antew.redditinpictures.library.model.ImageSize;
+import com.antew.redditinpictures.library.model.ImageType;
+import com.antew.redditinpictures.library.model.imgur.ImgurGallery;
+import com.antew.redditinpictures.library.model.imgur.SimpleImgurGallery;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
 import com.antew.redditinpictures.library.util.Ln;
 
@@ -119,6 +134,10 @@ public class ImgurGalleryType extends Image {
             return new ImgurImageType(mSimpleImgurGallery.getImgurImage().getLinks().getOriginal());
         }
         return null;
+    }
+
+    public boolean isSingleImage() {
+        return mSimpleImgurGallery != null && mSimpleImgurGallery.isImgurImage();
     }
 
     public Album getAlbum() {

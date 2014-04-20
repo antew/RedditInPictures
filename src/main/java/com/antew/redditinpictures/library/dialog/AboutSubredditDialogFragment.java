@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2014 Antew
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.antew.redditinpictures.library.dialog;
 
 import android.app.AlertDialog;
@@ -15,6 +30,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.model.reddit.SubredditData;
+import com.antew.redditinpictures.library.util.MarkdownUtil;
+import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Picasso;
 
@@ -67,15 +84,22 @@ public class AboutSubredditDialogFragment extends DialogFragment {
 
             infoText += mSubredditData.getSubscribers() + getActivity().getString(R.string._subscribers);
 
-            Picasso.with(getActivity())
-                   .load(Uri.parse(mSubredditData.getHeader_img()))
-                   .placeholder(R.drawable.loading_spinner_76)
-                   .error(R.drawable.empty_photo)
-                   .into(header);
+            if (Strings.notEmpty(mSubredditData.getHeader_img())) {
+                Picasso.with(getActivity())
+                       .load(Uri.parse(mSubredditData.getHeader_img()))
+                       .placeholder(R.drawable.empty_photo)
+                       .error(R.drawable.error_photo)
+                       .into(header);
+            } else {
+                Picasso.with(getActivity())
+                       .load(R.drawable.empty_photo)
+                       .error(R.drawable.error_photo)
+                       .into(header);
+            }
             name.setText(mSubredditData.getDisplay_name());
             info.setText(Html.fromHtml(infoText));
-            shortDescription.setText(mSubredditData.getPublic_description());
-            description.setText(mSubredditData.getDescription());
+            MarkdownUtil.setMarkdownText(shortDescription, mSubredditData.getPublic_description());
+            MarkdownUtil.setMarkdownText(description, mSubredditData.getDescription());
         }
 
         final AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(dialogView)

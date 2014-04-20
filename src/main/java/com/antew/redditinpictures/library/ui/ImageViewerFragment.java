@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2014 Antew
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.antew.redditinpictures.library.ui;
 
 import android.annotation.TargetApi;
@@ -38,8 +53,10 @@ import com.antew.redditinpictures.library.model.ImageSize;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
 import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -74,21 +91,23 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
     protected SystemUiStateProvider mSystemUiStateProvider;
     @InjectView(R.id.pb_progress)
-    ProgressBar    mProgress;
+    ProgressBar     mProgress;
     @InjectView(R.id.rl_post_information_wrapper)
-    RelativeLayout mPostInformationWrapper;
+    RelativeLayout  mPostInformationWrapper;
     @InjectView(R.id.tv_post_title)
-    TextView       mPostTitle;
+    TextView        mPostTitle;
     @InjectView(R.id.tv_post_information)
-    TextView       mPostInformation;
+    TextView        mPostInformation;
     @InjectView(R.id.btn_view_gallery)
-    Button         mBtnViewGallery;
+    Button          mBtnViewGallery;
     @InjectView(R.id.webview_stub)
-    ViewStub       mViewStub;
+    ViewStub        mViewStub;
     @InjectView(R.id.tv_post_votes)
-    TextView       mPostVotes;
+    TextView        mPostVotes;
     @InjectView(R.id.b_retry)
-    Button         mRetry;
+    Button          mRetry;
+    @Inject
+    ImageDownloader mImageDownloader;
     /**
      * This BroadcastReceiver handles updating the score when a vote is cast or changed
      */
@@ -299,35 +318,48 @@ public abstract class ImageViewerFragment extends BaseFragment {
             return;
         }
 
-        mResolvedImage = image;
-        mResolvedImageUrl = image.getSize(ImageSize.ORIGINAL);
+        try {
 
-        if (ImageUtil.isGif(mResolvedImageUrl)) {
-            Picasso.with(getActivity()).load(R.drawable.loading_spinner_76).into(mImageView);
-            loadGifInWebView(mResolvedImageUrl);
-        } else {
-            Picasso.with(getActivity())
-                   .load(Uri.parse(mResolvedImageUrl))
-                   .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
-                   .centerInside()
-                   .into(mImageView, new Callback() {
-                       @Override
-                       public void onSuccess() {
-                           if (mProgress != null) {
-                               mProgress.setVisibility(View.GONE);
-                           }
-                       }
+            mResolvedImage = image;
+            mResolvedImageUrl = mResolvedImage.getSize(ImageSize.ORIGINAL);
 
-                       @Override
-                       public void onError() {
-                           if (mErrorMessage != null) {
-                               mErrorMessage.setVisibility(View.VISIBLE);
+            // Fallback to the URL if we can't resolve.
+            if (Strings.isEmpty(mResolvedImageUrl)) {
+                mResolvedImageUrl = mResolvedImage.getUrl();
+            }
+
+            if (ImageUtil.isGif(mResolvedImageUrl)) {
+                Picasso.with(getActivity()).load(R.drawable.loading_spinner_76).into(mImageView);
+                loadGifInWebView(mResolvedImageUrl);
+            } else {
+                Picasso.with(getActivity())
+                       .load(Uri.parse(mResolvedImageUrl))
+                       .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
+                       .centerInside()
+                       .into(mImageView, new Callback() {
+                           @Override
+                           public void onSuccess() {
+                               if (mProgress != null) {
+                                   mProgress.setVisibility(View.GONE);
+                               }
                            }
-                           if (mRetry != null) {
-                               mRetry.setVisibility(View.VISIBLE);
+
+                           @Override
+                           public void onError() {
+                               if (mErrorMessage != null) {
+                                   mErrorMessage.setVisibility(View.VISIBLE);
+                               }
+                               if (mRetry != null) {
+                                   mRetry.setVisibility(View.VISIBLE);
+                               }
                            }
-                       }
-                   });
+                       });
+            }
+        } catch (Exception e) {
+            Ln.e(e, "Failed to load image");
+            mProgress.setVisibility(View.GONE);
+            mErrorMessage.setVisibility(View.VISIBLE);
+            mRetry.setVisibility(View.VISIBLE);
         }
     }
 
@@ -337,7 +369,16 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
 
         initializeWebView(mWebView);
-        mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
+        /**
+         * On earlier version of Android, {@link android.webkit.WebView#loadData(String, String, String)} decides to just show the HTML instead of actually display it.
+         *
+         * So, for older version we make it load from a base URL, which fixes it for some reason...
+         */
+        if (AndroidUtil.hasHoneycomb()) {
+            mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
+        } else {
+            mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
+        }
         mImageView.setVisibility(View.GONE);
     }
 

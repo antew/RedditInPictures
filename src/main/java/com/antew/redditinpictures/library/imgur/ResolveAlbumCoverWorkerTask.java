@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2014 Antew
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.antew.redditinpictures.library.imgur;
 
 import android.content.Context;
@@ -50,7 +65,7 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
     @Override
     protected void onPreExecute() throws Exception {
         super.onPreExecute();
-        Picasso.with(mContext).load(R.drawable.loading_spinner_48).error(R.drawable.empty_photo).into(mImageView);
+        Picasso.with(mContext).load(R.drawable.empty_photo).error(R.drawable.error_photo).into(mImageView);
     }
 
     /**
@@ -98,7 +113,10 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
         Ln.d("Resolving url: %s", mImageUrl);
         Image imageAlbum = ImageResolver.resolve(mImageUrl);
         if (imageAlbum instanceof ImgurAlbumType) {
-            return mImgurImagePrefix + ((ImgurAlbumType) imageAlbum).getAlbum().getCover() + mImgurImageSuffix;
+            ImgurAlbumType imgurAlbumType = (ImgurAlbumType) imageAlbum;
+            if (imgurAlbumType != null) {
+                return mImgurImagePrefix + imgurAlbumType.getAlbum().getCover() + mImgurImageSuffix;
+            }
         }
         return null;
     }

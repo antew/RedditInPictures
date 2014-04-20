@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+** Copyright 2014 Antew
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
+-->
 <resources>
     <string name="_0_of_">"0 of "</string>
     <string name="_of_">" of "</string>
@@ -13,7 +30,6 @@
     <string name="clear_cache_complete_toast">Caches have been cleared</string>
     <string name="clear_cache_menu">Clear Caches</string>
     <string name="delete">Delete</string>
-    <string name="disable_ads">Disable Ads</string>
     <string name="edit_subreddits">Edit Subreddits</string>
     <string name="enter_a_password">Enter a password!</string>
     <string name="enter_a_username">Enter a username!</string>
@@ -65,7 +81,6 @@
     <string name="swiping_disabled">Swiping disabled</string>
     <string name="swiping_enabled">Swiping enabled</string>
     <string name="thank_you_for_your_support">Thank you for your support!</string>
-    <string name="upgrade_to_full_version">Upgrade to pro version</string>
     <string name="username">Username:</string>
     <string name="uses_more_bandwidth">Uses more bandwidth</string>
     <string name="help_make_better">Help make Reddit in Pictures better by allowing us to track anonymous usage data.</string>
@@ -121,7 +136,8 @@
     <!-- Default Subreddits, grabbed image subreddits from the top 125 subreddits by activity -->
     <string name="default_subreddits_multi">pics+funny+gaming+aww+AdviceAnimals+EarthPorn+gifs+woahdude+mildlyinteresting+lifehacks+reactiongifs+photoshopbattles+FoodPorn+wheredidthesodago+HistoryPorn+cats+fffffffuuuuuuuuuuuu+standupshots+thewalkingdead+doctorwho+comics+QuotesPorn+carporn+SpacePorn</string>
     <string name="media_credits">Media Credits</string>
-    <string name="disable_swiping">Disable Swiping</string>
+    <string name="disable_swiping">Disable swiping</string>
+    <string name="enable_swiping">Enable swiping</string>
     <string name="share_image">Share Image</string>
     <string name="open_post_on_reddit">Open Post on Reddit</string>
     <string name="hot">Hot</string>
@@ -146,4 +162,7 @@
     <string name="upvote">Upvote</string>
     <string name="downvote">Downvote</string>
     <string name="report_image_display_issue">Report Image Display Issue</string>
+    <string name="image_display_issue_reported">Image display issue reported. \nThanks for letting us know!</string>
+    <string name="reddit_options">Reddit Options</string>
+    <string name="reddit_in_pictures_options">Reddit in Pictures Options</string>
 </resources>

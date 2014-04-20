@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Antew | antewcode@gmail.com
+ * Copyright (C) 2014 Antew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 package com.antew.redditinpictures.library.model.reddit;
 
 import android.content.ContentValues;
-import com.antew.redditinpictures.library.interfaces.ContentValuesArrayOperation;
 import com.antew.redditinpictures.library.database.RedditContract;
+import com.antew.redditinpictures.library.interfaces.ContentValuesArrayOperation;
 import java.util.ArrayList;
 import java.util.List;
 

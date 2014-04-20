@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2014 Antew
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.antew.redditinpictures.library.ui;
 
 import android.annotation.TargetApi;
@@ -40,11 +55,9 @@ import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Inject;
 
 /**
  * Fragment with convenience methods for displaying images
@@ -57,8 +70,6 @@ import javax.inject.Inject;
 public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V extends CursorAdapter> extends BaseFragment
     implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     protected V           mAdapter;
-    @Inject
-    protected Bus         mBus;
     @InjectView(R.id.no_images)
     protected TextView    mNoImages;
     @InjectView(R.id.pb_progress)
@@ -134,7 +145,6 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onResume() {
         super.onResume();
-        mBus.register(this);
         getActivity().getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_REDDIT, null, this);
         getActivity().getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_POSTS, null, this);
         fetchPostsIfNeeded();
@@ -148,7 +158,6 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onPause() {
         super.onPause();
-        mBus.unregister(this);
         getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_REDDIT);
         getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_POSTS);
     }

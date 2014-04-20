@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Antew | antewcode@gmail.com
+ * Copyright (C) 2014 Antew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
 import com.antew.redditinpictures.library.interfaces.RedditPostFilter;
 import com.antew.redditinpictures.library.util.ImageUtil;
-import com.antew.redditinpictures.library.database.RedditContract;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,7 +122,9 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
         values.put(RedditContract.RedditData.RETRIEVED_DATE, data.getRetrievedDate().getTime());
         values.put(RedditContract.RedditData.SUBREDDIT, data.getSubreddit());
         values.put(RedditContract.RedditData.CATEGORY, data.getCategory().getName());
-        values.put(RedditContract.RedditData.AGE, data.getAge().getAge());
+        if (data.getAge() != null) {
+            values.put(RedditContract.RedditData.AGE, data.getAge().getAge());
+        }
 
         return values;
     }

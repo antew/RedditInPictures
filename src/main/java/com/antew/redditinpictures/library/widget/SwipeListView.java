@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2014 Antew
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.antew.redditinpictures.library.widget;
 
 import android.content.Context;
@@ -13,6 +28,7 @@ import android.view.ViewParent;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.pro.R;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -27,19 +43,22 @@ public class SwipeListView extends ListView {
      */
     public enum SwipeDirection {
         /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)} to {@link
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
          * #BOTH} will allow the user to swipe list items to
          * either the left or the right.
          */
         BOTH,
         /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)} to {@link
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
          * #LEFT} will only allow the user to swipe list items to
          * the left.
          */
         LEFT,
         /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)} to {@link
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
          * #LEFT} will only allow the user to swipe list items to
          * the right.
          */
@@ -574,7 +593,20 @@ public class SwipeListView extends ListView {
                 }
                 break;
         }
-        return super.onTouchEvent(event);
+        /**
+         * In older versions of Android MotionEvent will cause an ArrayIndexOutOfBoundsException when it
+         * attempts to access the Y coordinateunchecked if there hasn't been any motion in the Y direction.
+         * Can't extend MotionEvent since it is final, so catching the error is the best we can do.
+         */
+        if (!AndroidUtil.hasHoneycomb()) {
+            try {
+                return super.onTouchEvent(event);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                return true;
+            }
+        } else {
+            return super.onTouchEvent(event);
+        }
     }
 
     /**

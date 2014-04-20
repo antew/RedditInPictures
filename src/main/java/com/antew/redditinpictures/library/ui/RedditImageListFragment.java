@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2014 Antew
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.antew.redditinpictures.library.ui;
 
 import android.content.Intent;
@@ -12,15 +27,15 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.ImageListCursorAdapter;
 import com.antew.redditinpictures.library.database.QueryCriteria;
 import com.antew.redditinpictures.library.database.RedditContract;
-import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
+import com.antew.redditinpictures.library.event.SaveImageEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
-import com.antew.redditinpictures.library.util.StringUtil;
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.widget.SwipeListView;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
@@ -147,8 +162,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
                    .send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.SAVE_POST,
                                                 mCurrentSubreddit, null).build()
                         );
-        SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(StringUtil.sanitizeFileName(postData.getTitle()));
-        saveImageDialog.show(getFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
+        mBus.post(new SaveImageEvent(postData));
     }
 
     /**
@@ -196,12 +210,19 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
      *     The PostData of the image.
      */
     @Override
-    public void reportImage(PostData postData) {
+    public void reportImage(final PostData postData) {
         EasyTracker.getInstance(getActivity())
                    .send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.REPORT_POST,
                                                 mCurrentSubreddit, null).build()
                         );
-        Toast.makeText(getActivity(), "Reporting Images Isn't Implemented Yet. :(", Toast.LENGTH_LONG).show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RedditService.reportPost(getActivity(), postData);
+            }
+        }).start();
+
+        Toast.makeText(getActivity(), R.string.image_display_issue_reported, Toast.LENGTH_LONG).show();
     }
 
     @Subscribe

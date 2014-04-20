@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Antew | antewcode@gmail.com
+ * Copyright (C) 2014 Antew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,8 +162,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
         if (Strings.notEmpty(url)) {
             Picasso.with(mContext)
                    .load(Uri.parse(url))
-                   .placeholder(R.drawable.loading_spinner_48)
-                   .error(R.drawable.empty_photo)
+                   .placeholder(R.drawable.empty_photo)
+                   .error(R.drawable.error_photo)
                    .fit()
                    .centerCrop()
                    .into(holder.imageView);

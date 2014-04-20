@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2014 Antew
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.antew.redditinpictures.library.dialog;
 
 import android.app.AlertDialog;
@@ -35,8 +50,8 @@ public class AddSubredditDialogFragment extends DialogFragment {
      * Poor mans check to reduce network calls. Based on the the Reddit source code the minimum length for a subreddit is 3 characters. See
      * https://github.com/reddit/reddit/blob/master/r2/r2/lib/validator/validator.py#L512
      */
-    private static final int MIN_SEARCH_LENGTH = 3;
-    private TextWatcher mSubredditWatcher = new TextWatcher() {
+    private static final int         MIN_SEARCH_LENGTH = 3;
+    private              TextWatcher mSubredditWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             return;
@@ -72,7 +87,8 @@ public class AddSubredditDialogFragment extends DialogFragment {
          * otherwise, this is null.
          * @return Return true if you have consumed the action, else false.
          */
-        @Override public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             if (actionId == EditorInfo.IME_ACTION_GO && mSubreddit != null) {
                 ((AddSubredditDialogListener) getActivity()).onAddSubreddit(mSubreddit.getText().toString());
                 dismiss();
@@ -91,17 +107,17 @@ public class AddSubredditDialogFragment extends DialogFragment {
             }
         }
     };
-    private DialogInterface.OnClickListener mAddSubredditListener = new DialogInterface.OnClickListener() {
+    private DialogInterface.OnClickListener mAddSubredditListener            = new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int whichButton) {
             ((AddSubredditDialogListener) getActivity()).onAddSubreddit(mSubreddit.getText().toString());
         }
     };
-    private DialogInterface.OnClickListener mDialogCancelListener = new DialogInterface.OnClickListener() {
+    private DialogInterface.OnClickListener mDialogCancelListener            = new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int whichButton) {
             dialog.cancel();
         }
     };
-    private BroadcastReceiver mSubredditsSearch = new BroadcastReceiver() {
+    private BroadcastReceiver               mSubredditsSearch                = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra(Constants.Extra.EXTRA_SUBREDDIT_NAMES)) {
@@ -140,9 +156,13 @@ public class AddSubredditDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    @Override public void onDismiss(DialogInterface dialog) {
+    /**
+     * Remove dialog.
+     */
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mSubredditsSearch);
-        super.onDismiss(dialog);
     }
 
     protected void searchForSubreddits(String queryText) {

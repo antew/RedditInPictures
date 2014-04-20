@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Antew | antewcode@gmail.com
+ * Copyright (C) 2014 Antew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.pro.R;
 
 public class SaveImageDialogFragment extends DialogFragment implements OnEditorActionListener, TextWatcher {
-    public static final String FILENAME = "";
+    public static final String FILENAME = "fileName";
     private EditText filename;
 
     // Empty constructor required for DialogFragment
@@ -51,9 +51,7 @@ public class SaveImageDialogFragment extends DialogFragment implements OnEditorA
         frag.setArguments(b);
 
         return frag;
-    }
-
-    ;
+    };
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Antew | antewcode@gmail.com
+ * Copyright (C) 2014 Antew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,62 +20,62 @@ public class Constants {
 
     public static class Analytics {
         public static class Category {
-            public static final String MENU_DRAWER_ACTION = "menu_drawer_action";
+            public static final String MENU_DRAWER_ACTION    = "menu_drawer_action";
             public static final String SUBREDDIT_MENU_ACTION = "subreddit_menu_action";
-            public static final String ACTION_BAR_ACTION = "action_bar_action";
-            public static final String POST_MENU_ACTION = "post_menu_action";
-            public static final String UI_ACTION = "ui_action";
-            public static final String LIST_UI_ACTION = "list_ui_action";
-            public static final String INITIALIZE = "initialize";
+            public static final String ACTION_BAR_ACTION     = "action_bar_action";
+            public static final String POST_MENU_ACTION      = "post_menu_action";
+            public static final String UI_ACTION             = "ui_action";
+            public static final String LIST_UI_ACTION        = "list_ui_action";
+            public static final String INITIALIZE            = "initialize";
         }
 
         public static class Action {
-            public static final String OPEN_SUBREDDIT = "open_subreddit";
-            public static final String ADD_SUBREDDIT = "add_subreddit";
-            public static final String SUBSCRIBE_TO_SUBREDDIT = "subscribe_subreddit";
+            public static final String OPEN_SUBREDDIT             = "open_subreddit";
+            public static final String ADD_SUBREDDIT              = "add_subreddit";
+            public static final String SUBSCRIBE_TO_SUBREDDIT     = "subscribe_subreddit";
             public static final String UNSUBSCRIBE_FROM_SUBREDDIT = "unsubscribe_subreddit";
-            public static final String DISPLAY_SUBREDDIT_INFO = "subreddit_info";
-            public static final String DELETE_SUBREDDIT = "delete_subreddit";
-            public static final String SHOW_ADD_SUBREDDIT = "show_add_subreddit";
-            public static final String SHOW_SET_DEFAULTS = "show_set_defaults";
-            public static final String CLICK = "click";
-            public static final String LOGIN = "login";
-            public static final String LONG_PRESS = "long_press";
-            public static final String CLEAR = "clear";
-            public static final String SORT_SUBREDDITS = "sort_subreddits";
-            public static final String REFRESH_SUBREDDITS = "refresh_subreddits";
-            public static final String REFRESH_POSTS = "refresh_posts";
-            public static final String OPEN_SETTINGS = "open_settings";
-            public static final String IMAGE_VIEW = "image_view";
-            public static final String CHANGE_VIEW = "change_view";
-            public static final String HOME = "home";
-            public static final String TOGGLE_SWIPING = "toggle_swiping";
-            public static final String SHARE_POST = "share_post";
-            public static final String SAVE_POST = "save_post";
-            public static final String OPEN_POST = "open_post";
-            public static final String OPEN_POST_EXTERNAL = "open_post_external";
-            public static final String TOGGLE_DETAILS = "toggle_details";
-            public static final String POST_VOTE = "post_vote";
-            public static final String REPORT_POST = "report_post";
-            public static final String OPEN_GALLERY = "open_gallery";
+            public static final String DISPLAY_SUBREDDIT_INFO     = "subreddit_info";
+            public static final String DELETE_SUBREDDIT           = "delete_subreddit";
+            public static final String SHOW_ADD_SUBREDDIT         = "show_add_subreddit";
+            public static final String SHOW_SET_DEFAULTS          = "show_set_defaults";
+            public static final String CLICK                      = "click";
+            public static final String LOGIN                      = "login";
+            public static final String LONG_PRESS                 = "long_press";
+            public static final String CLEAR                      = "clear";
+            public static final String SORT_SUBREDDITS            = "sort_subreddits";
+            public static final String REFRESH_SUBREDDITS         = "refresh_subreddits";
+            public static final String REFRESH_POSTS              = "refresh_posts";
+            public static final String OPEN_SETTINGS              = "open_settings";
+            public static final String IMAGE_VIEW                 = "image_view";
+            public static final String CHANGE_VIEW                = "change_view";
+            public static final String HOME                       = "home";
+            public static final String TOGGLE_SWIPING             = "toggle_swiping";
+            public static final String SHARE_POST                 = "share_post";
+            public static final String SAVE_POST                  = "save_post";
+            public static final String OPEN_POST                  = "open_post";
+            public static final String OPEN_POST_EXTERNAL         = "open_post_external";
+            public static final String TOGGLE_DETAILS             = "toggle_details";
+            public static final String POST_VOTE                  = "post_vote";
+            public static final String REPORT_POST                = "report_post";
+            public static final String OPEN_GALLERY               = "open_gallery";
         }
 
         public static class Label {
             public static final String SUBREDDIT_FILTER = "subreddit_filter";
-            public static final String ALPHABETICALLY = "alphabetically";
-            public static final String POPULARITY = "popularity";
-            public static final String LOGGED_IN = "logged_in";
-            public static final String NOT_LOGGED_IN = "not_logged_in";
-            public static final String LOGGED_OUT = "logged_out";
-            public static final String LIST = "list";
-            public static final String GRID = "grid";
-            public static final String ENABLED = "enabled";
-            public static final String DISABLED = "disabled";
-            public static final String GO_FULLSCREEN = "go_fullscreen";
-            public static final String EXIT_FULLSCREEN = "exit_fullscreen";
-            public static final String UP = "up";
-            public static final String DOWN = "down";
-            public static final String IMGUR = "imgur";
+            public static final String ALPHABETICALLY   = "alphabetically";
+            public static final String POPULARITY       = "popularity";
+            public static final String LOGGED_IN        = "logged_in";
+            public static final String NOT_LOGGED_IN    = "not_logged_in";
+            public static final String LOGGED_OUT       = "logged_out";
+            public static final String LIST             = "list";
+            public static final String GRID             = "grid";
+            public static final String ENABLED          = "enabled";
+            public static final String DISABLED         = "disabled";
+            public static final String GO_FULLSCREEN    = "go_fullscreen";
+            public static final String EXIT_FULLSCREEN  = "exit_fullscreen";
+            public static final String UP               = "up";
+            public static final String DOWN             = "down";
+            public static final String IMGUR            = "imgur";
         }
     }
 
@@ -106,6 +106,7 @@ public class Constants {
         public static final  String EXTRA_SHOW_NSFW_IMAGES_CHANGED = EXTRA_PREFIX + "showNsfwImagesChanged";
         public static final  String EXTRA_USERNAME                 = EXTRA_PREFIX + "username";
         public static final  String EXTRA_QUERY                    = EXTRA_PREFIX + "query";
+        public static final  String EXTRA_IS_SWIPING_ENABLED       = EXTRA_PREFIX + "isSwipingEnabled";
     }
 
     public static class Dialog {
@@ -116,6 +117,7 @@ public class Constants {
         public static final  String DIALOG_GET_FILENAME       = DIALOG_PREFIX + "getFilename";
         public static final  String DIALOG_LOGIN              = DIALOG_PREFIX + "login";
         public static final  String DIALOG_LOGOUT             = DIALOG_PREFIX + "logout";
+        public static final  String DIALOG_EXIT               = DIALOG_PREFIX + "exit";
     }
 
     public static class Broadcast {
@@ -165,9 +167,12 @@ public class Constants {
         public static final String API_KEY = "REPLACE_THIS_WITH_YOUR_FLICKR_API_KEY";
     }
 
-    public static final float  IMAGE_CACHE_SIZE = 0.25f;
-    public static final String JSON             = ".json";
+    public static final int    DOUBLE_CLICK_TIMEOUT = 500; //500 milliseconds, taken from the Windows default value for double clicks.
+    public static final float  IMAGE_CACHE_SIZE             = 0.25f;
+    public static final String JSON                         = ".json";
 
     public static final String WEBVIEW_IMAGE_HTML_BEGIN = "<html><head><style type=\"text/css\">* {padding:0;margin:0;}body {background:#000000;}.center-container {position:absolute;width:100%;height:100%;text-align:center;}.center-agent {display:inline-block;height:100%;vertical-align:middle;}.center-target {display:inline-block;vertical-align:middle;}#image {width: 80%;}</style></head><body><div class=\"center-container\"><span class=\"center-agent\"></span><img id=\"image\" class=\"center-target\" src=\"";
     public static final String WEBVIEW_IMAGE_HTML_END   = "\"/></div></body></html>";
+    public static final String REPORT_POST_URL          = "http://dev.davidtpate.com/reportPost.php";
+    public static final String REPORT_IMAGE_URL         = "http://dev.davidtpate.com/reportImage.php";
 }
