@@ -34,7 +34,7 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
-        versionName "3.0.2"
+        versionName "3.0.3"
     }
 
     packagingOptions {
@@ -53,13 +53,13 @@ android {
     productFlavors {
         free {
             packageName "com.antew.redditinpictures"
-            versionCode 17
+            versionCode 18
             signingConfig signingConfigs.prod
         }
 
         pro {
             packageName "com.antew.redditinpictures.pro"
-            versionCode 14
+            versionCode 18
             signingConfig signingConfigs.prod
         }
     }
