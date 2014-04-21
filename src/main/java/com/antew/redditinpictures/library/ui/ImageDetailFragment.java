@@ -183,8 +183,13 @@ public class ImageDetailFragment extends ImageViewerFragment {
                 }
 
                 if (mAlbum != null && mAlbum.getImages().size() > 1) {
-                    mBtnViewGallery.setVisibility(View.VISIBLE);
-                    mBtnViewGallery.setOnClickListener(getViewGalleryOnClickListener());
+                    mBtnViewGallery.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBtnViewGallery.setVisibility(View.VISIBLE);
+                            mBtnViewGallery.setOnClickListener(getViewGalleryOnClickListener());
+                        }
+                    });
                 }
             }
         }).start();
