@@ -160,13 +160,22 @@ public class ImageListCursorAdapter extends CursorAdapter {
         }
 
         if (Strings.notEmpty(url)) {
-            Picasso.with(mContext)
-                   .load(Uri.parse(url))
-                   .placeholder(R.drawable.empty_photo)
-                   .error(R.drawable.error_photo)
-                   .fit()
-                   .centerCrop()
-                   .into(holder.imageView);
+            try {
+                Picasso.with(mContext)
+                       .load(Uri.parse(url))
+                       .placeholder(R.drawable.empty_photo)
+                       .error(R.drawable.error_photo)
+                       .fit()
+                       .centerCrop()
+                       .into(holder.imageView);
+            } catch (Exception e) {
+                Ln.e(e, "Failed to load image");
+                Picasso.with(mContext)
+                       .load(R.drawable.error_photo)
+                       .fit()
+                       .centerCrop()
+                       .into(holder.imageView);
+            }
         }
 
         String separator = " " + "\u2022" + " ";

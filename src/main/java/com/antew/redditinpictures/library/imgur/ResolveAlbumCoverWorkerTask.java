@@ -65,7 +65,7 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
     @Override
     protected void onPreExecute() throws Exception {
         super.onPreExecute();
-        Picasso.with(mContext).load(R.drawable.empty_photo).error(R.drawable.error_photo).into(mImageView);
+        Picasso.with(mContext).load(R.drawable.empty_photo).into(mImageView);
     }
 
     /**
@@ -80,11 +80,18 @@ public class ResolveAlbumCoverWorkerTask extends SafeAsyncTask<String> {
         if (mImageView != null) {
             ResolveAlbumCoverWorkerTask albumCoverResolverWorkerTask = getAlbumCoverResolverTask(mImageView);
             if (this == albumCoverResolverWorkerTask) {
-                Picasso.with(mContext)
-                       .load(Uri.parse(imageUrl))
-                       .placeholder(R.drawable.loading_spinner_48)
-                       .error(R.drawable.empty_photo)
-                       .into(mImageView);
+                try {
+                    Picasso.with(mContext)
+                           .load(Uri.parse(imageUrl))
+                           .placeholder(R.drawable.loading_spinner_48)
+                           .error(R.drawable.error_photo)
+                           .into(mImageView);
+                } catch (Exception e) {
+                    Ln.e(e, "Failed to load image");
+                    Picasso.with(mContext)
+                           .load(R.drawable.error_photo)
+                           .into(mImageView);
+                }
             }
         }
     }
