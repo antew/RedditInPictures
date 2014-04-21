@@ -429,7 +429,8 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     }
 
     protected void fetchAdditionalImagesFromReddit() {
-        if (!mRequestInProgress) {
+        //This should only be called when a request is not in progress and we have an "After" value. Otherwise it creates an infinite loop of doom. DOOM!
+        if (!mRequestInProgress && Strings.notEmpty(mAfter)) {
             produceRequestInProgressEvent();
             RedditService.getPosts(getActivity(), mCurrentSubreddit, mAge, mCategory, mAfter);
         }
