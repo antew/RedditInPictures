@@ -31,6 +31,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -103,6 +104,8 @@ public class AddSubredditDialogFragment extends DialogFragment {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (mSubredditSearchResultsAdapter != null) {
                 ((AddSubredditDialogListener) getActivity()).onAddSubreddit(mSubredditSearchResultsAdapter.getItem(position));
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mSubreddit.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
                 dismiss();
             }
         }
