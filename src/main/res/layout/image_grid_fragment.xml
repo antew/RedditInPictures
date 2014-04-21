@@ -42,6 +42,7 @@
         style="@style/PhotoGridLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:fastScrollEnabled="true"
         android:columnWidth="@dimen/image_thumbnail_size"
         android:horizontalSpacing="@dimen/image_thumbnail_spacing"
         android:numColumns="auto_fit"
