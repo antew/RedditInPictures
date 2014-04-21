@@ -30,6 +30,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.model.reddit.SubredditData;
+import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.MarkdownUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
@@ -85,16 +86,18 @@ public class AboutSubredditDialogFragment extends DialogFragment {
             infoText += mSubredditData.getSubscribers() + getActivity().getString(R.string._subscribers);
 
             if (Strings.notEmpty(mSubredditData.getHeader_img())) {
-                Picasso.with(getActivity())
-                       .load(Uri.parse(mSubredditData.getHeader_img()))
-                       .placeholder(R.drawable.empty_photo)
-                       .error(R.drawable.error_photo)
-                       .into(header);
+                try {
+                    Picasso.with(getActivity())
+                           .load(Uri.parse(mSubredditData.getHeader_img()))
+                           .placeholder(R.drawable.empty_photo)
+                           .error(R.drawable.error_photo)
+                           .into(header);
+                } catch (Exception e) {
+                    Ln.e(e, "Failed to load image");
+                    Picasso.with(getActivity()).load(R.drawable.error_photo).into(header);
+                }
             } else {
-                Picasso.with(getActivity())
-                       .load(R.drawable.empty_photo)
-                       .error(R.drawable.error_photo)
-                       .into(header);
+                Picasso.with(getActivity()).load(R.drawable.error_photo).into(header);
             }
             name.setText(mSubredditData.getDisplay_name());
             info.setText(Html.fromHtml(infoText));

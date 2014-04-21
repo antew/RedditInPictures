@@ -22,6 +22,7 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.model.reddit.MySubreddits;
+import com.antew.redditinpictures.library.model.reddit.SubredditChildren;
 import com.antew.redditinpictures.library.model.reddit.SubredditData;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
@@ -39,9 +40,6 @@ public class MySubredditsResponse extends RedditResponseHandler {
     public void processHttpResponse(Context context) {
         ContentResolver resolver = context.getContentResolver();
 
-        // Don't wipe out the default subreddits
-        int userRowsDeleted = resolver.delete(RedditContract.Subreddits.CONTENT_URI, "isDefaultSubreddit = ?", new String[] { "0" });
-
         Ln.i("MySubreddits complete! = %s", result.getJson());
         MySubreddits mySubreddits = JsonDeserializer.deserialize(result.getJson(), MySubreddits.class);
 
@@ -55,14 +53,38 @@ public class MySubredditsResponse extends RedditResponseHandler {
         int capacity = mySubreddits.getCount() + defaultSubreddits.length;
         List<ContentValues> operations = new ArrayList<ContentValues>(capacity);
 
+        String where = null;
+        List<String> subredditNames = new ArrayList<String>();
         // Add in the default subreddits ('Frontpage' and 'All')
         for (DefaultSubreddit subreddit : defaultSubreddits) {
+            if (where == null) {
+                where = RedditContract.SubredditColumns.DISPLAY_NAME + " in (?";
+            } else {
+                where += ",?";
+            }
+            subredditNames.add(subreddit.getDisplayName());
             operations.add(mySubreddits.getContentValues(new SubredditData(subreddit.getDisplayName(), subreddit.getPriority())));
         }
+
+        // Add all of the subreddits so we can remove them and merge the records.
+        for (SubredditChildren child : mySubreddits.getData().getChildren()) {
+            if (child != null) {
+                if (where == null) {
+                    where = RedditContract.SubredditColumns.DISPLAY_NAME + " in (?";
+                } else {
+                    where += ",?";
+                }
+                subredditNames.add(child.getData().getDisplay_name());
+            }
+        }
+        // Close the in statement.
+        where += ")";
 
         // Get the subreddits in an array
         operations.addAll(mySubreddits.getContentValuesArray());
 
+        // Remove all current rows, so we can merge the records.
+        resolver.delete(RedditContract.Subreddits.CONTENT_URI, where, subredditNames.toArray(new String[] { }));
         int rowsInserted = resolver.bulkInsert(RedditContract.Subreddits.CONTENT_URI,
                                                operations.toArray(new ContentValues[operations.size()]));
 

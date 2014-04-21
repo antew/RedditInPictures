@@ -91,23 +91,19 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
     protected SystemUiStateProvider mSystemUiStateProvider;
     @InjectView(R.id.pb_progress)
-    ProgressBar     mProgress;
+    ProgressBar    mProgress;
     @InjectView(R.id.rl_post_information_wrapper)
-    RelativeLayout  mPostInformationWrapper;
+    RelativeLayout mPostInformationWrapper;
     @InjectView(R.id.tv_post_title)
-    TextView        mPostTitle;
+    TextView       mPostTitle;
     @InjectView(R.id.tv_post_information)
-    TextView        mPostInformation;
+    TextView       mPostInformation;
     @InjectView(R.id.btn_view_gallery)
-    Button          mBtnViewGallery;
+    Button         mBtnViewGallery;
     @InjectView(R.id.webview_stub)
-    ViewStub        mViewStub;
+    ViewStub       mViewStub;
     @InjectView(R.id.tv_post_votes)
-    TextView        mPostVotes;
-    @InjectView(R.id.b_retry)
-    Button          mRetry;
-    @Inject
-    ImageDownloader mImageDownloader;
+    TextView       mPostVotes;
     /**
      * This BroadcastReceiver handles updating the score when a vote is cast or changed
      */
@@ -126,10 +122,14 @@ public abstract class ImageViewerFragment extends BaseFragment {
             }
         }
     };
-    @InjectView(R.id.tv_error_message)
-    TextView   mErrorMessage;
+    @InjectView(R.id.b_retry)
+    Button          mRetry;
     @Inject
-    ScreenSize mScreenSize;
+    ImageDownloader mImageDownloader;
+    @InjectView(R.id.tv_error_message)
+    TextView        mErrorMessage;
+    @Inject
+    ScreenSize      mScreenSize;
     private boolean           mExitTasksEarly         = false;
     private boolean           mCancelClick            = false;
     private float             mDownXPos               = 0;
@@ -183,16 +183,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (mSystemUiStateProvider.isSystemUiVisible()) {
-            showPostDetails();
-        } else {
-            hidePostDetails();
-        }
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         if (mImage != null) {
             outState.putParcelable(IMAGE_DATA_EXTRA, mImage);
@@ -228,18 +218,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
         super.onDestroy();
     }
 
-    public void showPostDetails() {
-        if (shouldShowPostInformation()) {
-            mPostInformationWrapper.setVisibility(View.VISIBLE);
-            animate(mPostInformationWrapper).setDuration(500).y(mActionBarHeight);
-        }
-    }
-
-    public void hidePostDetails() {
-        animate(mPostInformationWrapper).setDuration(500).y(-400);
-    }
-
-    protected abstract boolean shouldShowPostInformation();
+    protected abstract void resolveImage();
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -283,6 +262,29 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mSystemUiStateProvider.isSystemUiVisible()) {
+            showPostDetails();
+        } else {
+            hidePostDetails();
+        }
+    }
+
+    public void showPostDetails() {
+        if (shouldShowPostInformation()) {
+            mPostInformationWrapper.setVisibility(View.VISIBLE);
+            animate(mPostInformationWrapper).setDuration(500).y(mActionBarHeight);
+        }
+    }
+
+    public void hidePostDetails() {
+        animate(mPostInformationWrapper).setDuration(500).y(-400);
+    }
+
+    protected abstract boolean shouldShowPostInformation();
+
     protected abstract void populatePostData(View v);
 
     protected void loadSavedInstanceState(Bundle savedInstanceState) {
@@ -307,14 +309,10 @@ public abstract class ImageViewerFragment extends BaseFragment {
         };
     }
 
-    protected abstract void resolveImage();
-
     public void loadImage(Image image) {
         if (image == null) {
             Ln.e("Received null url in loadImage(String imageUrl)");
-            mProgress.setVisibility(View.GONE);
-            mErrorMessage.setVisibility(View.VISIBLE);
-            mRetry.setVisibility(View.VISIBLE);
+            showImageError();
             return;
         }
 
@@ -339,27 +337,18 @@ public abstract class ImageViewerFragment extends BaseFragment {
                        .into(mImageView, new Callback() {
                            @Override
                            public void onSuccess() {
-                               if (mProgress != null) {
-                                   mProgress.setVisibility(View.GONE);
-                               }
+                               hideProgress();
                            }
 
                            @Override
                            public void onError() {
-                               if (mErrorMessage != null) {
-                                   mErrorMessage.setVisibility(View.VISIBLE);
-                               }
-                               if (mRetry != null) {
-                                   mRetry.setVisibility(View.VISIBLE);
-                               }
+                               showImageError();
                            }
                        });
             }
         } catch (Exception e) {
             Ln.e(e, "Failed to load image");
-            mProgress.setVisibility(View.GONE);
-            mErrorMessage.setVisibility(View.VISIBLE);
-            mRetry.setVisibility(View.VISIBLE);
+            showImageError();
         }
     }
 
@@ -430,7 +419,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
                         break;
                     case MotionEvent.ACTION_UP:
                         if (!mCancelClick) {
-
                             Intent intent = new Intent(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN);
                             intent.putExtra(Constants.Extra.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
                             LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
@@ -447,6 +435,28 @@ public abstract class ImageViewerFragment extends BaseFragment {
                 return false;
             }
         };
+    }
+
+    protected void showProgress() {
+        if (mProgress != null) {
+            mProgress.setVisibility(View.VISIBLE);
+        }
+    }
+
+    protected void hideProgress() {
+        if (mProgress != null) {
+            mProgress.setVisibility(View.GONE);
+        }
+    }
+
+    protected void showImageError() {
+        hideProgress();
+        if (mErrorMessage != null) {
+            mErrorMessage.setVisibility(View.VISIBLE);
+        }
+        if (mRetry != null) {
+            mRetry.setVisibility(View.VISIBLE);
+        }
     }
 
     /**

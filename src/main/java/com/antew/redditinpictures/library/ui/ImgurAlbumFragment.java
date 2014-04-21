@@ -59,6 +59,34 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
     }
 
     @Override
+    protected void resolveImage() {
+        try {
+            String imageUrl = mImage.getLinks().getOriginal();
+            if (ImageUtil.isGif(imageUrl)) {
+                super.loadGifInWebView(imageUrl);
+            } else {
+                Picasso.with(getActivity())
+                       .load(Uri.parse(imageUrl))
+                       .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
+                       .centerInside()
+                       .into(mImageView, new Callback() {
+                           @Override
+                           public void onSuccess() {
+                               hideProgress();
+                           }
+
+                           @Override
+                           public void onError() {
+                               showImageError();
+                           }
+                       });
+            }
+        } catch (Exception e) {
+            showImageError();
+        }
+    }
+
+    @Override
     protected boolean shouldShowPostInformation() {
         return hasTitle() || hasCaption();
     }
@@ -96,37 +124,6 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         }
     }
 
-    @Override
-    protected void resolveImage() {
-        String imageUrl = mImage.getLinks().getOriginal();
-        if (ImageUtil.isGif(imageUrl)) {
-            super.loadGifInWebView(imageUrl);
-        } else {
-            Picasso.with(getActivity())
-                   .load(Uri.parse(imageUrl))
-                   .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
-                   .centerInside()
-                   .into(mImageView, new Callback() {
-                       @Override
-                       public void onSuccess() {
-                           changeVisibility(mProgress, View.GONE);
-                       }
-
-                       @Override
-                       public void onError() {
-                           changeVisibility(mProgress, View.GONE);
-                           changeVisibility(mErrorMessage, View.VISIBLE);
-                           changeVisibility(mRetry, View.VISIBLE);
-                       }
-                   });
-        }
-    }
-
-    private void changeVisibility(View v, int visibility) {
-        if (v != null) {
-            v.setVisibility(visibility);
-        }
-    }
     private boolean hasTitle() {
         return mImage.getImage().getTitle() != null && !mImage.getImage().getTitle().trim().equals("");
     }
