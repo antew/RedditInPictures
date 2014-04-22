@@ -47,7 +47,7 @@
         android:visibility="gone"
         android:layout_below="@id/tv_error_message"/>
 
-    <uk.co.senab.photoview.PhotoView
+    <com.antew.redditinpictures.library.widget.GifPhotoView
         android:id="@+id/iv_imageView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
