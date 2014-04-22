@@ -58,9 +58,18 @@ import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.inject.Inject;
+import pl.droidsonroids.gif.GifDrawable;
+import pl.droidsonroids.gif.GifImageView;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 
@@ -79,10 +88,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
      */
     private static float MOVE_THRESHOLD;
     private final Object mPauseWorkLock = new Object();
-    protected PostData  mImage;
-    @InjectView(R.id.iv_imageView)
-    protected ImageView mImageView;
-    protected WebView   mWebView;
+    protected PostData mImage;
+    protected WebView  mWebView;
     protected boolean mPauseWork        = false;
     protected String  mResolvedImageUrl = null;
     protected Image   mResolvedImage    = null;
@@ -90,6 +97,10 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected Album mAlbum;
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
     protected SystemUiStateProvider mSystemUiStateProvider;
+    @InjectView(R.id.iv_imageView)
+    protected ImageView             mImageView;
+    @InjectView(R.id.giv_imageView)
+    protected GifImageView          mAnimatedImageView;
     @InjectView(R.id.pb_progress)
     ProgressBar    mProgress;
     @InjectView(R.id.rl_post_information_wrapper)
@@ -352,23 +363,54 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
     }
 
-    public void loadGifInWebView(String imageUrl) {
-        if (mViewStub.getParent() != null) {
-            mWebView = (WebView) mViewStub.inflate();
+    protected void showImageError() {
+        hideProgress();
+        if (mErrorMessage != null) {
+            mErrorMessage.setVisibility(View.VISIBLE);
         }
+        if (mRetry != null) {
+            mRetry.setVisibility(View.VISIBLE);
+        }
+    }
 
-        initializeWebView(mWebView);
-        /**
-         * On earlier version of Android, {@link android.webkit.WebView#loadData(String, String, String)} decides to just show the HTML instead of actually display it.
-         *
-         * So, for older version we make it load from a base URL, which fixes it for some reason...
-         */
-        if (AndroidUtil.hasHoneycomb()) {
-            mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
-        } else {
-            mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
+    public void loadGifInWebView(final String imageUrl) {
+        InputStream inputStream = null;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    OkHttpClient client = new OkHttpClient();
+                    HttpURLConnection connection = client.open(new URL(imageUrl));
+
+                    BufferedInputStream bis = new BufferedInputStream(connection.getInputStream(), 8192);
+                    final GifDrawable gifFromStream = new GifDrawable(bis);
+
+                    mAnimatedImageView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            hideProgress();
+                            mAnimatedImageView.setImageDrawable(gifFromStream);
+                            mAnimatedImageView.setVisibility(View.VISIBLE);
+                            mImageView.setVisibility(View.GONE);
+                        }
+                    });
+                } catch (Exception e) {
+                    Ln.d(e, "Failed to display GIF");
+                    mAnimatedImageView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            showImageError();
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
+    protected void hideProgress() {
+        if (mProgress != null) {
+            mProgress.setVisibility(View.GONE);
         }
-        mImageView.setVisibility(View.GONE);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -385,10 +427,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
         webview.setBackgroundColor(Color.BLACK);
         webview.setVisibility(View.VISIBLE);
         webview.setOnTouchListener(getWebViewOnTouchListener());
-    }
-
-    public String getHtmlForImageDisplay(String imageUrl) {
-        return Constants.WEBVIEW_IMAGE_HTML_BEGIN + imageUrl + Constants.WEBVIEW_IMAGE_HTML_END;
     }
 
     /**
@@ -437,25 +475,13 @@ public abstract class ImageViewerFragment extends BaseFragment {
         };
     }
 
+    public String getHtmlForImageDisplay(String imageUrl) {
+        return Constants.WEBVIEW_IMAGE_HTML_BEGIN + imageUrl + Constants.WEBVIEW_IMAGE_HTML_END;
+    }
+
     protected void showProgress() {
         if (mProgress != null) {
             mProgress.setVisibility(View.VISIBLE);
-        }
-    }
-
-    protected void hideProgress() {
-        if (mProgress != null) {
-            mProgress.setVisibility(View.GONE);
-        }
-    }
-
-    protected void showImageError() {
-        hideProgress();
-        if (mErrorMessage != null) {
-            mErrorMessage.setVisibility(View.VISIBLE);
-        }
-        if (mRetry != null) {
-            mRetry.setVisibility(View.VISIBLE);
         }
     }
 
