@@ -37,7 +37,6 @@ import android.view.ViewStub;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -57,6 +56,7 @@ import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
+import com.antew.redditinpictures.library.widget.GifPhotoView;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -81,7 +81,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
     private final Object mPauseWorkLock = new Object();
     protected PostData  mImage;
     @InjectView(R.id.iv_imageView)
-    protected ImageView mImageView;
+    protected GifPhotoView mImageView;
     protected WebView   mWebView;
     protected boolean mPauseWork        = false;
     protected String  mResolvedImageUrl = null;
@@ -327,8 +327,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
             }
 
             if (ImageUtil.isGif(mResolvedImageUrl)) {
-                Picasso.with(getActivity()).load(R.drawable.loading_spinner_76).into(mImageView);
-                loadGifInWebView(mResolvedImageUrl);
+                //loadGifInWebView(mResolvedImageUrl);
+                mImageView.loadGif(mResolvedImageUrl);
             } else {
                 Picasso.with(getActivity())
                        .load(Uri.parse(mResolvedImageUrl))
