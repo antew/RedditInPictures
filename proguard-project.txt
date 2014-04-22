@@ -24,3 +24,5 @@
     @com.squareup.otto.Subscribe public *;
     @com.squareup.otto.Produce public *;
 }
+# Picasso/OkHttp
+-dontwarn com.squareup.okhttp.**
