@@ -25,6 +25,7 @@ import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.util.AdUtil;
@@ -101,13 +102,13 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
                 adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
                 int orientation = getResources().getConfiguration().orientation;
-                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                if (orientation == Configuration.ORIENTATION_PORTRAIT && AndroidUtil.isSplitActionBar(getActivity())) {
                     adParams.bottomMargin = ConstsFree.getActionBarSize(getActivity());
+                }
 
-                    if (mViewGalleryButton != null) {
-                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
-                        lp.bottomMargin = ConstsFree.getActionBarSize(getActivity()) * 2;
-                    }
+                if (mViewGalleryButton != null) {
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
+                    lp.bottomMargin = ConstsFree.getActionBarSize(getActivity()) * 2;
                 }
 
                 mAdView.setLayoutParams(adParams);
