@@ -34,7 +34,7 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
-        versionName "3.1.0"
+        versionName "3.1.2"
     }
 
     packagingOptions {
@@ -53,13 +53,13 @@ android {
     productFlavors {
         free {
             packageName "com.antew.redditinpictures"
-            versionCode 19
+            versionCode 20
             signingConfig signingConfigs.prod
         }
 
         pro {
             packageName "com.antew.redditinpictures.pro"
-            versionCode 19
+            versionCode 20
             signingConfig signingConfigs.prod
         }
     }
@@ -85,9 +85,10 @@ dependencies {
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.+@aar'
     compile 'com.nineoldandroids:library:2.4.+'
     compile 'net.simonvt.menudrawer:menudrawer:3.0.+@aar'
-    compile 'com.squareup.picasso:picasso:2.2.+'
     compile 'com.android.support:support-v4:19.1.+'
     compile "com.jakewharton:butterknife:4.0.+"
+    compile 'com.squareup.picasso:picasso:2.2.+'
+    compile 'com.squareup.okhttp:okhttp:1.5.+'
     compile "com.squareup.dagger:dagger:1.2.+"
     compile "com.squareup.dagger:dagger-compiler:1.2.+"
     compile 'com.squareup:otto:1.3.+'

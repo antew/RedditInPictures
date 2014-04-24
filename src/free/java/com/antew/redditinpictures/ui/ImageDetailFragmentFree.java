@@ -20,16 +20,19 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import com.antew.redditinpictures.library.event.DownloadImageEvent;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.preferences.SharedPreferencesHelperFree;
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.util.AdUtil;
 import com.antew.redditinpictures.util.ConstsFree;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
+import com.squareup.otto.Subscribe;
 
 public class ImageDetailFragmentFree extends ImageDetailFragment {
     public static final String TAG = ImageDetailFragmentFree.class.getSimpleName();
@@ -99,13 +102,13 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
                 adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
                 int orientation = getResources().getConfiguration().orientation;
-                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                if (orientation == Configuration.ORIENTATION_PORTRAIT && AndroidUtil.isSplitActionBar(getActivity())) {
                     adParams.bottomMargin = ConstsFree.getActionBarSize(getActivity());
+                }
 
-                    if (mViewGalleryButton != null) {
-                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
-                        lp.bottomMargin = ConstsFree.getActionBarSize(getActivity()) * 2;
-                    }
+                if (mViewGalleryButton != null) {
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mViewGalleryButton.getLayoutParams();
+                    lp.bottomMargin = ConstsFree.getActionBarSize(getActivity()) * 2;
                 }
 
                 mAdView.setLayoutParams(adParams);
@@ -150,5 +153,10 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     public Class<? extends ImgurAlbumActivity> getImgurAlbumActivity() {
         return ImgurAlbumActivityFree.class;
     }
-    
+
+    @Subscribe
+    @Override
+    public void downloadImage(DownloadImageEvent event) {
+        super.downloadImage(event);
+    }
 }

@@ -23,9 +23,12 @@ import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.adapter.CursorPagerAdapterFree;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener;
+import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.util.ConstsFree;
+import com.squareup.otto.Subscribe;
 
 public class ImageDetailActivityFree extends ImageDetailActivity implements UpdateToFullVersionDialogListener {
     public static final String TAG = ImageDetailActivityFree.class.getSimpleName();
@@ -52,5 +55,11 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
     @Override
     public FragmentStatePagerAdapter getPagerAdapter() {
         return new CursorPagerAdapterFree(getSupportFragmentManager(), null);
+    }
+
+    @Subscribe
+    @Override
+    public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
+        super.onDownloadImageComplete(event);
     }
 }

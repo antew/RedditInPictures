@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -36,6 +37,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -58,8 +60,15 @@ import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
+import com.hipmob.gifanimationdrawable.GifAnimationDrawable;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.inject.Inject;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
@@ -352,7 +361,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
     }
 
-    public void loadGifInWebView(String imageUrl) {
+    public void loadGifInWebView(final String imageUrl) {
         if (mViewStub.getParent() != null) {
             mWebView = (WebView) mViewStub.inflate();
         }
@@ -372,7 +381,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void initializeWebView(WebView webview) {
+    public void initializeWebView(final WebView webview) {
         assert webview != null : "WebView should not be null!";
 
         WebSettings settings = webview.getSettings();
@@ -383,7 +392,26 @@ public abstract class ImageViewerFragment extends BaseFragment {
             settings.setDisplayZoomControls(false);
         }
         webview.setBackgroundColor(Color.BLACK);
-        webview.setVisibility(View.VISIBLE);
+        webview.setWebViewClient(new WebViewClient() {
+            /**
+             * Notify the host application that a page has finished loading. This method
+             * is called only for main frame. When onPageFinished() is called, the
+             * rendering picture may not be updated yet. To get the notification for the
+             * new Picture, use {@link android.webkit.WebView.PictureListener#onNewPicture}.
+             *
+             * @param view
+             *     The WebView that is initiating the callback.
+             * @param url
+             *     The url of the page.
+             */
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                if (webview != null) {
+                    webview.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         webview.setOnTouchListener(getWebViewOnTouchListener());
     }
 

@@ -39,46 +39,6 @@ import com.squareup.otto.Subscribe;
 public class RedditFragmentActivityFree extends RedditFragmentActivity
     implements UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener {
     @Override
-    public Fragment getNewImageGridFragment(String subreddit, Category category, Age age) {
-        return RedditImageGridFragmentFree.newInstance(subreddit, category, age);
-    }
-
-    @Override
-    public Fragment getNewImageListFragment(String subreddit, Category category, Age age) {
-        return RedditImageListFragmentFree.newInstance(subreddit, category, age);
-    }
-
-    @Override @Subscribe
-    public void requestInProgress(RequestInProgressEvent event) {
-        super.requestInProgress(event);
-    }
-
-    @Override @Subscribe
-    public void requestCompleted(RequestCompletedEvent event) {
-        super.requestCompleted(event);
-    }
-
-    @Override
-    @Subscribe
-    public void onLoadSubredditEvent(LoadSubredditEvent event) {
-        super.onLoadSubredditEvent(event);
-    }
-
-    @Subscribe
-    public void onSaveImageEvent(SaveImageEvent event) {
-        super.onSaveImageEvent(event);
-    }
-
-    @Subscribe public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
-        super.onDownloadImageComplete(event);
-    }
-
-    @Override
-    public Class<? extends PreferenceActivity> getPreferencesClass() {
-        return RedditInPicturesFreePreferences.class;
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -90,17 +50,64 @@ public class RedditFragmentActivityFree extends RedditFragmentActivity
     }
 
     @Override
+    protected void subscribeToSubreddit(String subredditName) {
+        handleLoginAndLogout();
+    }
+
+    @Override
+    protected void unsubscribeToSubreddit(String subredditName) {
+        handleLoginAndLogout();
+    }
+
+    @Override
+    public Fragment getNewImageGridFragment(String subreddit, Category category, Age age) {
+        return RedditImageGridFragmentFree.newInstance(subreddit, category, age);
+    }
+
+    @Override
+    public Fragment getNewImageListFragment(String subreddit, Category category, Age age) {
+        return RedditImageListFragmentFree.newInstance(subreddit, category, age);
+    }
+
+    @Override
+    @Subscribe
+    public void requestInProgress(RequestInProgressEvent event) {
+        super.requestInProgress(event);
+    }
+
+    @Override
     public void handleLoginAndLogout() {
         DialogFragment upgrade = UpdateToFullVersionDialogFragment.newInstance();
         upgrade.show(getSupportFragmentManager(), ConstsFree.DIALOG_UPGRADE);
     }
 
-    @Override protected void subscribeToSubreddit(String subredditName) {
-        handleLoginAndLogout();
+    @Override
+    @Subscribe
+    public void requestCompleted(RequestCompletedEvent event) {
+        super.requestCompleted(event);
     }
 
-    @Override protected void unsubscribeToSubreddit(String subredditName) {
-        handleLoginAndLogout();
+    @Subscribe
+    @Override
+    public void onLoadSubredditEvent(LoadSubredditEvent event) {
+        super.onLoadSubredditEvent(event);
+    }
+
+    @Subscribe
+    @Override
+    public void onSaveImageEvent(SaveImageEvent event) {
+        super.onSaveImageEvent(event);
+    }
+
+    @Subscribe
+    @Override
+    public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
+        super.onDownloadImageComplete(event);
+    }
+
+    @Override
+    public Class<? extends PreferenceActivity> getPreferencesClass() {
+        return RedditInPicturesFreePreferences.class;
     }
 
     @Override

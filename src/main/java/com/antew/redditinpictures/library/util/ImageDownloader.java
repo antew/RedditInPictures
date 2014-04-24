@@ -18,6 +18,7 @@ package com.antew.redditinpictures.library.util;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -26,21 +27,28 @@ import com.antew.redditinpictures.library.annotation.ForApplication;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
 import com.antew.redditinpictures.library.image.ImageResolver;
 import com.antew.redditinpictures.library.model.ImageSize;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.inject.Inject;
 
 public class ImageDownloader {
+    @Inject
+    public  Bus     mBus;
     private Context context;
-
-    @Inject public Bus mBus;
 
     /**
      * Create an image downloader.  This is meant to
      * work with Application context!
+     *
      * @param context
      */
     @Inject
@@ -70,7 +78,7 @@ public class ImageDownloader {
                 Ln.e("DownloadImageTask - Invalid Arguments, URL and filename must not be null or empty: "
                      + "filename = "
                      + Strings.toString(mFilename)
-                     +", mUrl = "
+                     + ", mUrl = "
                      + Strings.toString(mUrl));
 
                 return null;
@@ -80,19 +88,19 @@ public class ImageDownloader {
 
             // If the image is already resolved, resolve it. (e.g. in the ListView)
             if (!ImageUtil.isSupportedImage(mUrl)) {
-                ImageResolver.resolve(mUrl, ImageSize.ORIGINAL);
+                resolvedUrl = ImageResolver.resolve(mUrl, ImageSize.ORIGINAL);
             }
 
             OutputStream outputStream = null;
             try {
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                if (ImageUtil.isJpeg(mUrl)) {
+                if (ImageUtil.isJpeg(resolvedUrl)) {
                     mFilename += ".jpg";
-                } else if (ImageUtil.isPng(mUrl)) {
+                } else if (ImageUtil.isPng(resolvedUrl)) {
                     mFilename += ".png";
-                } else if (ImageUtil.isGif(mUrl)) {
+                } else if (ImageUtil.isGif(resolvedUrl)) {
                     mFilename += ".gif";
-                } else if (ImageUtil.isWebp(mUrl)) {
+                } else if (ImageUtil.isWebp(resolvedUrl)) {
                     mFilename += ".webp";
                 } else {
                     mFilename += ".jpg";
@@ -105,33 +113,53 @@ public class ImageDownloader {
 
                 outputStream = new FileOutputStream(file);
 
-                Bitmap image = Picasso.with(mContext).load(Uri.parse(mUrl)).get();
-                if (image != null) {
-                    if (ImageUtil.isJpeg(mUrl)) {
-                        image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
-                    } else if (ImageUtil.isPng(mUrl)) {
-                        //PNG is loseless and ignores the quality setting.
-                        image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                    } else if (ImageUtil.isGif(mUrl)) {
-                        //No GIF support, treat it like a JPEG.
-                        image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
-                    } else if (ImageUtil.isWebp(mUrl) && AndroidUtil.hasIcs()) {
-                        // WEBP wasn't available until Ice Cream Sandwich
-                        image.compress(Bitmap.CompressFormat.WEBP, 90, outputStream);
-                    } else if (ImageUtil.isBitmap(mUrl)) {
-                        image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
-                    } else {
-                        image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+                // Picasso doesn't handle Gifs properly and there isn't any way to write them from a Bitmap properly.
+                if (ImageUtil.isGif(resolvedUrl)) {
+                    OkHttpClient client = new OkHttpClient();
+                    InputStream in = null;
+                    try {
+                        HttpURLConnection connection = client.open(new URL(resolvedUrl));
+                        in = connection.getInputStream();
+
+                        byte[] buf = new byte[1024];
+                        int len;
+                        while ((len = in.read(buf)) != -1) {
+                            outputStream.write(buf, 0, len);
+                        }
+                        outputStream.flush();
+                        MediaScannerConnection.scanFile(mContext, new String[] { file.toString() }, null, null);
+                    } catch (MalformedURLException e) {
+                        Ln.e(e);
+                    } catch (IOException e) {
+                        Ln.e(e);
+                    } finally {
+                        AndroidUtil.closeQuietly(in);
                     }
+                } else {
+                    Bitmap image = Picasso.with(mContext).load(Uri.parse(resolvedUrl)).get();
+                    if (image != null) {
+                        if (ImageUtil.isJpeg(resolvedUrl)) {
+                            image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+                        } else if (ImageUtil.isPng(resolvedUrl)) {
+                            //PNG is loseless and ignores the quality setting.
+                            image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                        } else if (ImageUtil.isWebp(resolvedUrl) && AndroidUtil.hasIcs()) {
+                            // WEBP wasn't available until Ice Cream Sandwich
+                            image.compress(Bitmap.CompressFormat.WEBP, 90, outputStream);
+                        } else if (ImageUtil.isBitmap(resolvedUrl)) {
+                            image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+                        } else {
+                            image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+                        }
 
-                    outputStream.flush();
-                    image.recycle();
-                    Ln.d("Saved File to %s", file.getAbsolutePath());
+                        outputStream.flush();
+                        image.recycle();
+                        Ln.d("Saved File to %s", file.getAbsolutePath());
 
-                    // Tell the media scanner about the new file so that it is
-                    // immediately available to the user.
-                    MediaScannerConnection.scanFile(mContext, new String[] { file.toString() }, null, null);
-
+                        // Tell the media scanner about the new file so that it is
+                        // immediately available to the user.
+                        MediaScannerConnection.scanFile(mContext, new String[] { file.toString() }, null, null);
+                    }
                 }
             } finally {
                 AndroidUtil.closeQuietly(outputStream);
@@ -139,7 +167,8 @@ public class ImageDownloader {
             return mFilename.toString();
         }
 
-        @Override protected void onSuccess(String result) throws Exception {
+        @Override
+        protected void onSuccess(String result) throws Exception {
             mBus.post(new DownloadImageCompleteEvent(result));
         }
     }
