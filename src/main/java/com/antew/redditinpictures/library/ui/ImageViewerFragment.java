@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -58,8 +59,15 @@ import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
+import com.hipmob.gifanimationdrawable.GifAnimationDrawable;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.inject.Inject;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
@@ -352,23 +360,32 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
     }
 
-    public void loadGifInWebView(String imageUrl) {
-        if (mViewStub.getParent() != null) {
-            mWebView = (WebView) mViewStub.inflate();
-        }
-
-        initializeWebView(mWebView);
-        /**
-         * On earlier version of Android, {@link android.webkit.WebView#loadData(String, String, String)} decides to just show the HTML instead of actually display it.
-         *
-         * So, for older version we make it load from a base URL, which fixes it for some reason...
-         */
-        if (AndroidUtil.hasHoneycomb()) {
-            mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
-        } else {
-            mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
-        }
-        mImageView.setVisibility(View.GONE);
+    public void loadGifInWebView(final String imageUrl) {
+        showProgress();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
+                InputStream in = null;
+                try {
+                    HttpURLConnection connection = client.open(new URL(imageUrl));
+                    in = connection.getInputStream();
+                    final AnimationDrawable drawable = new GifAnimationDrawable(in, true);
+                    mImageView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mImageView.setImageDrawable(drawable);
+                        }
+                    });
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    AndroidUtil.closeQuietly(in);
+                }
+            }
+        }).start();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
