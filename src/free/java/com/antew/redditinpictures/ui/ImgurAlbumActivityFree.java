@@ -34,12 +34,6 @@ public class ImgurAlbumActivityFree extends ImgurAlbumActivity implements Update
     public FragmentStatePagerAdapter getPagerAdapter() {
         return new ImgurAlbumPagerAdapterFree(getSupportFragmentManager(), getImages());   
     }
-    
-    @Override
-    public void handleSaveImage() {
-        DialogFragment upgrade = UpdateToFullVersionDialogFragment.newInstance();
-        upgrade.show(getSupportFragmentManager(), ConstsFree.DIALOG_UPGRADE);
-    }
 
     @Override
     public void onFinishUpgradeDialog() {
@@ -53,7 +47,6 @@ public class ImgurAlbumActivityFree extends ImgurAlbumActivity implements Update
     @Subscribe
     @Override
     public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
-        Ln.d("ass");
         super.onDownloadImageComplete(event);
     }
 }
