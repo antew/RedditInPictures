@@ -463,6 +463,10 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     protected abstract void reportCurrentItem();
 
+    /**
+     * Retrieve the current subreddit.
+     * @return the current subreddit
+     */
     public abstract String getSubreddit();
 
     /**
