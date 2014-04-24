@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -380,7 +381,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void initializeWebView(WebView webview) {
+    public void initializeWebView(final WebView webview) {
         assert webview != null : "WebView should not be null!";
 
         WebSettings settings = webview.getSettings();
@@ -391,7 +392,24 @@ public abstract class ImageViewerFragment extends BaseFragment {
             settings.setDisplayZoomControls(false);
         }
         webview.setBackgroundColor(Color.BLACK);
-        webview.setVisibility(View.VISIBLE);
+        webview.setWebViewClient(new WebViewClient() {
+            /**
+             * Notify the host application that a page has finished loading. This method
+             * is called only for main frame. When onPageFinished() is called, the
+             * rendering picture may not be updated yet. To get the notification for the
+             * new Picture, use {@link android.webkit.WebView.PictureListener#onNewPicture}.
+             *
+             * @param view
+             *     The WebView that is initiating the callback.
+             * @param url
+             *     The url of the page.
+             */
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                webview.setVisibility(View.VISIBLE);
+            }
+        });
         webview.setOnTouchListener(getWebViewOnTouchListener());
     }
 
