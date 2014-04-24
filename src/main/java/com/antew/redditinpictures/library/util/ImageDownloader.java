@@ -129,9 +129,9 @@ public class ImageDownloader {
                         outputStream.flush();
                         MediaScannerConnection.scanFile(mContext, new String[] { file.toString() }, null, null);
                     } catch (MalformedURLException e) {
-                        e.printStackTrace();
+                        Ln.e(e);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Ln.e(e);
                     } finally {
                         AndroidUtil.closeQuietly(in);
                     }

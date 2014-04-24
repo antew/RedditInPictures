@@ -29,6 +29,7 @@ import android.view.ViewTreeObserver;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.event.ForcePostRefreshEvent;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.model.Age;
@@ -145,6 +146,12 @@ public class RedditImageGridFragmentFree extends RedditImageGridFragment {
     @Override
     public Class<? extends ImageDetailActivity> getImageDetailActivityClass() {
         return ImageDetailActivityFree.class;
+    }
+
+    @Subscribe
+    @Override
+    public void handleForcePostRefreshEvent(ForcePostRefreshEvent event) {
+        super.handleForcePostRefreshEvent(event);
     }
 
     @Subscribe

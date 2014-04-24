@@ -22,9 +22,12 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import com.antew.redditinpictures.adapter.ImgurAlbumPagerAdapterFree;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener;
+import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.util.ConstsFree;
+import com.squareup.otto.Subscribe;
 
 public class ImgurAlbumActivityFree extends ImgurAlbumActivity implements UpdateToFullVersionDialogListener{
 
@@ -45,5 +48,12 @@ public class ImgurAlbumActivityFree extends ImgurAlbumActivity implements Update
             intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
             startActivity(intent);        
         }
+    }
+
+    @Subscribe
+    @Override
+    public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
+        Ln.d("ass");
+        super.onDownloadImageComplete(event);
     }
 }
