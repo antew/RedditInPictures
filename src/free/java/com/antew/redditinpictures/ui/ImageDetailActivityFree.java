@@ -60,7 +60,6 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
     @Subscribe
     @Override
     public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
-        Ln.d("Dumb");
         super.onDownloadImageComplete(event);
     }
 }
