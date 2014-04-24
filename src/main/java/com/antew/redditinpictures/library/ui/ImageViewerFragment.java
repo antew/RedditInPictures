@@ -361,31 +361,22 @@ public abstract class ImageViewerFragment extends BaseFragment {
     }
 
     public void loadGifInWebView(final String imageUrl) {
-        showProgress();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                OkHttpClient client = new OkHttpClient();
-                InputStream in = null;
-                try {
-                    HttpURLConnection connection = client.open(new URL(imageUrl));
-                    in = connection.getInputStream();
-                    final AnimationDrawable drawable = new GifAnimationDrawable(in, true);
-                    mImageView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mImageView.setImageDrawable(drawable);
-                        }
-                    });
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    AndroidUtil.closeQuietly(in);
-                }
-            }
-        }).start();
+        if (mViewStub.getParent() != null) {
+            mWebView = (WebView) mViewStub.inflate();
+        }
+
+        initializeWebView(mWebView);
+        /**
+         * On earlier version of Android, {@link android.webkit.WebView#loadData(String, String, String)} decides to just show the HTML instead of actually display it.
+         *
+         * So, for older version we make it load from a base URL, which fixes it for some reason...
+         */
+        if (AndroidUtil.hasHoneycomb()) {
+            mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
+        } else {
+            mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
+        }
+        mImageView.setVisibility(View.GONE);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
