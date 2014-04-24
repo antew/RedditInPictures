@@ -407,7 +407,9 @@ public abstract class ImageViewerFragment extends BaseFragment {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                webview.setVisibility(View.VISIBLE);
+                if (webview != null) {
+                    webview.setVisibility(View.VISIBLE);
+                }
             }
         });
         webview.setOnTouchListener(getWebViewOnTouchListener());
