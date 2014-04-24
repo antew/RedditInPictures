@@ -143,7 +143,7 @@ public class Constants {
 
     public static class Reddit {
         public static final String USER_AGENT                    = "Reddit In Pictures Android by /u/antew";
-        public static final int    POSTS_TO_FETCH                = 100;
+        public static final int    POSTS_TO_FETCH                = 40;
         public static final String REDDIT_FRONTPAGE              = "REDDIT_FRONTPAGE";
         public static final String REDDIT_FRONTPAGE_DISPLAY_NAME = "Frontpage";
         public static final String REDDIT_ALL_DISPLAY_NAME       = "All";
