@@ -22,7 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -40,9 +40,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.VideoView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.antew.redditinpictures.device.ScreenSize;
@@ -52,7 +54,9 @@ import com.antew.redditinpictures.library.image.ImageResolver;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.model.ImageSize;
+import com.antew.redditinpictures.library.model.gfycat.GfycatImage;
 import com.antew.redditinpictures.library.model.reddit.PostData;
+import com.antew.redditinpictures.library.service.GfycatService;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.ImageDownloader;
@@ -60,15 +64,9 @@ import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
-import com.hipmob.gifanimationdrawable.GifAnimationDrawable;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import javax.inject.Inject;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
@@ -88,10 +86,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
      */
     private static float MOVE_THRESHOLD;
     private final Object mPauseWorkLock = new Object();
-    protected PostData  mImage;
-    @InjectView(R.id.iv_imageView)
-    protected ImageView mImageView;
-    protected WebView   mWebView;
+    protected PostData mImage;
+    protected WebView  mWebView;
     protected boolean mPauseWork        = false;
     protected String  mResolvedImageUrl = null;
     protected Image   mResolvedImage    = null;
@@ -99,6 +95,11 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected Album mAlbum;
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
     protected SystemUiStateProvider mSystemUiStateProvider;
+    protected MediaController       mMediaController;
+    @InjectView(R.id.iv_imageView)
+    protected ImageView             mImageView;
+    @InjectView(R.id.vv_videoView)
+    protected VideoView             mVideoView;
     @InjectView(R.id.pb_progress)
     ProgressBar    mProgress;
     @InjectView(R.id.rl_post_information_wrapper)
@@ -361,23 +362,84 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
     }
 
+    protected void showImageError() {
+        hideProgress();
+        if (mErrorMessage != null) {
+            mErrorMessage.setVisibility(View.VISIBLE);
+        }
+        if (mRetry != null) {
+            mRetry.setVisibility(View.VISIBLE);
+        }
+    }
+
     public void loadGifInWebView(final String imageUrl) {
+        showProgress();
+        mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mVideoView.start();
+            }
+        });
+        mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mVideoView.start();
+            }
+        });
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final GfycatImage gfycatImage = GfycatService.convertGif(getActivity(), imageUrl);
+
+                    if (gfycatImage != null) {
+                        final Uri videoUri = Uri.parse(gfycatImage.getMp4Url());
+                        mVideoView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mVideoView.setVideoURI(videoUri);
+                                hideProgress();
+                            }
+                        });
+                        mVideoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                            @Override
+                            public boolean onError(MediaPlayer mp, int what, int extra) {
+                                final Uri videoUri = Uri.parse(gfycatImage.getWebmUrl());
+                                mVideoView.setVideoURI(videoUri);
+                                return true;
+                            }
+                        });
+                    }
+                } catch (MalformedURLException e) {
+                    Ln.e(e);
+                }
+            }
+        }).start();
+
+        /*
         if (mViewStub.getParent() != null) {
             mWebView = (WebView) mViewStub.inflate();
         }
 
-        initializeWebView(mWebView);
+        initializeWebView(mWebView);*/
         /**
          * On earlier version of Android, {@link android.webkit.WebView#loadData(String, String, String)} decides to just show the HTML instead of actually display it.
          *
          * So, for older version we make it load from a base URL, which fixes it for some reason...
          */
+        /*
         if (AndroidUtil.hasHoneycomb()) {
             mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
         } else {
             mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
         }
-        mImageView.setVisibility(View.GONE);
+        mImageView.setVisibility(View.GONE);*/
+    }
+
+    protected void hideProgress() {
+        if (mProgress != null) {
+            mProgress.setVisibility(View.GONE);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -413,10 +475,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
             }
         });
         webview.setOnTouchListener(getWebViewOnTouchListener());
-    }
-
-    public String getHtmlForImageDisplay(String imageUrl) {
-        return Constants.WEBVIEW_IMAGE_HTML_BEGIN + imageUrl + Constants.WEBVIEW_IMAGE_HTML_END;
     }
 
     /**
@@ -465,25 +523,13 @@ public abstract class ImageViewerFragment extends BaseFragment {
         };
     }
 
+    public String getHtmlForImageDisplay(String imageUrl) {
+        return Constants.WEBVIEW_IMAGE_HTML_BEGIN + imageUrl + Constants.WEBVIEW_IMAGE_HTML_END;
+    }
+
     protected void showProgress() {
         if (mProgress != null) {
             mProgress.setVisibility(View.VISIBLE);
-        }
-    }
-
-    protected void hideProgress() {
-        if (mProgress != null) {
-            mProgress.setVisibility(View.GONE);
-        }
-    }
-
-    protected void showImageError() {
-        hideProgress();
-        if (mErrorMessage != null) {
-            mErrorMessage.setVisibility(View.VISIBLE);
-        }
-        if (mRetry != null) {
-            mRetry.setVisibility(View.VISIBLE);
         }
     }
 

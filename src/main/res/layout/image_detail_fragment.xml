@@ -54,6 +54,12 @@
         android:contentDescription="@string/imageview_description"
         android:focusableInTouchMode="true" />
 
+    <VideoView
+        android:id="@+id/vv_videoView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
     <ViewStub
         android:id="@+id/webview_stub"
         android:layout_width="fill_parent"
