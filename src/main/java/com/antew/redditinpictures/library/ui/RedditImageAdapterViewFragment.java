@@ -101,10 +101,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        // Initialize the adapter to null, the adapter will be populated in onLoadFinished
-        if (mAdapter == null) {
-            mAdapter = getNewAdapter();
-        }
+
     }
 
     /**
@@ -170,6 +167,12 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         handleArguments(getArguments());
+
+        // Initialize the adapter to null, the adapter will be populated in onLoadFinished
+        if (mAdapter == null) {
+            mAdapter = getNewAdapter();
+        }
+
         if (getActivity() instanceof ActionBarTitleChanger) {
             ((ActionBarTitleChanger) getActivity()).setActionBarTitle(mCurrentSubreddit, RedditUtil.getSortDisplayString(mCategory, mAge));
         }
@@ -451,5 +454,12 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Subscribe
     public void requestCompleted(RequestCompletedEvent event) {
         mRequestInProgress = false;
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        mAdapter = null;
+        mNoImages = null;
+        mProgress = null;
     }
 }

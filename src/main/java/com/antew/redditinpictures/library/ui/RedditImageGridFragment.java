@@ -103,7 +103,7 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
         return new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                if (mAdapter.getNumColumns() == 0) {
+                if (mAdapter != null && mAdapter.getNumColumns() == 0) {
                     final int numColumns = (int) Math.floor(gridView.getWidth() / (mThumbnailInfo.getSize() + mThumbnailInfo.getSpacing()));
                     if (numColumns > 0) {
                         final int columnWidth = (gridView.getWidth() / numColumns) - mThumbnailInfo.getSpacing();

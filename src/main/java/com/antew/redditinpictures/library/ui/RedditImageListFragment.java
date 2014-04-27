@@ -102,6 +102,11 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
         mImageListView.setOnScrollListener(mListScrollListener);
     }
 
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        mImageListView = null;
+    }
+
     private void openImageAtPosition(int position) {
         final Intent i = new Intent(getActivity(), getImageDetailActivityClass());
         Bundle b = new Bundle();
