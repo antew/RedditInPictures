@@ -358,6 +358,16 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
     }
 
+    protected void showImageError() {
+        hideProgress();
+        if (mErrorMessage != null) {
+            mErrorMessage.setVisibility(View.VISIBLE);
+        }
+        if (mRetry != null) {
+            mRetry.setVisibility(View.VISIBLE);
+        }
+    }
+
     public void loadGifInWebView(final String imageUrl) {
         if (mViewStub.getParent() != null) {
             mWebView = (WebView) mViewStub.inflate();
@@ -375,6 +385,12 @@ public abstract class ImageViewerFragment extends BaseFragment {
             mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
         }
         mImageView.setVisibility(View.GONE);
+    }
+
+    protected void hideProgress() {
+        if (mProgress != null) {
+            mProgress.setVisibility(View.GONE);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -465,22 +481,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected void showProgress() {
         if (mProgress != null) {
             mProgress.setVisibility(View.VISIBLE);
-        }
-    }
-
-    protected void hideProgress() {
-        if (mProgress != null) {
-            mProgress.setVisibility(View.GONE);
-        }
-    }
-
-    protected void showImageError() {
-        hideProgress();
-        if (mErrorMessage != null) {
-            mErrorMessage.setVisibility(View.VISIBLE);
-        }
-        if (mRetry != null) {
-            mRetry.setVisibility(View.VISIBLE);
         }
     }
 
