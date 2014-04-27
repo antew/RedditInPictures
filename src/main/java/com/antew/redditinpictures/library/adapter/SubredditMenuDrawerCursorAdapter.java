@@ -21,6 +21,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -98,7 +99,8 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
             holder.more.setVisibility(View.VISIBLE);
 
             holder.view.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
+                @Override
+                public void onClick(View v) {
                     if (mSubredditActionListener != null) {
                         mSubredditActionListener.onAction(subredditData, OnSubredditActionListener.SubredditAction.View);
                     }
@@ -112,7 +114,8 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
             }
 
             holder.info.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
+                @Override
+                public void onClick(View v) {
                     if (mSubredditActionListener != null) {
                         mSubredditActionListener.onAction(subredditData, OnSubredditActionListener.SubredditAction.Info);
                     }
@@ -120,7 +123,8 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
             });
 
             holder.delete.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
+                @Override
+                public void onClick(View v) {
                     if (mSubredditActionListener != null) {
                         mSubredditActionListener.onAction(subredditData, OnSubredditActionListener.SubredditAction.Delete);
                     }
@@ -133,7 +137,8 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
         holder.unsubscribe.setVisibility(View.GONE);
         holder.subscribe.setVisibility(View.VISIBLE);
         holder.subscribe.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
                 if (mSubredditActionListener != null) {
                     mSubredditActionListener.onAction(subredditData, OnSubredditActionListener.SubredditAction.Subscribe);
                 }
@@ -149,7 +154,8 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
         holder.subscribe.setVisibility(View.GONE);
         holder.unsubscribe.setVisibility(View.VISIBLE);
         holder.unsubscribe.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
                 if (mSubredditActionListener != null) {
                     mSubredditActionListener.onAction(subredditData, OnSubredditActionListener.SubredditAction.Unsubscribe);
                 }
@@ -167,14 +173,22 @@ public class SubredditMenuDrawerCursorAdapter extends CursorAdapter {
     }
 
     protected class ViewHolder {
-        @InjectView(R.id.tv_subreddit)   TextView     subreddit;
-        @InjectView(R.id.ib_more)        ImageButton  more;
-        @InjectView(R.id.back)           LinearLayout back;
-        @InjectView(R.id.ib_view)        ImageButton  view;
-        @InjectView(R.id.ib_subscribe)   ImageButton  subscribe;
-        @InjectView(R.id.ib_unsubscribe) ImageButton  unsubscribe;
-        @InjectView(R.id.ib_info)        ImageButton  info;
-        @InjectView(R.id.ib_delete)      ImageButton  delete;
+        @InjectView(R.id.tv_subreddit)
+        TextView     subreddit;
+        @InjectView(R.id.ib_more)
+        ImageButton  more;
+        @InjectView(R.id.back)
+        LinearLayout back;
+        @InjectView(R.id.ib_view)
+        Button       view;
+        @InjectView(R.id.ib_subscribe)
+        Button       subscribe;
+        @InjectView(R.id.ib_unsubscribe)
+        Button       unsubscribe;
+        @InjectView(R.id.ib_info)
+        Button info;
+        @InjectView(R.id.ib_delete)
+        Button delete;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);

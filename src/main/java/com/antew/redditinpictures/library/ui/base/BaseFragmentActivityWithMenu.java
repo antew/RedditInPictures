@@ -283,6 +283,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         mMenuDrawer.getMenuContainer().setBackgroundColor(0xf51b1b1b);
         mMenuDrawer.setSlideDrawable(R.drawable.ic_drawer);
         mMenuDrawer.setDrawerIndicatorEnabled(true);
+        mMenuDrawer.setMenuSize(getResources().getDimensionPixelSize(R.dimen.menu_size));
     }
 
     private void setupMenuDrawer() {
