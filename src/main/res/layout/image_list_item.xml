@@ -34,42 +34,47 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp">
 
-        <ImageButton
+        <Button
             android:id="@+id/ib_view"
-            android:src="@drawable/ic_action_picture_dark"
+            android:drawableTop="@drawable/ic_action_picture_dark"
             android:contentDescription="@string/view_subreddit"
-            style="@style/ImageListItemMenuItem"/>
+            style="@style/ImageListItemMenuItem"
+            android:text="@string/view"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/ib_save"
-            android:src="@drawable/ic_action_save_dark"
+            android:drawableTop="@drawable/ic_action_save_dark"
             android:contentDescription="@string/save_image"
-            style="@style/ImageListItemMenuItem"/>
+            style="@style/ImageListItemMenuItem"
+            android:text="@string/save"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/ib_share"
-            android:src="@drawable/ic_action_share_dark"
+            android:drawableTop="@drawable/ic_action_share_dark"
             android:contentDescription="@string/share_image"
-            style="@style/ImageListItemMenuItem"/>
+            style="@style/ImageListItemMenuItem"
+            android:text="@string/share"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/ib_open"
-            android:src="@drawable/ic_action_globe_dark"
+            android:drawableTop="@drawable/ic_action_globe_dark"
             android:contentDescription="@string/open_post_on_reddit"
-            style="@style/ImageListItemMenuItem"/>
+            style="@style/ImageListItemMenuItem"
+            android:text="@string/open"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/ib_report"
-            android:src="@drawable/ic_action_warning_dark"
+            android:drawableTop="@drawable/ic_action_warning_dark"
             android:contentDescription="@string/report_image_display_issue"
-            style="@style/ImageListItemMenuItem"/>
+            style="@style/ImageListItemMenuItem"
+            android:text="@string/report"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/front"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:background="@color/listview_background"

@@ -165,4 +165,7 @@
     <string name="image_display_issue_reported">Image display issue reported. \nThanks for letting us know!</string>
     <string name="reddit_options">Reddit Options</string>
     <string name="reddit_in_pictures_options">Reddit in Pictures Options</string>
+    <string name="share">Share</string>
+    <string name="open">Open</string>
+    <string name="report">Report</string>
 </resources>
