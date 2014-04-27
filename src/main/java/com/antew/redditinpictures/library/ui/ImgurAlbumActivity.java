@@ -67,6 +67,14 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
     }
 
     /**
+     * Called upon reaching the last page present in the ViewPager
+     */
+    @Override
+    public void reachedCloseToLastPage() {
+        //Do nothing.
+    }
+
+    /**
      * Get the JSON representation of the current image/post in the ViewPager to report an error.
      *
      * @return The JSON representation of the currently viewed object.

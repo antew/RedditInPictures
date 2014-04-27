@@ -116,9 +116,7 @@ public class ImageDetailActivity extends ImageViewerActivity
     }
 
     @Override
-    public void reachedLastPage() {
-        super.reachedLastPage();
-
+    public void reachedCloseToLastPage() {
         if (!isRequestInProgress() && mAdapter.getCount() > 0) {
             Ln.d("Reached last page, loading more images");
             setRequestInProgress(true);

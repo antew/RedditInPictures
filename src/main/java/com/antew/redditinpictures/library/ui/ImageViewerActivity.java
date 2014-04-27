@@ -56,7 +56,11 @@ import javax.inject.Inject;
 
 public abstract class ImageViewerActivity extends BaseFragmentActivity implements SaveImageDialogListener, SystemUiStateProvider {
 
-    private static final String IMAGE_CACHE_DIR = "images";
+    /**
+     * 8 is a great number! Not only is it divisible by 4, but it is also equivalent to 2 * 2 * 2 you just can't beat that!
+     */
+    private static final int    POST_LOAD_OFFSET = 8;
+    private static final String IMAGE_CACHE_DIR  = "images";
 
     /**
      * The Adapter for the ViewPager
@@ -215,8 +219,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
             public void onPageSelected(int position) {
                 updateDisplay(position);
 
-                if (position == (mAdapter.getCount() - 1)) {
-                    reachedLastPage();
+                if (position == (mAdapter.getCount() - POST_LOAD_OFFSET)) {
+                    reachedCloseToLastPage();
                 }
             }
 
@@ -263,9 +267,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     /**
      * Called upon reaching the last page present in the ViewPager
      */
-    public void reachedLastPage() {
-        // Do nothing
-    }
+    public abstract void reachedCloseToLastPage();
 
     @Override
     public void onResume() {
