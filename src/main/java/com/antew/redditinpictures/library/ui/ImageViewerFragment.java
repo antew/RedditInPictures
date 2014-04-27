@@ -15,17 +15,14 @@
  */
 package com.antew.redditinpictures.library.ui;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.TypedValue;
@@ -34,13 +31,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -58,7 +50,6 @@ import com.antew.redditinpictures.library.model.gfycat.GfycatImage;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.service.GfycatService;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
-import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
@@ -79,15 +70,8 @@ import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 public abstract class ImageViewerFragment extends BaseFragment {
     protected static final String IMAGE_DATA_EXTRA  = "extra_image_data";
     protected static final String IMAGE_ALBUM_EXTRA = "extra_image_album";
-    /**
-     * Movement threshold used to decide whether to cancel the toggle
-     * between windowed mode and fullscreen mode in the
-     * WebView in {@link #getWebViewOnTouchListener()}
-     */
-    private static float MOVE_THRESHOLD;
     private final Object mPauseWorkLock = new Object();
     protected PostData mImage;
-    protected WebView  mWebView;
     protected boolean mPauseWork        = false;
     protected String  mResolvedImageUrl = null;
     protected Image   mResolvedImage    = null;
@@ -95,10 +79,9 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected Album mAlbum;
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
     protected SystemUiStateProvider mSystemUiStateProvider;
-    protected MediaController       mMediaController;
     @InjectView(R.id.iv_imageView)
     protected ImageView             mImageView;
-    @InjectView(R.id.vv_videoView)
+    @InjectView(R.id.vv_video)
     protected VideoView             mVideoView;
     @InjectView(R.id.pb_progress)
     ProgressBar    mProgress;
@@ -110,8 +93,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
     TextView       mPostInformation;
     @InjectView(R.id.btn_view_gallery)
     Button         mBtnViewGallery;
-    @InjectView(R.id.webview_stub)
-    ViewStub       mViewStub;
     @InjectView(R.id.tv_post_votes)
     TextView       mPostVotes;
     /**
@@ -214,10 +195,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
             mImageView.setImageDrawable(null);
         }
 
-        if (mWebView != null) {
-            mWebView.destroy();
-        }
-
         if (mResolveImageTask != null) {
             if (mResolveImageTask.getStatus() != AsyncTask.Status.FINISHED) {
                 Ln.i("onDestroy - Cancelling resolveImageTask");
@@ -250,8 +227,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
         // Set up on our tap listener for the PhotoView which we use to toggle between fullscreen
         // and windowed mode
         ((PhotoView) mImageView).setOnPhotoTapListener(getOnPhotoTapListener(act));
-
-        MOVE_THRESHOLD = 20 * getResources().getDisplayMetrics().density;
 
         // Calculate ActionBar height
         TypedValue tv = new TypedValue();
@@ -374,18 +349,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
     public void loadGifInWebView(final String imageUrl) {
         showProgress();
-        mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mVideoView.start();
-            }
-        });
-        mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mVideoView.start();
-            }
-        });
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -398,9 +361,23 @@ public abstract class ImageViewerFragment extends BaseFragment {
                             @Override
                             public void run() {
                                 mVideoView.setVideoURI(videoUri);
+                                mVideoView.setVisibility(View.VISIBLE);
                                 hideProgress();
                             }
                         });
+                        mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                mVideoView.start();
+                            }
+                        });
+                        mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                mVideoView.start();
+                            }
+                        });
+                        mVideoView.setOnTouchListener(getVideoViewOnTouchListener());
                         mVideoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                             @Override
                             public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -415,25 +392,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
                 }
             }
         }).start();
-
-        /*
-        if (mViewStub.getParent() != null) {
-            mWebView = (WebView) mViewStub.inflate();
-        }
-
-        initializeWebView(mWebView);*/
-        /**
-         * On earlier version of Android, {@link android.webkit.WebView#loadData(String, String, String)} decides to just show the HTML instead of actually display it.
-         *
-         * So, for older version we make it load from a base URL, which fixes it for some reason...
-         */
-        /*
-        if (AndroidUtil.hasHoneycomb()) {
-            mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
-        } else {
-            mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
-        }
-        mImageView.setVisibility(View.GONE);*/
     }
 
     protected void hideProgress() {
@@ -442,78 +400,29 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void initializeWebView(final WebView webview) {
-        assert webview != null : "WebView should not be null!";
-
-        WebSettings settings = webview.getSettings();
-        settings.setLoadWithOverviewMode(true);
-        settings.setUseWideViewPort(true);
-        settings.setBuiltInZoomControls(true);
-        if (AndroidUtil.hasHoneycomb()) {
-            settings.setDisplayZoomControls(false);
+    protected void showProgress() {
+        if (mProgress != null) {
+            mProgress.setVisibility(View.VISIBLE);
         }
-        webview.setBackgroundColor(Color.BLACK);
-        webview.setWebViewClient(new WebViewClient() {
-            /**
-             * Notify the host application that a page has finished loading. This method
-             * is called only for main frame. When onPageFinished() is called, the
-             * rendering picture may not be updated yet. To get the notification for the
-             * new Picture, use {@link android.webkit.WebView.PictureListener#onNewPicture}.
-             *
-             * @param view
-             *     The WebView that is initiating the callback.
-             * @param url
-             *     The url of the page.
-             */
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                if (webview != null) {
-                    webview.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-        webview.setOnTouchListener(getWebViewOnTouchListener());
     }
 
     /**
-     * This handles receiving the touch events in the WebView so that we can
+     * This handles receiving the touch events in the VideoView so that we can
      * toggle between fullscreen and windowed mode.
      * <p/>
-     * The first time the user touches the screen we save the X and Y coordinates.
-     * If we receive a {@link MotionEvent#ACTION_DOWN} event we compare the previous
-     * X and Y coordinates to the saved coordinates, if they are greater than {@link
-     * #MOVE_THRESHOLD}
-     * we prevent the toggle from windowed mode to fullscreen mode or vice versa, the idea
-     * being that the user is either dragging the image or using pinch-to-zoom.
-     * <p/>
-     * TODO: Implement handling for double tap to zoom.
      *
-     * @return The {@link OnTouchListener} for the {@link WebView} to use.
+     * @return The {@link OnTouchListener}
      */
-    public OnTouchListener getWebViewOnTouchListener() {
+    public OnTouchListener getVideoViewOnTouchListener() {
         return new OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        mCancelClick = false;
-                        mDownXPos = event.getX();
-                        mDownYPos = event.getY();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (!mCancelClick) {
-                            Intent intent = new Intent(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN);
-                            intent.putExtra(Constants.Extra.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
-                            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
-                        }
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        if (Math.abs(event.getX() - mDownXPos) > MOVE_THRESHOLD || Math.abs(event.getY() - mDownYPos) > MOVE_THRESHOLD) {
-                            mCancelClick = true;
-                        }
+                        Intent intent = new Intent(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN);
+                        intent.putExtra(Constants.Extra.EXTRA_IS_SYSTEM_UI_VISIBLE, mSystemUiStateProvider.isSystemUiVisible());
+                        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
                         break;
                 }
 
@@ -525,12 +434,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
     public String getHtmlForImageDisplay(String imageUrl) {
         return Constants.WEBVIEW_IMAGE_HTML_BEGIN + imageUrl + Constants.WEBVIEW_IMAGE_HTML_END;
-    }
-
-    protected void showProgress() {
-        if (mProgress != null) {
-            mProgress.setVisibility(View.VISIBLE);
-        }
     }
 
     /**

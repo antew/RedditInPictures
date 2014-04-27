@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="@string/error_loading_image"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/b_retry"
@@ -45,7 +45,7 @@
         android:layout_centerInParent="true"
         android:layout_marginTop="10dp"
         android:visibility="gone"
-        android:layout_below="@id/tv_error_message"/>
+        android:layout_below="@id/tv_error_message" />
 
     <uk.co.senab.photoview.PhotoView
         android:id="@+id/iv_imageView"
@@ -55,18 +55,11 @@
         android:focusableInTouchMode="true" />
 
     <VideoView
-        android:id="@+id/vv_videoView"
+        android:id="@+id/vv_video"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
-
-    <ViewStub
-        android:id="@+id/webview_stub"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="bottom"
-        android:inflatedId="@+id/webview_import"
-        android:layout="@layout/webview_overlay" />
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btn_view_gallery"
