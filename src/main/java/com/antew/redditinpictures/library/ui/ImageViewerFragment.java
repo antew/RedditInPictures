@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -60,15 +59,8 @@ import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
-import com.hipmob.gifanimationdrawable.GifAnimationDrawable;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import javax.inject.Inject;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
@@ -328,7 +320,12 @@ public abstract class ImageViewerFragment extends BaseFragment {
         try {
 
             mResolvedImage = image;
-            mResolvedImageUrl = mResolvedImage.getSize(ImageSize.ORIGINAL);
+            mResolvedImageUrl = mResolvedImage.getSize(ImageSize.LARGE_THUMBNAIL);
+
+            // Falllback to the Original if we can't resolve.
+            if (Strings.isEmpty(mResolvedImageUrl)) {
+                mResolvedImageUrl = mResolvedImage.getSize(ImageSize.ORIGINAL);
+            }
 
             // Fallback to the URL if we can't resolve.
             if (Strings.isEmpty(mResolvedImageUrl)) {
