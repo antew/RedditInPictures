@@ -311,8 +311,11 @@ public class ImageDetailActivity extends ImageViewerActivity
     public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
         switch (id) {
             case Constants.Loader.LOADER_REDDIT:
-                return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, null, null, null,
-                                        RedditContract.RedditData.DEFAULT_SORT);
+            return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, // uri
+                                    null,                                  // projection
+                                    "subreddit = ?",                       // selection
+                                    new String[] { mSubreddit },      // selectionArgs[]
+                                    RedditContract.Posts.DEFAULT_SORT);    // sort
             case Constants.Loader.LOADER_LOGIN:
                 return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
             case Constants.Loader.LOADER_POSTS:
