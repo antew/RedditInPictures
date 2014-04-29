@@ -286,28 +286,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mToggleFullscreenReceiver);
     }
 
-    /**
-     * Get the image size to use for scaling.
-     *
-     * @return The requested image width/height
-     */
-    private int getImageWidthForResizing() {
-        // Fetch screen height and width, to use as our max size when loading images as this activity runs full screen
-        final DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        final int height = displayMetrics.heightPixels;
-        final int width = displayMetrics.widthPixels;
-
-        // For this sample we'll use half of the longest width to resize our images. As the
-        // image scaling ensures the image is larger than this, we should be left with a
-        // resolution that is appropriate for both portrait and landscape. For best image quality
-        // we shouldn't divide by 2, but this will use more memory and require a larger memory
-        // cache.
-        final int longest = (height > width ? height : width) / 2;
-
-        return longest;
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(Constants.Extra.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
