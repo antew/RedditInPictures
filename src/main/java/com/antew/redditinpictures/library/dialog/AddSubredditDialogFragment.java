@@ -175,7 +175,7 @@ public class AddSubredditDialogFragment extends DialogFragment {
     }
 
     private void handleSubredditSearchResults(ArrayList<String> subredditNameList) {
-        if (mSubreddit != null && subredditNameList != null && subredditNameList.size() > 0) {
+        if (mSubreddit != null && subredditNameList != null && subredditNameList.size() > 0 && getActivity() != null) {
             mSubredditSearchResultsAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line,
                                                                       subredditNameList);
             mSubreddit.setAdapter(mSubredditSearchResultsAdapter);
