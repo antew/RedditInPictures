@@ -219,7 +219,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
             public void onPageSelected(int position) {
                 updateDisplay(position);
 
-                if (position == (mAdapter.getCount() - POST_LOAD_OFFSET)) {
+                if (position >= (mAdapter.getCount() - POST_LOAD_OFFSET)) {
                     reachedCloseToLastPage();
                 }
             }
@@ -282,8 +282,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mToggleFullscreenReceiver);
+        super.onDestroy();
     }
 
     @Override
