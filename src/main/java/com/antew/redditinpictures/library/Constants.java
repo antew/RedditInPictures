@@ -168,8 +168,8 @@ public class Constants {
     }
 
     public static final int    DOUBLE_CLICK_TIMEOUT = 500; //500 milliseconds, taken from the Windows default value for double clicks.
-    public static final float  IMAGE_CACHE_SIZE             = 0.25f;
-    public static final String JSON                         = ".json";
+    public static final float  IMAGE_CACHE_SIZE     = 0.25f;
+    public static final String JSON                 = ".json";
 
     public static final String WEBVIEW_IMAGE_HTML_BEGIN = "<html><head><style type=\"text/css\">* {padding:0;margin:0;}body {background:#000000;}.center-container {position:absolute;width:100%;height:100%;text-align:center;}.center-agent {display:inline-block;height:100%;vertical-align:middle;}.center-target {display:inline-block;vertical-align:middle;}#image {width: 80%;}</style></head><body><div class=\"center-container\"><span class=\"center-agent\"></span><img id=\"image\" class=\"center-target\" src=\"";
     public static final String WEBVIEW_IMAGE_HTML_END   = "\"/></div></body></html>";
