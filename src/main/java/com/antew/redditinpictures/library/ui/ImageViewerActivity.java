@@ -45,6 +45,7 @@ import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveIma
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.widget.CustomViewPager;
 import com.antew.redditinpictures.pro.R;
@@ -118,6 +119,11 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     private boolean mSwipingEnabled = true;
 
+    /**
+     * The page in the ViewPager that was requested
+     */
+    private int mRequestedPage = 0;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,10 +153,16 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
                                                new IntentFilter(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN));
     }
 
+    public int getRequestedPage() {
+        return mRequestedPage;
+    }
+
     /**
      * Get the extras from the intent and do whatever necessary
      */
-    public abstract void getExtras();
+    public void getExtras() {
+        mRequestedPage = BundleUtil.getInt(getIntent().getExtras(), Constants.Extra.EXTRA_IMAGE, 0);
+    }
 
     /**
      * Initialize the Adapter and ViewPager for the ViewPager
@@ -188,7 +200,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void initializeViewPager() {
-        moveViewPagerToSelectedIndex();
         // Hide and show the ActionBar as the visibility changes
         if (AndroidUtil.hasHoneycomb()) {
             mPager.setOnSystemUiVisibilityChangeListener(getOnSystemUiVisibilityChangeListener());
@@ -232,12 +243,11 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     }
 
     /**
-     * Set the current item based on the extra passed in to this activity
+     * Set the current item in the ViewPager
      */
-    private void moveViewPagerToSelectedIndex() {
-        final int extraCurrentItem = getIntent().getIntExtra(Constants.Extra.EXTRA_IMAGE, -1);
-        if (extraCurrentItem != -1) {
-            mPager.setCurrentItem(extraCurrentItem);
+    protected void moveViewPagerToPosition(int position) {
+        if (mPager != null && mPager.getCurrentItem() != position) {
+            mPager.setCurrentItem(position);
         }
     }
 
@@ -290,6 +300,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(Constants.Extra.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
         outState.putBoolean(Constants.Extra.EXTRA_IS_SWIPING_ENABLED, mPager.isSwipingEnabled());
+        outState.putInt(Constants.Extra.EXTRA_IMAGE, mPager.getCurrentItem());
         super.onSaveInstanceState(outState);
     }
 
@@ -302,6 +313,10 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
         if (savedInstanceState.containsKey(Constants.Extra.EXTRA_IS_SWIPING_ENABLED)) {
             mSwipingEnabled = savedInstanceState.getBoolean(Constants.Extra.EXTRA_IS_SWIPING_ENABLED);
+        }
+
+        if (savedInstanceState.containsKey(Constants.Extra.EXTRA_IMAGE)) {
+            mRequestedPage = savedInstanceState.getInt(Constants.Extra.EXTRA_IMAGE);
         }
     }
 

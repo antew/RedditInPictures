@@ -45,6 +45,7 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
 
     @Override
     public void getExtras() {
+        super.getExtras();
         if (getIntent().hasExtra(EXTRA_ALBUM)) {
             mAlbum = getIntent().getParcelableExtra(EXTRA_ALBUM);
             mImages = mAlbum.getImages();
