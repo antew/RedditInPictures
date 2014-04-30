@@ -126,16 +126,6 @@ public class ImgurGalleryType extends Image {
         return simpleGallery;
     }
 
-    public Image getSingleImage() {
-        //TODO: Make this less terrible...
-        if (mSimpleImgurGallery != null
-            && mSimpleImgurGallery.getImgurImage() != null
-            && mSimpleImgurGallery.getImgurImage().getLinks() != null) {
-            return new ImgurImageType(mSimpleImgurGallery.getImgurImage().getLinks().getOriginal());
-        }
-        return null;
-    }
-
     public boolean isSingleImage() {
         return mSimpleImgurGallery != null && mSimpleImgurGallery.isImgurImage();
     }

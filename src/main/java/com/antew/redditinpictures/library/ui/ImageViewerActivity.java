@@ -45,6 +45,7 @@ import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveIma
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.widget.CustomViewPager;
 import com.antew.redditinpictures.pro.R;
@@ -56,7 +57,11 @@ import javax.inject.Inject;
 
 public abstract class ImageViewerActivity extends BaseFragmentActivity implements SaveImageDialogListener, SystemUiStateProvider {
 
-    private static final String IMAGE_CACHE_DIR = "images";
+    /**
+     * 8 is a great number! Not only is it divisible by 4, but it is also equivalent to 2 * 2 * 2 you just can't beat that!
+     */
+    private static final int    POST_LOAD_OFFSET = 8;
+    private static final String IMAGE_CACHE_DIR  = "images";
 
     /**
      * The Adapter for the ViewPager
@@ -114,6 +119,11 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     private boolean mSwipingEnabled = true;
 
+    /**
+     * The page in the ViewPager that was requested
+     */
+    private int mRequestedPage = 0;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,10 +153,16 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
                                                new IntentFilter(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN));
     }
 
+    public int getRequestedPage() {
+        return mRequestedPage;
+    }
+
     /**
      * Get the extras from the intent and do whatever necessary
      */
-    public abstract void getExtras();
+    public void getExtras() {
+        mRequestedPage = BundleUtil.getInt(getIntent().getExtras(), Constants.Extra.EXTRA_IMAGE, 0);
+    }
 
     /**
      * Initialize the Adapter and ViewPager for the ViewPager
@@ -184,7 +200,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void initializeViewPager() {
-        moveViewPagerToSelectedIndex();
         // Hide and show the ActionBar as the visibility changes
         if (AndroidUtil.hasHoneycomb()) {
             mPager.setOnSystemUiVisibilityChangeListener(getOnSystemUiVisibilityChangeListener());
@@ -215,8 +230,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
             public void onPageSelected(int position) {
                 updateDisplay(position);
 
-                if (position == (mAdapter.getCount() - 1)) {
-                    reachedLastPage();
+                if (position >= (mAdapter.getCount() - POST_LOAD_OFFSET)) {
+                    reachedCloseToLastPage();
                 }
             }
 
@@ -228,12 +243,11 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     }
 
     /**
-     * Set the current item based on the extra passed in to this activity
+     * Set the current item in the ViewPager
      */
-    private void moveViewPagerToSelectedIndex() {
-        final int extraCurrentItem = getIntent().getIntExtra(Constants.Extra.EXTRA_IMAGE, -1);
-        if (extraCurrentItem != -1) {
-            mPager.setCurrentItem(extraCurrentItem);
+    protected void moveViewPagerToPosition(int position) {
+        if (mPager != null && mPager.getCurrentItem() != position) {
+            mPager.setCurrentItem(position);
         }
     }
 
@@ -263,9 +277,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     /**
      * Called upon reaching the last page present in the ViewPager
      */
-    public void reachedLastPage() {
-        // Do nothing
-    }
+    public abstract void reachedCloseToLastPage();
 
     @Override
     public void onResume() {
@@ -280,36 +292,15 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mToggleFullscreenReceiver);
-    }
-
-    /**
-     * Get the image size to use for scaling.
-     *
-     * @return The requested image width/height
-     */
-    private int getImageWidthForResizing() {
-        // Fetch screen height and width, to use as our max size when loading images as this activity runs full screen
-        final DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        final int height = displayMetrics.heightPixels;
-        final int width = displayMetrics.widthPixels;
-
-        // For this sample we'll use half of the longest width to resize our images. As the
-        // image scaling ensures the image is larger than this, we should be left with a
-        // resolution that is appropriate for both portrait and landscape. For best image quality
-        // we shouldn't divide by 2, but this will use more memory and require a larger memory
-        // cache.
-        final int longest = (height > width ? height : width) / 2;
-
-        return longest;
+        super.onDestroy();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(Constants.Extra.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
         outState.putBoolean(Constants.Extra.EXTRA_IS_SWIPING_ENABLED, mPager.isSwipingEnabled());
+        outState.putInt(Constants.Extra.EXTRA_IMAGE, mPager.getCurrentItem());
         super.onSaveInstanceState(outState);
     }
 
@@ -322,6 +313,10 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
         if (savedInstanceState.containsKey(Constants.Extra.EXTRA_IS_SWIPING_ENABLED)) {
             mSwipingEnabled = savedInstanceState.getBoolean(Constants.Extra.EXTRA_IS_SWIPING_ENABLED);
+        }
+
+        if (savedInstanceState.containsKey(Constants.Extra.EXTRA_IMAGE)) {
+            mRequestedPage = savedInstanceState.getInt(Constants.Extra.EXTRA_IMAGE);
         }
     }
 

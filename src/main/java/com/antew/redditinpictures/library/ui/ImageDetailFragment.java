@@ -99,100 +99,90 @@ public class ImageDetailFragment extends ImageViewerFragment {
         super.loadImage(image);
 
         if (image == null) {
-            Ln.e("Recieved null ImageContainer in loadImage(ImageContainer image)");
+            Ln.e("Received null ImageContainer in loadImage(ImageContainer image)");
             return;
         }
-        // Attempting to retrieve the album could result in a network call, need to make this call in another thread.
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (ImageType.IMGUR_ALBUM.equals(image.getImageType())) {
-                    mAlbum = ((ImgurAlbumType) image).getAlbum();
-                } else if (ImageType.IMGUR_GALLERY.equals(image.getImageType())) {
-                    //@formatter:off
-                    /*
-                     There are two types of galleries, one wraps a single image in
-                     the gallery response, while the other wraps an album.
+        // The image has already been resolved at this point, so we don't have to worry about network calls
+        if (ImageType.IMGUR_ALBUM.equals(image.getImageType())) {
+            mAlbum = ((ImgurAlbumType) image).getAlbum();
+        } else if (ImageType.IMGUR_GALLERY.equals(image.getImageType())) {
+            //@formatter:off
+            /*
+             There are two types of galleries, one wraps a single image in
+             the gallery response, while the other wraps an album.
 
 
-                     For a single image the JSON format is like:
-                     {
-                         "data": {
-                             "image": {
-                               "hash": "X74W0",
-                               "album_cover": null,
-                               ...
-                             }
-                         }
+             For a single image the JSON format is like:
+             {
+                 "data": {
+                     "image": {
+                       "hash": "X74W0",
+                       "album_cover": null,
+                       ...
                      }
+                 }
+             }
 
-                     While the album wrapping kind has an array of images under
-                     'album_images'.
+             While the album wrapping kind has an array of images under
+             'album_images'.
 
-                     The cover image refers to one of the images in the set.
+             The cover image refers to one of the images in the set.
 
-                     {
-                       "data": {
-                           "image": {
-                             "hash": "X74W0",
-                             "album_cover": "li3gH5A",
-                             "album_images": {
-                               "count": 2,
-                               "images": [
-                                   {
-                                     "hash": "li3gH5A",
-                                     "title": "",
-                                     "description": "",
-                                     "width": 350,
-                                     "height": 350,
-                                     "size": 1875308,
-                                     "ext": ".gif",
-                                     "animated": 1,
-                                     "datetime": "2014-04-15 14:25:18",
-                                     "ip": "1195885755"
-                                   },
-                                   {
-                                     "hash": "SegdXoM",
-                                     "title": "",
-                                     "description": "",
-                                     "width": 350,
-                                     "height": 350,
-                                     "size": 1069755,
-                                     "ext": ".gif",
-                                     "animated": 1,
-                                     "datetime": "2014-04-15 14:25:26",
-                                     "ip": "1195885755"
-                                   }
-                               ]
-                             }
+             {
+               "data": {
+                   "image": {
+                     "hash": "X74W0",
+                     "album_cover": "li3gH5A",
+                     "album_images": {
+                       "count": 2,
+                       "images": [
+                           {
+                             "hash": "li3gH5A",
+                             "title": "",
+                             "description": "",
+                             "width": 350,
+                             "height": 350,
+                             "size": 1875308,
+                             "ext": ".gif",
+                             "animated": 1,
+                             "datetime": "2014-04-15 14:25:18",
+                             "ip": "1195885755"
+                           },
+                           {
+                             "hash": "SegdXoM",
+                             "title": "",
+                             "description": "",
+                             "width": 350,
+                             "height": 350,
+                             "size": 1069755,
+                             "ext": ".gif",
+                             "animated": 1,
+                             "datetime": "2014-04-15 14:25:26",
+                             "ip": "1195885755"
                            }
-                       }
+                       ]
                      }
-                     */
-                    //@formatter:on
-                    ImgurGalleryType gallery = (ImgurGalleryType) image;
-                    if (gallery.isSingleImage()) {
-                        mResolvedImage = image;
-                    } else {
-                        mAlbum = gallery.getAlbum();
-                    }
-
-                    if (mAlbum == null) {
-                        Ln.e("Received imgur gallery without an album or image!");
-                    }
-                }
-
-                if (mAlbum != null && mAlbum.getImages().size() > 1) {
-                    mBtnViewGallery.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mBtnViewGallery.setVisibility(View.VISIBLE);
-                            mBtnViewGallery.setOnClickListener(getViewGalleryOnClickListener());
-                        }
-                    });
-                }
+                   }
+               }
+             }
+             */
+            //@formatter:on
+            ImgurGalleryType gallery = (ImgurGalleryType) image;
+            if (gallery.isSingleImage()) {
+                mResolvedImage = image;
+            } else {
+                mAlbum = gallery.getAlbum();
             }
-        }).start();
+
+            if (mAlbum == null) {
+                Ln.e("Received imgur gallery without an album or image!");
+            }
+        }
+
+        if (mAlbum != null && mAlbum.getImages().size() > 1) {
+            mBtnViewGallery.setVisibility(View.VISIBLE);
+            mBtnViewGallery.setOnClickListener(getViewGalleryOnClickListener());
+        }
     }
 
     private OnClickListener getViewGalleryOnClickListener() {

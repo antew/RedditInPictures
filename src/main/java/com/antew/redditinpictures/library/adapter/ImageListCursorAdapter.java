@@ -23,6 +23,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -321,15 +322,15 @@ public class ImageListCursorAdapter extends CursorAdapter {
         @InjectView(R.id.ib_downVote)
         ImageButton downVote;
         @InjectView(R.id.ib_view)
-        ImageButton view;
+        Button view;
         @InjectView(R.id.ib_save)
-        ImageButton save;
+        Button save;
         @InjectView(R.id.ib_share)
-        ImageButton share;
+        Button share;
         @InjectView(R.id.ib_open)
-        ImageButton open;
+        Button open;
         @InjectView(R.id.ib_report)
-        ImageButton report;
+        Button report;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);

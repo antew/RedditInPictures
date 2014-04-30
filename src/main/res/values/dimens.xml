@@ -33,5 +33,6 @@
 
     <dimen name="subreddit_menu_padding">5dp</dimen>
     <dimen name="subreddit_menu_item_padding">10dp</dimen>
+    <dimen name="menu_size">260dp</dimen>
 
 </resources>

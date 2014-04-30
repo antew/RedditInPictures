@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -60,15 +59,8 @@ import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
-import com.hipmob.gifanimationdrawable.GifAnimationDrawable;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import javax.inject.Inject;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
@@ -92,9 +84,10 @@ public abstract class ImageViewerFragment extends BaseFragment {
     @InjectView(R.id.iv_imageView)
     protected ImageView mImageView;
     protected WebView   mWebView;
-    protected boolean mPauseWork        = false;
-    protected String  mResolvedImageUrl = null;
-    protected Image   mResolvedImage    = null;
+    protected boolean mWebViewInitialized = false;
+    protected boolean mPauseWork          = false;
+    protected String  mResolvedImageUrl   = null;
+    protected Image   mResolvedImage      = null;
     protected int   mActionBarHeight;
     protected Album mAlbum;
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
@@ -133,6 +126,36 @@ public abstract class ImageViewerFragment extends BaseFragment {
     };
     @InjectView(R.id.b_retry)
     Button          mRetry;
+
+    /**
+     * Set a hint to the system about whether this fragment's UI is currently visible
+     * to the user. This hint defaults to true and is persistent across fragment instance
+     * state save and restore.
+     * <p/>
+     * <p>An app may set this to false to indicate that the fragment's UI is
+     * scrolled out of visibility or is otherwise not directly visible to the user.
+     * This may be used by the system to prioritize operations such as fragment lifecycle updates
+     * or loader ordering behavior.</p>
+     *
+     * @param isVisibleToUser
+     *     true if this fragment's UI is currently visible to the user (default),
+     *     false if it is not.
+     */
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        // If we have a webview shown we want to hide it when the fragment is not being viewed to prevent the lag from swiping between fragments.
+        if (mWebView != null) {
+            if (isVisibleToUser) {
+                mWebView.setVisibility(View.VISIBLE);
+            } else {
+                mWebView.setVisibility(View.GONE);
+                // Set the view to uninitialized since it could get GC'd and we want to show the progress bar when/if they navigate back.
+                mWebViewInitialized = false;
+            }
+        }
+    }
+
     @Inject
     ImageDownloader mImageDownloader;
     @InjectView(R.id.tv_error_message)
@@ -326,9 +349,13 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
 
         try {
-
             mResolvedImage = image;
-            mResolvedImageUrl = mResolvedImage.getSize(ImageSize.ORIGINAL);
+            mResolvedImageUrl = mResolvedImage.getSize(ImageSize.LARGE_THUMBNAIL);
+
+            // Falllback to the Original if we can't resolve.
+            if (Strings.isEmpty(mResolvedImageUrl)) {
+                mResolvedImageUrl = mResolvedImage.getSize(ImageSize.ORIGINAL);
+            }
 
             // Fallback to the URL if we can't resolve.
             if (Strings.isEmpty(mResolvedImageUrl)) {
@@ -361,12 +388,22 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
     }
 
+    protected void showImageError() {
+        hideProgress();
+        if (mErrorMessage != null) {
+            mErrorMessage.setVisibility(View.VISIBLE);
+        }
+        if (mRetry != null) {
+            mRetry.setVisibility(View.VISIBLE);
+        }
+    }
+
     public void loadGifInWebView(final String imageUrl) {
         if (mViewStub.getParent() != null) {
             mWebView = (WebView) mViewStub.inflate();
         }
 
-        initializeWebView(mWebView);
+        initializeWebView();
         /**
          * On earlier version of Android, {@link android.webkit.WebView#loadData(String, String, String)} decides to just show the HTML instead of actually display it.
          *
@@ -380,19 +417,31 @@ public abstract class ImageViewerFragment extends BaseFragment {
         mImageView.setVisibility(View.GONE);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void initializeWebView(final WebView webview) {
-        assert webview != null : "WebView should not be null!";
+    protected void hideProgress() {
+        if (mProgress != null) {
+            mProgress.setVisibility(View.GONE);
+        }
+    }
 
-        WebSettings settings = webview.getSettings();
-        settings.setLoadWithOverviewMode(true);
-        settings.setUseWideViewPort(true);
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void initializeWebView() {
+        assert mWebView != null : "WebView should not be null!";
+
+        WebSettings settings = mWebView.getSettings();
+        settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
         if (AndroidUtil.hasHoneycomb()) {
             settings.setDisplayZoomControls(false);
         }
-        webview.setBackgroundColor(Color.BLACK);
-        webview.setWebViewClient(new WebViewClient() {
+        // Before loading the actual content, let's let the WebView initialize everything.
+        mWebView.loadData("<html></html>", "text/html", "utf-8");
+
+        // Hardware acceleration wasn't introduced until Honeycomb. So we want to use the drawing cache for older devices.
+        if (!AndroidUtil.hasHoneycomb()) {
+            mWebView.setDrawingCacheEnabled(true);
+        }
+        mWebView.setBackgroundColor(Color.BLACK);
+        mWebView.setWebViewClient(new WebViewClient() {
             /**
              * Notify the host application that a page has finished loading. This method
              * is called only for main frame. When onPageFinished() is called, the
@@ -407,12 +456,15 @@ public abstract class ImageViewerFragment extends BaseFragment {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (webview != null) {
-                    webview.setVisibility(View.VISIBLE);
+                // We first initialize the webview with mostly blank HTML content, so don't want to show it until we get to the image.
+                if (mWebView != null && mWebViewInitialized) {
+                    mWebView.setVisibility(View.VISIBLE);
+                } else if (!mWebViewInitialized) {
+                    mWebViewInitialized = true;
                 }
             }
         });
-        webview.setOnTouchListener(getWebViewOnTouchListener());
+        mWebView.setOnTouchListener(getWebViewOnTouchListener());
     }
 
     public String getHtmlForImageDisplay(String imageUrl) {
@@ -468,22 +520,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected void showProgress() {
         if (mProgress != null) {
             mProgress.setVisibility(View.VISIBLE);
-        }
-    }
-
-    protected void hideProgress() {
-        if (mProgress != null) {
-            mProgress.setVisibility(View.GONE);
-        }
-    }
-
-    protected void showImageError() {
-        hideProgress();
-        if (mErrorMessage != null) {
-            mErrorMessage.setVisibility(View.VISIBLE);
-        }
-        if (mRetry != null) {
-            mRetry.setVisibility(View.VISIBLE);
         }
     }
 

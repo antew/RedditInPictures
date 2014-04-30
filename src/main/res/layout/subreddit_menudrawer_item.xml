@@ -22,8 +22,7 @@
     android:orientation="vertical"
     android:descendantFocusability="blocksDescendants"
     android:paddingTop="5dp"
-    android:paddingBottom="5dp"
-    android:animateLayoutChanges="true">
+    android:paddingBottom="5dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -63,34 +62,39 @@
         android:orientation="horizontal"
         android:id="@+id/back">
 
-        <ImageButton
+        <Button
             android:id="@+id/ib_view"
-            android:src="@drawable/ic_action_picture_dark"
+            android:drawableTop="@drawable/ic_action_picture_dark"
             android:contentDescription="@string/view_subreddit"
+            android:text="@string/view"
             style="@style/SubredditMenuItem"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/ib_subscribe"
-            android:src="@drawable/ic_action_tick_dark"
+            android:drawableTop="@drawable/ic_action_tick_dark"
             android:contentDescription="@string/subscribe"
+            android:text="@string/subscribe"
             style="@style/SubredditMenuItem"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/ib_unsubscribe"
-            android:src="@drawable/ic_action_cancel_dark"
+            android:drawableTop="@drawable/ic_action_cancel_dark"
             android:contentDescription="@string/unsubscribe"
+            android:text="@string/unsubscribe"
             style="@style/SubredditMenuItem"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/ib_info"
-            android:src="@drawable/ic_action_info_dark"
+            android:drawableTop="@drawable/ic_action_info_dark"
             android:contentDescription="@string/info"
+            android:text="@string/info"
             style="@style/SubredditMenuItem"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/ib_delete"
-            android:src="@drawable/ic_action_trash_dark"
+            android:drawableTop="@drawable/ic_action_trash_dark"
             android:contentDescription="@string/delete"
+            android:text="@string/delete"
             style="@style/SubredditMenuItem"/>
     </LinearLayout>
 

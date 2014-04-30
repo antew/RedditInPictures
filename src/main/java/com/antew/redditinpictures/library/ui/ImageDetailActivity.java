@@ -67,14 +67,11 @@ public class ImageDetailActivity extends ImageViewerActivity
     private   Category  mCategory;
     private   Age       mAge;
     private   String    mSubreddit;
-    private   int       mRequestedPage;
-    private boolean mFirstLoad = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
-        displayVote();
 
         getSupportLoaderManager().initLoader(Constants.Loader.LOADER_REDDIT, null, this);
         getSupportLoaderManager().initLoader(Constants.Loader.LOADER_LOGIN, null, this);
@@ -83,13 +80,14 @@ public class ImageDetailActivity extends ImageViewerActivity
         updateDisplay(mPager.getCurrentItem());
     }
 
+    @Override
     public void getExtras() {
+        super.getExtras();
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         mSubreddit = BundleUtil.getString(extras, Constants.Extra.EXTRA_SUBREDDIT, Constants.Reddit.REDDIT_FRONTPAGE);
         mCategory = Category.fromString(BundleUtil.getString(extras, Constants.Extra.EXTRA_CATEGORY, Category.HOT.getName()));
         mAge = Age.fromString(BundleUtil.getString(extras, Constants.Extra.EXTRA_AGE, Age.TODAY.getAge()));
-        mRequestedPage = BundleUtil.getInt(extras, Constants.Extra.EXTRA_IMAGE, -1);
 
         Ln.d("Got Extras: Age %s Category %s Subreddit %s", mAge, mCategory, mSubreddit);
     }
@@ -102,10 +100,11 @@ public class ImageDetailActivity extends ImageViewerActivity
      * Update the vote
      */
     protected void updateDisplay(int position) {
-        PostData p = getAdapter().getPost(position);
-        if (p != null) {
-            displayVote(p.getVote());
+        if (getAdapter() == null) {
+            return;
         }
+
+        displayVote();
 
         int count = getAdapter().getCount();
         if (count > 0) {
@@ -116,9 +115,7 @@ public class ImageDetailActivity extends ImageViewerActivity
     }
 
     @Override
-    public void reachedLastPage() {
-        super.reachedLastPage();
-
+    public void reachedCloseToLastPage() {
         if (!isRequestInProgress() && mAdapter.getCount() > 0) {
             Ln.d("Reached last page, loading more images");
             setRequestInProgress(true);
@@ -313,8 +310,11 @@ public class ImageDetailActivity extends ImageViewerActivity
     public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
         switch (id) {
             case Constants.Loader.LOADER_REDDIT:
-                return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, null, null, null,
-                                        RedditContract.RedditData.DEFAULT_SORT);
+            return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, // uri
+                                    null,                                  // projection
+                                    "subreddit = ?",                       // selection
+                                    new String[] { mSubreddit },      // selectionArgs[]
+                                    RedditContract.Posts.DEFAULT_SORT);    // sort
             case Constants.Loader.LOADER_LOGIN:
                 return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
             case Constants.Loader.LOADER_POSTS:
@@ -399,13 +399,7 @@ public class ImageDetailActivity extends ImageViewerActivity
                 setRequestInProgress(false);
                 getAdapter().swapCursor(cursor);
 
-                // Set the ViewPager to the index the user selected in ImageGridFragment, we only need to do this
-                // the first time the data is loaded
-                if (mFirstLoad) {
-                    mPager.setCurrentItem(mRequestedPage);
-                    mFirstLoad = false;
-                }
-
+                moveViewPagerToPosition(getRequestedPage());
                 updateDisplay(mPager.getCurrentItem());
                 break;
         }

@@ -21,8 +21,10 @@ import android.text.Html;
 import android.view.View;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.Image;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
+import com.antew.redditinpictures.library.model.ImageSize;
 import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.library.util.Strings;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -61,7 +63,13 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
     @Override
     protected void resolveImage() {
         try {
-            String imageUrl = mImage.getLinks().getOriginal();
+            String imageUrl = mImage.getSize(ImageSize.LARGE_THUMBNAIL);
+
+            // Falllback to the Original if we can't resolve.
+            if (Strings.isEmpty(imageUrl)) {
+                imageUrl = mImage.getSize(ImageSize.ORIGINAL);
+            }
+
             if (ImageUtil.isGif(imageUrl)) {
                 super.loadGifInWebView(imageUrl);
             } else {

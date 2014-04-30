@@ -45,6 +45,7 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
 
     @Override
     public void getExtras() {
+        super.getExtras();
         if (getIntent().hasExtra(EXTRA_ALBUM)) {
             mAlbum = getIntent().getParcelableExtra(EXTRA_ALBUM);
             mImages = mAlbum.getImages();
@@ -64,6 +65,14 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
     @Override
     protected void updateDisplay(int position) {
         getSupportActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
+    }
+
+    /**
+     * Called upon reaching the last page present in the ViewPager
+     */
+    @Override
+    public void reachedCloseToLastPage() {
+        //Do nothing.
     }
 
     /**
