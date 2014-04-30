@@ -16,20 +16,18 @@
 package com.antew.redditinpictures.library.adapter;
 
 import android.database.Cursor;
+import android.support.v4.app.FixedFragmentStatePagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.util.Ln;
 
 /**
- * The main adapter that backs the ViewPager. A subclass of FragmentStatePagerAdapter as there
- * could
- * be a large number of items in the ViewPager and we don't want to retain them all in memory at
- * once but create/destroy them on the fly.
+ * The main adapter that backs the ViewPager. A subclass of FragmentStatePagerAdapter as there could be a large number of items in the
+ * ViewPager and we don't want to retain them all in memory at once but create/destroy them on the fly.
  */
-public class CursorPagerAdapter extends FragmentStatePagerAdapter {
+public class CursorPagerAdapter extends FixedFragmentStatePagerAdapter {
     protected Cursor mCursor;
 
     public CursorPagerAdapter(FragmentManager fm, Cursor cursor) {
