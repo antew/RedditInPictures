@@ -92,6 +92,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected Album mAlbum;
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
     protected SystemUiStateProvider mSystemUiStateProvider;
+    protected boolean mFragmentVisibleToUser = false;
     @InjectView(R.id.pb_progress)
     ProgressBar    mProgress;
     @InjectView(R.id.rl_post_information_wrapper)
@@ -144,9 +145,11 @@ public abstract class ImageViewerFragment extends BaseFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        mFragmentVisibleToUser = isVisibleToUser;
+
         // If we have a webview shown we want to hide it when the fragment is not being viewed to prevent the lag from swiping between fragments.
         if (mWebView != null) {
-            if (isVisibleToUser) {
+            if (mFragmentVisibleToUser) {
                 mWebView.setVisibility(View.VISIBLE);
             } else {
                 mWebView.setVisibility(View.GONE);
@@ -409,12 +412,31 @@ public abstract class ImageViewerFragment extends BaseFragment {
          *
          * So, for older version we make it load from a base URL, which fixes it for some reason...
          */
-        if (AndroidUtil.hasHoneycomb()) {
-            mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
-        } else {
-            mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
-        }
-        mImageView.setVisibility(View.GONE);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // When the current view isn't being directly viewed by the user we want to defer it slightly so that the one currently being displayed can have priority.
+                if (!mFragmentVisibleToUser) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        Ln.e(e);
+                    }
+                }
+                mWebView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (AndroidUtil.hasHoneycomb()) {
+                            mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
+                        } else {
+                            mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
+                        }
+                        mImageView.setVisibility(View.GONE);
+                    }
+                });
+
+            }
+        }).start();
     }
 
     protected void hideProgress() {
