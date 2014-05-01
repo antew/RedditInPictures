@@ -452,6 +452,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
         WebSettings settings = mWebView.getSettings();
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(true);
         if (AndroidUtil.hasHoneycomb()) {
             settings.setDisplayZoomControls(false);
         }
