@@ -147,6 +147,9 @@ public class Constants {
         public static final String REDDIT_FRONTPAGE              = "REDDIT_FRONTPAGE";
         public static final String REDDIT_FRONTPAGE_DISPLAY_NAME = "Frontpage";
         public static final String REDDIT_ALL_DISPLAY_NAME       = "All";
+        public static final String AFTER                         = "after";
+        public static final String LIMIT                         = "limit";
+        public static final int    MY_SUBREDDITS_LIMIT           = 100;
 
         public static class Endpoint {
             public static final String REDDIT_BASE_URL              = "http://www.reddit.com";
@@ -156,7 +159,7 @@ public class Constants {
             public static final String SUBREDDIT_BASE_URL           = REDDIT_BASE_URL + "/r/";
             public static final String REDDIT_ABOUT_URL             = REDDIT_BASE_URL + "/r/%s/about.json";
             public static final String REDDIT_SEARCH_SUBREDDITS_URL = REDDIT_BASE_URL + "/api/search_reddit_names.json";
-            public static final String REDDIT_MY_SUBREDDITS_URL     = REDDIT_BASE_URL + "/reddits/mine/subscriber.json";
+            public static final String REDDIT_MY_SUBREDDITS_URL     = REDDIT_BASE_URL + "/subreddits/mine/subscriber.json";
             public static final String REDDIT_SESSION               = "reddit_session";
             public static final String COMPACT_URL                  = "/.compact";
         }

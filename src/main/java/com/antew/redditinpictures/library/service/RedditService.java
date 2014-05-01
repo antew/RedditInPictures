@@ -150,12 +150,24 @@ public class RedditService extends RESTService {
     }
 
     public static void getMySubreddits(Context context) {
+        getMySubreddits(context, null);
+    }
+
+    public static void getMySubreddits(Context context, String after) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
         intent.setData(Uri.parse(Constants.Reddit.Endpoint.REDDIT_MY_SUBREDDITS_URL));
         intent.putExtra(RedditService.EXTRA_REQUEST_CODE, RequestCode.MY_SUBREDDITS);
         intent.putExtra(EXTRA_HTTP_VERB, GET);
 
+        Bundle params = new Bundle();
+        params.putInt(Constants.Reddit.LIMIT, Constants.Reddit.MY_SUBREDDITS_LIMIT);
+
+        if (Strings.notEmpty(after)) {
+            params.putString(Constants.Reddit.AFTER, after);
+        }
+
+        intent.putExtra(EXTRA_PARAMS, params);
         context.startService(intent);
     }
 
