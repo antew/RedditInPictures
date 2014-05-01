@@ -228,6 +228,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
             @Override
             public void onPageSelected(int position) {
+                mRequestedPage = position;
                 updateDisplay(position);
 
                 if (position >= (mAdapter.getCount() - POST_LOAD_OFFSET)) {
