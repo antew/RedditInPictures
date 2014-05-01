@@ -24,6 +24,7 @@ import com.antew.redditinpictures.library.json.JsonDeserializer;
 import com.antew.redditinpictures.library.model.reddit.MySubreddits;
 import com.antew.redditinpictures.library.model.reddit.SubredditChildren;
 import com.antew.redditinpictures.library.model.reddit.SubredditData;
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
 import java.util.ArrayList;
@@ -47,6 +48,12 @@ public class MySubredditsResponse extends RedditResponseHandler {
             Ln.e("Something went wrong on mySubreddits! status = %d, json = %s", result.getHttpStatusCode(),
                  Strings.toString(result.getJson()));
             return;
+        }
+
+        String after = mySubreddits.getData().getAfter();
+
+        if (Strings.notEmpty(after)) {
+            RedditService.getMySubreddits(context, after);
         }
 
         DefaultSubreddit[] defaultSubreddits = DefaultSubreddit.values();
