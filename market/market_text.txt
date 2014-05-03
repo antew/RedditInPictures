@@ -1,5 +1,9 @@
+Free:
+
 Reddit In Pictures is the easiest way to view pictures from Reddit on your phone or tablet. Start viewing hilarious, witty, and downright cute images from Reddit right now with Reddit In Pictures.
-** Reddit In Pictures is an unofficial Reddit app **
+
+**Reddit In Pictures is an unofficial Reddit app**
+
 Features:
 - Designed for phones and tablets
 - View pictures and animated images on any subreddit
@@ -12,13 +16,54 @@ Features:
 - Navigate between subreddits easily
 - Search for new subreddits or add your favorites
 - Ads can be disabled.
+
 Permissions We Use:
 Internet - To access Reddit and display images
 External Storage - Used to save images and for caching
 Access Network State - Used to detect network speed and display optional ads.
+
 This application is RateWare, you are free to disable ads, I ask that in exchange you rate the app in the Market (whatever you feel it deserves).
+
 Want more features? Check out our pro version, search for Reddit In Picture Pro on the Play Store!
-Note: Reddit In Pictures may use large amounts of data and carrier charges may apply. I recommend using WiFi when available!
+
+Note: Reddit In Pictures may use large amounts of data and carrier charges may apply. We recommend using WiFi when available!
+
 Find a bug, have an idea? Want to help Beta test the latest features? Find our Community on Google+ for details, search for "Reddit In Pictures - Development" or visit http://goo.gl/aLgjaD.
 Please note, this is an unofficial Reddit app. Reddit, the Reddit alien, and trademark are registered trademarks owned by Reddit Inc.
+
+Keywords: Reddit, funny pictures, images, imgur, pictures, pics
+
+Pro:
+
+Reddit In Pictures is the easiest way to view pictures from Reddit on your phone or tablet. Start viewing hilarious, witty, and downright cute images from Reddit right now with Reddit In Pictures.
+
+**Reddit In Pictures is an unofficial Reddit app**
+
+Features:
+- Designed for phones and tablets
+- View and manage your subreddits when logged in
+- Upvote and Downvote posts when you're logged in
+- View pictures and animated images on any subreddit
+- Share any image with your friends
+- Save any image for offline viewing
+- Navigate between images with just a swipe of your finger
+- Pinch-to-zoom on any image
+- Turn Not-Safe-For-Work (NSFW) images and subreddits on/off
+- View image albums quickly and easily
+- Navigate between subreddits easily
+- Search for new subreddits or add your favorites
+- Ads can be disabled.
+
+Permissions We Use:
+Internet - To access Reddit and display images
+External Storage - Used to save images and for caching
+Access Network State - Used to detect network speed and display optional ads.
+
+Thanks for supporting independent developers, we hope that you like our app as much as we do!
+
+Note: Reddit In Pictures may use large amounts of data and carrier charges may apply. We recommend using WiFi when available!
+
+Find a bug, have an idea? Want to help Beta test the latest features? Find our Community on Google+ for details, search for "Reddit In Pictures - Development" or visit http://goo.gl/aLgjaD.
+Please note, this is an unofficial Reddit app. Reddit, the Reddit alien, and trademark are registered trademarks owned by Reddit Inc.
+
 Keywords: Reddit, funny pictures, images, imgur, pictures, pics
