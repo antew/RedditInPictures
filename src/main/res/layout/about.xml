@@ -127,6 +127,14 @@
 
         <TextView
             style="@style/AboutCreditHeader"
+            android:text="OkHttp" />
+
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="An HTTP &amp; SPDY client for Android and Java applications. Available at: https://github.com/square/okhttp" />
+
+        <TextView
+            style="@style/AboutCreditHeader"
             android:text="Otto" />
 
         <TextView
@@ -140,6 +148,22 @@
         <TextView
             style="@style/AboutCreditSubHeader"
             android:text="A small Android library allowing you to have a smooth and customizable horizontal indeterminate ProgressBar. Available at: https://github.com/castorflex/SmoothProgressBar" />
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="SDK Manager Plugin" />
+
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="Gradle plugin which downloads and manages your Android SDK. Available at: https://github.com/JakeWharton/sdk-manager-plugin" />
+
+        <TextView
+            style="@style/AboutCreditHeader"
+            android:text="CWAC AndDown" />
+
+        <TextView
+            style="@style/AboutCreditSubHeader"
+            android:text="Markdown processor for Android. Available at: https://github.com/commonsguy/cwac-anddown" />
 
         <TextView
             android:text="@string/media_credits"

@@ -16,6 +16,7 @@
 ## Technologies
 
 ### Client-Side
+* [Gson](https://code.google.com/p/google-gson/)
 * [Menu Drawer](https://github.com/SimonVT/android-menudrawer)
 * [ActionBarSherlock](https://github.com/JakeWharton/ActionBarSherlock)
 * [Nine Old Androids](https://github.com/JakeWharton/NineOldAndroids/)
@@ -25,6 +26,11 @@
 * [Otto](https://github.com/square/otto)
 * [SmoothProgressBar](https://github.com/castorflex/SmoothProgressBar)
 * [Photo View](https://github.com/chrisbanes/PhotoView)
+
+### Other Libraries
+* [SDK Manager Plugin](https://github.com/JakeWharton/sdk-manager-plugin)
+* [CWAC AndDown](https://github.com/commonsguy/cwac-anddown)
+* [OkHttp](https://github.com/square/okhttp)
 
 ### APIs
 * [Imgur API](https://api.imgur.com/)
