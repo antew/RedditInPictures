@@ -9,9 +9,6 @@ out
 .DS_Store
 classes
 
-# Gradle
-.gradle
-
 # Maven
 target
 pom.xml.*
@@ -20,6 +17,7 @@ release.properties
 # Gradle
 .gradle
 production.keystore
+gradle.properties
 
 #IntelliJ
 .idea

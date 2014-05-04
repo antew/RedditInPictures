@@ -34,7 +34,7 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
-        versionName "3.1.3"
+        versionName "3.1.4"
     }
 
     packagingOptions {
@@ -42,25 +42,24 @@ android {
     }
 
     signingConfigs {
-        prod {
-            storeFile file("production.keystore")
-            storePassword "PASSWORD_GOES_HERE"
-            keyAlias "ALIAS_GOES_HERE"
-            keyPassword "PASSWORD_GOES_HERE"
+        release
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
         }
     }
 
     productFlavors {
         free {
-            packageName "com.antew.redditinpictures"
-            versionCode 21
-            signingConfig signingConfigs.prod
+            packageName "com.wemakestuff.redditinpictures"
+            versionCode 22
         }
 
         pro {
-            packageName "com.antew.redditinpictures.pro"
-            versionCode 21
-            signingConfig signingConfigs.prod
+            packageName "com.wemakestuff.redditinpictures.pro"
+            versionCode 22
         }
     }
 
@@ -97,4 +96,18 @@ dependencies {
     compile 'com.commonsware.cwac:anddown:0.2.+'
     compile files('lib/libGoogleAnalyticsServices.jar')
     freeCompile files('lib/admob-6.2.1.jar')
+}
+
+def hasValidSigningConfig = project.hasProperty('storeFile') &&
+                            project.hasProperty('storePassword') &&
+                            project.hasProperty('keyAlias') &&
+                            project.hasProperty('keyPassword')
+
+if (hasValidSigningConfig) {
+    android.signingConfigs.release.storeFile = file(storeFile)
+    android.signingConfigs.release.storePassword = storePassword
+    android.signingConfigs.release.keyAlias = keyAlias
+    android.signingConfigs.release.keyPassword = keyPassword
+} else {
+    android.buildTypes.release.signingConfig = null
 }

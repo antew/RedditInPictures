@@ -21,11 +21,11 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.pro.R;
 
 public class ConstsFree extends Constants {
-    public static final String ADMOB_ID            = "a14fd4522953241";
+    public static final String ADMOB_ID            = "a153655662672f3";
     public static final String DIALOG_UPGRADE      = "Upgrade";
     public static final String MARKET_INTENT       = "market://details?id=";
     public static final String REMOVE_ADS          = "removeAds";
-    public static final String PRO_VERSION_PACKAGE = "com.antew.redditinpictures.pro";
+    public static final String PRO_VERSION_PACKAGE = "com.wemakestuff.redditinpictures.pro";
     private static Integer mActionBarSize;
 
     public static int getActionBarSize(Context context) {
