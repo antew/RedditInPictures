@@ -30,8 +30,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.pro.R;
-import com.nineoldandroids.view.ViewHelper;
-import com.nineoldandroids.view.ViewPropertyAnimator;
 import java.util.WeakHashMap;
 
 public class SwipeListView extends ListView {
@@ -189,15 +187,15 @@ public class SwipeListView extends ListView {
                     // If the view we are looking at has alrady been swiped, reset it.
                     if (mSwipedViews.containsKey(mViewPair.hashCode())) {
                         mViewPair.mBackView.setVisibility(View.GONE);
-                        ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
+                        mViewPair.mFrontView.animate().translationX(0).alpha(1).setDuration(mAnimationTime);
                     } else {
                         // Otherwise let's open it up.
-                        ViewPropertyAnimator.animate(mViewPair.mFrontView)
+                        mViewPair.mFrontView.animate()
                                             .translationX(mSwipeDirection == SWIPE_DIRECTION_LEFT ? -mViewWidth : mViewWidth)
                                             .alpha(0)
                                             .setDuration(mAnimationTime);
                         mViewPair.mBackView.setVisibility(View.VISIBLE);
-                        ViewPropertyAnimator.animate(mViewPair.mBackView).alpha(1).setDuration(mAnimationTime);
+                        mViewPair.mBackView.animate().alpha(1).setDuration(mAnimationTime);
                         mSwipedViews.put(mViewPair.hashCode(), mViewPair);
                         resetState();
                     }
@@ -256,7 +254,7 @@ public class SwipeListView extends ListView {
                         // If we are supposed to close all views when the user scrolls, do it.
                         for (SwipeableViewPair viewPair : mSwipedViews.values()) {
                             viewPair.mBackView.setVisibility(View.GONE);
-                            ViewPropertyAnimator.animate(viewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
+                            viewPair.mFrontView.animate().translationX(0).alpha(1).setDuration(mAnimationTime);
                         }
                         mSwipedViews.clear();
                     }
@@ -510,11 +508,11 @@ public class SwipeListView extends ListView {
 
                         if (shouldSwipe) {
                             // If a swipe should occur meaning someone has let go of a view they were moving and it was far/fast enough for us to consider it a swipe start the animations.
-                            ViewPropertyAnimator.animate(mViewPair.mFrontView)
+                            mViewPair.mFrontView.animate()
                                                 .translationX(deltaX >= 0 ? mViewWidth : -mViewWidth)
                                                 .alpha(0)
                                                 .setDuration(mAnimationTime);
-                            ViewPropertyAnimator.animate(mViewPair.mBackView).alpha(1).setDuration(mAnimationTime);
+                            mViewPair.mBackView.animate().alpha(1).setDuration(mAnimationTime);
                             // Now that the item is open, store it off so we can close it when we scroll if needed.
                             mSwipedViews.put(mViewPair.hashCode(), mViewPair);
                             // Clear out current variables as they are no longer needed and recycle the velocity tracker.
@@ -523,7 +521,7 @@ public class SwipeListView extends ListView {
                             // If the user let go of the view and we don't think the swipe was intended to occur (it was cancelled basically) reset the views.
                             // Make sure the back disappears, since if it has buttons these can intercept touches from the front view.
                             mViewPair.mBackView.setVisibility(View.GONE);
-                            ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
+                            mViewPair.mFrontView.animate().translationX(0).alpha(1).setDuration(mAnimationTime);
                             // Clear out current variables as they are no longer needed and recycle the velocity tracker.
                             resetState();
                         }
@@ -585,9 +583,9 @@ public class SwipeListView extends ListView {
                         // Make sure the back is visible.
                         mViewPair.mBackView.setVisibility(View.VISIBLE);
                         //Fade the back in and front out as they move.
-                        ViewHelper.setAlpha(mViewPair.mBackView, Math.min(1f, 2f * Math.abs(deltaX) / mViewWidth));
-                        ViewHelper.setTranslationX(mViewPair.mFrontView, deltaX);
-                        ViewHelper.setAlpha(mViewPair.mFrontView, Math.max(0f, Math.min(1f, 1f - 2f * Math.abs(deltaX) / mViewWidth)));
+                        mViewPair.mBackView.setAlpha(Math.min(1f, 2f * Math.abs(deltaX) / mViewWidth));
+                        mViewPair.mFrontView.setTranslationX(deltaX);
+                        mViewPair.mFrontView.setAlpha(Math.max(0f, Math.min(1f, 1f - 2f * Math.abs(deltaX) / mViewWidth)));
                         return true;
                     }
                 }

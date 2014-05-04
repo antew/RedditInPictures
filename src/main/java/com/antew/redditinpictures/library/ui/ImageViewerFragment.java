@@ -65,8 +65,6 @@ import javax.inject.Inject;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 
-import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
-
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
@@ -127,6 +125,34 @@ public abstract class ImageViewerFragment extends BaseFragment {
     };
     @InjectView(R.id.b_retry)
     Button          mRetry;
+    @Inject
+    ImageDownloader mImageDownloader;
+    @InjectView(R.id.tv_error_message)
+    TextView        mErrorMessage;
+    @Inject
+    ScreenSize      mScreenSize;
+    private boolean           mExitTasksEarly         = false;
+    private boolean           mCancelClick            = false;
+    private float             mDownXPos               = 0;
+    private float             mDownYPos               = 0;
+    private BroadcastReceiver mToggleFullscreenIntent = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isSystemUiVisible = intent.getBooleanExtra(Constants.Extra.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
+            if (isSystemUiVisible) {
+                hidePostDetails();
+            } else {
+                showPostDetails();
+            }
+        }
+    };
+
+    /**
+     * Empty constructor as per the Fragment documentation
+     */
+    public ImageViewerFragment() {
+    }
 
     /**
      * Set a hint to the system about whether this fragment's UI is currently visible
@@ -157,35 +183,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
                 mWebViewInitialized = false;
             }
         }
-    }
-
-    @Inject
-    ImageDownloader mImageDownloader;
-    @InjectView(R.id.tv_error_message)
-    TextView        mErrorMessage;
-    @Inject
-    ScreenSize      mScreenSize;
-    private boolean           mExitTasksEarly         = false;
-    private boolean           mCancelClick            = false;
-    private float             mDownXPos               = 0;
-    private float             mDownYPos               = 0;
-    private BroadcastReceiver mToggleFullscreenIntent = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean isSystemUiVisible = intent.getBooleanExtra(Constants.Extra.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
-            if (isSystemUiVisible) {
-                hidePostDetails();
-            } else {
-                showPostDetails();
-            }
-        }
-    };
-
-    /**
-     * Empty constructor as per the Fragment documentation
-     */
-    public ImageViewerFragment() {
     }
 
     /**
@@ -310,12 +307,12 @@ public abstract class ImageViewerFragment extends BaseFragment {
     public void showPostDetails() {
         if (shouldShowPostInformation()) {
             mPostInformationWrapper.setVisibility(View.VISIBLE);
-            animate(mPostInformationWrapper).setDuration(500).y(mActionBarHeight);
+            mPostInformationWrapper.animate().setDuration(500).y(mActionBarHeight);
         }
     }
 
     public void hidePostDetails() {
-        animate(mPostInformationWrapper).setDuration(500).y(-400);
+        mPostInformationWrapper.animate().setDuration(500).y(-400);
     }
 
     protected abstract boolean shouldShowPostInformation();
@@ -434,7 +431,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
                         mImageView.setVisibility(View.GONE);
                     }
                 });
-
             }
         }).start();
     }

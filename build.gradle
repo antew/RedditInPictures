@@ -32,7 +32,7 @@ android {
     buildToolsVersion '19.0.3'
 
     defaultConfig {
-        minSdkVersion 13
+        minSdkVersion 14
         targetSdkVersion 19
         versionName "3.1.4"
     }
@@ -81,7 +81,6 @@ repositories {
 
 dependencies {
     compile 'com.google.code.gson:gson:2.2.+'
-    compile 'com.nineoldandroids:library:2.4.+'
     compile 'net.simonvt.menudrawer:menudrawer:3.0.+@aar'
     compile 'com.android.support:support-v13:19.1.+'
     compile "com.jakewharton:butterknife:4.0.+"

@@ -67,7 +67,6 @@ import com.antew.redditinpictures.library.util.SubredditUtil;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
-import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.squareup.otto.Subscribe;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import javax.inject.Inject;
@@ -327,7 +326,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     @Subscribe
     public void requestInProgress(RequestInProgressEvent event) {
-        ViewPropertyAnimator.animate(mProgressBar).setDuration(500).alpha(100);
+        mProgressBar.animate().setDuration(500).alpha(100);
     }
 
     public void handleLoginAndLogout() {
@@ -384,7 +383,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
     @Subscribe
     public void requestCompleted(RequestCompletedEvent event) {
-        ViewPropertyAnimator.animate(mProgressBar).setDuration(500).alpha(0);
+        mProgressBar.animate().setDuration(500).alpha(0);
     }
 
     @Override
