@@ -53,12 +53,12 @@ android {
 
     productFlavors {
         free {
-            packageName "com.antew.redditinpictures"
+            packageName "com.wemakestuff.redditinpictures"
             versionCode 21
         }
 
         pro {
-            packageName "com.antew.redditinpictures.pro"
+            packageName "com.wemakestuff.redditinpictures.pro"
             versionCode 21
         }
     }
