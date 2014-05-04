@@ -15,7 +15,6 @@
  */
 package com.antew.redditinpictures.library.preferences;
 
-import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Build;
@@ -35,7 +34,6 @@ import com.antew.redditinpictures.pro.R;
  *
  * @author Antew
  */
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class RedditInPicturesPreferencesFragment extends PreferenceActivity {
     private boolean showNsfwImagesNewValue;
     private boolean showNsfwImagesOldValue;

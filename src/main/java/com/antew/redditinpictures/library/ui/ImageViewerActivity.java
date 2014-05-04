@@ -15,7 +15,6 @@
  */
 package com.antew.redditinpictures.library.ui;
 
-import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.FragmentStatePagerAdapter;
 import android.content.BroadcastReceiver;
@@ -23,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -43,7 +41,6 @@ import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
-import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.widget.CustomViewPager;
@@ -61,16 +58,16 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     private static final int    POST_LOAD_OFFSET = 8;
     private static final String IMAGE_CACHE_DIR  = "images";
-
+    @Inject
+    public    ImageDownloader           mImageDownloader;
     /**
      * The Adapter for the ViewPager
      */
     protected FragmentStatePagerAdapter mAdapter;
-
     /**
      * The ViewPager which holds the fragments
      */
-    protected CustomViewPager mPager;
+    protected CustomViewPager           mPager;
     /**
      * This BroadcastReceiver handles toggling between fullscreen/windowed mode
      */
@@ -109,10 +106,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * The wrapper view
      */
     protected RelativeLayout mWrapper;
-
-    @Inject
-    public ImageDownloader mImageDownloader;
-
     /**
      * Whether swiping on the ViewPager is enabled
      */
@@ -150,10 +143,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         LocalBroadcastManager.getInstance(this)
                              .registerReceiver(mToggleFullscreenReceiver,
                                                new IntentFilter(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN));
-    }
-
-    public int getRequestedPage() {
-        return mRequestedPage;
     }
 
     /**
@@ -197,12 +186,9 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void initializeViewPager() {
         // Hide and show the ActionBar as the visibility changes
-        if (AndroidUtil.hasHoneycomb()) {
-            mPager.setOnSystemUiVisibilityChangeListener(getOnSystemUiVisibilityChangeListener());
-        }
+        mPager.setOnSystemUiVisibilityChangeListener(getOnSystemUiVisibilityChangeListener());
     }
 
     /**
@@ -242,16 +228,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         return viewPagerOnPageChangeListener;
     }
 
-    /**
-     * Set the current item in the ViewPager
-     */
-    protected void moveViewPagerToPosition(int position) {
-        if (mPager != null && mPager.getCurrentItem() != position) {
-            mPager.setCurrentItem(position);
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public OnSystemUiVisibilityChangeListener getOnSystemUiVisibilityChangeListener() {
         return new OnSystemUiVisibilityChangeListener() {
 
@@ -296,12 +272,38 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         super.onDestroy();
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(Constants.Extra.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
-        outState.putBoolean(Constants.Extra.EXTRA_IS_SWIPING_ENABLED, mPager.isSwipingEnabled());
-        outState.putInt(Constants.Extra.EXTRA_IMAGE, mPager.getCurrentItem());
-        super.onSaveInstanceState(outState);
+    /**
+     * Set whether swiping is enabled on the ViewPager.
+     *
+     * @param swipingEnabled
+     *     Whether swiping should be enabled
+     * @param showMessageToUser
+     *     Whether to display a message to the user, set this to true if the user took direct action to change the state.
+     */
+    private void setSwipingState(boolean swipingEnabled, boolean showMessageToUser) {
+        if (mAdapter != null && mPager != null) {
+            mSwipingEnabled = swipingEnabled;
+            mPager.setSwipingEnabled(mSwipingEnabled);
+            if (showMessageToUser) {
+                mCrouton.setText(mSwipingEnabled ? getString(R.string.swiping_enabled) : getString(R.string.swiping_disabled));
+                FadeInThenOut.fadeInThenOut(mCrouton, 1500);
+            }
+
+            invalidateOptionsMenu();
+        }
+    }
+
+    public int getRequestedPage() {
+        return mRequestedPage;
+    }
+
+    /**
+     * Set the current item in the ViewPager
+     */
+    protected void moveViewPagerToPosition(int position) {
+        if (mPager != null && mPager.getCurrentItem() != position) {
+            mPager.setCurrentItem(position);
+        }
     }
 
     @Override
@@ -318,6 +320,14 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         if (savedInstanceState.containsKey(Constants.Extra.EXTRA_IMAGE)) {
             mRequestedPage = savedInstanceState.getInt(Constants.Extra.EXTRA_IMAGE);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(Constants.Extra.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
+        outState.putBoolean(Constants.Extra.EXTRA_IS_SWIPING_ENABLED, mPager.isSwipingEnabled());
+        outState.putInt(Constants.Extra.EXTRA_IMAGE, mPager.getCurrentItem());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -431,35 +441,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     }
 
     /**
-     * Set whether swiping is enabled on the ViewPager.
-     *
-     * @param swipingEnabled
-     *     Whether swiping should be enabled
-     * @param showMessageToUser
-     *     Whether to display a message to the user, set this to true if the user took direct action to change the state.
-     */
-    private void setSwipingState(boolean swipingEnabled, boolean showMessageToUser) {
-        if (mAdapter != null && mPager != null) {
-            mSwipingEnabled = swipingEnabled;
-            mPager.setSwipingEnabled(mSwipingEnabled);
-            if (showMessageToUser) {
-                mCrouton.setText(mSwipingEnabled ? getString(R.string.swiping_enabled) : getString(R.string.swiping_disabled));
-                FadeInThenOut.fadeInThenOut(mCrouton, 1500);
-            }
-
-            invalidateOptionsMenu();
-        }
-    }
-
-    /**
-     * Get the JSON representation of the current image/post in the ViewPager to report an error.
-     *
-     * @return The JSON representation of the currently viewed object.
-     */
-    protected abstract void reportCurrentItem();
-
-    /**
      * Retrieve the current subreddit.
+     *
      * @return the current subreddit
      */
     public abstract String getSubreddit();
@@ -492,6 +475,13 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     }
 
     /**
+     * Get the JSON representation of the current image/post in the ViewPager to report an error.
+     *
+     * @return The JSON representation of the currently viewed object.
+     */
+    protected abstract void reportCurrentItem();
+
+    /**
      * Get the initial value for the filename prompt, by default it is an empty string
      *
      * @return The initial filename
@@ -510,42 +500,26 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     @Override
     public abstract void onFinishSaveImageDialog(String filename);
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void goFullscreen() {
         EasyTracker.getInstance(this)
                    .send(MapBuilder.createEvent(Constants.Analytics.Category.UI_ACTION, Constants.Analytics.Action.TOGGLE_DETAILS,
                                                 Constants.Analytics.Label.GO_FULLSCREEN, null).build());
-        if (AndroidUtil.hasHoneycomb()) {
-            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-        } else {
-            getActionBar().hide();
-        }
+        mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void exitFullscreen() {
         EasyTracker.getInstance(this)
                    .send(MapBuilder.createEvent(Constants.Analytics.Category.UI_ACTION, Constants.Analytics.Action.TOGGLE_DETAILS,
                                                 Constants.Analytics.Label.EXIT_FULLSCREEN, null).build());
-        if (AndroidUtil.hasHoneycomb()) {
-            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        } else {
-            getActionBar().show();
-        }
+        mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public boolean isSystemUiVisible() {
-        if (AndroidUtil.hasHoneycomb()) {
-            final int vis = mPager.getSystemUiVisibility();
-            if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) {
-                return false;
-            }
-        } else {
-            return getActionBar().isShowing();
+        final int vis = mPager.getSystemUiVisibility();
+        if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) {
+            return false;
         }
-
         return true;
     }
 }

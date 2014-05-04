@@ -28,41 +28,10 @@ import android.view.ViewParent;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.pro.R;
 import java.util.WeakHashMap;
 
 public class SwipeListView extends ListView {
-    /**
-     * Defines the direction in which list items can be swiped. Use {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
-     * to change the behavior. This can also
-     * be
-     * set via a Styleable Attribute called swipeDirection.
-     */
-    public enum SwipeDirection {
-        /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
-         * to {@link
-         * #BOTH} will allow the user to swipe list items to
-         * either the left or the right.
-         */
-        BOTH,
-        /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
-         * to {@link
-         * #LEFT} will only allow the user to swipe list items to
-         * the left.
-         */
-        LEFT,
-        /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
-         * to {@link
-         * #LEFT} will only allow the user to swipe list items to
-         * the right.
-         */
-        RIGHT
-    }
-
     /**
      * Defines the direction in which list items can be swiped. Use {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
      * to change the behavior. This can also
@@ -104,28 +73,27 @@ public class SwipeListView extends ListView {
      * Holds the generated Id for the Front View, can be passed via XML with R.styleable.SwipeListView_frontViewId or set via the
      * constructor if creating it in code. This value is required.
      */
-    private int     mFrontViewId;
+    private int               mFrontViewId;
     /**
      * Holds the generated Id for the Back View, can be passed via XML with R.styleable.SwipeListView_backViewId or set via the constructor
      * if creating it in code. This value is required.
      */
-    private int     mBackViewId;
+    private int               mBackViewId;
     /**
      * Holds the selection for the SwipeDirection that applies to all list items, can be passed via XML with
      * R.styleable.SwipeListView_swipeDirection or set via #setSwipeDirection. Defaults to SWIPE_DIRECTION_BOTH.
      */
-    private int     mSwipeDirection;
+    private int               mSwipeDirection;
     /**
      * Holds the selection for whether or not scrolling closes all currently open list items, can be passed via XML with
      * R.styleable.SwipeListView_closeAllWhenScrolling or set via #setCloseAllWhenScrolling. Defaults to true.
      */
-    private boolean mCloseAllWhenScrolling;
+    private boolean           mCloseAllWhenScrolling;
     /**
      * Holds the selection for whether or not long pressing on an item causes it to swipe open or not, can be passed via XML with
      * R.styleable.SwipeListView_openOnLongPress or set via #setOpenOnLongPress. Defaults to true.
      */
-    private boolean mOpenOnLongPress;
-
+    private boolean           mOpenOnLongPress;
     /**
      * Used to hold the location from which the initial touch began.
      */
@@ -338,38 +306,6 @@ public class SwipeListView extends ListView {
     }
 
     /**
-     * @param closeAllWhenScrolling
-     *
-     * @return This {@link SwipeListView}
-     */
-    public SwipeListView setCloseAllWhenScrolling(boolean closeAllWhenScrolling) {
-        mCloseAllWhenScrolling = closeAllWhenScrolling;
-        return this;
-    }
-
-    /**
-     * @param swipeDirection
-     *
-     * @return This {@link SwipeListView}
-     */
-    public SwipeListView setSwipeDirection(SwipeDirection swipeDirection) {
-        switch (swipeDirection) {
-            case LEFT:
-                setSwipeDirection(SWIPE_DIRECTION_LEFT);
-                break;
-            case RIGHT:
-                setSwipeDirection(SWIPE_DIRECTION_RIGHT);
-                break;
-            // fall through
-            case BOTH:
-            default:
-                setSwipeDirection(SWIPE_DIRECTION_BOTH);
-                break;
-        }
-        return this;
-    }
-
-    /**
      * Used to set the SwipeDirection for items in the List View. Can also be set in the layout XML using
      * R.styleable.SwipeListView_swipeDirection.
      *
@@ -411,6 +347,38 @@ public class SwipeListView extends ListView {
     }
 
     /**
+     * @param closeAllWhenScrolling
+     *
+     * @return This {@link SwipeListView}
+     */
+    public SwipeListView setCloseAllWhenScrolling(boolean closeAllWhenScrolling) {
+        mCloseAllWhenScrolling = closeAllWhenScrolling;
+        return this;
+    }
+
+    /**
+     * @param swipeDirection
+     *
+     * @return This {@link SwipeListView}
+     */
+    public SwipeListView setSwipeDirection(SwipeDirection swipeDirection) {
+        switch (swipeDirection) {
+            case LEFT:
+                setSwipeDirection(SWIPE_DIRECTION_LEFT);
+                break;
+            case RIGHT:
+                setSwipeDirection(SWIPE_DIRECTION_RIGHT);
+                break;
+            // fall through
+            case BOTH:
+            default:
+                setSwipeDirection(SWIPE_DIRECTION_BOTH);
+                break;
+        }
+        return this;
+    }
+
+    /**
      * Set the listener that will receive notifications every time the list scrolls.
      *
      * @param onScrollListener
@@ -419,16 +387,6 @@ public class SwipeListView extends ListView {
     @Override
     public void setOnScrollListener(OnScrollListener onScrollListener) {
         mOnScrollListener = onScrollListener;
-    }
-
-    /**
-     * @param openOnLongPress
-     *
-     * @return This {@link SwipeListView}
-     */
-    public SwipeListView setOpenOnLongPress(boolean openOnLongPress) {
-        mOpenOnLongPress = openOnLongPress;
-        return this;
     }
 
     @Override
@@ -591,20 +549,7 @@ public class SwipeListView extends ListView {
                 }
                 break;
         }
-        /**
-         * In older versions of Android MotionEvent will cause an ArrayIndexOutOfBoundsException when it
-         * attempts to access the Y coordinateunchecked if there hasn't been any motion in the Y direction.
-         * Can't extend MotionEvent since it is final, so catching the error is the best we can do.
-         */
-        if (!AndroidUtil.hasHoneycomb()) {
-            try {
-                return super.onTouchEvent(event);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                return true;
-            }
-        } else {
-            return super.onTouchEvent(event);
-        }
+        return super.onTouchEvent(event);
     }
 
     /**
@@ -632,6 +577,16 @@ public class SwipeListView extends ListView {
     }
 
     /**
+     * @param openOnLongPress
+     *
+     * @return This {@link SwipeListView}
+     */
+    public SwipeListView setOpenOnLongPress(boolean openOnLongPress) {
+        mOpenOnLongPress = openOnLongPress;
+        return this;
+    }
+
+    /**
      * Register a callback to be invoked when an item in this AdapterView has
      * been clicked and held
      *
@@ -641,6 +596,36 @@ public class SwipeListView extends ListView {
     @Override
     public void setOnItemLongClickListener(OnItemLongClickListener listener) {
         mOnItemLongClickListener = listener;
+    }
+
+    /**
+     * Defines the direction in which list items can be swiped. Use {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+     * to change the behavior. This can also
+     * be
+     * set via a Styleable Attribute called swipeDirection.
+     */
+    public enum SwipeDirection {
+        /**
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
+         * #BOTH} will allow the user to swipe list items to
+         * either the left or the right.
+         */
+        BOTH,
+        /**
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
+         * #LEFT} will only allow the user to swipe list items to
+         * the left.
+         */
+        LEFT,
+        /**
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
+         * #LEFT} will only allow the user to swipe list items to
+         * the right.
+         */
+        RIGHT
     }
 
     /**

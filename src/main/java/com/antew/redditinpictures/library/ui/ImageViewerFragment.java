@@ -15,7 +15,6 @@
  */
 package com.antew.redditinpictures.library.ui;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,7 +23,6 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.TypedValue;
@@ -53,7 +51,6 @@ import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.model.ImageSize;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
-import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
@@ -423,11 +420,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
                 mWebView.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (AndroidUtil.hasHoneycomb()) {
-                            mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
-                        } else {
-                            mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
-                        }
+                        mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
                         mImageView.setVisibility(View.GONE);
                     }
                 });
@@ -441,7 +434,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void initializeWebView() {
         assert mWebView != null : "WebView should not be null!";
 
@@ -450,16 +442,10 @@ public abstract class ImageViewerFragment extends BaseFragment {
         settings.setBuiltInZoomControls(true);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
-        if (AndroidUtil.hasHoneycomb()) {
-            settings.setDisplayZoomControls(false);
-        }
+        settings.setDisplayZoomControls(false);
         // Before loading the actual content, let's let the WebView initialize everything.
         mWebView.loadData("<html></html>", "text/html", "utf-8");
 
-        // Hardware acceleration wasn't introduced until Honeycomb. So we want to use the drawing cache for older devices.
-        if (!AndroidUtil.hasHoneycomb()) {
-            mWebView.setDrawingCacheEnabled(true);
-        }
         mWebView.setBackgroundColor(Color.BLACK);
         mWebView.setWebViewClient(new WebViewClient() {
             /**

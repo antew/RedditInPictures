@@ -189,7 +189,6 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     public void handleArguments(Bundle arguments) {
         mCurrentSubreddit = BundleUtil.getString(arguments, Constants.Extra.EXTRA_SUBREDDIT, Constants.Reddit.REDDIT_FRONTPAGE);
         mCategory = Category.fromString(BundleUtil.getString(arguments, Constants.Extra.EXTRA_CATEGORY, Category.HOT.getName()));

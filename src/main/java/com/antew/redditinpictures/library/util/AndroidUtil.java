@@ -15,14 +15,12 @@
  */
 package com.antew.redditinpictures.library.util;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import com.antew.redditinpictures.library.ui.RedditFragmentActivity;
-import com.antew.redditinpictures.pro.R;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -56,44 +54,21 @@ public class AndroidUtil {
         return (int) (px / (context.getResources().getDisplayMetrics().densityDpi / 160f) + 0.5f);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static void enableStrictMode() {
-        if (AndroidUtil.hasGingerbread()) {
-            StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
-            StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
+        StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
+        StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
 
-            if (AndroidUtil.hasHoneycomb()) {
-                threadPolicyBuilder.penaltyFlashScreen();
-                vmPolicyBuilder.setClassInstanceLimit(RedditFragmentActivity.class, 1)
-                               .setClassInstanceLimit(ImageDetailActivity.class, 1)
-                               .setClassInstanceLimit(ImgurAlbumActivity.class, 1);
-            }
+        threadPolicyBuilder.penaltyFlashScreen();
+        vmPolicyBuilder.setClassInstanceLimit(RedditFragmentActivity.class, 1)
+                       .setClassInstanceLimit(ImageDetailActivity.class, 1)
+                       .setClassInstanceLimit(ImgurAlbumActivity.class, 1);
 
-            StrictMode.setThreadPolicy(threadPolicyBuilder.build());
-            StrictMode.setVmPolicy(vmPolicyBuilder.build());
-        }
+        StrictMode.setThreadPolicy(threadPolicyBuilder.build());
+        StrictMode.setVmPolicy(vmPolicyBuilder.build());
     }
 
-    public static boolean hasGingerbread() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
-    }
-
-    public static boolean hasHoneycomb() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
-    }
-
-    public static boolean hasFroyo() {
-        // Can use static final constants like FROYO, declared in later versions
-        // of the OS since they are inlined at compile time. This is guaranteed behavior.
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
-    }
-
-    public static boolean hasHoneycombMR1() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1;
-    }
-
-    public static boolean hasIcs() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+    public static boolean hasIcsMr1() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1;
     }
 
     public static boolean hasJellyBean() {

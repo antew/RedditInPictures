@@ -15,7 +15,6 @@
  */
 package com.antew.redditinpictures.library.ui;
 
-import android.annotation.TargetApi;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -27,7 +26,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v4.content.LocalBroadcastManager;
@@ -109,7 +107,6 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         super.onSaveInstanceState(outState);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     private void restoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mActiveViewType = ViewType.valueOf(
