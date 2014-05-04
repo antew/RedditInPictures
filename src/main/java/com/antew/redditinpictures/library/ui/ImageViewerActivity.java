@@ -16,6 +16,8 @@
 package com.antew.redditinpictures.library.ui;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
+import android.app.FragmentStatePagerAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,20 +26,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.DisplayMetrics;
+import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.animation.FadeInThenOut;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
@@ -184,7 +183,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * Initialize the mActionBarHeight variable.
      */
     private void initializeActionBar() {
-        final ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getActionBar();
 
         // Hide title text and set home as up
         actionBar.setDisplayShowTitleEnabled(true);
@@ -193,7 +192,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
 
         // Calculate ActionBar height
         TypedValue tv = new TypedValue();
-        if (getTheme() != null && getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+        if (getTheme() != null && getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
             mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
         }
     }
@@ -212,7 +211,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      *
      * @return The adapter for the ViewPager
      */
-    public abstract FragmentStatePagerAdapter getPagerAdapter();
+    public abstract android.app.FragmentStatePagerAdapter getPagerAdapter();
 
     /**
      * Get the page change listener for the ViewPager. By default it changes between
@@ -220,8 +219,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      *
      * @return
      */
-    protected OnPageChangeListener getViewPagerOnPageChangeListener() {
-        OnPageChangeListener viewPagerOnPageChangeListener = new OnPageChangeListener() {
+    protected ViewPager.OnPageChangeListener getViewPagerOnPageChangeListener() {
+        ViewPager.OnPageChangeListener viewPagerOnPageChangeListener = new ViewPager.OnPageChangeListener() {
 
             @Override
             public void onPageScrolled(int arg0, float arg1, int arg2) {}
@@ -259,9 +258,9 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
             @Override
             public void onSystemUiVisibilityChange(int visibility) {
                 if ((visibility & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) {
-                    getSupportActionBar().hide();
+                    getActionBar().hide();
                 } else {
-                    getSupportActionBar().show();
+                    getActionBar().show();
                 }
             }
         };
@@ -324,7 +323,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getSupportMenuInflater().inflate(R.menu.image_view_menu, menu);
+        getMenuInflater().inflate(R.menu.image_view_menu, menu);
         return true;
     }
 
@@ -489,7 +488,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     public void handleSaveImage() {
         SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(getFilenameForSave());
-        saveImageDialog.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
+        saveImageDialog.show(getFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
     }
 
     /**
@@ -519,7 +518,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         if (AndroidUtil.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         } else {
-            getSupportActionBar().hide();
+            getActionBar().hide();
         }
     }
 
@@ -531,7 +530,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         if (AndroidUtil.hasHoneycomb()) {
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         } else {
-            getSupportActionBar().show();
+            getActionBar().show();
         }
     }
 
@@ -544,7 +543,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
                 return false;
             }
         } else {
-            return getSupportActionBar().isShowing();
+            return getActionBar().isShowing();
         }
 
         return true;

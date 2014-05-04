@@ -40,7 +40,7 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
     
     private void showUpgradeDialog() {
         DialogFragment upgrade = UpdateToFullVersionDialogFragment.newInstance();
-        upgrade.show(getSupportFragmentManager(), ConstsFree.DIALOG_UPGRADE);
+        upgrade.show(getFragmentManager(), ConstsFree.DIALOG_UPGRADE);
     }
     
     @Override
@@ -54,7 +54,7 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
 
     @Override
     public FragmentStatePagerAdapter getPagerAdapter() {
-        return new CursorPagerAdapterFree(getSupportFragmentManager(), null);
+        return new CursorPagerAdapterFree(getFragmentManager(), null);
     }
 
     @Subscribe

@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_more_dark"
-            android:background="@drawable/abs__item_background_holo_dark"
+            android:background="@drawable/abs__list_selector_holo_dark"
             android:id="@+id/ib_more"
             android:layout_alignParentRight="true"
             android:padding="5dp"

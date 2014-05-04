@@ -78,7 +78,7 @@ public class RedditFragmentActivityFree extends RedditFragmentActivity
     @Override
     public void handleLoginAndLogout() {
         DialogFragment upgrade = UpdateToFullVersionDialogFragment.newInstance();
-        upgrade.show(getSupportFragmentManager(), ConstsFree.DIALOG_UPGRADE);
+        upgrade.show(getFragmentManager(), ConstsFree.DIALOG_UPGRADE);
     }
 
     @Override

@@ -18,10 +18,10 @@ package com.antew.redditinpictures.library.ui;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.InjectView;
-import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.ui.base.BaseActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.Ln;
@@ -42,7 +42,7 @@ public class About extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         int size = AndroidUtil.dpToPx(this, 100);
 

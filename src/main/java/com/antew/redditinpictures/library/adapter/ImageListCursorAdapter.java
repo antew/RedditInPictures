@@ -18,12 +18,12 @@ package com.antew.redditinpictures.library.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.widget.CursorAdapter;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -56,6 +56,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
     private ImageListItemMenuActionListener mActionListener;
     private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
     private Pattern mImgurAlbumPattern    = Pattern.compile("^https?://imgur.com/a/.*$");
+    private Context mContext;
 
     public interface ImageListItemMenuActionListener {
         /**
@@ -110,8 +111,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
     @Override
     public Object getItem(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor;
+        getCursor().moveToPosition(position);
+        return getCursor();
     }
 
     @Override

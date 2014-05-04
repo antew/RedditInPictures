@@ -17,18 +17,18 @@ package com.antew.redditinpictures.library.ui;
 
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import butterknife.ButterKnife;
@@ -142,8 +142,8 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_REDDIT, null, this);
-        getActivity().getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_POSTS, null, this);
+        getActivity().getLoaderManager().restartLoader(Constants.Loader.LOADER_REDDIT, null, this);
+        getActivity().getLoaderManager().restartLoader(Constants.Loader.LOADER_POSTS, null, this);
         fetchPostsIfNeeded();
     }
 
@@ -155,8 +155,8 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onPause() {
         super.onPause();
-        getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_REDDIT);
-        getActivity().getSupportLoaderManager().destroyLoader(Constants.Loader.LOADER_POSTS);
+        getActivity().getLoaderManager().destroyLoader(Constants.Loader.LOADER_REDDIT);
+        getActivity().getLoaderManager().destroyLoader(Constants.Loader.LOADER_POSTS);
     }
 
     protected abstract int getLayoutId();

@@ -15,8 +15,8 @@
  */
 package com.antew.redditinpictures.library.ui;
 
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.GridView;

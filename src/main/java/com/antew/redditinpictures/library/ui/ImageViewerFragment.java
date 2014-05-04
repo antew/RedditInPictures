@@ -280,7 +280,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
         // Calculate ActionBar height
         TypedValue tv = new TypedValue();
-        if (getActivity().getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
             mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getActivity().getResources().getDisplayMetrics());
         }
 

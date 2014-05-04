@@ -32,7 +32,7 @@ import com.squareup.otto.Subscribe;
 public class ImgurAlbumActivityFree extends ImgurAlbumActivity implements UpdateToFullVersionDialogListener{
 
     public FragmentStatePagerAdapter getPagerAdapter() {
-        return new ImgurAlbumPagerAdapterFree(getSupportFragmentManager(), getImages());   
+        return new ImgurAlbumPagerAdapterFree(getFragmentManager(), getImages());
     }
 
     @Override

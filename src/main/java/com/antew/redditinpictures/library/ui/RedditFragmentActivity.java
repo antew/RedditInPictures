@@ -16,26 +16,26 @@
 package com.antew.redditinpictures.library.ui;
 
 import android.annotation.TargetApi;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 import butterknife.InjectView;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
@@ -129,7 +129,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                 EasyTracker.getInstance(this)
                            .send(MapBuilder.createEvent(Constants.Analytics.Category.INITIALIZE, Constants.Analytics.Action.IMAGE_VIEW,
                                                         Constants.Analytics.Label.GRID, null).build());
-                FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
+                FragmentTransaction gridTrans = getFragmentManager().beginTransaction();
                 gridTrans.replace(R.id.content_fragment, getNewImageGridFragment());
                 gridTrans.commit();
                 break;
@@ -137,7 +137,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                 EasyTracker.getInstance(this)
                            .send(MapBuilder.createEvent(Constants.Analytics.Category.INITIALIZE, Constants.Analytics.Action.IMAGE_VIEW,
                                                         Constants.Analytics.Label.LIST, null).build());
-                FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
+                FragmentTransaction listTrans = getFragmentManager().beginTransaction();
                 listTrans.replace(R.id.content_fragment, getNewImageListFragment());
                 listTrans.commit();
                 break;
@@ -168,7 +168,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     }
 
     private void initializeLoaders() {
-        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_LOGIN, null, this);
+        getLoaderManager().initLoader(Constants.Loader.LOADER_LOGIN, null, this);
     }
 
     @Override
@@ -304,13 +304,13 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
             mActiveViewType = viewType;
             switch (mActiveViewType) {
                 case GRID:
-                    FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
+                    FragmentTransaction gridTrans = getFragmentManager().beginTransaction();
                     gridTrans.replace(R.id.content_fragment, getNewImageGridFragment());
                     gridTrans.commit();
                     invalidateOptionsMenu();
                     break;
                 case LIST:
-                    FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
+                    FragmentTransaction listTrans = getFragmentManager().beginTransaction();
                     listTrans.replace(R.id.content_fragment, getNewImageListFragment());
                     listTrans.commit();
                     invalidateOptionsMenu();
@@ -333,10 +333,10 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     public void handleLoginAndLogout() {
         if (!RedditLoginInformation.isLoggedIn()) {
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
+            loginFragment.show(getFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
         } else {
             DialogFragment logoutFragment = LogoutDialogFragment.newInstance(RedditLoginInformation.getUsername());
-            logoutFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGOUT);
+            logoutFragment.show(getFragmentManager(), Constants.Dialog.DIALOG_LOGOUT);
         }
     }
 
@@ -391,7 +391,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        MenuInflater inflater = getSupportMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
 
         MenuItem item;
@@ -523,7 +523,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
             String username = intent.getStringExtra(Constants.Extra.EXTRA_USERNAME);
             if (Strings.notEmpty(username)) {
                 LoginDialogFragment loginFragment = LoginDialogFragment.newInstance(username);
-                loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
+                loginFragment.show(getFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
             }
 
             String errorMessage = intent.getStringExtra(Constants.Extra.EXTRA_ERROR_MESSAGE);
@@ -559,13 +559,13 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
 
         switch (mActiveViewType) {
             case GRID:
-                FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
+                FragmentTransaction gridTrans = getFragmentManager().beginTransaction();
                 gridTrans.replace(R.id.content_fragment, getNewImageGridFragment(mSelectedSubreddit, mCategory, mAge));
                 gridTrans.addToBackStack(null);
                 gridTrans.commit();
                 break;
             case LIST:
-                FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
+                FragmentTransaction listTrans = getFragmentManager().beginTransaction();
                 listTrans.replace(R.id.content_fragment, getNewImageListFragment(mSelectedSubreddit, mCategory, mAge));
                 listTrans.addToBackStack(null);
                 listTrans.commit();
@@ -579,7 +579,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     public void onSaveImageEvent(SaveImageEvent event) {
         mPostData = event.getPostData();
         SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(StringUtil.sanitizeFileName(mPostData.getTitle()));
-        saveImageDialog.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
+        saveImageDialog.show(getFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
     }
 
     @Subscribe

@@ -19,7 +19,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
-import com.actionbarsherlock.internal.ResourcesCompat;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import com.antew.redditinpictures.library.ui.RedditFragmentActivity;
@@ -106,7 +105,9 @@ public class AndroidUtil {
     }
 
     public static boolean isSplitActionBar(Context context) {
-        return ResourcesCompat.getResources_getBoolean(context, R.bool.abs__split_action_bar_is_narrow);
+        //TODO: Fix this.
+        return true;
+        //return ResourcesCompat.getResources_getBoolean(context, R.bool.abs__split_action_bar_is_narrow);
     }
 
     public static void closeQuietly(Closeable closeable) {
