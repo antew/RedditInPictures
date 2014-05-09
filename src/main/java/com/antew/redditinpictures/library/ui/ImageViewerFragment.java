@@ -424,6 +424,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
                             mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
                             mImageView.setVisibility(View.GONE);
                         } else {
+                            mWebView.destroy();
                             showImageError();
                         }
                     }
