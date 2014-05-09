@@ -15,7 +15,6 @@
  */
 package com.antew.redditinpictures.preferences;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
@@ -33,9 +32,6 @@ import com.antew.redditinpictures.library.preferences.RedditInPicturesPreference
 import com.antew.redditinpictures.pro.R;
 import com.antew.redditinpictures.util.ConstsFree;
 
-// This really only requires API 11, the Lint check for setOnPreferenceChangeListener seems to be incorrect and reports that it requires API level 14
-// http://developer.android.com/reference/android/preference/Preference.html#setOnPreferenceChangeListener(android.preference.Preference.OnPreferenceChangeListener)
-@TargetApi(14)
 public class RedditInPicturesFreePreferencesFragment extends RedditInPicturesPreferencesFragment {
     public Fragment getPrefsFragment() {
         return new PrefsFragment();

@@ -15,9 +15,9 @@
  */
 package com.antew.redditinpictures.library.ui.base;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.os.Bundle;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.android.debug.hv.ViewServer;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.Injector;
@@ -34,7 +34,7 @@ import javax.inject.Inject;
 /**
  * Base activity for an activity which does not use fragments.
  */
-public abstract class BaseFragmentActivity extends SherlockFragmentActivity implements ActionBarTitleChanger {
+public abstract class BaseFragmentActivity extends Activity implements ActionBarTitleChanger {
     @Inject
     protected Bus mBus;
 
@@ -89,7 +89,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
 
     @Override
     public void setActionBarTitle(String title, String subtitle) {
-        ActionBar actionBar = getSupportActionBar();
+        ActionBar actionBar = getActionBar();
 
         if (Strings.isEmpty(title)) {
             actionBar.setTitle(getString(R.string.app_name));

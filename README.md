@@ -6,6 +6,8 @@
 * Maintained By [Antew](https://github.com/antew) and [David Pate](https://github.com/DavidTPate)
 * Twitter: [@davidtpate](http://twitter.com/davidtpate)
 
+![Image List View](https://github.com/antew/RedditInPictures/raw/master/market/github-example-small.png)
+
 ## Features
 
 * Easy viewing experience for images submitted to the Reddit platform.
@@ -16,8 +18,6 @@
 ### Client-Side
 * [Gson](https://code.google.com/p/google-gson/)
 * [Menu Drawer](https://github.com/SimonVT/android-menudrawer)
-* [ActionBarSherlock](https://github.com/JakeWharton/ActionBarSherlock)
-* [Nine Old Androids](https://github.com/JakeWharton/NineOldAndroids/)
 * [Picasso](https://github.com/square/picasso)
 * [Butterknife](https://github.com/JakeWharton/butterknife)
 * [Dagger](https://github.com/square/dagger/)

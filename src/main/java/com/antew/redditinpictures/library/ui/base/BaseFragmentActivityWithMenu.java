@@ -15,14 +15,15 @@
  */
 package com.antew.redditinpictures.library.ui.base;
 
+import android.app.LoaderManager;
 import android.content.ContentResolver;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -33,7 +34,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
-import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.SubredditMenuDrawerCursorAdapter;
 import com.antew.redditinpictures.library.database.RedditContract;
@@ -186,7 +186,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
                    .send(MapBuilder.createEvent(Constants.Analytics.Category.MENU_DRAWER_ACTION,
                                                 Constants.Analytics.Action.SHOW_ADD_SUBREDDIT, null, null).build());
-        AddSubredditDialogFragment.newInstance().show(getSupportFragmentManager(), Constants.Dialog.DIALOG_ADD_SUBREDDIT);
+        AddSubredditDialogFragment.newInstance().show(getFragmentManager(), Constants.Dialog.DIALOG_ADD_SUBREDDIT);
     }
 
     @OnLongClick({ R.id.ib_add, R.id.ib_sort, R.id.ib_refresh, R.id.ib_clear })
@@ -235,7 +235,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             mSortSubreddits.setContentDescription(getString(R.string.sort_by_popularity));
         }
 
-        getSupportLoaderManager().restartLoader(Constants.Loader.LOADER_SUBREDDITS, null, this);
+        getLoaderManager().restartLoader(Constants.Loader.LOADER_SUBREDDITS, null, this);
     }
 
     @OnClick(R.id.ib_refresh)
@@ -254,7 +254,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
                                                     Constants.Analytics.Action.SHOW_SET_DEFAULTS, null, null).build());
             // If they aren't logged in, we want to make sure that they understand this will set the subreddits back to default.
             SetDefaultSubredditsDialogFragment fragment = SetDefaultSubredditsDialogFragment.newInstance();
-            fragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_DEFAULT_SUBREDDITS);
+            fragment.show(getFragmentManager(), Constants.Dialog.DIALOG_DEFAULT_SUBREDDITS);
         }
     }
 
@@ -307,7 +307,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     private void initializeLoaders() {
-        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_SUBREDDITS, null, this);
+        getLoaderManager().initLoader(Constants.Loader.LOADER_SUBREDDITS, null, this);
     }
 
     private SubredditMenuDrawerCursorAdapter getSubredditMenuAdapter() {
@@ -320,7 +320,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
     protected void displaySubredditInfo(SubredditData subredditData) {
         AboutSubredditDialogFragment fragment = AboutSubredditDialogFragment.newInstance(subredditData);
-        fragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_ABOUT_SUBREDDIT);
+        fragment.show(getFragmentManager(), Constants.Dialog.DIALOG_ABOUT_SUBREDDIT);
     }
 
     protected void forceRefreshCurrentSubreddit() {
@@ -333,7 +333,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
     }
 
     protected void filterSubreddits(String filterText) {
-        LoaderManager loaderManager = getSupportLoaderManager();
+        LoaderManager loaderManager = getLoaderManager();
         Bundle filterBundle = new Bundle();
         filterBundle.putString(Constants.Extra.EXTRA_QUERY, filterText);
         loaderManager.restartLoader(Constants.Loader.LOADER_SUBREDDITS, filterBundle, this);
@@ -345,7 +345,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         // Only needs to be shown if they aren't currently logged in.
         if (!RedditLoginInformation.isLoggedIn()) {
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
+            loginFragment.show(getFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
         }
     }
 
@@ -371,7 +371,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
         // If the back button has been double clicked, finish the activity.
         if (currentTime - Constants.DOUBLE_CLICK_TIMEOUT <= mLastTimeBackPressed) {
-            ExitDialogFragment.newInstance().show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
+            ExitDialogFragment.newInstance().show(getFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
         } else {
             mLastTimeBackPressed = currentTime;
         }
@@ -380,9 +380,9 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         if (mMenuDrawer != null && mMenuDrawer.isMenuVisible()) {
             mMenuDrawer.closeMenu();
             return;
-        } else if (!getSupportFragmentManager().popBackStackImmediate()) {
+        } else if (!getFragmentManager().popBackStackImmediate()) {
             // Otherwise, let's pop the back stack. If that returns false then there is nothing left in the backstack so let's see if they want to exit.
-            ExitDialogFragment.newInstance().show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
+            ExitDialogFragment.newInstance().show(getFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
         }
     }
 

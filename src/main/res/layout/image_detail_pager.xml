@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="?attr/actionBarSize"
+        android:layout_marginBottom="?android:attr/actionBarSize"
         android:background="#ff33b5e5"
         android:gravity="center"
         android:padding="10dp"

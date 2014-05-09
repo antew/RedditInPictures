@@ -15,6 +15,7 @@
  */
 package com.antew.redditinpictures.library.preferences;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -22,9 +23,8 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
+import android.preference.PreferenceActivity;
+import android.view.MenuItem;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.ui.About;
 import com.antew.redditinpictures.pro.R;
@@ -36,7 +36,7 @@ import com.google.analytics.tracking.android.GoogleAnalytics;
  *
  * @author Antew
  */
-public class RedditInPicturesPreferences extends SherlockPreferenceActivity implements OnSharedPreferenceChangeListener {
+public class RedditInPicturesPreferences extends PreferenceActivity implements OnSharedPreferenceChangeListener {
     public static final String TAG = RedditInPicturesPreferences.class.getSimpleName();
     private CheckBoxPreference useMobileInterface;
     private CheckBoxPreference showNsfwImages;
@@ -72,7 +72,7 @@ public class RedditInPicturesPreferences extends SherlockPreferenceActivity impl
             }
         });
 
-        final ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getActionBar();
 
         // Hide title text and set home as up
         actionBar.setDisplayShowTitleEnabled(true);

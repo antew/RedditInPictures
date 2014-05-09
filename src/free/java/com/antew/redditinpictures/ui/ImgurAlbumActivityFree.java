@@ -15,24 +15,21 @@
  */
 package com.antew.redditinpictures.ui;
 
+import android.app.FragmentStatePagerAdapter;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import com.antew.redditinpictures.adapter.ImgurAlbumPagerAdapterFree;
-import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
-import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.util.ConstsFree;
 import com.squareup.otto.Subscribe;
 
 public class ImgurAlbumActivityFree extends ImgurAlbumActivity implements UpdateToFullVersionDialogListener{
 
     public FragmentStatePagerAdapter getPagerAdapter() {
-        return new ImgurAlbumPagerAdapterFree(getSupportFragmentManager(), getImages());   
+        return new ImgurAlbumPagerAdapterFree(getFragmentManager(), getImages());
     }
 
     @Override

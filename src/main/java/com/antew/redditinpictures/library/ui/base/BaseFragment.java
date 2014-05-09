@@ -15,13 +15,13 @@
  */
 package com.antew.redditinpictures.library.ui.base;
 
+import android.app.Fragment;
 import android.os.Bundle;
-import com.actionbarsherlock.app.SherlockFragment;
 import com.antew.redditinpictures.library.Injector;
 import com.squareup.otto.Bus;
 import javax.inject.Inject;
 
-public class BaseFragment extends SherlockFragment {
+public class BaseFragment extends Fragment {
     @Inject
     protected Bus mBus;
 

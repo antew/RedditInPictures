@@ -15,13 +15,10 @@
  */
 package com.antew.redditinpictures.library.util;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import com.antew.redditinpictures.library.annotation.ForApplication;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
@@ -71,7 +68,6 @@ public class ImageDownloader {
             mFilename = filename;
         }
 
-        @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
         @Override
         public String call() throws Exception {
             if (Strings.isEmpty(mUrl) || Strings.isEmpty(mFilename) || mContext == null) {
@@ -143,8 +139,7 @@ public class ImageDownloader {
                         } else if (ImageUtil.isPng(resolvedUrl)) {
                             //PNG is loseless and ignores the quality setting.
                             image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                        } else if (ImageUtil.isWebp(resolvedUrl) && AndroidUtil.hasIcs()) {
-                            // WEBP wasn't available until Ice Cream Sandwich
+                        } else if (ImageUtil.isWebp(resolvedUrl)) {
                             image.compress(Bitmap.CompressFormat.WEBP, 90, outputStream);
                         } else if (ImageUtil.isBitmap(resolvedUrl)) {
                             image.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);

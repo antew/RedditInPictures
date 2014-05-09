@@ -87,14 +87,6 @@
 
         <TextView
             style="@style/AboutCreditHeader"
-            android:text="ActionBarSherlock" />
-
-        <TextView
-            style="@style/AboutCreditSubHeader"
-            android:text="Action bar implementation which uses the native action bar on Android 4.0+ and a custom implementation on pre-4.0 through a single API and theme. Available at: https://github.com/JakeWharton/ActionBarSherlock" />
-
-        <TextView
-            style="@style/AboutCreditHeader"
             android:text="ButterKnife" />
 
         <TextView
@@ -108,14 +100,6 @@
         <TextView
             style="@style/AboutCreditSubHeader"
             android:text="A powerful image downloading and caching library for Android. Available at: https://github.com/square/picasso" />
-
-        <TextView
-            style="@style/AboutCreditHeader"
-            android:text="NineOldAndroids" />
-
-        <TextView
-            style="@style/AboutCreditSubHeader"
-            android:text="Android library for using the Honeycomb animation API on all versions of the platform back to 1.0! Available at: https://github.com/JakeWharton/NineOldAndroids/" />
 
         <TextView
             style="@style/AboutCreditHeader"
