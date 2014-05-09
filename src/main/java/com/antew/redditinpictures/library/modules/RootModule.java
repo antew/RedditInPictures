@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
@@ -47,15 +48,22 @@ public class RootModule {
         this.application = application;
     }
 
-    @Provides @Singleton @ForApplication Context provideApplicationContext() {
+    @Provides
+    @Singleton
+    @ForApplication
+    Context provideApplicationContext() {
         return application.getApplicationContext();
     }
 
-    @Provides @ForApplication SharedPreferences provideDefaultSharedPreferences(@ForApplication final Context context) {
+    @Provides
+    @ForApplication
+    SharedPreferences provideDefaultSharedPreferences(@ForApplication final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    @Provides @ForApplication PackageInfo providePackageInfo(@ForApplication Context context) {
+    @Provides
+    @ForApplication
+    PackageInfo providePackageInfo(@ForApplication Context context) {
         try {
             return context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
@@ -63,7 +71,9 @@ public class RootModule {
         }
     }
 
-    @Provides @ForApplication TelephonyManager provideTelephonyManager(@ForApplication Context context) {
+    @Provides
+    @ForApplication
+    TelephonyManager provideTelephonyManager(@ForApplication Context context) {
         return getSystemService(context, Context.TELEPHONY_SERVICE);
     }
 
@@ -72,37 +82,59 @@ public class RootModule {
         return (T) context.getSystemService(serviceConstant);
     }
 
-    @Provides @ForApplication InputMethodManager provideInputMethodManager(@ForApplication Context context) {
+    @Provides
+    @ForApplication
+    InputMethodManager provideInputMethodManager(@ForApplication Context context) {
         return (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
     }
 
-    @Provides @ForApplication ApplicationInfo provideApplicationInfo(@ForApplication final Context context) {
+    @Provides
+    @ForApplication
+    ApplicationInfo provideApplicationInfo(@ForApplication final Context context) {
         return context.getApplicationInfo();
     }
 
-    @Provides @ForApplication AccountManager provideAccountManager(@ForApplication final Context context) {
+    @Provides
+    @ForApplication
+    AccountManager provideAccountManager(@ForApplication final Context context) {
         return AccountManager.get(context);
     }
 
-    @Provides @ForApplication ClassLoader provideClassLoader(@ForApplication final Context context) {
+    @Provides
+    @ForApplication
+    ClassLoader provideClassLoader(@ForApplication final Context context) {
         return context.getClassLoader();
     }
 
-    @Provides @ForApplication NotificationManager provideNotificationManager(@ForApplication final Context context) {
+    @Provides
+    @ForApplication
+    NotificationManager provideNotificationManager(@ForApplication final Context context) {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-    @Provides @Singleton Bus provideOttoBus() {
+    @Provides
+    @ForApplication
+    ConnectivityManager providConnectivityManager(@ForApplication final Context context) {
+        return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
+
+    @Provides
+    @Singleton
+    Bus provideOttoBus() {
         return new MainThreadBus(new Bus());
     }
 
-    @Provides @Singleton ScreenSize provideScreenSize(@ForApplication final Context context) {
+    @Provides
+    @Singleton
+    ScreenSize provideScreenSize(@ForApplication final Context context) {
         final DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return new ScreenSize(displayMetrics.widthPixels, displayMetrics.heightPixels);
     }
 
-    @Provides @Singleton @ForApplication ImageDownloader provideImageDownloader(@ForApplication final Context context) {
+    @Provides
+    @Singleton
+    @ForApplication
+    ImageDownloader provideImageDownloader(@ForApplication final Context context) {
         return new ImageDownloader(context);
     }
-
 }

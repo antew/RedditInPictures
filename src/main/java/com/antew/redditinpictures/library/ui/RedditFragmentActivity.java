@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -37,6 +39,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.annotation.ForApplication;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.LogoutDialogFragment;
@@ -77,7 +80,12 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                SaveImageDialogFragment.SaveImageDialogListener {
     public static final int SETTINGS_REQUEST = 20;
     @InjectView(R.id.top_progressbar)
-    protected SmoothProgressBar mProgressBar;
+    protected SmoothProgressBar   mProgressBar;
+    @Inject
+    protected ImageDownloader     mImageDownloader;
+    @Inject
+    @ForApplication
+    protected ConnectivityManager mConnectivityManager;
     private ViewType          mActiveViewType = ViewType.LIST;
     private BroadcastReceiver mLoginComplete  = new BroadcastReceiver() {
         @Override
@@ -85,10 +93,7 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
             handleLoginComplete(intent);
         }
     };
-
-    @Inject
-    protected ImageDownloader mImageDownloader;
-    private   PostData        mPostData;
+    private PostData mPostData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,16 +103,10 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         initializeActiveView();
         initializeLoaders();
 
+        if (!isNetworkAvailable()) {
+            Toast.makeText(this, "No Network Connection Available, Connect to the Internet and Try Again", Toast.LENGTH_LONG).show();
+        }
         new SubredditUtil.SetDefaultSubredditsTask(this).execute();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putString(Constants.Extra.EXTRA_ACTIVE_VIEW, mActiveViewType.toString());
-        outState.putString(Constants.Extra.EXTRA_SUBREDDIT, mSelectedSubreddit);
-        outState.putString(Constants.Extra.EXTRA_CATEGORY, Strings.toString(mCategory));
-        outState.putString(Constants.Extra.EXTRA_AGE, Strings.toString(mAge));
-        super.onSaveInstanceState(outState);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
@@ -144,16 +143,41 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceivers();
+    private void initializeLoaders() {
+        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_LOGIN, null, this);
+    }
+
+    protected boolean isNetworkAvailable() {
+        NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
+    public Fragment getNewImageGridFragment() {
+        return getNewImageGridFragment(mSelectedSubreddit, mCategory, mAge);
+    }
+
+    public Fragment getNewImageListFragment() {
+        return getNewImageListFragment(mSelectedSubreddit, mCategory, mAge);
+    }
+
+    public Fragment getNewImageGridFragment(String subreddit, Category category, Age age) {
+        return RedditImageGridFragment.newInstance(subreddit, category, age);
+    }
+
+    public Fragment getNewImageListFragment(String subreddit, Category category, Age age) {
+        return RedditImageListFragment.newInstance(subreddit, category, age);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         registerReceivers();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceivers();
     }
 
     private void unregisterReceivers() {
@@ -167,224 +191,13 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
                              .registerReceiver(mLoginComplete, new IntentFilter(Constants.Broadcast.BROADCAST_LOGIN_COMPLETE));
     }
 
-    private void initializeLoaders() {
-        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_LOGIN, null, this);
-    }
-
     @Override
-    protected void subscribeToSubreddit(String subredditName) {
-        if (!RedditLoginInformation.isLoggedIn()) {
-            showLogin();
-        } else {
-            RedditService.subscribe(this, subredditName);
-        }
-    }
-
-    @Override
-    protected void unsubscribeToSubreddit(String subredditName) {
-        if (!RedditLoginInformation.isLoggedIn()) {
-            showLogin();
-        } else {
-            RedditService.unsubscribe(this, subredditName);
-        }
-    }
-
-    public Fragment getNewImageGridFragment(String subreddit, Category category, Age age) {
-        return RedditImageGridFragment.newInstance(subreddit, category, age);
-    }
-
-    public Fragment getNewImageGridFragment() {
-        return getNewImageGridFragment(mSelectedSubreddit, mCategory, mAge);
-    }
-
-    public Fragment getNewImageListFragment(String subreddit, Category category, Age age) {
-        return RedditImageListFragment.newInstance(subreddit, category, age);
-    }
-
-    public Fragment getNewImageListFragment() {
-        return getNewImageListFragment(mSelectedSubreddit, mCategory, mAge);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        item.setChecked(true);
-
-        switch (item.getItemId()) {
-            case R.id.change_view:
-                switch (mActiveViewType) {
-                    case LIST:
-                        EasyTracker.getInstance(this)
-                                   .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
-                                                                Constants.Analytics.Action.CHANGE_VIEW, Constants.Analytics.Label.GRID,
-                                                                null).build());
-                        break;
-                    case GRID:
-                        EasyTracker.getInstance(this)
-                                   .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
-                                                                Constants.Analytics.Action.CHANGE_VIEW, Constants.Analytics.Label.LIST,
-                                                                null).build());
-                        break;
-                }
-                changeViewType(mActiveViewType == ViewType.LIST ? ViewType.GRID : ViewType.LIST);
-                return true;
-            case R.id.settings:
-                EasyTracker.getInstance(this)
-                           .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
-                                                        Constants.Analytics.Action.OPEN_SETTINGS, null, null).build());
-                startPreferences();
-                return true;
-            case R.id.refresh_all:
-                EasyTracker.getInstance(this)
-                           .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
-                                                        Constants.Analytics.Action.REFRESH_POSTS, null, null).build());
-                // Notify our image fragment(s) that they need
-                // to remove references to the now stale data
-                mBus.post(new ForcePostRefreshEvent());
-                produceRequestInProgressEvent();
-                forceRefreshCurrentSubreddit();
-                return true;
-            case R.id.login:
-                if (RedditLoginInformation.isLoggedIn()) {
-                    EasyTracker.getInstance(this)
-                               .send(
-                                   MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.LOGIN,
-                                                          Constants.Analytics.Label.LOGGED_IN, null).build()
-                                    );
-                } else {
-                    EasyTracker.getInstance(this)
-                               .send(
-                                   MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.LOGIN,
-                                                          Constants.Analytics.Label.NOT_LOGGED_IN, null).build()
-                                    );
-                }
-                handleLoginAndLogout();
-                return true;
-            // fall through
-            case R.id.category_hot:
-            case R.id.category_new:
-            case R.id.category_rising:
-            case R.id.category_top_hour:
-            case R.id.category_top_today:
-            case R.id.category_top_week:
-            case R.id.category_top_month:
-            case R.id.category_top_year:
-            case R.id.category_top_all_time:
-            case R.id.category_controversial_hour:
-            case R.id.category_controversial_today:
-            case R.id.category_controversial_week:
-            case R.id.category_controversial_month:
-            case R.id.category_controversial_year:
-            case R.id.category_controversial_all_time:
-                if (RedditSort.contains(item.getItemId())) {
-                    produceRequestInProgressEvent();
-                    RedditSort.SortCriteria sortCriteria = RedditSort.get(item.getItemId());
-                    EasyTracker.getInstance(this)
-                               .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
-                                                            Constants.Analytics.Action.OPEN_SUBREDDIT, mSelectedSubreddit
-                                                                                                       + "/"
-                                                                                                       + Strings.toString(
-                                       sortCriteria.getCategory())
-                                                                                                       + "/"
-                                                                                                       + Strings.toString(
-                                       sortCriteria.getAge()), null
-                                                           ).build());
-                    loadSubreddit(mSelectedSubreddit, sortCriteria.getCategory(), sortCriteria.getAge());
-                    return true;
-                } else {
-                    Ln.e("Unable to get sorting criteria for menu item id: " + item.getItemId() + ", unable to load subreddit");
-                    return super.onOptionsItemSelected(item);
-                }
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void changeViewType(ViewType viewType) {
-        if (viewType != null) {
-            mActiveViewType = viewType;
-            switch (mActiveViewType) {
-                case GRID:
-                    FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
-                    gridTrans.replace(R.id.content_fragment, getNewImageGridFragment());
-                    gridTrans.commit();
-                    invalidateOptionsMenu();
-                    break;
-                case LIST:
-                    FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
-                    listTrans.replace(R.id.content_fragment, getNewImageListFragment());
-                    listTrans.commit();
-                    invalidateOptionsMenu();
-                    break;
-            }
-        }
-    }
-
-    public void startPreferences() {
-        Intent intent = new Intent(this, getPreferencesClass());
-        intent.putExtra(Constants.Extra.EXTRA_SHOW_NSFW_IMAGES, SharedPreferencesHelper.getShowNsfwImages(this));
-        startActivityForResult(intent, SETTINGS_REQUEST);
-    }
-
-    @Subscribe
-    public void requestInProgress(RequestInProgressEvent event) {
-        ViewPropertyAnimator.animate(mProgressBar).setDuration(500).alpha(100);
-    }
-
-    public void handleLoginAndLogout() {
-        if (!RedditLoginInformation.isLoggedIn()) {
-            LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
-        } else {
-            DialogFragment logoutFragment = LogoutDialogFragment.newInstance(RedditLoginInformation.getUsername());
-            logoutFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGOUT);
-        }
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle paramBundle) {
-        switch (id) {
-            case Constants.Loader.LOADER_LOGIN:
-                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
-            default:
-                return super.onCreateLoader(id, paramBundle);
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        switch (loader.getId()) {
-            case Constants.Loader.LOADER_LOGIN:
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        String username = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
-                        String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
-                        String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
-
-                        LoginData data = new LoginData(username, modhash, cookie);
-                        if (!data.equals(RedditLoginInformation.getLoginData())) {
-                            RedditLoginInformation.setLoginData(data);
-                        }
-
-                        invalidateOptionsMenu();
-                        new SubredditUtil.SetDefaultSubredditsTask(this).execute();
-                        forceRefreshCurrentSubreddit();
-                    }
-                }
-                break;
-            default:
-                super.onLoadFinished(loader, cursor);
-                break;
-        }
-    }
-
-    @Override
-    protected void loadSubredditFromMenu(String subreddit) {
-        loadSubreddit(subreddit, mCategory, mAge);
-    }
-
-    @Subscribe
-    public void requestCompleted(RequestCompletedEvent event) {
-        ViewPropertyAnimator.animate(mProgressBar).setDuration(500).alpha(0);
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(Constants.Extra.EXTRA_ACTIVE_VIEW, mActiveViewType.toString());
+        outState.putString(Constants.Extra.EXTRA_SUBREDDIT, mSelectedSubreddit);
+        outState.putString(Constants.Extra.EXTRA_CATEGORY, Strings.toString(mCategory));
+        outState.putString(Constants.Extra.EXTRA_AGE, Strings.toString(mAge));
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -497,6 +310,242 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        item.setChecked(true);
+
+        switch (item.getItemId()) {
+            case R.id.change_view:
+                switch (mActiveViewType) {
+                    case LIST:
+                        EasyTracker.getInstance(this)
+                                   .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
+                                                                Constants.Analytics.Action.CHANGE_VIEW, Constants.Analytics.Label.GRID,
+                                                                null).build());
+                        break;
+                    case GRID:
+                        EasyTracker.getInstance(this)
+                                   .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
+                                                                Constants.Analytics.Action.CHANGE_VIEW, Constants.Analytics.Label.LIST,
+                                                                null).build());
+                        break;
+                }
+                changeViewType(mActiveViewType == ViewType.LIST ? ViewType.GRID : ViewType.LIST);
+                return true;
+            case R.id.settings:
+                EasyTracker.getInstance(this)
+                           .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
+                                                        Constants.Analytics.Action.OPEN_SETTINGS, null, null).build());
+                startPreferences();
+                return true;
+            case R.id.refresh_all:
+                EasyTracker.getInstance(this)
+                           .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
+                                                        Constants.Analytics.Action.REFRESH_POSTS, null, null).build());
+                // Notify our image fragment(s) that they need
+                // to remove references to the now stale data
+                mBus.post(new ForcePostRefreshEvent());
+                produceRequestInProgressEvent();
+                forceRefreshCurrentSubreddit();
+                return true;
+            case R.id.login:
+                if (RedditLoginInformation.isLoggedIn()) {
+                    EasyTracker.getInstance(this)
+                               .send(
+                                   MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.LOGIN,
+                                                          Constants.Analytics.Label.LOGGED_IN, null).build()
+                                    );
+                } else {
+                    EasyTracker.getInstance(this)
+                               .send(
+                                   MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.LOGIN,
+                                                          Constants.Analytics.Label.NOT_LOGGED_IN, null).build()
+                                    );
+                }
+                handleLoginAndLogout();
+                return true;
+            // fall through
+            case R.id.category_hot:
+            case R.id.category_new:
+            case R.id.category_rising:
+            case R.id.category_top_hour:
+            case R.id.category_top_today:
+            case R.id.category_top_week:
+            case R.id.category_top_month:
+            case R.id.category_top_year:
+            case R.id.category_top_all_time:
+            case R.id.category_controversial_hour:
+            case R.id.category_controversial_today:
+            case R.id.category_controversial_week:
+            case R.id.category_controversial_month:
+            case R.id.category_controversial_year:
+            case R.id.category_controversial_all_time:
+                if (RedditSort.contains(item.getItemId())) {
+                    produceRequestInProgressEvent();
+                    RedditSort.SortCriteria sortCriteria = RedditSort.get(item.getItemId());
+                    EasyTracker.getInstance(this)
+                               .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
+                                                            Constants.Analytics.Action.OPEN_SUBREDDIT, mSelectedSubreddit
+                                                                                                       + "/"
+                                                                                                       + Strings.toString(
+                                       sortCriteria.getCategory())
+                                                                                                       + "/"
+                                                                                                       + Strings.toString(
+                                       sortCriteria.getAge()), null
+                                                           ).build());
+                    loadSubreddit(mSelectedSubreddit, sortCriteria.getCategory(), sortCriteria.getAge());
+                    return true;
+                } else {
+                    Ln.e("Unable to get sorting criteria for menu item id: " + item.getItemId() + ", unable to load subreddit");
+                    return super.onOptionsItemSelected(item);
+                }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void subscribeToSubreddit(String subredditName) {
+        if (!RedditLoginInformation.isLoggedIn()) {
+            showLogin();
+        } else {
+            RedditService.subscribe(this, subredditName);
+        }
+    }
+
+    @Override
+    protected void unsubscribeToSubreddit(String subredditName) {
+        if (!RedditLoginInformation.isLoggedIn()) {
+            showLogin();
+        } else {
+            RedditService.unsubscribe(this, subredditName);
+        }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle paramBundle) {
+        switch (id) {
+            case Constants.Loader.LOADER_LOGIN:
+                return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
+            default:
+                return super.onCreateLoader(id, paramBundle);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        switch (loader.getId()) {
+            case Constants.Loader.LOADER_LOGIN:
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        String username = cursor.getString(cursor.getColumnIndex(RedditContract.Login.USERNAME));
+                        String cookie = cursor.getString(cursor.getColumnIndex(RedditContract.Login.COOKIE));
+                        String modhash = cursor.getString(cursor.getColumnIndex(RedditContract.Login.MODHASH));
+
+                        LoginData data = new LoginData(username, modhash, cookie);
+                        if (!data.equals(RedditLoginInformation.getLoginData())) {
+                            RedditLoginInformation.setLoginData(data);
+                        }
+
+                        invalidateOptionsMenu();
+                        new SubredditUtil.SetDefaultSubredditsTask(this).execute();
+                        forceRefreshCurrentSubreddit();
+                    }
+                }
+                break;
+            default:
+                super.onLoadFinished(loader, cursor);
+                break;
+        }
+    }
+
+    @Override
+    protected void loadSubredditFromMenu(String subreddit) {
+        loadSubreddit(subreddit, mCategory, mAge);
+    }
+
+    private void changeViewType(ViewType viewType) {
+        if (viewType != null) {
+            mActiveViewType = viewType;
+            switch (mActiveViewType) {
+                case GRID:
+                    FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
+                    gridTrans.replace(R.id.content_fragment, getNewImageGridFragment());
+                    gridTrans.commit();
+                    invalidateOptionsMenu();
+                    break;
+                case LIST:
+                    FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
+                    listTrans.replace(R.id.content_fragment, getNewImageListFragment());
+                    listTrans.commit();
+                    invalidateOptionsMenu();
+                    break;
+            }
+        }
+    }
+
+    public void startPreferences() {
+        Intent intent = new Intent(this, getPreferencesClass());
+        intent.putExtra(Constants.Extra.EXTRA_SHOW_NSFW_IMAGES, SharedPreferencesHelper.getShowNsfwImages(this));
+        startActivityForResult(intent, SETTINGS_REQUEST);
+    }
+
+    protected void produceRequestInProgressEvent() {
+        mBus.post(new RequestInProgressEvent());
+    }
+
+    public void handleLoginAndLogout() {
+        if (!RedditLoginInformation.isLoggedIn()) {
+            LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
+            loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
+        } else {
+            DialogFragment logoutFragment = LogoutDialogFragment.newInstance(RedditLoginInformation.getUsername());
+            logoutFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGOUT);
+        }
+    }
+
+    private void loadSubreddit(String subreddit, Category category, Age age) {
+        if (subreddit.equals(Constants.Reddit.REDDIT_FRONTPAGE) || subreddit.equals(Constants.Reddit.REDDIT_FRONTPAGE_DISPLAY_NAME)) {
+            mSelectedSubreddit = Constants.Reddit.REDDIT_FRONTPAGE;
+        } else {
+            mSelectedSubreddit = subreddit;
+        }
+
+        mCategory = category;
+        mAge = age;
+
+        switch (mActiveViewType) {
+            case GRID:
+                FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
+                gridTrans.replace(R.id.content_fragment, getNewImageGridFragment(mSelectedSubreddit, mCategory, mAge));
+                gridTrans.addToBackStack(null);
+                gridTrans.commit();
+                break;
+            case LIST:
+                FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
+                listTrans.replace(R.id.content_fragment, getNewImageListFragment(mSelectedSubreddit, mCategory, mAge));
+                listTrans.addToBackStack(null);
+                listTrans.commit();
+                break;
+        }
+
+        setActionBarTitle(mSelectedSubreddit, RedditUtil.getSortDisplayString(mCategory, mAge));
+    }
+
+    public Class<? extends PreferenceActivity> getPreferencesClass() {
+        return RedditInPicturesPreferences.class;
+    }
+
+    @Subscribe
+    public void requestInProgress(RequestInProgressEvent event) {
+        ViewPropertyAnimator.animate(mProgressBar).setDuration(500).alpha(100);
+    }
+
+    @Subscribe
+    public void requestCompleted(RequestCompletedEvent event) {
+        ViewPropertyAnimator.animate(mProgressBar).setDuration(500).alpha(0);
+    }
+
+    @Override
     public void onFinishLoginDialog(String username, String password) {
         produceRequestInProgressEvent();
         RedditService.login(this, username, password);
@@ -535,44 +584,12 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         mBus.post(new RequestCompletedEvent());
     }
 
-    protected void produceRequestInProgressEvent() {
-        mBus.post(new RequestInProgressEvent());
-    }
-
     @Subscribe
     public void onLoadSubredditEvent(LoadSubredditEvent event) {
         if (event != null) {
             mSelectedSubreddit = event.getSubreddit();
             loadSubreddit(event.getSubreddit(), event.getCategory(), event.getAge());
         }
-    }
-
-    private void loadSubreddit(String subreddit, Category category, Age age) {
-        if (subreddit.equals(Constants.Reddit.REDDIT_FRONTPAGE) || subreddit.equals(Constants.Reddit.REDDIT_FRONTPAGE_DISPLAY_NAME)) {
-            mSelectedSubreddit = Constants.Reddit.REDDIT_FRONTPAGE;
-        } else {
-            mSelectedSubreddit = subreddit;
-        }
-
-        mCategory = category;
-        mAge = age;
-
-        switch (mActiveViewType) {
-            case GRID:
-                FragmentTransaction gridTrans = getSupportFragmentManager().beginTransaction();
-                gridTrans.replace(R.id.content_fragment, getNewImageGridFragment(mSelectedSubreddit, mCategory, mAge));
-                gridTrans.addToBackStack(null);
-                gridTrans.commit();
-                break;
-            case LIST:
-                FragmentTransaction listTrans = getSupportFragmentManager().beginTransaction();
-                listTrans.replace(R.id.content_fragment, getNewImageListFragment(mSelectedSubreddit, mCategory, mAge));
-                listTrans.addToBackStack(null);
-                listTrans.commit();
-                break;
-        }
-
-        setActionBarTitle(mSelectedSubreddit, RedditUtil.getSortDisplayString(mCategory, mAge));
     }
 
     @Subscribe
@@ -587,10 +604,6 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         mPostData = null;
         Ln.i("DownloadImageComplete - filename was: " + event.getFilename());
         Toast.makeText(this, "Image saved as " + event.getFilename(), Toast.LENGTH_SHORT).show();
-    }
-
-    public Class<? extends PreferenceActivity> getPreferencesClass() {
-        return RedditInPicturesPreferences.class;
     }
 
     @Override
