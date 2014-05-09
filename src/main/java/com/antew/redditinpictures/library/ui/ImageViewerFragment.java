@@ -426,12 +426,16 @@ public abstract class ImageViewerFragment extends BaseFragment {
                 mWebView.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (AndroidUtil.hasHoneycomb()) {
-                            mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
-                        } else {
-                            mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
+                        if (imageUrl != null) {
+                            if (AndroidUtil.hasHoneycomb()) {
+                                mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
+                            } else {
+                                mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
+                            }
+                            mImageView.setVisibility(View.GONE);
                         }
-                        mImageView.setVisibility(View.GONE);
+                        mWebView.destroy();
+                        showImageError();
                     }
                 });
 
