@@ -114,7 +114,7 @@ public class RootModule {
 
     @Provides
     @ForApplication
-    ConnectivityManager providConnectivityManager(@ForApplication final Context context) {
+    ConnectivityManager provideConnectivityManager(@ForApplication final Context context) {
         return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
