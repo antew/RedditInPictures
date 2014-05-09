@@ -289,12 +289,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
         } catch (ClassCastException e) {
             Ln.e(e, "The activity must implement the SystemUiStateProvider interface");
         }
-
-        // Use the parent activity to load the image asynchronously into the ImageView (so a single
-        // cache can be used over all pages in the ViewPager
-        if (ImageViewerActivity.class.isInstance(getActivity())) {
-            resolveImage();
-        }
     }
 
     @Override
@@ -304,6 +298,12 @@ public abstract class ImageViewerFragment extends BaseFragment {
             showPostDetails();
         } else {
             hidePostDetails();
+        }
+
+        // Use the parent activity to load the image asynchronously into the ImageView (so a single
+        // cache can be used over all pages in the ViewPager
+        if (ImageViewerActivity.class.isInstance(getActivity())) {
+            resolveImage();
         }
     }
 
