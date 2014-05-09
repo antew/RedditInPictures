@@ -102,7 +102,6 @@ public class ImageDetailFragment extends ImageViewerFragment {
             Ln.e("Received null ImageContainer in loadImage(ImageContainer image)");
             return;
         }
-        // The image has already been resolved at this point, so we don't have to worry about network calls
         new Thread(new Runnable() {
             @Override
             public void run() {
