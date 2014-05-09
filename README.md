@@ -6,6 +6,8 @@
 * Maintained By [Antew](https://github.com/antew) and [David Pate](https://github.com/DavidTPate)
 * Twitter: [@davidtpate](http://twitter.com/davidtpate)
 
+![Image List View](https://github.com/antew/RedditInPictures/raw/master/market/github-example-small.png)
+
 ## Features
 
 * Easy viewing experience for images submitted to the Reddit platform.
