@@ -103,6 +103,9 @@ public class ImageDetailFragment extends ImageViewerFragment {
             return;
         }
         // The image has already been resolved at this point, so we don't have to worry about network calls
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
         if (ImageType.IMGUR_ALBUM.equals(image.getImageType())) {
             mAlbum = ((ImgurAlbumType) image).getAlbum();
         } else if (ImageType.IMGUR_GALLERY.equals(image.getImageType())) {
@@ -180,9 +183,16 @@ public class ImageDetailFragment extends ImageViewerFragment {
         }
 
         if (mAlbum != null && mAlbum.getImages().size() > 1) {
-            mBtnViewGallery.setVisibility(View.VISIBLE);
-            mBtnViewGallery.setOnClickListener(getViewGalleryOnClickListener());
+            mBtnViewGallery.post(new Runnable() {
+                @Override
+                public void run() {
+                    mBtnViewGallery.setVisibility(View.VISIBLE);
+                    mBtnViewGallery.setOnClickListener(getViewGalleryOnClickListener());
+                }
+            });
         }
+            }
+        }).start();
     }
 
     private OnClickListener getViewGalleryOnClickListener() {
