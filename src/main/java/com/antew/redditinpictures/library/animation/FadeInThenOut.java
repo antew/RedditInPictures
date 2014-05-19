@@ -15,11 +15,8 @@
  */
 package com.antew.redditinpictures.library.animation;
 
+import android.animation.Animator;
 import android.view.View;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.Animator.AnimatorListener;
-import com.nineoldandroids.view.ViewHelper;
-import com.nineoldandroids.view.ViewPropertyAnimator;
 
 /**
  * Utility class to simplify fading views in and out with NineOldAndroids
@@ -29,9 +26,9 @@ import com.nineoldandroids.view.ViewPropertyAnimator;
 public class FadeInThenOut {
 
     public static void fadeInThenOut(final View view, final int duration) {
-        ViewHelper.setAlpha(view, 0);
+        view.setAlpha(0);
         view.setVisibility(View.VISIBLE);
-        ViewPropertyAnimator.animate(view).alpha(1f).setDuration(duration / 2).setListener(new AnimatorListener() {
+        view.animate().alpha(1f).setDuration(duration / 2).setListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {}
 
@@ -49,24 +46,20 @@ public class FadeInThenOut {
     }
 
     private static void fade(final View view, final int visibility, int duration) {
-        ViewPropertyAnimator.animate(view)
-                            .alpha(0)
-                            .setStartDelay(250)
-                            .setDuration(duration / 2)
-                            .setListener(new Animator.AnimatorListener() {
-                                @Override
-                                public void onAnimationStart(Animator animator) {}
+        view.animate().alpha(0).setStartDelay(250).setDuration(duration / 2).setListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {}
 
-                                @Override
-                                public void onAnimationCancel(Animator animator) {}
+            @Override
+            public void onAnimationCancel(Animator animator) {}
 
-                                @Override
-                                public void onAnimationRepeat(Animator animator) {}
+            @Override
+            public void onAnimationRepeat(Animator animator) {}
 
-                                @Override
-                                public void onAnimationEnd(Animator animator) {
-                                    view.setVisibility(visibility);
-                                }
-                            });
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                view.setVisibility(visibility);
+            }
+        });
     }
 }

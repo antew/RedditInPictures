@@ -16,14 +16,11 @@
 package com.antew.redditinpictures.library.preferences;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
-import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.pro.R;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,13 +69,8 @@ public class SharedPreferencesHelper {
      *
      * @param editor
      */
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public static void save(SharedPreferences.Editor editor) {
-        if (AndroidUtil.hasGingerbread()) {
             editor.apply();
-        } else {
-            editor.commit();
-        }
     }
 
     /**

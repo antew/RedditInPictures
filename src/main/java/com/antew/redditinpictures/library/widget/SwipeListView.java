@@ -28,43 +28,10 @@ import android.view.ViewParent;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.pro.R;
-import com.nineoldandroids.view.ViewHelper;
-import com.nineoldandroids.view.ViewPropertyAnimator;
 import java.util.WeakHashMap;
 
 public class SwipeListView extends ListView {
-    /**
-     * Defines the direction in which list items can be swiped. Use {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
-     * to change the behavior. This can also
-     * be
-     * set via a Styleable Attribute called swipeDirection.
-     */
-    public enum SwipeDirection {
-        /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
-         * to {@link
-         * #BOTH} will allow the user to swipe list items to
-         * either the left or the right.
-         */
-        BOTH,
-        /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
-         * to {@link
-         * #LEFT} will only allow the user to swipe list items to
-         * the left.
-         */
-        LEFT,
-        /**
-         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
-         * to {@link
-         * #LEFT} will only allow the user to swipe list items to
-         * the right.
-         */
-        RIGHT
-    }
-
     /**
      * Defines the direction in which list items can be swiped. Use {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
      * to change the behavior. This can also
@@ -106,28 +73,27 @@ public class SwipeListView extends ListView {
      * Holds the generated Id for the Front View, can be passed via XML with R.styleable.SwipeListView_frontViewId or set via the
      * constructor if creating it in code. This value is required.
      */
-    private int     mFrontViewId;
+    private int               mFrontViewId;
     /**
      * Holds the generated Id for the Back View, can be passed via XML with R.styleable.SwipeListView_backViewId or set via the constructor
      * if creating it in code. This value is required.
      */
-    private int     mBackViewId;
+    private int               mBackViewId;
     /**
      * Holds the selection for the SwipeDirection that applies to all list items, can be passed via XML with
      * R.styleable.SwipeListView_swipeDirection or set via #setSwipeDirection. Defaults to SWIPE_DIRECTION_BOTH.
      */
-    private int     mSwipeDirection;
+    private int               mSwipeDirection;
     /**
      * Holds the selection for whether or not scrolling closes all currently open list items, can be passed via XML with
      * R.styleable.SwipeListView_closeAllWhenScrolling or set via #setCloseAllWhenScrolling. Defaults to true.
      */
-    private boolean mCloseAllWhenScrolling;
+    private boolean           mCloseAllWhenScrolling;
     /**
      * Holds the selection for whether or not long pressing on an item causes it to swipe open or not, can be passed via XML with
      * R.styleable.SwipeListView_openOnLongPress or set via #setOpenOnLongPress. Defaults to true.
      */
-    private boolean mOpenOnLongPress;
-
+    private boolean           mOpenOnLongPress;
     /**
      * Used to hold the location from which the initial touch began.
      */
@@ -189,15 +155,15 @@ public class SwipeListView extends ListView {
                     // If the view we are looking at has alrady been swiped, reset it.
                     if (mSwipedViews.containsKey(mViewPair.hashCode())) {
                         mViewPair.mBackView.setVisibility(View.GONE);
-                        ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
+                        mViewPair.mFrontView.animate().translationX(0).alpha(1).setDuration(mAnimationTime);
                     } else {
                         // Otherwise let's open it up.
-                        ViewPropertyAnimator.animate(mViewPair.mFrontView)
+                        mViewPair.mFrontView.animate()
                                             .translationX(mSwipeDirection == SWIPE_DIRECTION_LEFT ? -mViewWidth : mViewWidth)
                                             .alpha(0)
                                             .setDuration(mAnimationTime);
                         mViewPair.mBackView.setVisibility(View.VISIBLE);
-                        ViewPropertyAnimator.animate(mViewPair.mBackView).alpha(1).setDuration(mAnimationTime);
+                        mViewPair.mBackView.animate().alpha(1).setDuration(mAnimationTime);
                         mSwipedViews.put(mViewPair.hashCode(), mViewPair);
                         resetState();
                     }
@@ -256,7 +222,7 @@ public class SwipeListView extends ListView {
                         // If we are supposed to close all views when the user scrolls, do it.
                         for (SwipeableViewPair viewPair : mSwipedViews.values()) {
                             viewPair.mBackView.setVisibility(View.GONE);
-                            ViewPropertyAnimator.animate(viewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
+                            viewPair.mFrontView.animate().translationX(0).alpha(1).setDuration(mAnimationTime);
                         }
                         mSwipedViews.clear();
                     }
@@ -340,38 +306,6 @@ public class SwipeListView extends ListView {
     }
 
     /**
-     * @param closeAllWhenScrolling
-     *
-     * @return This {@link SwipeListView}
-     */
-    public SwipeListView setCloseAllWhenScrolling(boolean closeAllWhenScrolling) {
-        mCloseAllWhenScrolling = closeAllWhenScrolling;
-        return this;
-    }
-
-    /**
-     * @param swipeDirection
-     *
-     * @return This {@link SwipeListView}
-     */
-    public SwipeListView setSwipeDirection(SwipeDirection swipeDirection) {
-        switch (swipeDirection) {
-            case LEFT:
-                setSwipeDirection(SWIPE_DIRECTION_LEFT);
-                break;
-            case RIGHT:
-                setSwipeDirection(SWIPE_DIRECTION_RIGHT);
-                break;
-            // fall through
-            case BOTH:
-            default:
-                setSwipeDirection(SWIPE_DIRECTION_BOTH);
-                break;
-        }
-        return this;
-    }
-
-    /**
      * Used to set the SwipeDirection for items in the List View. Can also be set in the layout XML using
      * R.styleable.SwipeListView_swipeDirection.
      *
@@ -413,6 +347,38 @@ public class SwipeListView extends ListView {
     }
 
     /**
+     * @param closeAllWhenScrolling
+     *
+     * @return This {@link SwipeListView}
+     */
+    public SwipeListView setCloseAllWhenScrolling(boolean closeAllWhenScrolling) {
+        mCloseAllWhenScrolling = closeAllWhenScrolling;
+        return this;
+    }
+
+    /**
+     * @param swipeDirection
+     *
+     * @return This {@link SwipeListView}
+     */
+    public SwipeListView setSwipeDirection(SwipeDirection swipeDirection) {
+        switch (swipeDirection) {
+            case LEFT:
+                setSwipeDirection(SWIPE_DIRECTION_LEFT);
+                break;
+            case RIGHT:
+                setSwipeDirection(SWIPE_DIRECTION_RIGHT);
+                break;
+            // fall through
+            case BOTH:
+            default:
+                setSwipeDirection(SWIPE_DIRECTION_BOTH);
+                break;
+        }
+        return this;
+    }
+
+    /**
      * Set the listener that will receive notifications every time the list scrolls.
      *
      * @param onScrollListener
@@ -421,16 +387,6 @@ public class SwipeListView extends ListView {
     @Override
     public void setOnScrollListener(OnScrollListener onScrollListener) {
         mOnScrollListener = onScrollListener;
-    }
-
-    /**
-     * @param openOnLongPress
-     *
-     * @return This {@link SwipeListView}
-     */
-    public SwipeListView setOpenOnLongPress(boolean openOnLongPress) {
-        mOpenOnLongPress = openOnLongPress;
-        return this;
     }
 
     @Override
@@ -510,11 +466,11 @@ public class SwipeListView extends ListView {
 
                         if (shouldSwipe) {
                             // If a swipe should occur meaning someone has let go of a view they were moving and it was far/fast enough for us to consider it a swipe start the animations.
-                            ViewPropertyAnimator.animate(mViewPair.mFrontView)
+                            mViewPair.mFrontView.animate()
                                                 .translationX(deltaX >= 0 ? mViewWidth : -mViewWidth)
                                                 .alpha(0)
                                                 .setDuration(mAnimationTime);
-                            ViewPropertyAnimator.animate(mViewPair.mBackView).alpha(1).setDuration(mAnimationTime);
+                            mViewPair.mBackView.animate().alpha(1).setDuration(mAnimationTime);
                             // Now that the item is open, store it off so we can close it when we scroll if needed.
                             mSwipedViews.put(mViewPair.hashCode(), mViewPair);
                             // Clear out current variables as they are no longer needed and recycle the velocity tracker.
@@ -523,7 +479,7 @@ public class SwipeListView extends ListView {
                             // If the user let go of the view and we don't think the swipe was intended to occur (it was cancelled basically) reset the views.
                             // Make sure the back disappears, since if it has buttons these can intercept touches from the front view.
                             mViewPair.mBackView.setVisibility(View.GONE);
-                            ViewPropertyAnimator.animate(mViewPair.mFrontView).translationX(0).alpha(1).setDuration(mAnimationTime);
+                            mViewPair.mFrontView.animate().translationX(0).alpha(1).setDuration(mAnimationTime);
                             // Clear out current variables as they are no longer needed and recycle the velocity tracker.
                             resetState();
                         }
@@ -585,28 +541,15 @@ public class SwipeListView extends ListView {
                         // Make sure the back is visible.
                         mViewPair.mBackView.setVisibility(View.VISIBLE);
                         //Fade the back in and front out as they move.
-                        ViewHelper.setAlpha(mViewPair.mBackView, Math.min(1f, 2f * Math.abs(deltaX) / mViewWidth));
-                        ViewHelper.setTranslationX(mViewPair.mFrontView, deltaX);
-                        ViewHelper.setAlpha(mViewPair.mFrontView, Math.max(0f, Math.min(1f, 1f - 2f * Math.abs(deltaX) / mViewWidth)));
+                        mViewPair.mBackView.setAlpha(Math.min(1f, 2f * Math.abs(deltaX) / mViewWidth));
+                        mViewPair.mFrontView.setTranslationX(deltaX);
+                        mViewPair.mFrontView.setAlpha(Math.max(0f, Math.min(1f, 1f - 2f * Math.abs(deltaX) / mViewWidth)));
                         return true;
                     }
                 }
                 break;
         }
-        /**
-         * In older versions of Android MotionEvent will cause an ArrayIndexOutOfBoundsException when it
-         * attempts to access the Y coordinateunchecked if there hasn't been any motion in the Y direction.
-         * Can't extend MotionEvent since it is final, so catching the error is the best we can do.
-         */
-        if (!AndroidUtil.hasHoneycomb()) {
-            try {
-                return super.onTouchEvent(event);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                return true;
-            }
-        } else {
-            return super.onTouchEvent(event);
-        }
+        return super.onTouchEvent(event);
     }
 
     /**
@@ -634,6 +577,16 @@ public class SwipeListView extends ListView {
     }
 
     /**
+     * @param openOnLongPress
+     *
+     * @return This {@link SwipeListView}
+     */
+    public SwipeListView setOpenOnLongPress(boolean openOnLongPress) {
+        mOpenOnLongPress = openOnLongPress;
+        return this;
+    }
+
+    /**
      * Register a callback to be invoked when an item in this AdapterView has
      * been clicked and held
      *
@@ -643,6 +596,36 @@ public class SwipeListView extends ListView {
     @Override
     public void setOnItemLongClickListener(OnItemLongClickListener listener) {
         mOnItemLongClickListener = listener;
+    }
+
+    /**
+     * Defines the direction in which list items can be swiped. Use {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+     * to change the behavior. This can also
+     * be
+     * set via a Styleable Attribute called swipeDirection.
+     */
+    public enum SwipeDirection {
+        /**
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
+         * #BOTH} will allow the user to swipe list items to
+         * either the left or the right.
+         */
+        BOTH,
+        /**
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
+         * #LEFT} will only allow the user to swipe list items to
+         * the left.
+         */
+        LEFT,
+        /**
+         * Setting the swipe direction via {@link #setSwipeDirection(com.antew.redditinpictures.library.widget.SwipeListView.SwipeDirection)}
+         * to {@link
+         * #LEFT} will only allow the user to swipe list items to
+         * the right.
+         */
+        RIGHT
     }
 
     /**

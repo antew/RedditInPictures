@@ -15,6 +15,7 @@
  */
 package com.antew.redditinpictures.library.ui;
 
+import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
@@ -46,8 +47,8 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
      *
      * @return A new instance of ImageDetailFragment with imageNum extras
      */
-    public static ImgurAlbumFragment newInstance(ImgurImage image) {
-        final ImgurAlbumFragment f = new ImgurAlbumFragment();
+    public static Fragment newInstance(ImgurImage image) {
+        final Fragment f = new ImgurAlbumFragment();
         final Bundle args = new Bundle();
         args.putParcelable(IMAGE_DATA_EXTRA, image);
         f.setArguments(args);

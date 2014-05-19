@@ -15,9 +15,9 @@
  */
 package com.antew.redditinpictures.library.adapter;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentStatePagerAdapter;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.ui.ImgurAlbumFragment;
 import java.util.List;

@@ -21,14 +21,42 @@ import android.text.style.ForegroundColorSpan;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Replacer {
-    public static CharSequence replace(CharSequence source, String regex, TextColor color) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(source);
-        return doReplace(source, matcher, color);
+public class ColoredString {
+    SpannableStringBuilder builder;
+
+    public ColoredString() {
+        builder = new SpannableStringBuilder();
     }
 
-    private static CharSequence doReplace(CharSequence mSource, Matcher mMatcher, TextColor mColor) {
+    public ColoredString(String text, int color) {
+        builder = new SpannableStringBuilder(text);
+        builder.setSpan(new ForegroundColorSpan(color), 0, text.length(), 0);
+    }
+
+    public ColoredString append(String text) {
+        builder.append(text);
+        return this;
+    }
+
+    public ColoredString append(String text, int color) {
+        SpannableString s = new SpannableString(text);
+        s.setSpan(new ForegroundColorSpan(color), 0, text.length(), 0);
+        builder.append(s);
+        return this;
+    }
+
+    public ColoredString append(String text, String regex, int color) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(text);
+        builder.append(doReplace(text, matcher, color));
+        return this;
+    }
+
+    public SpannableStringBuilder getText() {
+        return builder;
+    }
+
+    private static CharSequence doReplace(CharSequence mSource, Matcher mMatcher, int color) {
 
         int mAppendPosition = 0;
         SpannableStringBuilder buffer = new SpannableStringBuilder();
@@ -36,7 +64,7 @@ public class Replacer {
             buffer.append(mSource.subSequence(mAppendPosition, mMatcher.start()));
 
             SpannableString text = new SpannableString(mMatcher.group());
-            text.setSpan(new ForegroundColorSpan(mColor.getColor()), 0, text.length(), 0);
+            text.setSpan(new ForegroundColorSpan(color), 0, text.length(), 0);
             buffer.append(text);
 
             mAppendPosition = mMatcher.end();
@@ -46,17 +74,4 @@ public class Replacer {
         return buffer;
     }
 
-    public enum TextColor {
-        BLUE(0xFF0C5DA5), YELLOW(0xFFFFC200), ORANGE(0xFFBF5D30);
-
-        private int mColor;
-
-        TextColor(int color) {
-            mColor = color;
-        }
-
-        int getColor() {
-            return mColor;
-        }
-    }
 }

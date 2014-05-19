@@ -18,12 +18,12 @@ package com.antew.redditinpictures.library.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.widget.CursorAdapter;
-import android.text.Html;
+import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,6 +37,7 @@ import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.ui.RedditFragmentActivity;
+import com.antew.redditinpictures.library.util.ColoredString;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.PostUtil;
 import com.antew.redditinpictures.library.util.Strings;
@@ -56,6 +57,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
     private ImageListItemMenuActionListener mActionListener;
     private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
     private Pattern mImgurAlbumPattern    = Pattern.compile("^https?://imgur.com/a/.*$");
+    private Context mContext;
+    private static final String SEPARATOR = " " + "\u2022" + " ";
 
     public interface ImageListItemMenuActionListener {
         /**
@@ -110,8 +113,8 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
     @Override
     public Object getItem(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor;
+        getCursor().moveToPosition(position);
+        return getCursor();
     }
 
     @Override
@@ -179,23 +182,23 @@ public class ImageListCursorAdapter extends CursorAdapter {
             }
         }
 
-        String separator = " " + "\u2022" + " ";
-        String titleText = "<font color='#ffffff'>"
-                           + postData.getTitle()
-                           + "</font><font color='#BEBEBE'> ("
-                           + postData.getDomain()
-                           + ")</font>";
-        holder.postTitle.setText(Html.fromHtml(titleText));
-        String postInformation = "";
 
-        //If we have a NSFW image.
+        SpannableStringBuilder titleText = new ColoredString(postData.getTitle(), 0xFFFFFFFF).append(" (" + postData.getDomain() + ")", 0xFFBEBEBE).getText();
+        holder.postTitle.setText(titleText);
+        ColoredString postInformation = new ColoredString();
+
+        //If we have a NSFW image add a note about it
         if (postData.isOver_18()) {
-            postInformation = "<font color='#AC3939'>" + mContext.getString(R.string.nsfw) + "</font>" + separator;
+            postInformation.append(mContext.getString(R.string.nsfw), 0xFFAC3939).append(SEPARATOR);
         }
 
-        postInformation += postData.getSubreddit() + separator + postData.getNum_comments() + " " + mContext.getString(R.string.comments);
+        postInformation.append(postData.getSubreddit())
+                       .append(SEPARATOR)
+                       .append(Integer.toString(postData.getNum_comments()))
+                       .append(" ")
+                       .append(mContext.getString(R.string.comments));
 
-        holder.postInformation.setText(Html.fromHtml(postInformation));
+        holder.postInformation.setText(postInformation.getText());
         holder.postVotes.setText("" + postData.getScore());
 
         if (postData.getVote() == Vote.UP) {

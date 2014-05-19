@@ -15,18 +15,18 @@
  */
 package com.antew.redditinpictures.library.ui;
 
+import android.app.FragmentStatePagerAdapter;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Toast;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.CursorPagerAdapter;
 import com.antew.redditinpictures.library.database.RedditContract;
@@ -73,9 +73,9 @@ public class ImageDetailActivity extends ImageViewerActivity
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
 
-        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_REDDIT, null, this);
-        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_LOGIN, null, this);
-        getSupportLoaderManager().initLoader(Constants.Loader.LOADER_POSTS, null, this);
+        getLoaderManager().initLoader(Constants.Loader.LOADER_REDDIT, null, this);
+        getLoaderManager().initLoader(Constants.Loader.LOADER_LOGIN, null, this);
+        getLoaderManager().initLoader(Constants.Loader.LOADER_POSTS, null, this);
         // Put the current page / total pages text in the ActionBar
         updateDisplay(mPager.getCurrentItem());
     }
@@ -93,7 +93,7 @@ public class ImageDetailActivity extends ImageViewerActivity
     }
 
     public FragmentStatePagerAdapter getPagerAdapter() {
-        return new CursorPagerAdapter(getSupportFragmentManager(), null);
+        return new CursorPagerAdapter(getFragmentManager(), null);
     }
 
     /**
@@ -108,9 +108,9 @@ public class ImageDetailActivity extends ImageViewerActivity
 
         int count = getAdapter().getCount();
         if (count > 0) {
-            getSupportActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
+            getActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
         } else {
-            getSupportActionBar().setTitle(getString(R.string.reddit_in_pictures));
+            getActionBar().setTitle(getString(R.string.reddit_in_pictures));
         }
     }
 
@@ -146,7 +146,7 @@ public class ImageDetailActivity extends ImageViewerActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.image_detail_menu, menu);
+        getMenuInflater().inflate(R.menu.image_detail_menu, menu);
         super.onCreateOptionsMenu(menu);
 
         return true;
@@ -202,7 +202,7 @@ public class ImageDetailActivity extends ImageViewerActivity
         // Only needs to be shown if they aren't currently logged in.
         if (!RedditLoginInformation.isLoggedIn()) {
             LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
+            loginFragment.show(getFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
         }
     }
 
@@ -261,7 +261,7 @@ public class ImageDetailActivity extends ImageViewerActivity
 
     public void setRequestInProgress(boolean requestInProgress) {
         mRequestInProgress = requestInProgress;
-        setSupportProgressBarIndeterminateVisibility(requestInProgress);
+        setProgressBarIndeterminateVisibility(requestInProgress);
     }
 
     public void displayVote() {

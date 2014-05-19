@@ -18,7 +18,6 @@ package com.antew.redditinpictures.util;
 import android.content.Context;
 import android.content.res.TypedArray;
 import com.antew.redditinpictures.library.Constants;
-import com.antew.redditinpictures.pro.R;
 
 public class ConstsFree extends Constants {
     public static final String ADMOB_ID            = "a153655662672f3";
@@ -30,7 +29,9 @@ public class ConstsFree extends Constants {
 
     public static int getActionBarSize(Context context) {
         if (mActionBarSize == null) {
-            mActionBarSize = context.getResources().getDimensionPixelSize(R.dimen.abs__action_bar_default_height);
+            final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(new int[] { android.R.attr.actionBarSize });
+            mActionBarSize = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
         }
         return mActionBarSize;
     }

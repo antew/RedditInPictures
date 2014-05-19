@@ -15,11 +15,11 @@
  */
 package com.antew.redditinpictures.ui;
 
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.preference.PreferenceActivity;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
@@ -78,7 +78,7 @@ public class RedditFragmentActivityFree extends RedditFragmentActivity
     @Override
     public void handleLoginAndLogout() {
         DialogFragment upgrade = UpdateToFullVersionDialogFragment.newInstance();
-        upgrade.show(getSupportFragmentManager(), ConstsFree.DIALOG_UPGRADE);
+        upgrade.show(getFragmentManager(), ConstsFree.DIALOG_UPGRADE);
     }
 
     @Override

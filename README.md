@@ -18,8 +18,6 @@
 ### Client-Side
 * [Gson](https://code.google.com/p/google-gson/)
 * [Menu Drawer](https://github.com/SimonVT/android-menudrawer)
-* [ActionBarSherlock](https://github.com/JakeWharton/ActionBarSherlock)
-* [Nine Old Androids](https://github.com/JakeWharton/NineOldAndroids/)
 * [Picasso](https://github.com/square/picasso)
 * [Butterknife](https://github.com/JakeWharton/butterknife)
 * [Dagger](https://github.com/square/dagger/)

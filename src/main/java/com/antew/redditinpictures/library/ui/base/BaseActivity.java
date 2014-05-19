@@ -15,9 +15,9 @@
  */
 package com.antew.redditinpictures.library.ui.base;
 
+import android.app.Activity;
 import android.os.Bundle;
 import butterknife.ButterKnife;
-import com.actionbarsherlock.app.SherlockActivity;
 import com.android.debug.hv.ViewServer;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.pro.BuildConfig;
@@ -27,7 +27,7 @@ import com.squareup.picasso.Picasso;
 /**
  * Base activity for an activity which does not use fragments.
  */
-public abstract class BaseActivity extends SherlockActivity {
+public abstract class BaseActivity extends Activity {
 
     @Override
     protected void onStart() {

@@ -17,7 +17,6 @@ package com.antew.redditinpictures.library.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.widget.Toast;
 import com.antew.redditinpictures.library.adapter.ImgurAlbumPagerAdapter;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
@@ -53,8 +52,8 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
     }
 
     @Override
-    public FragmentStatePagerAdapter getPagerAdapter() {
-        return new ImgurAlbumPagerAdapter(getSupportFragmentManager(), getImages());
+    public android.app.FragmentStatePagerAdapter getPagerAdapter() {
+        return new ImgurAlbumPagerAdapter(getFragmentManager(), getImages());
     }
 
     @SuppressWarnings("unchecked")
@@ -64,7 +63,7 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
 
     @Override
     protected void updateDisplay(int position) {
-        getSupportActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
+        getActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
     }
 
     /**

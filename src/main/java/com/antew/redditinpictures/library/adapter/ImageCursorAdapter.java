@@ -18,11 +18,11 @@ package com.antew.redditinpictures.library.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.CursorAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import com.antew.redditinpictures.library.database.RedditContract;
@@ -42,6 +42,7 @@ public class ImageCursorAdapter extends CursorAdapter {
     public static final String TAG         = ImageCursorAdapter.class.getSimpleName();
     private             int    mItemHeight = 0;
     private             int    mNumColumns = 0;
+    private Context mContext;
     private GridView.LayoutParams mImageViewLayoutParams;
     private Pattern mImgurNonAlbumPattern = Pattern.compile("^https?://imgur.com/[^/]*$");
     private Pattern mImgurAlbumPattern    = Pattern.compile("^https?://imgur.com/a/.*$");
@@ -58,8 +59,8 @@ public class ImageCursorAdapter extends CursorAdapter {
 
     @Override
     public Object getItem(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor;
+        getCursor().moveToPosition(position);
+        return getCursor();
     }
 
     @Override

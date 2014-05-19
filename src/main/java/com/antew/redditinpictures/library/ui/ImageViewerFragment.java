@@ -15,7 +15,6 @@
  */
 package com.antew.redditinpictures.library.ui;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,7 +23,6 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.TypedValue;
@@ -53,7 +51,6 @@ import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.model.ImageSize;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
-import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
@@ -64,8 +61,6 @@ import com.squareup.picasso.Picasso;
 import javax.inject.Inject;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
-
-import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
@@ -127,6 +122,34 @@ public abstract class ImageViewerFragment extends BaseFragment {
     };
     @InjectView(R.id.b_retry)
     Button          mRetry;
+    @Inject
+    ImageDownloader mImageDownloader;
+    @InjectView(R.id.tv_error_message)
+    TextView        mErrorMessage;
+    @Inject
+    ScreenSize      mScreenSize;
+    private boolean           mExitTasksEarly         = false;
+    private boolean           mCancelClick            = false;
+    private float             mDownXPos               = 0;
+    private float             mDownYPos               = 0;
+    private BroadcastReceiver mToggleFullscreenIntent = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isSystemUiVisible = intent.getBooleanExtra(Constants.Extra.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
+            if (isSystemUiVisible) {
+                hidePostDetails();
+            } else {
+                showPostDetails();
+            }
+        }
+    };
+
+    /**
+     * Empty constructor as per the Fragment documentation
+     */
+    public ImageViewerFragment() {
+    }
 
     /**
      * Set a hint to the system about whether this fragment's UI is currently visible
@@ -157,35 +180,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
                 mWebViewInitialized = false;
             }
         }
-    }
-
-    @Inject
-    ImageDownloader mImageDownloader;
-    @InjectView(R.id.tv_error_message)
-    TextView        mErrorMessage;
-    @Inject
-    ScreenSize      mScreenSize;
-    private boolean           mExitTasksEarly         = false;
-    private boolean           mCancelClick            = false;
-    private float             mDownXPos               = 0;
-    private float             mDownYPos               = 0;
-    private BroadcastReceiver mToggleFullscreenIntent = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean isSystemUiVisible = intent.getBooleanExtra(Constants.Extra.EXTRA_IS_SYSTEM_UI_VISIBLE, false);
-            if (isSystemUiVisible) {
-                hidePostDetails();
-            } else {
-                showPostDetails();
-            }
-        }
-    };
-
-    /**
-     * Empty constructor as per the Fragment documentation
-     */
-    public ImageViewerFragment() {
     }
 
     /**
@@ -280,7 +274,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
         // Calculate ActionBar height
         TypedValue tv = new TypedValue();
-        if (getActivity().getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
             mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getActivity().getResources().getDisplayMetrics());
         }
 
@@ -288,12 +282,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
             mSystemUiStateProvider = (SystemUiStateProvider) getActivity();
         } catch (ClassCastException e) {
             Ln.e(e, "The activity must implement the SystemUiStateProvider interface");
-        }
-
-        // Use the parent activity to load the image asynchronously into the ImageView (so a single
-        // cache can be used over all pages in the ViewPager
-        if (ImageViewerActivity.class.isInstance(getActivity())) {
-            resolveImage();
         }
     }
 
@@ -305,17 +293,23 @@ public abstract class ImageViewerFragment extends BaseFragment {
         } else {
             hidePostDetails();
         }
+
+        // Use the parent activity to load the image asynchronously into the ImageView (so a single
+        // cache can be used over all pages in the ViewPager
+        if (ImageViewerActivity.class.isInstance(getActivity())) {
+            resolveImage();
+        }
     }
 
     public void showPostDetails() {
         if (shouldShowPostInformation()) {
             mPostInformationWrapper.setVisibility(View.VISIBLE);
-            animate(mPostInformationWrapper).setDuration(500).y(mActionBarHeight);
+            mPostInformationWrapper.animate().setDuration(500).y(mActionBarHeight);
         }
     }
 
     public void hidePostDetails() {
-        animate(mPostInformationWrapper).setDuration(500).y(-400);
+        mPostInformationWrapper.animate().setDuration(500).y(-400);
     }
 
     protected abstract boolean shouldShowPostInformation();
@@ -426,15 +420,15 @@ public abstract class ImageViewerFragment extends BaseFragment {
                 mWebView.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (AndroidUtil.hasHoneycomb()) {
+                        if (imageUrl != null) {
                             mWebView.loadData(getHtmlForImageDisplay(imageUrl), "text/html", "utf-8");
+                            mImageView.setVisibility(View.GONE);
                         } else {
-                            mWebView.loadDataWithBaseURL("", getHtmlForImageDisplay(imageUrl), "text/html", "utf-8", "");
+                            mWebView.destroy();
+                            showImageError();
                         }
-                        mImageView.setVisibility(View.GONE);
                     }
                 });
-
             }
         }).start();
     }
@@ -445,7 +439,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void initializeWebView() {
         assert mWebView != null : "WebView should not be null!";
 
@@ -454,16 +447,10 @@ public abstract class ImageViewerFragment extends BaseFragment {
         settings.setBuiltInZoomControls(true);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
-        if (AndroidUtil.hasHoneycomb()) {
-            settings.setDisplayZoomControls(false);
-        }
+        settings.setDisplayZoomControls(false);
         // Before loading the actual content, let's let the WebView initialize everything.
         mWebView.loadData("<html></html>", "text/html", "utf-8");
 
-        // Hardware acceleration wasn't introduced until Honeycomb. So we want to use the drawing cache for older devices.
-        if (!AndroidUtil.hasHoneycomb()) {
-            mWebView.setDrawingCacheEnabled(true);
-        }
         mWebView.setBackgroundColor(Color.BLACK);
         mWebView.setWebViewClient(new WebViewClient() {
             /**
