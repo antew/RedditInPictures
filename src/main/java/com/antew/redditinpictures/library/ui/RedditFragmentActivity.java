@@ -97,7 +97,12 @@ public class RedditFragmentActivity extends BaseFragmentActivityWithMenu
         super.onCreate(savedInstanceState);
         setMenuDrawerContentView(R.layout.reddit_fragment_activity);
         restoreInstanceState(savedInstanceState);
-        initializeActiveView();
+
+        // We only need to create a new fragment if we aren't pulling from the back stack.
+        if (savedInstanceState == null) {
+            initializeActiveView();
+        }
+
         initializeLoaders();
 
         if (!isNetworkAvailable()) {

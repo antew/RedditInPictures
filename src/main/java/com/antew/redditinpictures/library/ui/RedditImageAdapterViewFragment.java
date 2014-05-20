@@ -99,9 +99,6 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-
-
     }
 
     /**
@@ -352,6 +349,7 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
                     }
                     mProgress.setVisibility(View.GONE);
                     produceRequestCompletedEvent();
+                    onPostsLoaded();
                 }
                 break;
             default:
@@ -461,4 +459,6 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
         mNoImages = null;
         mProgress = null;
     }
+
+    public abstract void onPostsLoaded();
 }
