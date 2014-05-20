@@ -32,7 +32,7 @@ import dagger.Module;
     injects = {
         ImageDetailActivity.class, ImageDetailFragment.class, ImgurAlbumActivity.class, RedditFragmentActivity.class,
         RedditImageListFragment.class, RedditImageGridFragment.class, ImgurAlbumFragment.class, RedditService.GetNewPostsIfNeededTask.class,
-        ImageDownloader.class
+        ImageDownloader.class, RedditService.NotifyRequestCompleted.class
     }, library = true
 )
 public class ApplicationModulePro {

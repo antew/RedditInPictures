@@ -28,6 +28,7 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.Injector;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.database.RedditDatabase;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.model.Age;
@@ -49,6 +50,7 @@ import java.util.Date;
 import javax.inject.Inject;
 
 public class RedditService extends RESTService {
+    private static String mPreviousGetPosts = "";
 
     public static void getPostsIfNeeded(Context context, String subreddit, Age age, Category category) {
         new GetNewPostsIfNeededTask(context, subreddit, age, category).execute();
@@ -73,6 +75,17 @@ public class RedditService extends RESTService {
         }
 
         Ln.d("Retrieving Posts For %s %s %s After %s", subreddit, category.toString(), age.toString(), after);
+        Ln.d("Previous Request %s", mPreviousGetPosts);
+
+        // If we have presumably a duplicate request.
+        String requestParams = subreddit + age + category + after;
+        if (mPreviousGetPosts.equals(requestParams)) {
+            new NotifyRequestCompleted().execute();
+            return;
+        } else {
+            mPreviousGetPosts = requestParams;
+        }
+
 
         RedditUrl url = new RedditUrl.Builder(subreddit).age(age)
                                                         .category(category)
@@ -282,6 +295,29 @@ public class RedditService extends RESTService {
         }
 
         redditResult.handleResponse(getApplicationContext());
+    }
+
+    public static class NotifyRequestCompleted extends SafeAsyncTask<Void> {
+        @Inject
+        Bus mBus;
+
+        protected NotifyRequestCompleted() {
+            Injector.inject(this);
+        }
+
+        /**
+         * Computes a result, or throws an exception if unable to do so.
+         *
+         * @return computed result
+         *
+         * @throws Exception
+         *     if unable to compute a result
+         */
+        @Override
+        public Void call() throws Exception {
+            mBus.post(new RequestCompletedEvent());
+            return null;
+        }
     }
 
     public static class GetNewPostsIfNeededTask extends SafeAsyncTask<Void> {
