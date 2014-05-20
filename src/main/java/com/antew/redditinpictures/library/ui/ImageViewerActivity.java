@@ -39,6 +39,8 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.animation.FadeInThenOut;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.ui.base.BaseFragmentActivity;
 import com.antew.redditinpictures.library.util.BundleUtil;
@@ -47,6 +49,7 @@ import com.antew.redditinpictures.library.widget.CustomViewPager;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
+import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -56,7 +59,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     /**
      * 8 is a great number! Not only is it divisible by 4, but it is also equivalent to 2 * 2 * 2 you just can't beat that!
      */
-    private static final int    POST_LOAD_OFFSET = 8;
+    protected static final int    POST_LOAD_OFFSET = 8;
     private static final String IMAGE_CACHE_DIR  = "images";
     @Inject
     public    ImageDownloader           mImageDownloader;
@@ -115,6 +118,8 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * The page in the ViewPager that was requested
      */
     private int mRequestedPage = 0;
+
+    protected boolean     mRequestInProgress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -216,7 +221,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
                 mRequestedPage = position;
                 updateDisplay(position);
 
-                if (position >= (mAdapter.getCount() - POST_LOAD_OFFSET)) {
+                if (!mRequestInProgress && position >= (mAdapter.getCount() - POST_LOAD_OFFSET)) {
                     reachedCloseToLastPage();
                 }
             }
@@ -512,6 +517,16 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
                    .send(MapBuilder.createEvent(Constants.Analytics.Category.UI_ACTION, Constants.Analytics.Action.TOGGLE_DETAILS,
                                                 Constants.Analytics.Label.EXIT_FULLSCREEN, null).build());
         mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+    }
+
+    @Subscribe
+    public void requestInProgress(RequestInProgressEvent event) {
+        mRequestInProgress = true;
+    }
+
+    @Subscribe
+    public void requestCompleted(RequestCompletedEvent event) {
+        mRequestInProgress = false;
     }
 
     @Override

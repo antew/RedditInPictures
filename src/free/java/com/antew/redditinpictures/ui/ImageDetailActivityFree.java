@@ -61,4 +61,16 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
     public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
         super.onDownloadImageComplete(event);
     }
+
+    @Subscribe
+    @Override
+    public void requestInProgress(RequestInProgressEvent event) {
+        super.requestInProgress(event);
+    }
+
+    @Subscribe
+    @Override
+    public void requestCompleted(RequestCompletedEvent event) {
+        super.requestCompleted(event);
+    }
 }

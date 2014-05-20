@@ -33,6 +33,8 @@ import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
 import com.antew.redditinpictures.library.event.DownloadImageEvent;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.Vote;
@@ -399,10 +401,26 @@ public class ImageDetailActivity extends ImageViewerActivity
                 setRequestInProgress(false);
                 getAdapter().swapCursor(cursor);
 
+                if (!mRequestInProgress && mPager.getCurrentItem() >= getAdapter().getCount() - POST_LOAD_OFFSET) {
+                    reachedCloseToLastPage();
+                }
+
                 moveViewPagerToPosition(getRequestedPage());
                 updateDisplay(mPager.getCurrentItem());
                 break;
         }
+    }
+
+    @Subscribe
+    @Override
+    public void requestInProgress(RequestInProgressEvent event) {
+        super.requestInProgress(event);
+    }
+
+    @Subscribe
+    @Override
+    public void requestCompleted(RequestCompletedEvent event) {
+        super.requestCompleted(event);
     }
 
     @Override
