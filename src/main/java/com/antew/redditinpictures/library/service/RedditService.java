@@ -78,14 +78,14 @@ public class RedditService extends RESTService {
         Ln.d("Previous Request %s", mPreviousGetPosts);
 
         // If we have presumably a duplicate request.
-        String requestParams = subreddit + age + category + after;
-        if (mPreviousGetPosts.equals(requestParams)) {
+        String requestParams = subreddit + age + category + (after == null ? "null" : after);
+        if (mPreviousGetPosts.equals(requestParams) && after != null) {
+            Ln.d("Duplicate Request Detected");
             new NotifyRequestCompleted().execute();
             return;
-        } else {
-            mPreviousGetPosts = requestParams;
         }
 
+        mPreviousGetPosts = requestParams;
 
         RedditUrl url = new RedditUrl.Builder(subreddit).age(age)
                                                         .category(category)

@@ -32,7 +32,6 @@ import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
-import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.otto.Subscribe;
 
@@ -53,7 +52,6 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
         @Override
         public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             // if we're are approaching the bottom of the gridview, load more data
-            Ln.d("First %d Visible %d Total %d", firstVisibleItem, visibleItemCount, totalItemCount);
             if (!mRequestInProgress && firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET && totalItemCount > 0) {
                 fetchAdditionalImagesFromReddit();
             }

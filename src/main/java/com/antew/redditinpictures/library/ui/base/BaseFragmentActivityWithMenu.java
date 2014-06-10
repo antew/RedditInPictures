@@ -95,7 +95,7 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
         public void onAction(SubredditData subredditData, SubredditAction action) {
             // The keyboard doesn't always close, so let's make sure that we close it in all cases.
             hideKeyboard();
-            
+
             switch (action) {
                 case View:
                     EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
