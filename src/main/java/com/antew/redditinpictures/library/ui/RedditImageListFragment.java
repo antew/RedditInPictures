@@ -19,7 +19,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -37,7 +37,6 @@ import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
-import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.widget.SwipeListView;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
@@ -48,7 +47,6 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
     implements ImageListCursorAdapter.ImageListItemMenuActionListener {
     //8 is a good number, the kind of number that you could say take home to your parents and not be worried about what they might think about it.
     private static final int                          POST_LOAD_OFFSET    = 8;
-    private              Integer                      mVisiblePosition    = null;
     private              AbsListView.OnScrollListener mListScrollListener = new AbsListView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(AbsListView absListView, int scrollState) {
@@ -103,9 +101,6 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
 
         mImageListView.setAdapter(mAdapter);
         mImageListView.setOnScrollListener(mListScrollListener);
-        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.Extra.EXTRA_VISIBLE_POSITION)) {
-            mVisiblePosition = savedInstanceState.getInt(Constants.Extra.EXTRA_VISIBLE_POSITION);
-        }
     }
 
     @Override
@@ -117,8 +112,9 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
     @Override
     public void onPostsLoaded() {
         if (mVisiblePosition != null) {
-            mImageListView.setSelection(mVisiblePosition);
+            mImageListView.setSelectionFromTop(mVisiblePosition, mTopOffset);
             mVisiblePosition = null;
+            mTopOffset = null;
         }
     }
 
@@ -259,6 +255,11 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(Constants.Extra.EXTRA_VISIBLE_POSITION, mImageListView.getFirstVisiblePosition());
+        if (mImageListView != null) {
+            outState.putInt(Constants.Extra.EXTRA_VISIBLE_POSITION, mImageListView.getFirstVisiblePosition());
+
+            View topView = mImageListView.getChildAt(0);
+            outState.putInt(Constants.Extra.EXTRA_TOP_OFFSET, topView != null ? topView.getTop() : 0);
+        }
     }
 }

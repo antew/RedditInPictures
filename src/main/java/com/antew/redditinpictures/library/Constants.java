@@ -107,6 +107,7 @@ public class Constants {
         public static final  String EXTRA_QUERY                    = EXTRA_PREFIX + "query";
         public static final  String EXTRA_IS_SWIPING_ENABLED       = EXTRA_PREFIX + "isSwipingEnabled";
         public static final  String EXTRA_VISIBLE_POSITION         = EXTRA_PREFIX + "visiblePosition";
+        public static final  String EXTRA_TOP_OFFSET               = EXTRA_PREFIX + "topOffset";
     }
 
     public static class Dialog {

@@ -75,6 +75,8 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
     @InjectView(R.id.pb_progress)
     protected ProgressBar mProgress;
     protected boolean     mRequestInProgress;
+    protected Integer     mVisiblePosition;
+    protected Integer     mTopOffset;
     private   String      mAfter;
     protected String   mCurrentSubreddit = Constants.Reddit.REDDIT_FRONTPAGE;
     protected Category mCategory         = Category.HOT;
@@ -183,6 +185,15 @@ public abstract class RedditImageAdapterViewFragment<T extends AdapterView, V ex
 
         if (getAdapterView() != null) {
             getAdapterView().setOnItemClickListener(this);
+        }
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(Constants.Extra.EXTRA_VISIBLE_POSITION)) {
+                mVisiblePosition = savedInstanceState.getInt(Constants.Extra.EXTRA_VISIBLE_POSITION);
+            }
+            if (savedInstanceState.containsKey(Constants.Extra.EXTRA_TOP_OFFSET)) {
+                mTopOffset = savedInstanceState.getInt(Constants.Extra.EXTRA_TOP_OFFSET);
+            }
         }
     }
 

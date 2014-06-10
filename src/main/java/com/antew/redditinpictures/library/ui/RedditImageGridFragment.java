@@ -17,6 +17,7 @@ package com.antew.redditinpictures.library.ui;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.GridView;
@@ -38,7 +39,6 @@ import com.squareup.otto.Subscribe;
 public class RedditImageGridFragment extends RedditImageAdapterViewFragment<GridView, ImageCursorAdapter> {
     //9 is a good number, it's not as great as 8 or as majestic as 42 but it is indeed the product of 3 3s which is okay...I guess.
     private static final int                          POST_LOAD_OFFSET          = 9;
-    private              Integer                      mVisiblePosition    = null;
     private              AbsListView.OnScrollListener mGridViewOnScrollListener = new AbsListView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(AbsListView absListView, int scrollState) {
@@ -89,10 +89,6 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
         mGridView.setOnItemClickListener(this);
         mGridView.setOnScrollListener(mGridViewOnScrollListener);
         mGridView.getViewTreeObserver().addOnGlobalLayoutListener(getGridGlobalLayoutListener(mGridView));
-
-        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.Extra.EXTRA_VISIBLE_POSITION)) {
-            mVisiblePosition = savedInstanceState.getInt(Constants.Extra.EXTRA_VISIBLE_POSITION);
-        }
     }
 
     /**
@@ -162,7 +158,12 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(Constants.Extra.EXTRA_VISIBLE_POSITION, mGridView.getFirstVisiblePosition());
+        if (mGridView != null) {
+            outState.putInt(Constants.Extra.EXTRA_VISIBLE_POSITION, mGridView.getFirstVisiblePosition());
+
+            View topView = mGridView.getChildAt(0);
+            outState.putInt(Constants.Extra.EXTRA_TOP_OFFSET, topView != null ? topView.getTop() : 0);
+        }
     }
 
     @Override
@@ -170,6 +171,7 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
         if (mVisiblePosition != null) {
             mGridView.setSelection(mVisiblePosition);
             mVisiblePosition = null;
+            mTopOffset = null;
         }
     }
 }
