@@ -16,7 +16,6 @@
 package com.antew.redditinpictures.library.ui;
 
 import android.app.ActionBar;
-import android.app.FragmentStatePagerAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +23,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
@@ -119,7 +119,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     private int mRequestedPage = 0;
 
-    protected boolean     mRequestInProgress;
+    protected boolean mRequestInProgress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -202,7 +202,7 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      *
      * @return The adapter for the ViewPager
      */
-    public abstract android.app.FragmentStatePagerAdapter getPagerAdapter();
+    public abstract FragmentStatePagerAdapter getPagerAdapter();
 
     /**
      * Get the page change listener for the ViewPager. By default it changes between

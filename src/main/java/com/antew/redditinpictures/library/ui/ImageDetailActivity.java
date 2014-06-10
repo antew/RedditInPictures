@@ -15,7 +15,6 @@
  */
 package com.antew.redditinpictures.library.ui;
 
-import android.app.FragmentStatePagerAdapter;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -23,6 +22,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;

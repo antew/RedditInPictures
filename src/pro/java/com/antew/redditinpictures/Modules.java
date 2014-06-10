@@ -21,7 +21,7 @@ import com.antew.redditinpictures.library.util.Ln;
 public class Modules {
 
     public static Object get(RedditInPicturesApplication app) {
-        Ln.e("Called free 'Modules' class");
+        Ln.e("Called pro 'Modules' class");
         return new ApplicationModulePro();
     }
 }

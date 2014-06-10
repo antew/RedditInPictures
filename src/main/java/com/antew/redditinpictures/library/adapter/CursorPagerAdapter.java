@@ -17,8 +17,8 @@ package com.antew.redditinpictures.library.adapter;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentStatePagerAdapter;
 import android.database.Cursor;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.util.Ln;
