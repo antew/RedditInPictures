@@ -15,9 +15,9 @@
  */
 package com.antew.redditinpictures.ui;
 
-import android.app.FragmentStatePagerAdapter;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import com.antew.redditinpictures.adapter.ImgurAlbumPagerAdapterFree;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;

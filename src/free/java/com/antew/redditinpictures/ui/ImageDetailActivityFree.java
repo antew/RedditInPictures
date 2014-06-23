@@ -16,14 +16,16 @@
 package com.antew.redditinpictures.ui;
 
 import android.app.DialogFragment;
-import android.app.FragmentStatePagerAdapter;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.view.MenuItem;
 import com.antew.redditinpictures.adapter.CursorPagerAdapterFree;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.util.ConstsFree;
