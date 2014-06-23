@@ -15,7 +15,6 @@
  */
 package com.antew.redditinpictures.library.ui;
 
-import android.app.FragmentStatePagerAdapter;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -23,6 +22,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -33,6 +33,8 @@ import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
 import com.antew.redditinpictures.library.event.DownloadImageEvent;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.Vote;
@@ -399,10 +401,26 @@ public class ImageDetailActivity extends ImageViewerActivity
                 setRequestInProgress(false);
                 getAdapter().swapCursor(cursor);
 
+                if (!mRequestInProgress && mPager.getCurrentItem() >= getAdapter().getCount() - POST_LOAD_OFFSET) {
+                    reachedCloseToLastPage();
+                }
+
                 moveViewPagerToPosition(getRequestedPage());
                 updateDisplay(mPager.getCurrentItem());
                 break;
         }
+    }
+
+    @Subscribe
+    @Override
+    public void requestInProgress(RequestInProgressEvent event) {
+        super.requestInProgress(event);
+    }
+
+    @Subscribe
+    @Override
+    public void requestCompleted(RequestCompletedEvent event) {
+        super.requestCompleted(event);
     }
 
     @Override

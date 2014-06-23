@@ -25,6 +25,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -36,6 +38,7 @@ import butterknife.OnClick;
 import butterknife.OnLongClick;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.SubredditMenuDrawerCursorAdapter;
+import com.antew.redditinpictures.library.annotation.ForApplication;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.AboutSubredditDialogFragment;
 import com.antew.redditinpictures.library.dialog.AddSubredditDialogFragment;
@@ -57,6 +60,7 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.picasso.Picasso;
 import java.util.Date;
+import javax.inject.Inject;
 import net.simonvt.menudrawer.MenuDrawer;
 import net.simonvt.menudrawer.Position;
 
@@ -65,6 +69,9 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
                AddSubredditDialogFragment.AddSubredditDialogListener, RedditDataProvider, ExitDialogFragment.ExitDialogListener {
     protected MenuDrawer                       mMenuDrawer;
     protected SubredditMenuDrawerCursorAdapter mSubredditAdapter;
+    @Inject
+    @ForApplication
+    protected InputMethodManager mInputMethodManager;
     @InjectView(R.id.et_subreddit_filter)
     protected EditText                         mSubredditFilter;
     @InjectView(R.id.ib_clear)
@@ -86,6 +93,9 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
 
         @Override
         public void onAction(SubredditData subredditData, SubredditAction action) {
+            // The keyboard doesn't always close, so let's make sure that we close it in all cases.
+            hideKeyboard();
+
             switch (action) {
                 case View:
                     EasyTracker.getInstance(BaseFragmentActivityWithMenu.this)
@@ -172,9 +182,19 @@ public abstract class BaseFragmentActivityWithMenu extends BaseFragmentActivity
             mMenuDrawer.setActiveView(view, position);
             mSubredditAdapter.setActivePosition(position);
             mMenuDrawer.closeMenu(true);
+            // The keyboard doesn't always close, so let's make sure that we close it in all cases.
+            hideKeyboard();
             loadSubredditFromMenu(subredditName);
         }
     };
+
+    protected void hideKeyboard() {
+        View view = getCurrentFocus();
+        if (view != null) {
+            mInputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
 
     @Override
     public void onFinishExitDialog() {

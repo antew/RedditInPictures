@@ -19,8 +19,8 @@ buildscript {
   }
 
   dependencies {
-      classpath 'com.android.tools.build:gradle:0.9.+'
-      classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.9.+'
+      classpath 'com.android.tools.build:gradle:0.11.+'
+      classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.10.+'
   }
 }
 
@@ -29,12 +29,12 @@ apply plugin: 'android'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.0.3'
+    buildToolsVersion '19.1.0'
 
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 19
-        versionName "3.1.4"
+        versionName "3.1.5"
     }
 
     packagingOptions {
@@ -53,13 +53,13 @@ android {
 
     productFlavors {
         free {
-            packageName "com.wemakestuff.redditinpictures"
-            versionCode 22
+            applicationId "com.wemakestuff.redditinpictures"
+            versionCode 23
         }
 
         pro {
-            packageName "com.wemakestuff.redditinpictures.pro"
-            versionCode 22
+            applicationId "com.wemakestuff.redditinpictures.pro"
+            versionCode 23
         }
     }
 
@@ -82,6 +82,7 @@ repositories {
 dependencies {
     compile 'com.google.code.gson:gson:2.2.+'
     compile 'net.simonvt.menudrawer:menudrawer:3.0.+@aar'
+    compile 'com.android.support:support-v4:19.1.+'
     compile 'com.android.support:support-v13:19.1.+'
     compile "com.jakewharton:butterknife:4.0.+"
     compile 'com.squareup.picasso:picasso:2.2.+'

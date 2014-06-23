@@ -17,6 +17,7 @@ package com.antew.redditinpictures.library.ui;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.GridView;
@@ -31,7 +32,6 @@ import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.image.ThumbnailInfo;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
-import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.otto.Subscribe;
 
@@ -52,7 +52,6 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
         @Override
         public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             // if we're are approaching the bottom of the gridview, load more data
-            Ln.d("First %d Visible %d Total %d", firstVisibleItem, visibleItemCount, totalItemCount);
             if (!mRequestInProgress && firstVisibleItem + visibleItemCount >= totalItemCount - POST_LOAD_OFFSET && totalItemCount > 0) {
                 fetchAdditionalImagesFromReddit();
             }
@@ -152,5 +151,25 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
     @Override
     public void requestCompleted(RequestCompletedEvent event) {
         super.requestCompleted(event);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mGridView != null) {
+            outState.putInt(Constants.Extra.EXTRA_VISIBLE_POSITION, mGridView.getFirstVisiblePosition());
+
+            View topView = mGridView.getChildAt(0);
+            outState.putInt(Constants.Extra.EXTRA_TOP_OFFSET, topView != null ? topView.getTop() : 0);
+        }
+    }
+
+    @Override
+    public void onPostsLoaded() {
+        if (mVisiblePosition != null) {
+            mGridView.setSelection(mVisiblePosition);
+            mVisiblePosition = null;
+            mTopOffset = null;
+        }
     }
 }

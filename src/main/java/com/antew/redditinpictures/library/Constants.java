@@ -95,7 +95,6 @@ public class Constants {
         public static final  String EXTRA_MY_SUBREDDITS            = EXTRA_PREFIX + "mySubreddits";
         public static final  String EXTRA_SUBREDDIT_NAMES          = EXTRA_PREFIX + "subredditNames";
         public static final  String EXTRA_NAV_POSITION             = EXTRA_PREFIX + "navPosition";
-        public static final  String EXTRA_NEWLY_SELECTED_SUBREDDIT = EXTRA_PREFIX + "newSelectedSubreddit";
         public static final  String EXTRA_PERMALINK                = EXTRA_PREFIX + "permalink";
         public static final  String EXTRA_REDDIT_API               = EXTRA_PREFIX + "redditApi";
         public static final  String EXTRA_REDDIT_URL               = EXTRA_PREFIX + "redditUrl";
@@ -107,6 +106,8 @@ public class Constants {
         public static final  String EXTRA_USERNAME                 = EXTRA_PREFIX + "username";
         public static final  String EXTRA_QUERY                    = EXTRA_PREFIX + "query";
         public static final  String EXTRA_IS_SWIPING_ENABLED       = EXTRA_PREFIX + "isSwipingEnabled";
+        public static final  String EXTRA_VISIBLE_POSITION         = EXTRA_PREFIX + "visiblePosition";
+        public static final  String EXTRA_TOP_OFFSET               = EXTRA_PREFIX + "topOffset";
     }
 
     public static class Dialog {

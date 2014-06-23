@@ -19,6 +19,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -102,9 +103,19 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
         mImageListView.setOnScrollListener(mListScrollListener);
     }
 
-    @Override public void onDestroyView() {
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         mImageListView = null;
+    }
+
+    @Override
+    public void onPostsLoaded() {
+        if (mVisiblePosition != null) {
+            mImageListView.setSelectionFromTop(mVisiblePosition, mTopOffset);
+            mVisiblePosition = null;
+            mTopOffset = null;
+        }
     }
 
     private void openImageAtPosition(int position) {
@@ -148,8 +159,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
      */
     @Override
     public void viewImage(PostData postData, int position) {
-        EasyTracker.getInstance(getActivity())
-                   .send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.OPEN_POST,
+        EasyTracker.getInstance(getActivity()).send(MapBuilder.createEvent(Constants.Analytics.Category.POST_MENU_ACTION, Constants.Analytics.Action.OPEN_POST,
                                                 mCurrentSubreddit, null).build()
                         );
         openImageAtPosition(position);
@@ -240,5 +250,16 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
     @Override
     public void requestCompleted(RequestCompletedEvent event) {
         super.requestCompleted(event);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mImageListView != null) {
+            outState.putInt(Constants.Extra.EXTRA_VISIBLE_POSITION, mImageListView.getFirstVisiblePosition());
+
+            View topView = mImageListView.getChildAt(0);
+            outState.putInt(Constants.Extra.EXTRA_TOP_OFFSET, topView != null ? topView.getTop() : 0);
+        }
     }
 }

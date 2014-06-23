@@ -36,7 +36,7 @@ import dagger.Module;
     injects = {
         RedditImageGridFragmentFree.class, RedditImageListFragmentFree.class, RedditFragmentActivityFree.class,
         ImageDetailActivityFree.class, ImageDetailFragmentFree.class, ImgurAlbumActivityFree.class, ImgurAlbumFragmentFree.class,
-        RedditService.GetNewPostsIfNeededTask.class, ImageDownloader.class
+        RedditService.GetNewPostsIfNeededTask.class, ImageDownloader.class, RedditService.NotifyRequestCompleted.class
     }, library = true)
 public class ApplicationModuleFree {
 
