@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
     implements ImageListCursorAdapter.ImageListItemMenuActionListener {
     //8 is a good number, the kind of number that you could say take home to your parents and not be worried about what they might think about it.
     private static final int                          POST_LOAD_OFFSET    = 8;
+    private              Integer                      mVisiblePosition    = null;
     private              AbsListView.OnScrollListener mListScrollListener = new AbsListView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(AbsListView absListView, int scrollState) {
@@ -100,11 +102,24 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
 
         mImageListView.setAdapter(mAdapter);
         mImageListView.setOnScrollListener(mListScrollListener);
+        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.Extra.EXTRA_VISIBLE_POSITION)) {
+            mVisiblePosition = savedInstanceState.getInt(Constants.Extra.EXTRA_VISIBLE_POSITION);
+        }
+
     }
 
     @Override public void onDestroyView() {
         super.onDestroyView();
         mImageListView = null;
+    }
+
+    @Override
+    public void onPostsLoaded() {
+        if (mVisiblePosition != null) {
+            mImageListView.setSelectionFromTop(mVisiblePosition, mTopOffset);
+            mVisiblePosition = null;
+            mTopOffset = null;
+        }
     }
 
     private void openImageAtPosition(int position) {
@@ -240,5 +255,16 @@ public class RedditImageListFragment extends RedditImageAdapterViewFragment<List
     @Override
     public void requestCompleted(RequestCompletedEvent event) {
         super.requestCompleted(event);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mImageListView != null) {
+            outState.putInt(Constants.Extra.EXTRA_VISIBLE_POSITION, mImageListView.getFirstVisiblePosition());
+
+            View topView = mImageListView.getChildAt(0);
+            outState.putInt(Constants.Extra.EXTRA_TOP_OFFSET, topView != null ? topView.getTop() : 0);
+        }
     }
 }

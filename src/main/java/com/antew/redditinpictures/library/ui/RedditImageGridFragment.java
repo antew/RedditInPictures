@@ -17,6 +17,7 @@ package com.antew.redditinpictures.library.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.GridView;
@@ -81,6 +82,16 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
     }
 
     @Override
+    protected int getLayoutId() {
+        return R.layout.image_grid_fragment;
+    }
+
+    @Override
+    protected ImageCursorAdapter getNewAdapter() {
+        return new ImageCursorAdapter(getActivity());
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mThumbnailInfo = ThumbnailInfo.getThumbnailInfo(getResources());
@@ -115,6 +126,10 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
         };
     }
 
+    @Override protected GridView getAdapterView() {
+        return mGridView;
+    }
+
     /**
      * If we're forcing a refresh from Reddit we want
      * to discard the old posts so that the user has
@@ -124,18 +139,6 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
      */
     @Override @Subscribe public void handleForcePostRefreshEvent(ForcePostRefreshEvent event) {
         super.handleForcePostRefreshEvent(event);
-    }
-
-    @Override protected int getLayoutId() {
-        return R.layout.image_grid_fragment;
-    }
-
-    @Override protected GridView getAdapterView() {
-        return mGridView;
-    }
-
-    @Override protected ImageCursorAdapter getNewAdapter() {
-        return new ImageCursorAdapter(getActivity());
     }
 
     @Override protected QueryCriteria getPostsQueryCriteria() {
@@ -152,5 +155,24 @@ public class RedditImageGridFragment extends RedditImageAdapterViewFragment<Grid
     @Override
     public void requestCompleted(RequestCompletedEvent event) {
         super.requestCompleted(event);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mGridView != null) {
+            outState.putInt(Constants.Extra.EXTRA_VISIBLE_POSITION, mGridView.getFirstVisiblePosition());
+            View topView = mGridView.getChildAt(0);
+            outState.putInt(Constants.Extra.EXTRA_TOP_OFFSET, topView != null ? topView.getTop() : 0);
+        }
+    }
+
+    @Override
+    public void onPostsLoaded() {
+        if (mVisiblePosition != null) {
+            mGridView.setSelection(mVisiblePosition);
+            mVisiblePosition = null;
+            mTopOffset = null;
+        }
     }
 }
