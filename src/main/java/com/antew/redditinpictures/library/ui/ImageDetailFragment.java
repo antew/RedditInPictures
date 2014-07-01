@@ -28,6 +28,7 @@ import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.image.ImgurGalleryType;
 import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.model.reddit.PostData;
+import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.util.Ln;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;

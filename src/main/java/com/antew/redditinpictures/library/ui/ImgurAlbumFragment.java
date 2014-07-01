@@ -70,24 +70,44 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
                 imageUrl = mImage.getSize(ImageSize.ORIGINAL);
             }
 
+            if (mShowHighQualityImages) {
+                imageUrl = mImage.getSize(ImageSize.ORIGINAL);
+            }
+
             if (ImageUtil.isGif(imageUrl)) {
                 super.loadGifInWebView(imageUrl);
             } else {
-                Picasso.with(getActivity())
-                       .load(Uri.parse(imageUrl))
-                       .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
-                       .centerInside()
-                       .into(mImageView, new Callback() {
-                           @Override
-                           public void onSuccess() {
-                               hideProgress();
-                           }
+                if (mShowHighQualityImages) {
+                    Picasso.with(getActivity())
+                           .load(Uri.parse(imageUrl))
+                           .into(mImageView, new Callback() {
+                               @Override
+                               public void onSuccess() {
+                                   hideProgress();
+                               }
 
-                           @Override
-                           public void onError() {
-                               showImageError();
-                           }
-                       });
+                               @Override
+                               public void onError() {
+                                   showImageError();
+                               }
+                           });
+                } else {
+                    Picasso.with(getActivity())
+                           .load(Uri.parse(imageUrl))
+                           .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
+                           .centerInside()
+                           .into(mImageView, new Callback() {
+                               @Override
+                               public void onSuccess() {
+                                   hideProgress();
+                               }
+
+                               @Override
+                               public void onError() {
+                                   showImageError();
+                               }
+                           });
+                }
             }
         } catch (Exception e) {
             showImageError();

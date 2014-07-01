@@ -185,4 +185,16 @@ public class SharedPreferencesHelper {
     public static Category getCategory(Context context) {
         return Category.fromString(context.getSharedPreferences(GLOBAL_PREFS_NAME, 0).getString(CATEGORY, Category.HOT.getName()));
     }
+
+    /**
+     * Whether high quality images should be shown
+     *
+     * @param context
+     *     The context
+     *
+     * @return True high quality images should be shown
+     */
+    public static boolean getShowHighQualityImages(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.pref_load_high_quality_images), false);
+    }
 }
