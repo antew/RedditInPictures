@@ -30,6 +30,7 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.Injector;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.database.RedditDatabase;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.model.Age;
@@ -52,6 +53,7 @@ import java.util.Date;
 import javax.inject.Inject;
 
 public class RedditService extends RESTService {
+    private static String mPreviousGetPosts = "";
 
     public static void getPostsIfNeeded(Context context, String subreddit, Age age, Category category) {
         new GetNewPostsIfNeededTask(context, subreddit, age, category).execute();
@@ -76,6 +78,17 @@ public class RedditService extends RESTService {
         }
 
         Ln.d("Retrieving Posts For %s %s %s After %s", subreddit, category.toString(), age.toString(), after);
+        Ln.d("Previous Request %s", mPreviousGetPosts);
+
+        // If we have presumably a duplicate request.
+        String requestParams = subreddit + age + category + (after == null ? "null" : after);
+        if (mPreviousGetPosts.equals(requestParams) && after != null) {
+            Ln.d("Duplicate Request Detected");
+            new NotifyRequestCompleted().execute();
+            return;
+        }
+
+        mPreviousGetPosts = requestParams;
 
         RedditUrl url = new RedditUrl.Builder(subreddit).age(age)
                                                         .category(category)
@@ -227,16 +240,6 @@ public class RedditService extends RESTService {
         reportIssue(context, Constants.REPORT_POST_URL, json);
     }
 
-    public static void reportImage(Context context, ImgurImageApi.ImgurImage image) {
-        String json = null;
-        if (image != null) {
-            Gson gson = new Gson();
-            json = gson.toJson(image);
-        }
-
-        reportIssue(context, Constants.REPORT_IMAGE_URL, json);
-    }
-
     private static void reportIssue(Context context, String url, String jsonData) {
         Intent intent = new Intent(context, RedditService.class);
         intent = getIntentBasics(intent);
@@ -273,6 +276,16 @@ public class RedditService extends RESTService {
         context.startService(intent);
     }
 
+    public static void reportImage(Context context, ImgurImageApi.ImgurImage image) {
+        String json = null;
+        if (image != null) {
+            Gson gson = new Gson();
+            json = gson.toJson(image);
+        }
+
+        reportIssue(context, Constants.REPORT_IMAGE_URL, json);
+    }
+
     @Override
     public void onRequestComplete(Intent result) {
         super.onRequestComplete(result);
@@ -285,6 +298,29 @@ public class RedditService extends RESTService {
         }
 
         redditResult.handleResponse(getApplicationContext());
+    }
+
+    public static class NotifyRequestCompleted extends SafeAsyncTask<Void> {
+        @Inject
+        Bus mBus;
+
+        protected NotifyRequestCompleted() {
+            Injector.inject(this);
+        }
+
+        /**
+         * Computes a result, or throws an exception if unable to do so.
+         *
+         * @return computed result
+         *
+         * @throws Exception
+         *     if unable to compute a result
+         */
+        @Override
+        public Void call() throws Exception {
+            mBus.post(new RequestCompletedEvent());
+            return null;
+        }
     }
 
     public static class GetNewPostsIfNeededTask extends SafeAsyncTask<Void> {
