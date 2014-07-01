@@ -34,7 +34,7 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
-        versionName "3.1.4"
+        versionName "3.1.5"
     }
 
     packagingOptions {
@@ -54,12 +54,12 @@ android {
     productFlavors {
         free {
             applicationId "com.wemakestuff.redditinpictures"
-            versionCode 22
+            versionCode 23
         }
 
         pro {
             applicationId "com.wemakestuff.redditinpictures.pro"
-            versionCode 22
+            versionCode 23
         }
     }
 
