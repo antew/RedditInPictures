@@ -24,9 +24,10 @@ import com.antew.redditinpictures.adapter.CursorPagerAdapterFree;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.ui.ImageDetailActivity;
 import com.antew.redditinpictures.library.util.AndroidUtil;
-import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.util.ConstsFree;
 import com.squareup.otto.Subscribe;
 
@@ -34,21 +35,11 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
     public static final String TAG = ImageDetailActivityFree.class.getSimpleName();
 
     @Override
-    public void handleVote(MenuItem item) {
-        showUpgradeDialog();
-    }
-    
-    private void showUpgradeDialog() {
-        DialogFragment upgrade = UpdateToFullVersionDialogFragment.newInstance();
-        upgrade.show(getSupportFragmentManager(), ConstsFree.DIALOG_UPGRADE);
-    }
-    
-    @Override
     public void onFinishUpgradeDialog() {
         if (!AndroidUtil.isUserAMonkey()) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
-            startActivity(intent);        
+            startActivity(intent);
         }
     }
 
@@ -57,9 +48,31 @@ public class ImageDetailActivityFree extends ImageDetailActivity implements Upda
         return new CursorPagerAdapterFree(getSupportFragmentManager(), null);
     }
 
+    @Override
+    public void handleVote(MenuItem item) {
+        showUpgradeDialog();
+    }
+
+    private void showUpgradeDialog() {
+        DialogFragment upgrade = UpdateToFullVersionDialogFragment.newInstance();
+        upgrade.show(getSupportFragmentManager(), ConstsFree.DIALOG_UPGRADE);
+    }
+
     @Subscribe
     @Override
     public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
         super.onDownloadImageComplete(event);
+    }
+
+    @Subscribe
+    @Override
+    public void requestInProgress(RequestInProgressEvent event) {
+        super.requestInProgress(event);
+    }
+
+    @Subscribe
+    @Override
+    public void requestCompleted(RequestCompletedEvent event) {
+        super.requestCompleted(event);
     }
 }

@@ -33,6 +33,8 @@ import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
 import com.antew.redditinpictures.library.event.DownloadImageEvent;
+import com.antew.redditinpictures.library.event.RequestCompletedEvent;
+import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.Vote;
@@ -198,27 +200,6 @@ public class ImageDetailActivity extends ImageViewerActivity
         return mSubreddit;
     }
 
-    protected void showLogin() {
-        // Only needs to be shown if they aren't currently logged in.
-        if (!RedditLoginInformation.isLoggedIn()) {
-            LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
-        }
-    }
-
-    public void handleVote(MenuItem item) {
-        if (!RedditLoginInformation.isLoggedIn()) {
-            showLogin();
-        } else {
-            int itemId = item.getItemId();
-            if (itemId == R.id.upvote) {
-                PostUtil.votePost(this, getAdapter().getPost(mPager.getCurrentItem()), Vote.UP);
-            } else if (itemId == R.id.downvote) {
-                PostUtil.votePost(this, getAdapter().getPost(mPager.getCurrentItem()), Vote.DOWN);
-            }
-        }
-    }
-
     /**
      * Get the URL of the current image in the ViewPager.
      *
@@ -255,13 +236,29 @@ public class ImageDetailActivity extends ImageViewerActivity
         mBus.post(new DownloadImageEvent(postData.getPermalink(), filename));
     }
 
-    public boolean isRequestInProgress() {
-        return mRequestInProgress;
+    public void handleVote(MenuItem item) {
+        if (!RedditLoginInformation.isLoggedIn()) {
+            showLogin();
+        } else {
+            int itemId = item.getItemId();
+            if (itemId == R.id.upvote) {
+                PostUtil.votePost(this, getAdapter().getPost(mPager.getCurrentItem()), Vote.UP);
+            } else if (itemId == R.id.downvote) {
+                PostUtil.votePost(this, getAdapter().getPost(mPager.getCurrentItem()), Vote.DOWN);
+            }
+        }
     }
 
-    public void setRequestInProgress(boolean requestInProgress) {
-        mRequestInProgress = requestInProgress;
-        setSupportProgressBarIndeterminateVisibility(requestInProgress);
+    protected void showLogin() {
+        // Only needs to be shown if they aren't currently logged in.
+        if (!RedditLoginInformation.isLoggedIn()) {
+            LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
+            loginFragment.show(getSupportFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
+        }
+    }
+
+    private CursorPagerAdapter getAdapter() {
+        return (CursorPagerAdapter) mAdapter;
     }
 
     public void displayVote() {
@@ -271,10 +268,6 @@ public class ImageDetailActivity extends ImageViewerActivity
                 displayVote(post.getVote());
             }
         }
-    }
-
-    private CursorPagerAdapter getAdapter() {
-        return (CursorPagerAdapter) mAdapter;
     }
 
     public void displayVote(Vote vote) {
@@ -310,11 +303,11 @@ public class ImageDetailActivity extends ImageViewerActivity
     public Loader<Cursor> onCreateLoader(int id, Bundle arg1) {
         switch (id) {
             case Constants.Loader.LOADER_REDDIT:
-            return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, // uri
-                                    null,                                  // projection
-                                    "subreddit = ?",                       // selection
-                                    new String[] { mSubreddit },      // selectionArgs[]
-                                    RedditContract.Posts.DEFAULT_SORT);    // sort
+                return new CursorLoader(this, RedditContract.RedditData.CONTENT_URI, // uri
+                                        null,                                  // projection
+                                        "subreddit = ?",                       // selection
+                                        new String[] { mSubreddit },      // selectionArgs[]
+                                        RedditContract.Posts.DEFAULT_SORT);    // sort
             case Constants.Loader.LOADER_LOGIN:
                 return new CursorLoader(this, RedditContract.Login.CONTENT_URI, null, null, null, RedditContract.Login.DEFAULT_SORT);
             case Constants.Loader.LOADER_POSTS:
@@ -399,10 +392,23 @@ public class ImageDetailActivity extends ImageViewerActivity
                 setRequestInProgress(false);
                 getAdapter().swapCursor(cursor);
 
+                if (!mRequestInProgress && mPager.getCurrentItem() >= getAdapter().getCount() - POST_LOAD_OFFSET) {
+                    reachedCloseToLastPage();
+                }
+
                 moveViewPagerToPosition(getRequestedPage());
                 updateDisplay(mPager.getCurrentItem());
                 break;
         }
+    }
+
+    public boolean isRequestInProgress() {
+        return mRequestInProgress;
+    }
+
+    public void setRequestInProgress(boolean requestInProgress) {
+        mRequestInProgress = requestInProgress;
+        setSupportProgressBarIndeterminateVisibility(requestInProgress);
     }
 
     @Override
@@ -413,5 +419,17 @@ public class ImageDetailActivity extends ImageViewerActivity
     @Override
     public void onFinishLoginDialog(String username, String password) {
         RedditService.login(this, username, password);
+    }
+
+    @Subscribe
+    @Override
+    public void requestInProgress(RequestInProgressEvent event) {
+        super.requestInProgress(event);
+    }
+
+    @Subscribe
+    @Override
+    public void requestCompleted(RequestCompletedEvent event) {
+        super.requestCompleted(event);
     }
 }
