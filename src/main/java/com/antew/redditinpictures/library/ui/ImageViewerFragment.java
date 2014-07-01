@@ -50,6 +50,7 @@ import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.interfaces.SystemUiStateProvider;
 import com.antew.redditinpictures.library.model.ImageSize;
 import com.antew.redditinpictures.library.model.reddit.PostData;
+import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.ui.base.BaseFragment;
 import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.ImageUtil;
@@ -88,6 +89,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
     protected SystemUiStateProvider mSystemUiStateProvider;
     protected boolean mFragmentVisibleToUser = false;
+    protected boolean mShowHighQualityImages = false;
     @InjectView(R.id.pb_progress)
     ProgressBar    mProgress;
     @InjectView(R.id.rl_post_information_wrapper)
@@ -294,6 +296,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
             hidePostDetails();
         }
 
+        mShowHighQualityImages = SharedPreferencesHelper.getShowHighQualityImages(getActivity());
+
         // Use the parent activity to load the image asynchronously into the ImageView (so a single
         // cache can be used over all pages in the ViewPager
         if (ImageViewerActivity.class.isInstance(getActivity())) {
@@ -354,6 +358,10 @@ public abstract class ImageViewerFragment extends BaseFragment {
                 mResolvedImageUrl = mResolvedImage.getSize(ImageSize.ORIGINAL);
             }
 
+            if (mShowHighQualityImages) {
+                mResolvedImageUrl = mResolvedImage.getSize(ImageSize.ORIGINAL);
+            }
+
             // Fallback to the URL if we can't resolve.
             if (Strings.isEmpty(mResolvedImageUrl)) {
                 mResolvedImageUrl = mResolvedImage.getUrl();
@@ -363,21 +371,38 @@ public abstract class ImageViewerFragment extends BaseFragment {
                 Picasso.with(getActivity()).load(R.drawable.loading_spinner_76).into(mImageView);
                 loadGifInWebView(mResolvedImageUrl);
             } else {
-                Picasso.with(getActivity())
-                       .load(Uri.parse(mResolvedImageUrl))
-                       .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
-                       .centerInside()
-                       .into(mImageView, new Callback() {
-                           @Override
-                           public void onSuccess() {
-                               hideProgress();
-                           }
+                if (mShowHighQualityImages) {
+                    Picasso.with(getActivity())
+                           .load(Uri.parse(mResolvedImageUrl))
+                           .into(mImageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            hideProgress();
+                        }
 
-                           @Override
-                           public void onError() {
-                               showImageError();
-                           }
-                       });
+                        @Override
+                        public void onError() {
+                            showImageError();
+                        }
+                    });
+                    mResolvedImageUrl = mResolvedImage.getSize(ImageSize.ORIGINAL);
+                } else {
+                    Picasso.with(getActivity())
+                           .load(Uri.parse(mResolvedImageUrl))
+                           .resize(mScreenSize.getWidth(), mScreenSize.getHeight())
+                           .centerInside()
+                           .into(mImageView, new Callback() {
+                               @Override
+                               public void onSuccess() {
+                                   hideProgress();
+                               }
+
+                               @Override
+                               public void onError() {
+                                   showImageError();
+                               }
+                           });
+                }
             }
         } catch (Exception e) {
             Ln.e(e, "Failed to load image");

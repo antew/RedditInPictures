@@ -60,17 +60,17 @@
         <activity
             android:name="com.antew.redditinpictures.library.preferences.RedditInPicturesPreferencesFragment"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.FullScreen"/>
+            android:theme="@style/AppTheme"/>
 
         <activity
             android:name="com.antew.redditinpictures.library.preferences.RedditInPicturesPreferences"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.FullScreen"/>
+            android:theme="@style/AppTheme"/>
 
         <activity
             android:name="com.antew.redditinpictures.library.ui.About"
             android:label="@string/about"
-            android:theme="@style/AppTheme.FullScreen"/>
+            android:theme="@style/AppTheme"/>
 
     </application>
 
