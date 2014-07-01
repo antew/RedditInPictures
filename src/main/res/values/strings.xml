@@ -127,7 +127,7 @@
 
     <!-- Shared Preferences Keys -->
     <string name="pref_show_nsfw_images">Show NSFW Images</string>
-    <string name="pref_load_high_quality_thumbnails">Load high quality thumbnails</string>
+    <string name="pref_load_high_quality_images">Load high quality images</string>
     <string name="pref_use_mobile_interface">Use Mobile Interface</string>
     <string name="pref_analytics_opt_in">Send Anonymous Usage Data</string>
     <string name="pref_about">about</string>
@@ -168,4 +168,5 @@
     <string name="share">Share</string>
     <string name="open">Open</string>
     <string name="report">Report</string>
+    <string name="load_high_quality_images_summary">By default we load smaller images to help speed up image load times when viewing large images. You can always load high quality images by turning this on. Turning this on will use more data and images will load more slowly since they are larger.</string>
 </resources>

@@ -33,9 +33,9 @@
             android:title="@string/pref_show_nsfw_images" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="@string/pref_load_high_quality_thumbnails"
-            android:summary="@string/uses_more_bandwidth"
-            android:title="@string/pref_load_high_quality_thumbnails" />
+            android:key="@string/pref_load_high_quality_images"
+            android:summary="@string/load_high_quality_images_summary"
+            android:title="@string/pref_load_high_quality_images" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/reddit_in_pictures_options"
