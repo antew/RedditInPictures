@@ -25,6 +25,7 @@ import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
 import com.antew.redditinpictures.library.image.ImageResolver;
 import com.antew.redditinpictures.library.model.ImageSize;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkUrlFactory;
 import com.squareup.otto.Bus;
 import com.squareup.picasso.Picasso;
 import java.io.File;
@@ -114,7 +115,7 @@ public class ImageDownloader {
                     OkHttpClient client = new OkHttpClient();
                     InputStream in = null;
                     try {
-                        HttpURLConnection connection = client.open(new URL(resolvedUrl));
+                        HttpURLConnection connection = new OkUrlFactory(client).open(new URL(resolvedUrl));
                         in = connection.getInputStream();
 
                         byte[] buf = new byte[1024];
