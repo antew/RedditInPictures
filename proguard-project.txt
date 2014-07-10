@@ -1,28 +1,160 @@
-# To enable ProGuard in your project, edit project.properties
-# to define the proguard.config property as described in that file.
-#
-# Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in ${sdk.dir}/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the ProGuard
-# include property in project.properties.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+-libraryjars lib/admob-6.2.1.jar
+-libraryjars lib/libGoogleAnalyticsServices.jar
+-libraryjars lib/photoview-library-1.2.3.aar
 
-# Add any project specific keep options here:
+##---------------Begin: proguard configuration common for all Android apps ----------
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontskipnonpubliclibraryclassmembers
+-dontpreverify
+-verbose
+-dump class_files.txt
+-printseeds seeds.txt
+-printusage unused.txt
+-printmapping mapping.txt
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+-allowaccessmodification
+-keepattributes *Annotation*
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable
+-repackageclasses ''
 
-# Otto Configuration
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends android.content.ContentProvider
+-keep public class * extends android.app.backup.BackupAgentHelper
+-keep public class * extends android.preference.Preference
+-keep public class com.android.vending.licensing.ILicensingService
+-dontnote com.android.vending.licensing.ILicensingService
+
+# Explicitly preserve all serialization members. The Serializable interface
+# is only a marker interface, so it wouldn't save them.
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}
+
+# Preserve all native method names and the names of their classes.
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+-keepclasseswithmembernames class * {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+-keepclasseswithmembernames class * {
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+# Preserve static fields of inner classes of R classes that might be accessed
+# through introspection.
+-keepclassmembers class **.R$* {
+  public static <fields>;
+}
+
+# Preserve the special static methods that are required in all enumeration classes.
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+-keep public class * {
+    public protected *;
+}
+
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}
+##---------------End: proguard configuration common for all Android apps ----------
+-dontobfuscate
+-dontwarn javax.**
+-dontwarn sun.misc.**
+
+## Otto
 -keepclassmembers class ** {
     @com.squareup.otto.Subscribe public *;
     @com.squareup.otto.Produce public *;
 }
-# Picasso/OkHttp
+
+
+## Picasso/OkHttp
 -dontwarn com.squareup.okhttp.**
+
+
+## Dagger
+-dontwarn dagger.internal.codegen.**
+#Keep the annotated things annotated
+-keepattributes *Annotation*
+
+#Keep the dagger annotation classes themselves
+-keep @interface dagger.*,javax.inject.*
+
+#Keep the Modules intact
+-keep @dagger.Module class *
+
+#-Keep the fields annotated with @Inject of any class that is not deleted.
+-keepclassmembers class * {
+  @javax.inject.* <fields>;
+}
+
+#-Keep the names of classes that have fields annotated with @Inject and the fields themselves.
+-keepclasseswithmembernames class * {
+  @javax.inject.* <fields>;
+  @javax.inject.* <init>(...);
+}
+
+# Keep the generated classes by dagger-compile
+-keep class **$$ModuleAdapter
+-keep class **$$InjectAdapter
+-keep class **$$StaticInjection
+
+## Gson
+# Gson uses generic type information stored in a class file when working with fields. Proguard
+# removes such information by default, so configure it to keep all of it.
+-keepattributes Signature
+# Gson specific classes
+-keep class sun.misc.Unsafe { *; }
+#-keep class com.google.gson.stream.** { *; }
+
+# Application classes that will be serialized/deserialized over Gson
+-keep class com.google.gson.examples.android.model.** { *; }
+
+## ActionBarSherlock
+-keep class android.support.v4.app.** { *; }
+-keep interface android.support.v4.app.** { *; }
+-keep class com.actionbarsherlock.** { *; }
+-keep interface com.actionbarsherlock.** { *; }
+
+-keepattributes *Annotation*
+
+## Butter Knife
+-dontwarn butterknife.internal.**
+-keep class **$$ViewInjector { *; }
+-keepnames class * { @butterknife.InjectView *;}
+
+## PhotoView
+-keep class uk.co.senab.photoview.** { *; }
+-keep interface uk.co.senab.photoview.** { *; }
+
+-keepattributes *Annotation*
+
+## AdMob
+-keep public class com.google.android.gms.ads.** {
+    public *;
+}
+
+-keep public class com.google.ads.** {
+    public *;
+}
+
+-keep class com.google.ads.** # Don't proguard AdMob classes
+-dontwarn com.google.ads.**
