@@ -17,8 +17,9 @@ package com.antew.redditinpictures.library.imgur;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import com.antew.redditinpictures.library.model.ImageSize;
-import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.antew.redditinpictures.library.util.Ln;
 
 /**
  * Class used to parse the Imgur image JSON into POJOs
@@ -38,49 +39,37 @@ public class ImgurImageApi {
     private ImgurImage image;
 
     public static class ImgurImage implements Parcelable {
-        private Link  links;
-        private Image image;
+        Image  data;
+        String success;
+        int status;
 
-        public ImgurImage(Parcel in) {
-            links = in.readParcelable(Link.class.getClassLoader());
-            image = in.readParcelable(Image.class.getClassLoader());
+        public ImgurImage() {
         }
 
-        public Link getLinks() { return links; }
-
-        public Image getImage() { return image; }
-
-        @Override
-        public String toString() {
-            StringBuffer buf = new StringBuffer();
-            buf.append("Links: [ ImgurPage: "
-                       + r(links.getImgur_page())
-                       + ", LargeThumbnail: "
-                       + r(links.getLarge_thumbnail())
-                       + ", Original: "
-                       + r(links.getOriginal())
-                       + ", SmallSquare: "
-                       + r(links.getSmall_square())
-                       + "]");
-            return buf.toString();
+        private ImgurImage(Parcel in) {
+            this.data = in.readParcelable(Image.class.getClassLoader());
+            this.success = in.readString();
+            this.status = in.readInt();
         }
 
+        /**
+         * This method simply adds a null check on the {@link Image#getSize(com.antew.redditinpictures.library.model.ImageSize)},
+         * method, use it instead.
+         *
+         * @param size The image size to get
+         * @return The URL to the image of the specified size.
+         */
+        @Deprecated
         public String getSize(ImageSize size) {
-            String decoded = null;
-            if (links == null) {
+            if (data == null) {
                 return null;
             }
 
-            switch (size) {
-                case SMALL_SQUARE:
-                    decoded = links.getSmall_square();
-                case LARGE_THUMBNAIL:
-                    decoded = links.getLarge_thumbnail();
-                case ORIGINAL:
-                    decoded = links.getOriginal();
-            }
+            return data.getSize(size);
+        }
 
-            return decoded;
+        public Image getImage() {
+            return data;
         }
 
         @Override
@@ -90,13 +79,12 @@ public class ImgurImageApi {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeParcelable(links, 0);
-            dest.writeParcelable(image, 0);
+            dest.writeParcelable(this.data, 0);
+            dest.writeString(this.success);
+            dest.writeInt(this.status);
         }
 
         public static final Parcelable.Creator<ImgurImage> CREATOR = new Parcelable.Creator<ImgurImage>() {
-
-            @Override
             public ImgurImage createFromParcel(Parcel source) {
                 return new ImgurImage(source);
             }
@@ -104,63 +92,245 @@ public class ImgurImageApi {
             public ImgurImage[] newArray(int size) {
                 return new ImgurImage[size];
             }
-
-            ;
         };
     }
 
-    private static String r(String res) {
-        return res == null ? "null" : res;
-    }
-
     public static class Image implements Parcelable {
-        private String  title;
-        private String  caption;
-        private String  hash;
-        private String  datetime;
-        private String  type;
-        private boolean animated;
-        private int     width;
-        private int     height;
-        private int     size;
-        private long    views;
-        private long    bandwidth;
+        String  id;
+        String  title;
+        String  description;
+        String  datetime;
+        String  type;
+        boolean animated;
+        int     width;
+        int     height;
+        int     size;
+        long    views;
+        long    bandwidth;
+        String  deleteHash;
+        String  section;
+        String  link;
 
-        public Image(Parcel source) {
-            title = source.readString();
-            caption = source.readString();
-            hash = source.readString();
-            datetime = source.readString();
-            type = source.readString();
-            animated = source.readByte() == 1;
-            width = source.readInt();
-            height = source.readInt();
-            size = source.readInt();
-            views = source.readLong();
-            bandwidth = source.readLong();
+        public Image() {
         }
 
-        public String getTitle() { return title; }
+        private Image(Parcel in) {
+            this.id = in.readString();
+            this.title = in.readString();
+            this.description = in.readString();
+            this.datetime = in.readString();
+            this.type = in.readString();
+            this.animated = in.readByte() != 0;
+            this.width = in.readInt();
+            this.height = in.readInt();
+            this.size = in.readInt();
+            this.views = in.readLong();
+            this.bandwidth = in.readLong();
+            this.deleteHash = in.readString();
+            this.section = in.readString();
+            this.link = in.readString();
+        }
 
-        public String getCaption() { return caption; }
+        public String getSize(ImageSize size) {
+            String decoded = null;
+            if (link == null) {
+                return null;
+            }
 
-        public String getHash() { return hash; }
+            String linkWithoutExtension = link.substring(0, link.lastIndexOf('.') - 1);
+            String extension = link.substring(link.lastIndexOf('.'));
 
-        public String getDatetime() { return datetime; }
+            switch (size) {
+                case SMALL_SQUARE:
+                    decoded = linkWithoutExtension + ImgurImageSize.SMALL_SQURE + extension;
+                case LARGE_THUMBNAIL:
+                    decoded = linkWithoutExtension + ImgurImageSize.LARGE_THUMBNAIL + extension;
+                case ORIGINAL:
+                    decoded = link;
+            }
 
-        public String getType() { return type; }
+            return decoded;
+        }
 
-        public boolean isAnimated() { return animated; }
+        public String getId() {
+            return id;
+        }
 
-        public int getWidth() { return width; }
+        public void setId(String id) {
+            this.id = id;
+        }
 
-        public int getHeight() { return height; }
+        public String getTitle() {
+            return title;
+        }
 
-        public int getSize() { return size; }
+        public void setTitle(String title) {
+            this.title = title;
+        }
 
-        public long getViews() { return views; }
+        public String getDescription() {
+            return description;
+        }
 
-        public long getBandwidth() { return bandwidth; }
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getDatetime() {
+            return datetime;
+        }
+
+        public void setDatetime(String datetime) {
+            this.datetime = datetime;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public boolean isAnimated() {
+            return animated;
+        }
+
+        public void setAnimated(boolean animated) {
+            this.animated = animated;
+        }
+
+        public int getWidth() {
+            return width;
+        }
+
+        public void setWidth(int width) {
+            this.width = width;
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
+        public void setHeight(int height) {
+            this.height = height;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public void setSize(int size) {
+            this.size = size;
+        }
+
+        public long getViews() {
+            return views;
+        }
+
+        public void setViews(long views) {
+            this.views = views;
+        }
+
+        public long getBandwidth() {
+            return bandwidth;
+        }
+
+        public void setBandwidth(long bandwidth) {
+            this.bandwidth = bandwidth;
+        }
+
+        public String getDeleteHash() {
+            return deleteHash;
+        }
+
+        public void setDeleteHash(String deleteHash) {
+            this.deleteHash = deleteHash;
+        }
+
+        public String getSection() {
+            return section;
+        }
+
+        public void setSection(String section) {
+            this.section = section;
+        }
+
+        public String getLink() {
+            return link;
+        }
+
+        public void setLink(String link) {
+            this.link = link;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Image image = (Image) o;
+
+            if (animated != image.animated) return false;
+            if (bandwidth != image.bandwidth) return false;
+            if (height != image.height) return false;
+            if (size != image.size) return false;
+            if (views != image.views) return false;
+            if (width != image.width) return false;
+            if (datetime != null ? !datetime.equals(image.datetime) : image.datetime != null)
+                return false;
+            if (deleteHash != null ? !deleteHash.equals(image.deleteHash) : image.deleteHash != null)
+                return false;
+            if (description != null ? !description.equals(image.description) : image.description != null)
+                return false;
+            if (id != null ? !id.equals(image.id) : image.id != null) return false;
+            if (link != null ? !link.equals(image.link) : image.link != null) return false;
+            if (section != null ? !section.equals(image.section) : image.section != null)
+                return false;
+            if (title != null ? !title.equals(image.title) : image.title != null) return false;
+            if (type != null ? !type.equals(image.type) : image.type != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = id != null ? id.hashCode() : 0;
+            result = 31 * result + (title != null ? title.hashCode() : 0);
+            result = 31 * result + (description != null ? description.hashCode() : 0);
+            result = 31 * result + (datetime != null ? datetime.hashCode() : 0);
+            result = 31 * result + (type != null ? type.hashCode() : 0);
+            result = 31 * result + (animated ? 1 : 0);
+            result = 31 * result + width;
+            result = 31 * result + height;
+            result = 31 * result + size;
+            result = 31 * result + (int) (views ^ (views >>> 32));
+            result = 31 * result + (int) (bandwidth ^ (bandwidth >>> 32));
+            result = 31 * result + (deleteHash != null ? deleteHash.hashCode() : 0);
+            result = 31 * result + (section != null ? section.hashCode() : 0);
+            result = 31 * result + (link != null ? link.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Image{" +
+                    "id='" + id + '\'' +
+                    ", title='" + title + '\'' +
+                    ", description='" + description + '\'' +
+                    ", datetime='" + datetime + '\'' +
+                    ", type='" + type + '\'' +
+                    ", animated=" + animated +
+                    ", width=" + width +
+                    ", height=" + height +
+                    ", size=" + size +
+                    ", views=" + views +
+                    ", bandwidth=" + bandwidth +
+                    ", deleteHash='" + deleteHash + '\'' +
+                    ", section='" + section + '\'' +
+                    ", link='" + link + '\'' +
+                    '}';
+        }
 
         @Override
         public int describeContents() {
@@ -169,22 +339,23 @@ public class ImgurImageApi {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(title);
-            dest.writeString(caption);
-            dest.writeString(hash);
-            dest.writeString(datetime);
-            dest.writeString(type);
-            dest.writeByte(AndroidUtil.parcelBoolean(animated));
-            dest.writeInt(width);
-            dest.writeInt(height);
-            dest.writeInt(size);
-            dest.writeLong(views);
-            dest.writeLong(bandwidth);
+            dest.writeString(this.id);
+            dest.writeString(this.title);
+            dest.writeString(this.description);
+            dest.writeString(this.datetime);
+            dest.writeString(this.type);
+            dest.writeByte(animated ? (byte) 1 : (byte) 0);
+            dest.writeInt(this.width);
+            dest.writeInt(this.height);
+            dest.writeInt(this.size);
+            dest.writeLong(this.views);
+            dest.writeLong(this.bandwidth);
+            dest.writeString(this.deleteHash);
+            dest.writeString(this.section);
+            dest.writeString(this.link);
         }
 
         public static final Parcelable.Creator<Image> CREATOR = new Parcelable.Creator<Image>() {
-
-            @Override
             public Image createFromParcel(Parcel source) {
                 return new Image(source);
             }
@@ -192,57 +363,6 @@ public class ImgurImageApi {
             public Image[] newArray(int size) {
                 return new Image[size];
             }
-
-            ;
-        };
-    }
-
-    public static class Link implements Parcelable {
-        private String original;
-        private String imgur_page;
-        private String small_square;
-        private String large_thumbnail;
-
-        public Link(Parcel source) {
-            original = source.readString();
-            imgur_page = source.readString();
-            small_square = source.readString();
-            large_thumbnail = source.readString();
-        }
-
-        public String getOriginal() { return original; }
-
-        public String getImgur_page() { return imgur_page; }
-
-        public String getSmall_square() { return small_square; }
-
-        public String getLarge_thumbnail() { return large_thumbnail; }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(original);
-            dest.writeString(imgur_page);
-            dest.writeString(small_square);
-            dest.writeString(large_thumbnail);
-        }
-
-        public static final Parcelable.Creator<Link> CREATOR = new Parcelable.Creator<Link>() {
-
-            @Override
-            public Link createFromParcel(Parcel source) {
-                return new Link(source);
-            }
-
-            public Link[] newArray(int size) {
-                return new Link[size];
-            }
-
-            ;
         };
     }
 }

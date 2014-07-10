@@ -18,6 +18,7 @@ package com.antew.redditinpictures.adapter;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import com.antew.redditinpictures.library.adapter.ImgurAlbumPagerAdapter;
+import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.ui.ImgurAlbumFragmentFree;
 import java.util.List;
@@ -29,12 +30,12 @@ import java.util.List;
  */
 public class ImgurAlbumPagerAdapterFree extends ImgurAlbumPagerAdapter {
     
-    public ImgurAlbumPagerAdapterFree(FragmentManager fm, List<ImgurImage> images) {
+    public ImgurAlbumPagerAdapterFree(FragmentManager fm, List<ImgurImageApi.Image> images) {
         super(fm, images);
     }
 
     @Override
-    public Fragment getImgurAlbumFragment(ImgurImage i) {
+    public Fragment getImgurAlbumFragment(ImgurImageApi.Image i) {
         return ImgurAlbumFragmentFree.newInstance(i);
     }
 }

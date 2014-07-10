@@ -19,13 +19,18 @@ import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
 import com.antew.redditinpictures.library.imgur.ImgurApiCache;
+import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.model.ImageSize;
 import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
+import com.antew.redditinpictures.library.service.ImgurAuthenticationInterceptor;
+import com.antew.redditinpictures.library.service.ImgurServiceRetrofit;
 import com.antew.redditinpictures.library.util.Ln;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import retrofit.RestAdapter;
 
 public class ImgurAlbumType extends Image {
     private static final String URL_IMGUR_ALBUM_API = "http://api.imgur.com/2/album/";
@@ -82,13 +87,17 @@ public class ImgurAlbumType extends Image {
         } else {
             Ln.i("cache - resolveImgurAlbumFromHash - %s NOT found in cache", hash);
             try {
-                json = SynchronousNetworkApi.downloadUrl(newUrl);
+                final RestAdapter adapter = new RestAdapter.Builder().setEndpoint("https://api.imgur.com/3").setLogLevel(RestAdapter.LogLevel.FULL).setRequestInterceptor(new ImgurAuthenticationInterceptor()).build();
+                ImgurServiceRetrofit service = adapter.create(ImgurServiceRetrofit.class);
 
-                if (json == null) {
+                album = service.getAlbum(hash);
+
+
+                if (album == null) {
+                    Ln.e("Album was null for hash: " + hash);
                     return null;
                 }
 
-                album = gson.fromJson(json, ImgurAlbumApi.class);
                 ImgurApiCache.getInstance().addImgurAlbum(hash, album);
             } catch (JsonSyntaxException e) {
                 Ln.e(e, "resolveImgurAlbumFromHash");
@@ -106,7 +115,7 @@ public class ImgurAlbumType extends Image {
             mAlbum = resolve();
         }
 
-        ImgurImage imgurImage = null;
+        ImgurImageApi.Image imgurImage = null;
         String decodedUrl = null;
 
         boolean isValidImage = mAlbum != null && mAlbum.getImages() != null && mAlbum.getImages().get(0) != null;
@@ -130,6 +139,11 @@ public class ImgurAlbumType extends Image {
 
         return resolve();
     }
+
+    public Album getAlbumFromCache() {
+        return mAlbum;
+    }
+
 
     @Override
     public String getRegexForUrlMatching() {

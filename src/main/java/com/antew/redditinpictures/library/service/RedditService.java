@@ -273,7 +273,7 @@ public class RedditService extends RESTService {
         context.startService(intent);
     }
 
-    public static void reportImage(Context context, ImgurImageApi.ImgurImage image) {
+    public static void reportImage(Context context, ImgurImageApi.Image image) {
         String json = null;
         if (image != null) {
             Gson gson = new Gson();

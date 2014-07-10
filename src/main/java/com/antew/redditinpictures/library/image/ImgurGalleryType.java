@@ -148,7 +148,7 @@ public class ImgurGalleryType extends Image {
 
         String returnVal = null;
         if (gallery.isImgurImage()) {
-            returnVal = gallery.getImgurImage().getSize(size);
+            returnVal = gallery.getImgurImage().getImage().getSize(size);
         } else if (gallery.isImgurAlbum()) {
             returnVal = gallery.getImgurAlbum().getImages().get(0).getSize(size);
         }

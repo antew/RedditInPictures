@@ -22,9 +22,13 @@ import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.model.ImageSize;
 import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.network.SynchronousNetworkApi;
+import com.antew.redditinpictures.library.service.ImgurAuthenticationInterceptor;
+import com.antew.redditinpictures.library.service.ImgurServiceRetrofit;
 import com.antew.redditinpictures.library.util.Ln;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import retrofit.RestAdapter;
 
 public class ImgurImageType extends Image {
     private static final String     URL_IMGUR_IMAGE_API = "http://api.imgur.com/2/image/";
@@ -73,13 +77,18 @@ public class ImgurImageType extends Image {
         } else {
             Ln.i("cache - resolveImgurImageFromHash - %s NOT found in cache", hash);
             try {
-                json = SynchronousNetworkApi.downloadUrl(apiUrl);
+                final RestAdapter adapter = new RestAdapter.Builder().setEndpoint("https://api.imgur.com/3").setLogLevel(RestAdapter.LogLevel.FULL).setRequestInterceptor(new ImgurAuthenticationInterceptor()).build();
+                ImgurServiceRetrofit service = adapter.create(ImgurServiceRetrofit.class);
 
-                if (json == null) {
-                    return null;
+                ImgurImage image = service.getImage(hash);
+
+                if (image == null) {
+                    Ln.e("Image was null for hash: " + hash);
                 }
 
-                imgurImageApi = gson.fromJson(json, ImgurImageApi.class);
+                imgurImageApi = new ImgurImageApi();
+                imgurImageApi.setImage(image);
+
                 ImgurApiCache.getInstance().addImgurImage(hash, imgurImageApi);
             } catch (JsonSyntaxException e) {
                 Ln.e(e, "resolveImgurImageFromHash");

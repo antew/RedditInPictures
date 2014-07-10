@@ -20,6 +20,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
+
+import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.Image;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.model.ImageSize;
@@ -34,7 +36,7 @@ import com.squareup.picasso.Picasso;
  */
 public class ImgurAlbumFragment extends ImageViewerFragment {
     public static final String TAG = "ImgurAlbumFragment";
-    private ImgurImage mImage;
+    private Image mImage;
 
     /**
      * Empty constructor as per the Fragment documentation
@@ -47,7 +49,7 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
      *
      * @return A new instance of ImageDetailFragment with imageNum extras
      */
-    public static Fragment newInstance(ImgurImage image) {
+    public static Fragment newInstance(ImgurImageApi.Image image) {
         final Fragment f = new ImgurAlbumFragment();
         final Bundle args = new Bundle();
         args.putParcelable(IMAGE_DATA_EXTRA, image);
@@ -58,7 +60,7 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
 
     @Override
     public void loadExtras() {
-        mImage = getArguments() != null ? (ImgurImage) getArguments().getParcelable(IMAGE_DATA_EXTRA) : null;
+        mImage = getArguments() != null ? (Image) getArguments().getParcelable(IMAGE_DATA_EXTRA) : null;
     }
 
     @Override
@@ -130,21 +132,20 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
         // Hide the number of votes
         mPostVotes.setVisibility(View.GONE);
 
-        Image image = mImage.getImage();
         boolean hasTitle = hasTitle();
         boolean hasCaption = hasCaption();
 
         if (hasTitle || hasCaption) {
             if (hasTitle) {
-                Ln.i("Title - %s", image.getTitle());
-                mPostTitle.setText(Html.fromHtml(image.getTitle()));
+                Ln.i("Title - %s", mImage.getTitle());
+                mPostTitle.setText(Html.fromHtml(mImage.getTitle()));
             } else {
                 mPostTitle.setVisibility(View.GONE);
             }
 
             if (hasCaption) {
-                Ln.i("Caption - %s", image.getCaption());
-                mPostInformation.setText(Html.fromHtml(image.getCaption()));
+                Ln.i("Caption - %s", mImage.getDescription());
+                mPostInformation.setText(Html.fromHtml(mImage.getDescription()));
             } else {
                 mPostInformation.setVisibility(View.GONE);
             }
@@ -155,10 +156,10 @@ public class ImgurAlbumFragment extends ImageViewerFragment {
     }
 
     private boolean hasTitle() {
-        return mImage.getImage().getTitle() != null && !mImage.getImage().getTitle().trim().equals("");
+        return mImage != null && Strings.notEmpty(mImage.getTitle());
     }
 
     private boolean hasCaption() {
-        return mImage.getImage().getCaption() != null && !mImage.getImage().getCaption().trim().equals("");
+        return mImage != null && Strings.notEmpty(mImage.getDescription());
     }
 }

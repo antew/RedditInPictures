@@ -55,11 +55,15 @@ android {
         free {
             applicationId "com.wemakestuff.redditinpictures"
             versionCode 25
+            buildConfigField "String", "IMGUR_CLIENT_ID", "\"$imgurClientId\""
+            buildConfigField "String", "IMGUR_CLIENT_SECRET", "\"$imgurClientSecret\""
         }
 
         pro {
             applicationId "com.wemakestuff.redditinpictures.pro"
             versionCode 25
+            buildConfigField "String", "IMGUR_CLIENT_ID", "\"$imgurClientId\""
+            buildConfigField "String", "IMGUR_CLIENT_SECRET", "\"$imgurClientSecret\""
         }
     }
 

@@ -22,10 +22,12 @@ import android.widget.Toast;
 import com.antew.redditinpictures.library.adapter.ImgurAlbumPagerAdapter;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
+import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.StringUtil;
+import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.squareup.otto.Subscribe;
 import java.util.List;
@@ -58,8 +60,8 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
     }
 
     @SuppressWarnings("unchecked")
-    protected List<ImgurImage> getImages() {
-        return (List<ImgurImage>) mImages;
+    protected List<ImgurImageApi.Image> getImages() {
+        return (List<ImgurImageApi.Image>) mImages;
     }
 
     @Override
@@ -92,26 +94,26 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
 
     @Override
     public String getUrlForSharing() {
-        ImgurImage image = getAdapter().getImage(mPager.getCurrentItem());
-        return image.getLinks().getImgur_page();
+        ImgurImageApi.Image image = getAdapter().getImage(mPager.getCurrentItem());
+        return image.getLink();
     }
 
     @Override
     protected Uri getPostUri() {
-        ImgurImage image = getAdapter().getImage(mPager.getCurrentItem());
-        return Uri.parse(image.getLinks().getImgur_page());
+        ImgurImageApi.Image image = getAdapter().getImage(mPager.getCurrentItem());
+        return Uri.parse(image.getLink());
     }
 
     @Override
     public String getFilenameForSave() {
         String name = super.getFilenameForSave();
         if (getAdapter() != null && mPager != null) {
-            ImgurImage p = getAdapter().getImage(mPager.getCurrentItem());
-            name = p.getImage().getHash();
-            if (!p.getImage().getTitle().equals("")) {
-                name = StringUtil.sanitizeFileName(p.getImage().getTitle());
-            } else if (!p.getImage().getCaption().equals("")) {
-                name = StringUtil.sanitizeFileName(p.getImage().getCaption());
+            ImgurImageApi.Image p = getAdapter().getImage(mPager.getCurrentItem());
+            name = p.getId();
+            if (!p.getTitle().equals("")) {
+                name = StringUtil.sanitizeFileName(p.getTitle());
+            } else if (Strings.notEmpty(p.getDescription())) {
+                name = StringUtil.sanitizeFileName(p.getDescription());
             }
         }
 
@@ -120,8 +122,8 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
 
     @Override
     public void onFinishSaveImageDialog(String filename) {
-        ImgurImage image = getAdapter().getImage(mPager.getCurrentItem());
-        mImageDownloader.downloadImage(image.getLinks().getOriginal(), filename);
+        ImgurImageApi.Image image = getAdapter().getImage(mPager.getCurrentItem());
+        mImageDownloader.downloadImage(image.getLink(), filename);
     }
 
     @Subscribe

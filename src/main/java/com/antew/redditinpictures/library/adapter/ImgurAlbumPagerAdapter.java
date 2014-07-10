@@ -18,6 +18,9 @@ package com.antew.redditinpictures.library.adapter;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
+
+import com.antew.redditinpictures.library.image.Image;
+import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.ui.ImgurAlbumFragment;
 import java.util.List;
@@ -28,9 +31,9 @@ import java.util.List;
  * memory at once but create/destroy them on the fly.
  */
 public class ImgurAlbumPagerAdapter extends FragmentStatePagerAdapter {
-    private List<ImgurImage> mImages;
+    private List<ImgurImageApi.Image> mImages;
 
-    public ImgurAlbumPagerAdapter(FragmentManager fm, List<ImgurImage> images) {
+    public ImgurAlbumPagerAdapter(FragmentManager fm, List<ImgurImageApi.Image> images) {
         super(fm);
         mImages = images;
     }
@@ -52,7 +55,7 @@ public class ImgurAlbumPagerAdapter extends FragmentStatePagerAdapter {
      *
      * @return The {@link ImgurImage} at the input position
      */
-    public ImgurImage getImage(int position) {
+    public ImgurImageApi.Image getImage(int position) {
         if (mImages == null) {
             return null;
         } else if (position < 0 || position > mImages.size()) {
@@ -75,7 +78,7 @@ public class ImgurAlbumPagerAdapter extends FragmentStatePagerAdapter {
      *
      * @return A new {@link ImgurAlbumFragment} for the input {@link ImgurImage}
      */
-    public Fragment getImgurAlbumFragment(ImgurImage i) {
+    public Fragment getImgurAlbumFragment(ImgurImageApi.Image i) {
         return ImgurAlbumFragment.newInstance(i);
     }
 }

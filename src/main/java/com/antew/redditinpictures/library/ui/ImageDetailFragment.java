@@ -181,7 +181,7 @@ public class ImageDetailFragment extends ImageViewerFragment {
                     }
                 }
 
-                if (mAlbum != null && mAlbum.getImages().size() > 1) {
+                if (mAlbum != null && mAlbum.getImages() != null && mAlbum.getImages().size() > 1) {
                     mBtnViewGallery.post(new Runnable() {
                         @Override
                         public void run() {
