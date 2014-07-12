@@ -65,7 +65,7 @@ public class ImgurGalleryType extends Image {
      *
      * @return A {@link SimpleImgurGallery} representing the image
      */
-    private static SimpleImgurGallery getImgurGalleryFromHash(String hash) {
+    private SimpleImgurGallery getImgurGalleryFromHash(String hash) {
         ImgurGallery gallery = null;
         SimpleImgurGallery simpleGallery = null;
         ImgurAlbumApi album = null;
@@ -80,12 +80,12 @@ public class ImgurGalleryType extends Image {
             String imageHash = gallery.getData().getImage().getHash();
 
             if (gallery.getData().getImage().isAlbum()) {
-                album = ImgurAlbumType.resolveImgurAlbumFromHash(imageHash);
+                album = new ImgurAlbumType(getUrl()).resolveImgurAlbumFromHash(imageHash);
                 if (album != null && album.getAlbum() != null) {
                     simpleGallery = new SimpleImgurGallery(album.getAlbum());
                 }
             } else {
-                image = ImgurImageType.resolveImgurImageFromHash(imageHash);
+                image = new ImgurImageType(getUrl()).resolveImgurImageFromHash(hash);
                 if (image != null && image.getImage() != null) {
                     simpleGallery = new SimpleImgurGallery(image);
                 }
@@ -106,12 +106,12 @@ public class ImgurGalleryType extends Image {
                 String imageHash = gallery.getData().getImage().getHash();
 
                 if (gallery.getData().getImage().isAlbum()) {
-                    album = ImgurAlbumType.resolveImgurAlbumFromHash(imageHash);
+                    album = new ImgurAlbumType(getUrl()).resolveImgurAlbumFromHash(imageHash);
                     if (album != null && album.getAlbum() != null) {
                         simpleGallery = new SimpleImgurGallery(album.getAlbum());
                     }
                 } else {
-                    image = ImgurImageType.resolveImgurImageFromHash(imageHash);
+                    image = new ImgurImageType(getUrl()).resolveImgurImageFromHash(imageHash);
                     if (image != null && image.getImage() != null) {
                         simpleGallery = new SimpleImgurGallery(image);
                     }

@@ -16,6 +16,7 @@
 package com.antew.redditinpictures.library.image;
 
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.Injector;
 import com.antew.redditinpictures.library.imgur.ImgurApiCache;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
@@ -28,15 +29,20 @@ import com.antew.redditinpictures.library.util.Ln;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import javax.inject.Inject;
+
 import retrofit.RestAdapter;
 
 public class ImgurImageType extends Image {
-    private static final String     URL_IMGUR_IMAGE_API = "http://api.imgur.com/2/image/";
     private static final String     URL_REGEX           = "imgur.com/(?:gallery/)?([A-Za-z0-9]+)";
     private              ImgurImage mImgurImage         = null;
 
+    @Inject
+    ImgurServiceRetrofit imgurService;
+
     public ImgurImageType(String url) {
         super(url);
+        Injector.inject(this);
         mImgurImage = resolve();
     }
 
@@ -59,28 +65,24 @@ public class ImgurImageType extends Image {
      *
      * @return An {@link ImgurImage} representing the image
      */
-    public static ImgurImage resolveImgurImageFromHash(String hash) {
+    public ImgurImage resolveImgurImageFromHash(String hash) {
         if (hash == null) {
             Ln.e("Received null hash in resolveImgurImageFromHash");
             return null;
         }
 
-        Gson gson = new Gson();
-        String json = null;
         ImgurImageApi imgurImageApi = null;
         ImgurImage imgurImage = null;
 
-        String apiUrl = URL_IMGUR_IMAGE_API + hash + Constants.JSON;
+        // For one reason or another Imgur sends API responses with no-cache headers
+        // so we have our own cache here
         if (ImgurApiCache.getInstance().containsImgurImage(hash)) {
             Ln.i("cache - resolveImgurImageFromHash - %s found in cache", hash);
             imgurImageApi = ImgurApiCache.getInstance().getImgurImage(hash);
         } else {
             Ln.i("cache - resolveImgurImageFromHash - %s NOT found in cache", hash);
             try {
-                final RestAdapter adapter = new RestAdapter.Builder().setEndpoint("https://api.imgur.com/3").setLogLevel(RestAdapter.LogLevel.FULL).setRequestInterceptor(new ImgurAuthenticationInterceptor()).build();
-                ImgurServiceRetrofit service = adapter.create(ImgurServiceRetrofit.class);
-
-                ImgurImage image = service.getImage(hash);
+                ImgurImage image = imgurService.getImage(hash);
 
                 if (image == null) {
                     Ln.e("Image was null for hash: " + hash);
