@@ -19,24 +19,56 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ListView;
+
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.Injector;
+import com.antew.redditinpictures.library.adapter.RedditCommentAdapter;
 import com.antew.redditinpictures.library.event.DownloadImageEvent;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.image.ImgurGalleryType;
 import com.antew.redditinpictures.library.model.ImageType;
+import com.antew.redditinpictures.library.model.reddit.Children;
 import com.antew.redditinpictures.library.model.reddit.PostData;
+import com.antew.redditinpictures.library.service.RedditServiceRetrofit;
 import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import butterknife.InjectView;
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
-public class ImageDetailFragment extends ImageViewerFragment {
+public class ImageDetailFragment extends ImageViewerFragment implements Observer<List<Children>> {
+
+    @InjectView(R.id.lv_post_comments)
+    ListView mPostComments;
+
+    @Inject
+    RedditServiceRetrofit mRedditService;
+
+    private RedditCommentAdapter mCommentAdapter;
+
+    private Observable<List<Children>> mCommentsObservable;
+
     /**
      * Empty constructor as per the Fragment documentation
      */
@@ -60,6 +92,13 @@ public class ImageDetailFragment extends ImageViewerFragment {
         return fragment;
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = super.onCreateView(inflater, container, savedInstanceState);
+        mPostComments.setAdapter(mCommentAdapter);
+        return v;
+    }
+
     /**
      * Populate image using a url from extras, use the convenience factory method
      * {@link ImageDetailFragment#newInstance(com.antew.redditinpictures.library.model.reddit.PostData)} to create this fragment.
@@ -67,7 +106,16 @@ public class ImageDetailFragment extends ImageViewerFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Injector.inject(this);
         loadExtras();
+
+        mCommentsObservable = mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
+                                            .map(redditApis -> redditApis.get(1).getData().getChildren())
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread());
+
+        mCommentsObservable.subscribe(childrenList -> onNext(childrenList));
+        mCommentAdapter = new RedditCommentAdapter(getActivity(), new ArrayList<Children>());
     }
 
     public void loadExtras() {
@@ -225,5 +273,22 @@ public class ImageDetailFragment extends ImageViewerFragment {
         }
 
         mImageDownloader.downloadImage(mResolvedImageUrl, event.getFilename());
+    }
+
+    @Override
+    public void onCompleted() {
+
+    }
+
+    @Override
+    public void onError(Throwable e) {
+
+    }
+
+    @Override
+    public void onNext(List<Children> children) {
+        Ln.i("onNext: " + children.size() + " children.");
+        mCommentAdapter.swap(children);
+        mCommentAdapter.notifyDataSetChanged();
     }
 }

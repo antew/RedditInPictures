@@ -16,6 +16,7 @@
 package com.antew.redditinpictures.library.modules;
 
 import android.accounts.AccountManager;
+import android.app.Application;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -29,6 +30,7 @@ import android.util.DisplayMetrics;
 import android.view.inputmethod.InputMethodManager;
 import com.antew.redditinpictures.device.ScreenSize;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
+import com.antew.redditinpictures.library.adapter.RedditCommentAdapter;
 import com.antew.redditinpictures.library.annotation.ForApplication;
 import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.MainThreadBus;
@@ -40,13 +42,21 @@ import javax.inject.Singleton;
 /**
  * Module for all Android related provisions
  */
-@Module(library = true)
+@Module(
+        library = true,
+        includes = { NetworkModule.class, CommonModule.class },
+        injects = { RedditCommentAdapter.class }
+)
 public class RootModule {
     private final RedditInPicturesApplication application;
 
     public RootModule(RedditInPicturesApplication application) {
         this.application = application;
     }
+
+    @Provides
+    @Singleton
+    Application provideApplication() { return application; }
 
     @Provides
     @Singleton

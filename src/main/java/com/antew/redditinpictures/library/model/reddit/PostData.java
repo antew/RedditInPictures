@@ -22,45 +22,55 @@ import android.os.Parcelable;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.imgur.ImgurAlbumApi.Album;
+import com.antew.redditinpictures.library.imgur.ImgurImageApi;
 import com.antew.redditinpictures.library.imgur.ImgurImageApi.ImgurImage;
 import com.antew.redditinpictures.library.interfaces.ContentValuesOperation;
 import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.util.AndroidUtil;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class PostData implements Parcelable, ContentValuesOperation {
 
-    private String     domain;
-    private String     banned_by;
-    private MediaEmbed media_embed;
-    private String     subreddit;
-    private String     selftext_html;
-    private String     selftext;
-    private Vote       likes;
-    private boolean    saved;
-    private String     id;
-    private boolean    clicked;
-    private String     title;
-    private int        num_comments;
-    private int        score;
-    private String     approved_by;
-    private boolean    over_18;
-    private boolean    hidden;
-    private String     thumbnail;
-    private String     subreddit_id;
-    private String     author_flair_css_class;
-    private int        downs;
-    private boolean    is_self;
-    private String     permalink;
-    private String     name;
-    private long       created;
-    private String     url;
-    private String     author_flair_text;
-    private String     author;
-    private long       created_utc;
-    private String     link_flair_text;
-    private String     decoded_url;
-    private ImgurImage image;
-    private Album      album;
+    String     domain;
+    String     banned_by;
+    MediaEmbed media_embed;
+    String     subreddit;
+    String     selftext_html;
+    String     selftext;
+    Vote       likes;
+    boolean    saved;
+    String     id;
+    boolean    clicked;
+    String     title;
+    int        num_comments;
+    int        score;
+    String     approved_by;
+    boolean    over_18;
+    boolean    hidden;
+    String     thumbnail;
+    String     subreddit_id;
+    String     author_flair_css_class;
+    int        downs;
+    boolean    is_self;
+    String     permalink;
+    String     name;
+    long       created;
+    String     url;
+    String     author_flair_text;
+    String     author;
+    long       created_utc;
+    String     link_flair_text;
+    String     decoded_url;
+    ImgurImage image;
+    Album      album;
+    String     body;
+    int        gilded;
+    boolean    scoreHidden;
+    RedditApi  replies;
+    @SerializedName("parentId")
+    String parentId;
 
     /**
      * Leaving media commented out for now. On some subreddits it seems to return an object, but on
@@ -343,6 +353,54 @@ public class PostData implements Parcelable, ContentValuesOperation {
 
     public void setUps(int ups) { this.ups = ups; }
 
+    public String getDecoded_url() {
+        return decoded_url;
+    }
+
+    public ImgurImage getImage() {
+        return image;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public int getGilded() {
+        return gilded;
+    }
+
+    public void setGilded(int gilded) {
+        this.gilded = gilded;
+    }
+
+    public boolean isScoreHidden() {
+        return scoreHidden;
+    }
+
+    public void setScoreHidden(boolean scoreHidden) {
+        this.scoreHidden = scoreHidden;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public RedditApi getReplies() {
+        return replies;
+    }
+
+    public void setReplies(RedditApi replies) {
+        this.replies = replies;
+    }
+
     @Override
     public ContentValues getContentValues() {
         ContentValues values = new ContentValues();
@@ -381,6 +439,7 @@ public class PostData implements Parcelable, ContentValuesOperation {
 
     public static PostData fromListViewProjection(Cursor cursor) {
         PostData postData = new PostData();
+        postData.id = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.POST_ID));
         postData.selftext = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.SELFTEXT));
         postData.title = cursor.getString(cursor.getColumnIndex(RedditContract.Posts.TITLE));
         postData.score = cursor.getInt(cursor.getColumnIndex(RedditContract.Posts.SCORE));

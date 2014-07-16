@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 buildscript {
-  repositories {
-    mavenCentral()
-  }
+    repositories {
+        mavenCentral()
+    }
 
   dependencies {
       classpath 'com.android.tools.build:gradle:0.12.+'
       classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.10.+'
+      classpath 'me.tatarka:gradle-retrolambda:2.1.0'
   }
 }
 
 apply plugin: 'android-sdk-manager'
 apply plugin: 'android'
+apply plugin: 'retrolambda'
 
 android {
     compileSdkVersion 19
@@ -67,16 +69,16 @@ android {
         abortOnError false
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://repo.commonsware.com.s3.amazonaws.com"
-    }
-    flatDir {
-        dirs 'lib'
-    }
+    maven { url 'https://repo.commonsware.com.s3.amazonaws.com' }
+    flatDir { dirs 'lib' }
 }
 
 dependencies {
@@ -84,12 +86,12 @@ dependencies {
     compile 'net.simonvt.menudrawer:menudrawer:3.0.+@aar'
     compile 'com.android.support:support-v4:19.1.+'
     compile 'com.android.support:support-v13:19.1.+'
-    compile "com.jakewharton:butterknife:5.1.+"
+    compile 'com.jakewharton:butterknife:5.1.+'
     compile 'com.squareup.picasso:picasso:2.3.+'
     compile 'com.squareup.okhttp:okhttp:2.0.+'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.+'
-    compile "com.squareup.dagger:dagger:1.2.+"
-    compile "com.squareup.dagger:dagger-compiler:1.2.+"
+    compile 'com.squareup.dagger:dagger:1.2.+'
+    compile 'com.squareup.dagger:dagger-compiler:1.2.+'
     compile 'com.squareup:otto:1.3.+'
     compile 'com.github.castorflex.smoothprogressbar:library:0.5.+'
     compile 'com.github.chrisbanes.photoview:photoview-library:1.2.+@aar'

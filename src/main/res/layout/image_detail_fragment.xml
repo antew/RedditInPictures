@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 /*
 ** Copyright 2014 Antew
 **
@@ -16,114 +15,152 @@
 ** limitations under the License.
 */
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/fragment_wrapper"
-                android:background="@drawable/background_holo_dark"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-    <ProgressBar
-        android:id="@+id/pb_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
-
-    <TextView
-        android:id="@+id/tv_error_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="@string/error_loading_image"
-        android:visibility="gone"/>
-
-    <Button
-        android:id="@+id/b_retry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Retry"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="10dp"
-        android:visibility="gone"
-        android:layout_below="@id/tv_error_message"/>
-
-    <uk.co.senab.photoview.PhotoView
-        android:id="@+id/iv_imageView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:contentDescription="@string/imageview_description"
-        android:focusableInTouchMode="true" />
-
-    <ViewStub
-        android:id="@+id/webview_stub"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="bottom"
-        android:inflatedId="@+id/webview_import"
-        android:layout="@layout/webview_overlay" />
-
-    <Button
-        android:id="@+id/btn_view_gallery"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="?android:attr/actionBarSize"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:text="View Gallery"
-        android:visibility="gone" />
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sliding_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_holo_dark"
+    android:gravity="bottom"
+    sothree:panelHeight="68dp"
+    sothree:shadowHeight="4dp">
 
     <RelativeLayout
-        android:id="@+id/rl_post_information_wrapper"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="?android:attr/actionBarSize"
-        android:background="@color/post_information_background"
-        android:paddingBottom="5dp">
+        android:id="@+id/fragment_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_post_votes"
+        <ProgressBar
+            android:id="@+id/pb_progress"
+            style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:drawableBottom="@drawable/arrow_down"
-            android:drawablePadding="5dp"
-            android:drawableTop="@drawable/arrow_up"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:text="12345"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:layout_centerInParent="true" />
 
         <TextView
-            android:id="@+id/tv_post_title"
+            android:id="@+id/tv_error_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/error_loading_image"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/b_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_error_message"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:text="Retry"
+            android:visibility="gone" />
+
+        <uk.co.senab.photoview.PhotoView
+            android:id="@+id/iv_imageView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:contentDescription="@string/imageview_description"
+            android:focusableInTouchMode="true" />
+
+        <ViewStub
+            android:id="@+id/webview_stub"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="bottom"
+            android:inflatedId="@+id/webview_import"
+            android:layout="@layout/webview_overlay" />
+
+        <Button
+            android:id="@+id/btn_view_gallery"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="?android:attr/actionBarSize"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="View Gallery"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:id="@+id/rl_post_information_wrapper"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_alignWithParentIfMissing="true"
-            android:layout_toRightOf="@id/tv_post_votes"
-            android:ellipsize="none"
-            android:paddingBottom="3dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:paddingTop="3dp"
-            android:textColor="@android:color/primary_text_dark"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="?android:attr/actionBarSize"
+            android:background="@color/post_information_background"
+            android:paddingBottom="5dp">
 
-        <TextView
-            android:id="@+id/tv_post_information"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/tv_post_title"
-            android:layout_alignWithParentIfMissing="true"
-            android:layout_below="@id/tv_post_title"
-            android:paddingBottom="3dp"
-            android:paddingLeft="5dp"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tv_post_votes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:drawableBottom="@drawable/arrow_down"
+                android:drawablePadding="5dp"
+                android:drawableTop="@drawable/arrow_up"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="12345"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_post_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_toRightOf="@id/tv_post_votes"
+                android:ellipsize="none"
+                android:paddingBottom="3dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="3dp"
+                android:textColor="@android:color/primary_text_dark"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_post_information"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/tv_post_title"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_below="@id/tv_post_title"
+                android:paddingBottom="3dp"
+                android:paddingLeft="5dp"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
     </RelativeLayout>
 
-</RelativeLayout>
+    <LinearLayout
+        android:id="@+id/ll_sliding_up_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:layout_marginTop="48dp"
+        sothree:panelHeight="68dp"
+        sothree:shadowHeight="4dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|top"
+            android:padding="10dp"
+            android:text="Show Comments"
+            android:layout_alignParentTop="true"/>
+
+        <ListView
+            android:id="@+id/lv_post_comments"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </ListView>
+
+    </LinearLayout>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

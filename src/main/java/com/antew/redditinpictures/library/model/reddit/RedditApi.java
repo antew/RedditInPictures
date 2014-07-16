@@ -43,6 +43,8 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
     private String        kind;
     private RedditApiData data;
 
+    public RedditApi() {}
+
     public RedditApi(Parcel source) {
         kind = source.readString();
         data = source.readParcelable(RedditApiData.class.getClassLoader());

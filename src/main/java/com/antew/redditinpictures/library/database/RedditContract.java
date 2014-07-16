@@ -19,6 +19,8 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import com.antew.redditinpictures.pro.BuildConfig;
 
+import retrofit.http.POST;
+
 public class RedditContract {
 
     public static final String CONTENT_AUTHORITY = "com.antew.redditinpictures." + BuildConfig.FLAVOR;
@@ -128,9 +130,9 @@ public class RedditContract {
 
         public static final String DEFAULT_SORT = BaseColumns._ID + " ASC";
 
-        public static final String[] GRIDVIEW_PROJECTION = new String[] { _ID, URL, THUMBNAIL, DOMAIN };
+        public static final String[] GRIDVIEW_PROJECTION = new String[] { _ID, POST_ID, URL, THUMBNAIL, DOMAIN };
         public static final String[] LISTVIEW_PROJECTION = new String[] {
-            _ID, URL, THUMBNAIL, TITLE, SCORE, SELFTEXT, COMMENTS, SUBREDDIT, DOMAIN, AUTHOR, VOTE, NAME, OVER_18, PERMALINK
+            _ID, POST_ID, URL, THUMBNAIL, TITLE, SCORE, SELFTEXT, COMMENTS, SUBREDDIT, DOMAIN, AUTHOR, VOTE, NAME, OVER_18, PERMALINK
         };
 
         public static Uri buildPostDataUri(long postNumber) {
