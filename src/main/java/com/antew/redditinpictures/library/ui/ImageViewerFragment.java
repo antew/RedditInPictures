@@ -56,7 +56,9 @@ import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
+import com.antew.redditinpictures.library.util.ViewUtil;
 import com.antew.redditinpictures.pro.R;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import javax.inject.Inject;
@@ -104,6 +106,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
     ViewStub       mViewStub;
     @InjectView(R.id.tv_post_votes)
     TextView       mPostVotes;
+
     /**
      * This BroadcastReceiver handles updating the score when a vote is cast or changed
      */
@@ -124,12 +127,19 @@ public abstract class ImageViewerFragment extends BaseFragment {
     };
     @InjectView(R.id.b_retry)
     Button          mRetry;
+
     @Inject
     ImageDownloader mImageDownloader;
+
     @InjectView(R.id.tv_error_message)
     TextView        mErrorMessage;
+
+    @InjectView(R.id.sliding_layout)
+    SlidingUpPanelLayout mSlidingUpPanel;
+
     @Inject
-    ScreenSize      mScreenSize;
+    ScreenSize mScreenSize;
+
     private boolean           mExitTasksEarly         = false;
     private boolean           mCancelClick            = false;
     private float             mDownXPos               = 0;
@@ -308,12 +318,19 @@ public abstract class ImageViewerFragment extends BaseFragment {
     public void showPostDetails() {
         if (shouldShowPostInformation()) {
             mPostInformationWrapper.setVisibility(View.VISIBLE);
-            mPostInformationWrapper.animate().setDuration(500).y(mActionBarHeight);
+            mPostInformationWrapper.animate().setDuration(100).y(0);
         }
+
+        mSlidingUpPanel.showPanel();
     }
 
     public void hidePostDetails() {
-        mPostInformationWrapper.animate().setDuration(500).y(-400);
+        // 400 as a safe default if we can't get the measured height
+        int postInfoHeight = mPostInformationWrapper.getMeasuredHeight() == 0 ? 400 : mPostInformationWrapper.getHeight();
+
+        // Negative y value since we want to animated it off the top of the screen
+        mPostInformationWrapper.animate().setDuration(100).y(-1 * postInfoHeight);
+        mSlidingUpPanel.hidePanel();
     }
 
     protected abstract boolean shouldShowPostInformation();

@@ -22,8 +22,9 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_holo_dark"
     android:gravity="bottom"
-    sothree:panelHeight="68dp"
-    sothree:shadowHeight="4dp">
+    sothree:panelHeight="50dp"
+    sothree:shadowHeight="3dp"
+    sothree:dragView="@+id/ll_sliding_up_panel_menu_view">
 
     <RelativeLayout
         android:id="@+id/fragment_wrapper"
@@ -141,18 +142,63 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="bottom"
-        android:orientation="vertical"
-        android:layout_marginTop="48dp"
-        sothree:panelHeight="68dp"
-        sothree:shadowHeight="4dp">
+        android:orientation="vertical">
 
-        <TextView
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center|top"
-            android:padding="10dp"
-            android:text="Show Comments"
-            android:layout_alignParentTop="true"/>
+            android:layout_height="2dp"
+            android:background="#34495E"/>
+
+        <LinearLayout
+            android:id="@id/ll_sliding_up_panel_menu_view"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@android:color/transparent"
+            android:weightSum="6">
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_action_save_dark"
+                android:background="?android:selectableItemBackground"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_action_share_dark"
+                android:background="?android:selectableItemBackground"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_action_upvote"
+                android:background="?android:selectableItemBackground"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_action_downvote"
+                android:background="?android:selectableItemBackground"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_action_globe_dark"
+                android:background="?android:selectableItemBackground"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_action_overflow_dark"
+                android:background="?android:selectableItemBackground"
+                android:layout_weight="1" />
+
+            </LinearLayout>
 
         <ListView
             android:id="@+id/lv_post_comments"

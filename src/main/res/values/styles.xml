@@ -24,8 +24,13 @@
     </style>
 
     <style name="AppTheme.FullScreen">
-        <item name="android:windowActionBarOverlay" tools:ignore="NewApi">true</item>
-        <item name="android:actionBarStyle" tools:ignore="NewApi">@style/TranslucentDarkActionBar</item>
+    <item name="android:windowActionBarOverlay" tools:ignore="NewApi">true</item>
+    <item name="android:actionBarStyle" tools:ignore="NewApi">@style/TranslucentDarkActionBar</item>
+    </style>
+
+    <style name="AppTheme.FullScreen.NoActionBar" parent="AppTheme.FullScreen">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 
     <style name="DarkActionBar" parent="@android:style/Widget.Holo.ActionBar">

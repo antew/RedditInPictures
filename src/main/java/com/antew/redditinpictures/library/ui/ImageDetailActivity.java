@@ -27,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
+
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.adapter.CursorPagerAdapter;
 import com.antew.redditinpictures.library.database.RedditContract;
@@ -54,6 +55,7 @@ import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.otto.Subscribe;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -107,13 +109,6 @@ public class ImageDetailActivity extends ImageViewerActivity
         }
 
         displayVote();
-
-        int count = getAdapter().getCount();
-        if (count > 0) {
-            getActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
-        } else {
-            getActionBar().setTitle(getString(R.string.reddit_in_pictures));
-        }
     }
 
     @Override

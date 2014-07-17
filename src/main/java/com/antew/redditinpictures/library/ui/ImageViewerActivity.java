@@ -102,10 +102,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      */
     protected TextView       mCrouton;
     /**
-     * The calculated height of the Action Bar
-     */
-    protected int            mActionBarHeight;
-    /**
      * The wrapper view
      */
     protected RelativeLayout mWrapper;
@@ -135,8 +131,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         registerLocalBroadcastReceivers();
         getExtras();
         initializeAdapter();
-        initializeActionBar();
-        initializeViewPager();
 
         invalidateOptionsMenu();
     }
@@ -168,32 +162,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         mPager.setPageMarginDrawable(R.drawable.background_holo_dark);
         mPager.setOffscreenPageLimit(2);
         mPager.setOnPageChangeListener(getViewPagerOnPageChangeListener());
-    }
-
-    /**
-     * Enable some additional newer visibility and ActionBar features to create a more
-     * immersive photo viewing experience.
-     * <p/>
-     * Initialize the mActionBarHeight variable.
-     */
-    private void initializeActionBar() {
-        final ActionBar actionBar = getActionBar();
-
-        // Hide title text and set home as up
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(R.string.reddit_in_pictures);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        // Calculate ActionBar height
-        TypedValue tv = new TypedValue();
-        if (getTheme() != null && getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-        }
-    }
-
-    private void initializeViewPager() {
-        // Hide and show the ActionBar as the visibility changes
-        mPager.setOnSystemUiVisibilityChangeListener(getOnSystemUiVisibilityChangeListener());
     }
 
     /**
@@ -231,20 +199,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         };
 
         return viewPagerOnPageChangeListener;
-    }
-
-    public OnSystemUiVisibilityChangeListener getOnSystemUiVisibilityChangeListener() {
-        return new OnSystemUiVisibilityChangeListener() {
-
-            @Override
-            public void onSystemUiVisibilityChange(int visibility) {
-                if ((visibility & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0) {
-                    getActionBar().hide();
-                } else {
-                    getActionBar().show();
-                }
-            }
-        };
     }
 
     /**
