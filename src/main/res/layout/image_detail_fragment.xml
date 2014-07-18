@@ -157,6 +157,7 @@
             android:weightSum="6">
 
             <ImageButton
+                android:id="@+id/save_image"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_action_save_dark"

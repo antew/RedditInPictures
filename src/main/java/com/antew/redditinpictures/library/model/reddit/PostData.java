@@ -72,6 +72,8 @@ public class PostData implements Parcelable, ContentValuesOperation {
     @SerializedName("parentId")
     String parentId;
 
+    public int depth;
+
     /**
      * Leaving media commented out for now. On some subreddits it seems to return an object, but on
      * others it returns a string. Here is an example of it returning a string from the "funny"

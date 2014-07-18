@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.antew.redditinpictures.library.Constants;
@@ -43,24 +44,29 @@ import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import butterknife.OnClick;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
-public class ImageDetailFragment extends ImageViewerFragment implements Observer<List<Children>> {
+public class ImageDetailFragment extends ImageViewerFragment implements Observer<List<PostData>> {
 
     @InjectView(R.id.lv_post_comments)
     ListView mPostComments;
+
+    @InjectView(R.id.save_image)
+    ImageButton mSaveImage;
 
     @Inject
     RedditServiceRetrofit mRedditService;
@@ -69,11 +75,24 @@ public class ImageDetailFragment extends ImageViewerFragment implements Observer
 
     private Observable<List<Children>> mCommentsObservable;
 
+    private List<PostData> mAllPosts = new LinkedList<PostData>();
     /**
      * Empty constructor as per the Fragment documentation
      */
     public ImageDetailFragment() {}
 
+    @OnClick(R.id.save_image)
+    public void saveImage() {
+        Observable<List<PostData>> postDataObservable;
+        postDataObservable = mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
+                .map(redditApis -> redditApis.get(1).getData().getChildren())
+                .flatMap(children -> Observable.from(children).map(child -> child.getData()))
+                .flatMap(postData -> Observable.just(flattenList((PostData) postData, 0)))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
+        postDataObservable.subscribe(postList -> onNext(postList));
+    }
     /**
      * Factory method to generate a new instance of the fragment given an image number.
      *
@@ -109,13 +128,23 @@ public class ImageDetailFragment extends ImageViewerFragment implements Observer
         Injector.inject(this);
         loadExtras();
 
-        mCommentsObservable = mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
-                                            .map(redditApis -> redditApis.get(1).getData().getChildren())
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread());
+        mCommentAdapter = new RedditCommentAdapter(getActivity(), new ArrayList<PostData>());
+    }
 
-        mCommentsObservable.subscribe(childrenList -> onNext(childrenList));
-        mCommentAdapter = new RedditCommentAdapter(getActivity(), new ArrayList<Children>());
+    public static List<PostData> flattenList(PostData p, int depth) {
+        List<PostData> posts = new LinkedList<PostData>();
+
+        p.depth = depth;
+        posts.add(p);
+
+        if (p.getReplies() != null && p.getReplies().getData() != null && p.getReplies().getData().getChildren() != null) {
+            List<Children> children = p.getReplies().getData().getChildren();
+            for (Children c : children) {
+                posts.addAll(flattenList(c.getData(), depth + 1));
+            }
+        }
+
+        return posts;
     }
 
     public void loadExtras() {
@@ -277,18 +306,16 @@ public class ImageDetailFragment extends ImageViewerFragment implements Observer
 
     @Override
     public void onCompleted() {
-
+        Ln.i("onComplete! PostData size = " + mAllPosts.size());
     }
 
     @Override
     public void onError(Throwable e) {
-
+        Ln.e(e, "onError");
     }
 
     @Override
-    public void onNext(List<Children> children) {
-        Ln.i("onNext: " + children.size() + " children.");
-        mCommentAdapter.swap(children);
-        mCommentAdapter.notifyDataSetChanged();
+    public void onNext(List<PostData> postData) {
+        mCommentAdapter.addAll(postData);
     }
 }

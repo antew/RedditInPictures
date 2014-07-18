@@ -20,58 +20,64 @@
     android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants">
 
-    <TextView
-        android:id="@+id/tv_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="10dp"
-        android:text="Bobjoe123"
-        android:textSize="12sp"
-        android:textColor="#BBE74C3C"
-        android:textStyle="bold" />
+    <RelativeLayout
+        android:id="@+id/rl_comment_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_comment_votes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/tv_username"
-        android:layout_marginRight="5dp"
-        android:layout_toRightOf="@id/tv_username"
-        android:drawableLeft="@drawable/circle_divider"
-        android:drawablePadding="5dp"
-        android:text="234 points"
-        android:textSize="12sp"
-        android:textColor="#FF1F3A93"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tv_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            android:text="Bobjoe123"
+            android:textColor="#BBE74C3C"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tv_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/tv_username"
-        android:layout_toRightOf="@id/tv_comment_votes"
-        android:drawableLeft="@drawable/circle_divider"
-        android:drawablePadding="5dp"
-        android:text="3 hours ago"
-        android:textSize="12sp"
-        android:textColor="#BB7E931F"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tv_comment_votes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/tv_username"
+            android:layout_marginRight="5dp"
+            android:layout_toRightOf="@id/tv_username"
+            android:drawableLeft="@drawable/circle_divider"
+            android:drawablePadding="5dp"
+            android:text="234 points"
+            android:textColor="#FF1F3A93"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_username"
+            android:layout_toRightOf="@id/tv_comment_votes"
+            android:drawableLeft="@drawable/circle_divider"
+            android:drawablePadding="5dp"
+            android:text="3 hours ago"
+            android:textColor="#BB7E931F"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
 
-    <TextView
-        android:id="@+id/tv_comment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/tv_username"
-        android:layout_below="@id/tv_username"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:textSize="14sp"
-        android:text="Some asinine comment goes here.  Bears are only slightly less deadly than wet floors." />
+        <TextView
+            android:id="@+id/tv_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tv_username"
+            android:layout_below="@id/tv_username"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:text="Some asinine comment goes here.  Bears are only slightly less deadly than wet floors."
+            android:textSize="14sp" />
 
+    </RelativeLayout>
 
 </RelativeLayout>

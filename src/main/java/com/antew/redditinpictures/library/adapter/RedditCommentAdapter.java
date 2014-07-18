@@ -17,20 +17,19 @@ package com.antew.redditinpictures.library.adapter;
 
 import android.content.Context;
 import android.text.Html;
-import android.text.Layout;
 import android.text.format.DateUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.antew.redditinpictures.library.Injector;
-import com.antew.redditinpictures.library.model.reddit.Children;
 import com.antew.redditinpictures.library.model.reddit.PostData;
+import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.commonsware.cwac.anddown.AndDown;
 
@@ -47,27 +46,27 @@ import butterknife.InjectView;
  * @author Antew
  */
 public class RedditCommentAdapter extends BaseAdapter {
-    private List<Children> mComments;
+    private List<PostData> mPostData;
     private final LayoutInflater mInflater;
 
     @Inject
     AndDown andDown;
 
-    public RedditCommentAdapter(Context context, List<Children> comments) {
+    public RedditCommentAdapter(Context context, List<PostData> postData) {
         mInflater = LayoutInflater.from(context);
-        mComments = comments;
+        this.mPostData = postData;
 
         Injector.inject(this);
     }
 
     @Override
     public int getCount() {
-        return mComments.size();
+        return mPostData.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mComments.get(position);
+        return mPostData.get(position);
     }
 
     @Override
@@ -87,7 +86,7 @@ public class RedditCommentAdapter extends BaseAdapter {
             holder = (ViewHolder) v.getTag();
         }
 
-        PostData post = mComments.get(position).getData();
+        PostData post = mPostData.get(position);
         holder.username.setText(post.getAuthor());
         holder.votes.setText(Integer.toString(post.getScore()) + " points");
         holder.date.setText(
@@ -98,22 +97,34 @@ public class RedditCommentAdapter extends BaseAdapter {
                         DateUtils.FORMAT_ABBREV_RELATIVE     // format
                 )
         );
-        holder.comment.setText(Html.fromHtml(andDown.markdownToHtml(post.getBody())));
+        if (Strings.notEmpty(post.getBody())) {
+            holder.comment.setText(Html.fromHtml(andDown.markdownToHtml(post.getBody())));
+        }
+
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.commentWrapper.getLayoutParams();
+        params.setMargins(50 * post.depth, params.topMargin, params.rightMargin, params.bottomMargin);
 
         return v;
     }
 
-    public void swap(List<Children> comments) {
-        mComments.clear();
-        mComments.addAll(comments);
+    public void addAll(List<PostData> postData) {
+        this.mPostData.addAll(postData);
+        Ln.i("After adding posts, adapter size = " + mPostData.size());
         notifyDataSetChanged();
     }
 
+    public void swap(List<PostData> postData) {
+        this.mPostData.clear();
+        addAll(postData);
+    }
+
     static class ViewHolder {
-        @InjectView(R.id.tv_username)      TextView username;
-        @InjectView(R.id.tv_date)          TextView date;
-        @InjectView(R.id.tv_comment_votes) TextView votes;
-        @InjectView(R.id.tv_comment)       TextView comment;
+        @InjectView(R.id.tv_username)        TextView  username;
+        @InjectView(R.id.tv_date)            TextView  date;
+        @InjectView(R.id.tv_comment_votes)   TextView  votes;
+        @InjectView(R.id.tv_comment)         TextView  comment;
+        @InjectView(R.id.rl_comment_wrapper)
+        RelativeLayout commentWrapper;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);
