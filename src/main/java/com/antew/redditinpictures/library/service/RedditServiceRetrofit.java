@@ -10,6 +10,6 @@ import rx.Observable;
 
 public interface RedditServiceRetrofit {
 
-    @GET("/{subreddit}/comments/{id}.json?limit=100")
+    @GET("/{subreddit}/comments/{id}.json?limit=200")
     Observable<List<RedditApi>> getComments(@Path("subreddit") String subreddit, @Path("id") String postId);
 }
