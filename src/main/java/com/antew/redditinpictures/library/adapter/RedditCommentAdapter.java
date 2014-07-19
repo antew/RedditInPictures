@@ -98,7 +98,7 @@ public class RedditCommentAdapter extends BaseAdapter {
                 )
         );
         if (Strings.notEmpty(post.getBody())) {
-            holder.comment.setText(Html.fromHtml(andDown.markdownToHtml(post.getBody())));
+            holder.comment.setText(Strings.trimTrailingWhitespace(Html.fromHtml(andDown.markdownToHtml(post.getBody()))));
         }
 
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.commentWrapper.getLayoutParams();

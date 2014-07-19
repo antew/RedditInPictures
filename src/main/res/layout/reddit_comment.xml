@@ -15,7 +15,7 @@
 ** limitations under the License.
 */
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants">
@@ -80,4 +80,4 @@
 
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>
