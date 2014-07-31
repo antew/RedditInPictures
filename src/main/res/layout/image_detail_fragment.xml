@@ -156,7 +156,7 @@
             android:weightSum="6">
 
             <ImageButton
-                android:id="@+id/save_image"
+                android:id="@+id/save_post"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_action_save_dark"
@@ -164,6 +164,7 @@
                 android:layout_weight="1" />
 
             <ImageButton
+                android:id="@+id/share_post"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_action_share_dark"
@@ -171,6 +172,7 @@
                 android:layout_weight="1" />
 
             <ImageButton
+                android:id="@+id/upvote"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_action_upvote"
@@ -178,6 +180,7 @@
                 android:layout_weight="1" />
 
             <ImageButton
+                android:id="@+id/downvote"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_action_downvote"
@@ -185,6 +188,7 @@
                 android:layout_weight="1" />
 
             <ImageButton
+                android:id="@+id/view_post"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_action_globe_dark"
@@ -192,9 +196,10 @@
                 android:layout_weight="1" />
 
             <ImageButton
+                android:id="@+id/report_image"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_action_overflow_dark"
+                android:src="@drawable/ic_action_warning_dark"
                 android:background="?android:selectableItemBackground"
                 android:layout_weight="1" />
 

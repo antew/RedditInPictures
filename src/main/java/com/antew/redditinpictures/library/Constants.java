@@ -23,6 +23,7 @@ public class Constants {
             public static final String MENU_DRAWER_ACTION    = "menu_drawer_action";
             public static final String SUBREDDIT_MENU_ACTION = "subreddit_menu_action";
             public static final String ACTION_BAR_ACTION     = "action_bar_action";
+            public static final String SLIDING_UP_PANEL      = "sliding_up_panel";
             public static final String POST_MENU_ACTION      = "post_menu_action";
             public static final String UI_ACTION             = "ui_action";
             public static final String LIST_UI_ACTION        = "list_ui_action";
@@ -162,7 +163,7 @@ public class Constants {
             public static final String REDDIT_SEARCH_SUBREDDITS_URL = REDDIT_BASE_URL + "/api/search_reddit_names.json";
             public static final String REDDIT_MY_SUBREDDITS_URL     = REDDIT_BASE_URL + "/subreddits/mine/subscriber.json";
             public static final String REDDIT_SESSION               = "reddit_session";
-            public static final String COMPACT_URL                  = "/.compact";
+            public static final String COMPACT_URL                  = ".compact";
         }
     }
 

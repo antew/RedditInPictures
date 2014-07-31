@@ -26,6 +26,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.antew.redditinpictures.library.Injector;
+import com.antew.redditinpictures.library.interfaces.Item;
+import com.antew.redditinpictures.library.model.reddit.Child;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.Ln;
@@ -46,13 +48,11 @@ import butterknife.InjectView;
  * @author Antew
  */
 public class RedditCommentAdapter extends BaseAdapter {
-    private List<PostData> mPostData;
+    private List<Child> mPostData;
     private final LayoutInflater mInflater;
 
-    @Inject
-    AndDown andDown;
 
-    public RedditCommentAdapter(Context context, List<PostData> postData) {
+    public RedditCommentAdapter(Context context, List<Child> postData) {
         mInflater = LayoutInflater.from(context);
         this.mPostData = postData;
 
@@ -75,59 +75,29 @@ public class RedditCommentAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
-        ViewHolder holder = null;
-        if (v == null) {
-            v = mInflater.inflate(R.layout.reddit_comment, parent, false);
-            holder = new ViewHolder(v);
-            v.setTag(holder);
-        } else {
-            holder = (ViewHolder) v.getTag();
-        }
-
-        PostData post = mPostData.get(position);
-        holder.username.setText(post.getAuthor());
-        holder.votes.setText(Integer.toString(post.getScore()) + " points");
-        holder.date.setText(
-                DateUtils.getRelativeTimeSpanString(
-                        (long) post.getCreated_utc() * 1000, // startTime
-                        System.currentTimeMillis(),          // endTime
-                        0L,                                  // minResolution
-                        DateUtils.FORMAT_ABBREV_RELATIVE     // format
-                )
-        );
-        if (Strings.notEmpty(post.getBody())) {
-            holder.comment.setText(Strings.trimTrailingWhitespace(Html.fromHtml(andDown.markdownToHtml(post.getBody()))));
-        }
-
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.commentWrapper.getLayoutParams();
-        params.setMargins(50 * post.depth, params.topMargin, params.rightMargin, params.bottomMargin);
-
-        return v;
+    public int getViewTypeCount() {
+        return Child.Type.values().length;
     }
 
-    public void addAll(List<PostData> postData) {
+    @Override
+    public int getItemViewType(int position) {
+        return mPostData.get(position).getType().ordinal();
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        return mPostData.get(position).getView(mInflater, convertView);
+    }
+
+    public void addAll(List<Child> postData) {
         this.mPostData.addAll(postData);
         Ln.i("After adding posts, adapter size = " + mPostData.size());
         notifyDataSetChanged();
     }
 
-    public void swap(List<PostData> postData) {
+    public void swap(List<Child> postData) {
         this.mPostData.clear();
         addAll(postData);
     }
 
-    static class ViewHolder {
-        @InjectView(R.id.tv_username)        TextView  username;
-        @InjectView(R.id.tv_date)            TextView  date;
-        @InjectView(R.id.tv_comment_votes)   TextView  votes;
-        @InjectView(R.id.tv_comment)         TextView  comment;
-        @InjectView(R.id.rl_comment_wrapper)
-        RelativeLayout commentWrapper;
-
-        public ViewHolder(View view) {
-            ButterKnife.inject(this, view);
-        }
-    }
 }

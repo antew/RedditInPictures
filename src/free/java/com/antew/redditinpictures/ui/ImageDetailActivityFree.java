@@ -31,27 +31,8 @@ import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.util.ConstsFree;
 import com.squareup.otto.Subscribe;
 
-public class ImageDetailActivityFree extends ImageDetailActivity implements UpdateToFullVersionDialogListener {
+public class ImageDetailActivityFree extends ImageDetailActivity {
     public static final String TAG = ImageDetailActivityFree.class.getSimpleName();
-
-    @Override
-    public void handleVote(MenuItem item) {
-        showUpgradeDialog();
-    }
-    
-    private void showUpgradeDialog() {
-        DialogFragment upgrade = UpdateToFullVersionDialogFragment.newInstance();
-        upgrade.show(getFragmentManager(), ConstsFree.DIALOG_UPGRADE);
-    }
-    
-    @Override
-    public void onFinishUpgradeDialog() {
-        if (!AndroidUtil.isUserAMonkey()) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
-            startActivity(intent);        
-        }
-    }
 
     @Override
     public FragmentStatePagerAdapter getPagerAdapter() {

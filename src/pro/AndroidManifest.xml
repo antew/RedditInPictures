@@ -39,7 +39,7 @@
             android:label="@string/app_name"
             android:parentActivityName="com.antew.redditinpictures.library.ui.RedditFragmentActivity"
             android:uiOptions="splitActionBarWhenNarrow"
-            android:theme="@style/AppTheme.FullScreen">
+            android:theme="@style/AppTheme.FullScreen.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.antew.redditinpictures.library.ui.RedditFragmentActivity"/>
@@ -50,7 +50,7 @@
             android:label="@string/app_name"
             android:parentActivityName="com.antew.redditinpictures.library.ui.ImageDetailActivity"
             android:uiOptions="splitActionBarWhenNarrow"
-            android:theme="@style/AppTheme.FullScreen">
+            android:theme="@style/AppTheme.FullScreen.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.antew.redditinpictures.library.ui.ImageDetailActivity"/>

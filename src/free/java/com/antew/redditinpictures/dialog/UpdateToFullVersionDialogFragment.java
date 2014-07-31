@@ -40,20 +40,21 @@ public class UpdateToFullVersionDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        Dialog dialog = new AlertDialog.Builder(getActivity()).setTitle(R.string.feature_not_available)
-                                                              .setMessage(R.string.upgrade_value_prop)
-                                                              .setPositiveButton(R.string.upgrade, new DialogInterface.OnClickListener() {
-                                                                  public void onClick(DialogInterface dialog, int whichButton) {
-                                                                      UpdateToFullVersionDialogListener activity = (UpdateToFullVersionDialogListener) getActivity();
-                                                                      activity.onFinishUpgradeDialog();
-                                                                  }
-                                                              })
-                                                              .setNegativeButton(R.string.no_thanks, new DialogInterface.OnClickListener() {
-                                                                  public void onClick(DialogInterface dialog, int whichButton) {
-                                                                      dialog.cancel();
-                                                                  }
-                                                              })
-                                                              .create();
+        Dialog dialog = new AlertDialog.Builder(getActivity())
+                                       .setTitle(R.string.feature_not_available)
+                                       .setMessage(R.string.upgrade_value_prop)
+                                       .setPositiveButton(R.string.upgrade, new DialogInterface.OnClickListener() {
+                                           public void onClick(DialogInterface dialog, int whichButton) {
+                                               UpdateToFullVersionDialogListener fragment = (UpdateToFullVersionDialogListener) getTargetFragment();
+                                               fragment.onFinishUpgradeDialog();
+                                           }
+                                       })
+                                       .setNegativeButton(R.string.no_thanks, new DialogInterface.OnClickListener() {
+                                           public void onClick(DialogInterface dialog, int whichButton) {
+                                               dialog.cancel();
+                                           }
+                                       })
+                                       .create();
 
         return dialog;
     }

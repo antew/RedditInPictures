@@ -37,7 +37,7 @@ public class RedditApiData implements Parcelable {
         }
     };
     private String         modhash;
-    private List<Children> children;
+    private List<Child>    children;
     private String         after;
     private String         before;
     private Date           retrievedDate;
@@ -46,9 +46,9 @@ public class RedditApiData implements Parcelable {
     private Age            age;
 
     public RedditApiData(Parcel source) {
-        children = new ArrayList<Children>();
+        children = new ArrayList<Child>();
         modhash = source.readString();
-        source.readList(children, Children.class.getClassLoader());
+        source.readList(children, Child.class.getClassLoader());
         after = source.readString();
         before = source.readString();
         retrievedDate = new Date(source.readLong());
@@ -57,13 +57,13 @@ public class RedditApiData implements Parcelable {
         age = Age.fromString(source.readString());
     }
 
-    public void addChildren(List<Children> children) {
+    public void addChildren(List<Child> children) {
         this.children.addAll(children);
     }
 
     public String getModhash() { return modhash; }
 
-    public List<Children> getChildren() { return children; }
+    public List<Child> getChildren() { return children; }
 
     public String getAfter() { return after; }
 
@@ -107,8 +107,8 @@ public class RedditApiData implements Parcelable {
 
     public List<PostData> getPosts() {
         List<PostData> posts = new ArrayList<PostData>(children.size());
-        for (Children child : children) {
-            posts.add(child.getData());
+        for (Child child : children) {
+            posts.add((PostData) child.getData());
         }
 
         return posts;

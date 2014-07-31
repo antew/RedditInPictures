@@ -109,8 +109,8 @@ public class SaveImageDialogFragment extends DialogFragment implements OnEditorA
      */
     private void saveImage() {
         if (!hasErrors()) {
-            SaveImageDialogListener activity = (SaveImageDialogListener) getActivity();
-            activity.onFinishSaveImageDialog(filename.getText().toString());
+            SaveImageDialogListener targetFragment = (SaveImageDialogListener) getTargetFragment();
+            targetFragment.onFinishSaveImageDialog(filename.getText().toString());
             this.dismiss();
         }
     }

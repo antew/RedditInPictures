@@ -26,8 +26,6 @@ import java.lang.reflect.Type;
 
 
 public class RedditApiDeserializer implements JsonDeserializer<RedditApi> {
-//    private static final Gson gson = new GsonBuilder().registerTypeAdapter(Vote.class, new VoteAdapter()).create();
-
     @Override
     public RedditApi deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
         if (element.isJsonPrimitive()) {

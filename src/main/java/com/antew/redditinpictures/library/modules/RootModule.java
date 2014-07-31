@@ -32,6 +32,8 @@ import com.antew.redditinpictures.device.ScreenSize;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.adapter.RedditCommentAdapter;
 import com.antew.redditinpictures.library.annotation.ForApplication;
+import com.antew.redditinpictures.library.model.reddit.Comment;
+import com.antew.redditinpictures.library.model.reddit.PostChild;
 import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.MainThreadBus;
 import com.squareup.otto.Bus;
@@ -45,7 +47,7 @@ import javax.inject.Singleton;
 @Module(
         library = true,
         includes = { NetworkModule.class, CommonModule.class },
-        injects = { RedditCommentAdapter.class }
+        injects = { RedditCommentAdapter.class, PostChild.class, Comment.class }
 )
 public class RootModule {
     private final RedditInPicturesApplication application;

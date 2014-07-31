@@ -38,9 +38,6 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Put the current page / total pages text in the ActionBar 
-        updateDisplay(mPager.getCurrentItem());
     }
 
     @Override
@@ -62,11 +59,6 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
         return (List<ImgurImage>) mImages;
     }
 
-    @Override
-    protected void updateDisplay(int position) {
-        getActionBar().setTitle(++position + "/" + getAdapter().getCount() + " - " + getString(R.string.reddit_in_pictures));
-    }
-
     /**
      * Called upon reaching the last page present in the ViewPager
      */
@@ -80,31 +72,22 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
      *
      * @return The JSON representation of the currently viewed object.
      */
-    @Override
     protected void reportCurrentItem() {
         RedditService.reportImage(this, getAdapter().getImage(mPager.getCurrentItem()));
     }
 
-    @Override
-    public String getSubreddit() {
-        return "ImgurAlbum";
-    }
-
-    @Override
     public String getUrlForSharing() {
         ImgurImage image = getAdapter().getImage(mPager.getCurrentItem());
         return image.getLinks().getImgur_page();
     }
 
-    @Override
     protected Uri getPostUri() {
         ImgurImage image = getAdapter().getImage(mPager.getCurrentItem());
         return Uri.parse(image.getLinks().getImgur_page());
     }
 
-    @Override
     public String getFilenameForSave() {
-        String name = super.getFilenameForSave();
+        String name = "";
         if (getAdapter() != null && mPager != null) {
             ImgurImage p = getAdapter().getImage(mPager.getCurrentItem());
             name = p.getImage().getHash();
@@ -116,12 +99,6 @@ public class ImgurAlbumActivity extends ImageViewerActivity {
         }
 
         return name;
-    }
-
-    @Override
-    public void onFinishSaveImageDialog(String filename) {
-        ImgurImage image = getAdapter().getImage(mPager.getCurrentItem());
-        mImageDownloader.downloadImage(image.getLinks().getOriginal(), filename);
     }
 
     @Subscribe

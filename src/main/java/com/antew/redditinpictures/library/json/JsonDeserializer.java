@@ -18,12 +18,18 @@ package com.antew.redditinpictures.library.json;
 import com.antew.redditinpictures.library.gson.RedditApiDeserializer;
 import com.antew.redditinpictures.library.gson.VoteAdapter;
 import com.antew.redditinpictures.library.model.Vote;
+import com.antew.redditinpictures.library.model.reddit.Child;
+import com.antew.redditinpictures.library.model.reddit.Comment;
 import com.antew.redditinpictures.library.model.reddit.JsonRedditApi;
+import com.antew.redditinpictures.library.model.reddit.MoreChild;
+import com.antew.redditinpictures.library.model.reddit.PostChild;
 import com.antew.redditinpictures.library.model.reddit.RedditApi;
 import com.antew.redditinpictures.library.util.Ln;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
+
 import java.io.Reader;
 
 public class JsonDeserializer {
@@ -54,10 +60,16 @@ public class JsonDeserializer {
     }
 
     public static Gson getGson() {
+        RuntimeTypeAdapterFactory<Child> adapter = RuntimeTypeAdapterFactory.of(Child.class, "kind")
+                .registerSubtype(PostChild.class, "t3")
+                .registerSubtype(Comment.class, "t1")
+                .registerSubtype(MoreChild.class, "more");
+
         if (gson == null) {
             GsonBuilder builder = new GsonBuilder();
             builder.registerTypeAdapter(Vote.class, new VoteAdapter());
             builder.registerTypeAdapter(RedditApi.class, new RedditApiDeserializer());
+            builder.registerTypeAdapterFactory(adapter);
             builder.serializeNulls();
             gson = builder.create();
         }

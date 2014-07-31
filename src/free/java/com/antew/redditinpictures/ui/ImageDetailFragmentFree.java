@@ -14,14 +14,20 @@
  * limitations under the License.
  */package com.antew.redditinpictures.ui;
 
+import android.app.DialogFragment;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+
+import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
 import com.antew.redditinpictures.library.event.DownloadImageEvent;
 import com.antew.redditinpictures.library.image.Image;
+import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.ui.ImageDetailFragment;
 import com.antew.redditinpictures.library.ui.ImgurAlbumActivity;
@@ -34,7 +40,7 @@ import com.google.ads.AdSize;
 import com.google.ads.AdView;
 import com.squareup.otto.Subscribe;
 
-public class ImageDetailFragmentFree extends ImageDetailFragment {
+public class ImageDetailFragmentFree extends ImageDetailFragment implements UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener {
     public static final String TAG = ImageDetailFragmentFree.class.getSimpleName();
     private AdView mAdView;
     private boolean mAdsDisabled;
@@ -150,6 +156,13 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     }
 
     @Override
+    public void handleVote(Vote vote) {
+        DialogFragment upgrade = UpdateToFullVersionDialogFragment.newInstance();
+        upgrade.setTargetFragment(this, 0);
+        upgrade.show(getFragmentManager(), ConstsFree.DIALOG_UPGRADE);
+    }
+
+    @Override
     public Class<? extends ImgurAlbumActivity> getImgurAlbumActivity() {
         return ImgurAlbumActivityFree.class;
     }
@@ -158,5 +171,14 @@ public class ImageDetailFragmentFree extends ImageDetailFragment {
     @Override
     public void downloadImage(DownloadImageEvent event) {
         super.downloadImage(event);
+    }
+
+    @Override
+    public void onFinishUpgradeDialog() {
+        if (!AndroidUtil.isUserAMonkey()) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(ConstsFree.MARKET_INTENT + ConstsFree.PRO_VERSION_PACKAGE));
+            startActivity(intent);
+        }
     }
 }

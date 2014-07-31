@@ -98,7 +98,7 @@ dependencies {
     compile 'com.netflix.rxjava:rxjava-android:0.19.6'
     compile 'com.squareup.retrofit:retrofit:1.6.+'
     compile 'com.sothree.slidinguppanel:library:2.0.+'
-    compile 'com.commonsware.cwac:anddown:0.2.0'
+    compile 'com.commonsware.cwac:anddown:0.2.+'
     compile files('lib/libGoogleAnalyticsServices.jar')
     freeCompile files('lib/admob-6.2.1.jar')
 }

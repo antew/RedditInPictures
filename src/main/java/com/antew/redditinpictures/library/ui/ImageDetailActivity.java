@@ -23,8 +23,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -38,7 +36,6 @@ import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
-import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.model.reddit.LoginData;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
@@ -47,13 +44,8 @@ import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.util.BundleUtil;
 import com.antew.redditinpictures.library.util.Ln;
-import com.antew.redditinpictures.library.util.PostUtil;
-import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.library.util.SubredditUtil;
-import com.antew.redditinpictures.pro.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -62,8 +54,6 @@ import java.util.List;
 
 public class ImageDetailActivity extends ImageViewerActivity
     implements LoaderManager.LoaderCallbacks<Cursor>, LoginDialogFragment.LoginDialogListener {
-    protected MenuItem  mUpvoteMenuItem;
-    protected MenuItem  mDownvoteMenuItem;
     protected RedditUrl mRedditUrl;
     protected boolean   mRequestInProgress;
     private   String    mAfter;
@@ -80,8 +70,6 @@ public class ImageDetailActivity extends ImageViewerActivity
         getLoaderManager().initLoader(Constants.Loader.LOADER_REDDIT, null, this);
         getLoaderManager().initLoader(Constants.Loader.LOADER_LOGIN, null, this);
         getLoaderManager().initLoader(Constants.Loader.LOADER_POSTS, null, this);
-        // Put the current page / total pages text in the ActionBar
-        updateDisplay(mPager.getCurrentItem());
     }
 
     @Override
@@ -100,17 +88,6 @@ public class ImageDetailActivity extends ImageViewerActivity
         return new CursorPagerAdapter(getFragmentManager(), null);
     }
 
-    /**
-     * Update the vote
-     */
-    protected void updateDisplay(int position) {
-        if (getAdapter() == null) {
-            return;
-        }
-
-        displayVote();
-    }
-
     @Override
     public void reachedCloseToLastPage() {
         if (!isRequestInProgress() && mAdapter.getCount() > 0) {
@@ -118,12 +95,6 @@ public class ImageDetailActivity extends ImageViewerActivity
             setRequestInProgress(true);
             RedditService.getPosts(this, mSubreddit, mAge, mCategory, mAfter);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        displayVote();
     }
 
     @Override
@@ -141,117 +112,6 @@ public class ImageDetailActivity extends ImageViewerActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.image_detail_menu, menu);
-        super.onCreateOptionsMenu(menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        // We save the upvote and downvote icons so that we can change their icon later
-        mUpvoteMenuItem = menu.findItem(R.id.upvote);
-        mDownvoteMenuItem = menu.findItem(R.id.downvote);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-
-        int itemId = item.getItemId();
-        if (itemId == R.id.upvote) {
-            EasyTracker.getInstance(this)
-                       .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.POST_VOTE,
-                                                    Constants.Analytics.Label.UP, null).build()
-                            );
-            handleVote(item);
-        } else if (itemId == R.id.downvote) {
-            EasyTracker.getInstance(this)
-                       .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.POST_VOTE,
-                                                    Constants.Analytics.Label.DOWN, null).build()
-                            );
-            handleVote(item);
-        }
-
-        return true;
-    }
-
-    /**
-     * Get the JSON representation of the current image/post in the ViewPager to report an error.
-     *
-     * @return The JSON representation of the currently viewed object.
-     */
-    @Override
-    protected void reportCurrentItem() {
-        RedditService.reportPost(this, getAdapter().getPost(mPager.getCurrentItem()));
-    }
-
-    @Override
-    public String getSubreddit() {
-        return mSubreddit;
-    }
-
-    protected void showLogin() {
-        // Only needs to be shown if they aren't currently logged in.
-        if (!RedditLoginInformation.isLoggedIn()) {
-            LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
-            loginFragment.show(getFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
-        }
-    }
-
-    public void handleVote(MenuItem item) {
-        if (!RedditLoginInformation.isLoggedIn()) {
-            showLogin();
-        } else {
-            int itemId = item.getItemId();
-            if (itemId == R.id.upvote) {
-                PostUtil.votePost(this, getAdapter().getPost(mPager.getCurrentItem()), Vote.UP);
-            } else if (itemId == R.id.downvote) {
-                PostUtil.votePost(this, getAdapter().getPost(mPager.getCurrentItem()), Vote.DOWN);
-            }
-        }
-    }
-
-    /**
-     * Get the URL of the current image in the ViewPager.
-     *
-     * @return The URL of the current image in the ViewPager.
-     */
-    public String getUrlForSharing() {
-        PostData pd = getAdapter().getPost(mPager.getCurrentItem());
-        return pd.getUrl();
-    }
-
-    /**
-     * Get the Uri for the Reddit page of the current post in the ViewPager.
-     *
-     * @return The Uri for the post on reddit
-     */
-    protected Uri getPostUri() {
-        return Uri.parse(
-            getAdapter().getPost(mPager.getCurrentItem()).getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(this)));
-    }
-
-    @Override
-    public String getFilenameForSave() {
-        if (getAdapter() != null && mPager != null) {
-            PostData p = getAdapter().getPost(mPager.getCurrentItem());
-            return StringUtil.sanitizeFileName(p.getTitle());
-        }
-
-        return super.getFilenameForSave();
-    }
-
-    @Override
-    public void onFinishSaveImageDialog(String filename) {
-        PostData postData = getAdapter().getPost(mPager.getCurrentItem());
-        mBus.post(new DownloadImageEvent(postData.getPermalink(), filename));
-    }
-
     public boolean isRequestInProgress() {
         return mRequestInProgress;
     }
@@ -261,40 +121,8 @@ public class ImageDetailActivity extends ImageViewerActivity
         setProgressBarIndeterminateVisibility(requestInProgress);
     }
 
-    public void displayVote() {
-        if (getAdapter() != null && mPager != null) {
-            PostData post = getAdapter().getPost(mPager.getCurrentItem());
-            if (post != null) {
-                displayVote(post.getVote());
-            }
-        }
-    }
-
     private CursorPagerAdapter getAdapter() {
         return (CursorPagerAdapter) mAdapter;
-    }
-
-    public void displayVote(Vote vote) {
-        if (mUpvoteMenuItem == null || mDownvoteMenuItem == null) {
-            return;
-        }
-
-        switch (vote) {
-            case DOWN:
-                mUpvoteMenuItem.setIcon(R.drawable.ic_action_upvote);
-                mDownvoteMenuItem.setIcon(R.drawable.ic_action_downvote_highlighted);
-                break;
-
-            case UP:
-                mUpvoteMenuItem.setIcon(R.drawable.ic_action_upvote_highlighted);
-                mDownvoteMenuItem.setIcon(R.drawable.ic_action_downvote);
-                break;
-
-            case NEUTRAL:
-                mUpvoteMenuItem.setIcon(R.drawable.ic_action_upvote);
-                mDownvoteMenuItem.setIcon(R.drawable.ic_action_downvote);
-                break;
-        }
     }
 
     @Subscribe
@@ -401,7 +229,6 @@ public class ImageDetailActivity extends ImageViewerActivity
                 }
 
                 moveViewPagerToPosition(getRequestedPage());
-                updateDisplay(mPager.getCurrentItem());
                 break;
         }
     }

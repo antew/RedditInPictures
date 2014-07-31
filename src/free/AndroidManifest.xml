@@ -49,7 +49,7 @@
             android:label="@string/app_name"
             android:uiOptions="splitActionBarWhenNarrow"
             android:parentActivityName="com.antew.redditinpictures.ui.ImageDetailActivityFree"
-            android:theme="@style/AppTheme.FullScreen">
+            android:theme="@style/AppTheme.FullScreen.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.antew.redditinpictures.ui.ImageDetailActivityFree"/>

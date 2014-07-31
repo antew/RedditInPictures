@@ -17,6 +17,7 @@ package com.antew.redditinpictures.library.ui;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -25,22 +26,35 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.Injector;
 import com.antew.redditinpictures.library.adapter.RedditCommentAdapter;
+import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
+import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.event.DownloadImageEvent;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.image.ImgurGalleryType;
 import com.antew.redditinpictures.library.model.ImageType;
-import com.antew.redditinpictures.library.model.reddit.Children;
+import com.antew.redditinpictures.library.model.Vote;
+import com.antew.redditinpictures.library.model.reddit.Child;
+import com.antew.redditinpictures.library.model.reddit.Comment;
+import com.antew.redditinpictures.library.model.reddit.PostChild;
 import com.antew.redditinpictures.library.model.reddit.PostData;
+import com.antew.redditinpictures.library.model.reddit.RedditApi;
+import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
+import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
+import com.antew.redditinpictures.library.service.RedditService;
 import com.antew.redditinpictures.library.service.RedditServiceRetrofit;
 import com.antew.redditinpictures.library.util.Ln;
+import com.antew.redditinpictures.library.util.PostUtil;
+import com.antew.redditinpictures.library.util.StringUtil;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -54,26 +68,31 @@ import butterknife.OnClick;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
-public class ImageDetailFragment extends ImageViewerFragment implements Observer<List<PostData>> {
+public class ImageDetailFragment extends ImageViewerFragment implements SaveImageDialogFragment.SaveImageDialogListener, Observer<List<Child>> {
 
     @InjectView(R.id.lv_post_comments)
     ListView mPostComments;
 
-    @InjectView(R.id.save_image)
-    ImageButton mSaveImage;
+    @InjectView(R.id.save_post)    ImageButton mSaveImageMenuItem;
+    @InjectView(R.id.share_post)   ImageButton mSharePostMenuItem;
+    @InjectView(R.id.upvote)       ImageButton mUpvoteMenuItem;
+    @InjectView(R.id.downvote)     ImageButton mDownvoteMenuItem;
+    @InjectView(R.id.view_post)    ImageButton mViewPostMenuItem;
+    @InjectView(R.id.report_image) ImageButton mReportImageMenuItem;
 
     @Inject
     RedditServiceRetrofit mRedditService;
 
     private RedditCommentAdapter mCommentAdapter;
 
-    private Observable<List<Children>> mCommentsObservable;
+    private Observable<List<Child>> mCommentsObservable;
 
     private List<PostData> mAllPosts = new LinkedList<PostData>();
     /**
@@ -81,18 +100,61 @@ public class ImageDetailFragment extends ImageViewerFragment implements Observer
      */
     public ImageDetailFragment() {}
 
-    @OnClick(R.id.save_image)
+    @OnClick(R.id.save_post)
     public void saveImage() {
-        Observable<List<PostData>> postDataObservable;
-        postDataObservable = mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
-                .map(redditApis -> redditApis.get(1).getData().getChildren())
-                .flatMap(children -> Observable.from(children).map(child -> child.getData()))
-                .flatMap(postData -> Observable.just(flattenList((PostData) postData, 0)))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-
-        postDataObservable.subscribe(postList -> onNext(postList));
+        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.SAVE_POST, mImage.getSubreddit());
+        handleSaveImage();
     }
+
+    @OnClick(R.id.share_post)
+    public void sharePost() {
+        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.SHARE_POST, mImage.getSubreddit());
+        String subject = getString(R.string.check_out_this_image);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, subject + " " + mImage.getUrl());
+        startActivity(Intent.createChooser(intent, getString(R.string.share_using_)));
+    }
+
+    @OnClick(R.id.view_post)
+    public void viewPost() {
+        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.OPEN_POST_EXTERNAL, mImage.getSubreddit());
+        Ln.i("View Post URL = " + mImage.getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(getActivity())));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mImage.getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(getActivity()))));
+        startActivity(browserIntent);
+    }
+
+    @OnClick(R.id.upvote)
+    public void upVote() {
+        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.POST_VOTE, Constants.Analytics.Label.UP);
+        handleVote(Vote.UP);
+    }
+
+    @OnClick(R.id.downvote)
+    public void downVote() {
+        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.POST_VOTE, Constants.Analytics.Label.DOWN);
+        handleVote(Vote.DOWN);
+    }
+
+    @OnClick(R.id.report_image)
+    public void reportImage() {
+        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.REPORT_POST, mImage.getSubreddit());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                reportCurrentItem();
+            }
+        }).start();
+        Toast.makeText(getActivity(), R.string.image_display_issue_reported, Toast.LENGTH_LONG).show();
+    }
+
+    public void track(String category, String action, String label) {
+        EasyTracker.getInstance(getActivity())
+                   .send(MapBuilder.createEvent(category, action, label, null)
+                           .build());
+    }
+
     /**
      * Factory method to generate a new instance of the fragment given an image number.
      *
@@ -115,6 +177,34 @@ public class ImageDetailFragment extends ImageViewerFragment implements Observer
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
         mPostComments.setAdapter(mCommentAdapter);
+
+        mSlidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override public void onPanelSlide(View view, float v) {}
+            @Override public void onPanelCollapsed(View view) { }
+            @Override public void onPanelAnchored(View view) { }
+            @Override public void onPanelHidden(View view) { }
+
+            @Override
+            public void onPanelExpanded(View view) {
+                Observable<List<Child>> postDataObservable;
+
+                //  The can probably be greatly simplified
+                postDataObservable = mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
+                        .map(redditApis -> redditApis.get(1).getData().getChildren())
+                        .flatMap(children -> {
+                                List<Child> mapped = new ArrayList<Child>();
+                                Observable<List<Child>> map = Observable.from(children).map(child -> flattenList(child, 0));
+                                map.subscribe(children1 -> mapped.addAll(children1));
+                                return Observable.just(mapped);
+                            }
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
+
+                postDataObservable.subscribe(postList -> onNext(postList));
+            }
+
+        });
         return v;
     }
 
@@ -128,21 +218,26 @@ public class ImageDetailFragment extends ImageViewerFragment implements Observer
         Injector.inject(this);
         loadExtras();
 
-        mCommentAdapter = new RedditCommentAdapter(getActivity(), new ArrayList<PostData>());
+        mCommentAdapter = new RedditCommentAdapter(getActivity(), new ArrayList<Child>());
+        displayVote();
     }
 
-    public static List<PostData> flattenList(PostData p, int depth) {
-        List<PostData> posts = new LinkedList<PostData>();
+    public static List<Child> flattenList(Child child, int depth) {
+        List<Child> posts = new LinkedList<Child>();
 
-        p.depth = depth;
-        posts.add(p);
+        child.setDepth(depth);
+        posts.add(child);
 
-        if (p.getReplies() != null && p.getReplies().getData() != null && p.getReplies().getData().getChildren() != null) {
-            List<Children> children = p.getReplies().getData().getChildren();
-            for (Children c : children) {
-                posts.addAll(flattenList(c.getData(), depth + 1));
+        if (child instanceof PostChild || child instanceof Comment) {
+            PostChild p = (PostChild) child;
+            if (p.getData() != null && p.getData().getReplies() != null && p.getData().getReplies().getData() != null) {
+                List<Child> children = p.getData().getReplies().getData().getChildren();
+                for (Child c : children) {
+                    posts.addAll(flattenList(c, depth + 1));
+                }
             }
         }
+
 
         return posts;
     }
@@ -315,7 +410,85 @@ public class ImageDetailFragment extends ImageViewerFragment implements Observer
     }
 
     @Override
-    public void onNext(List<PostData> postData) {
+    public void onNext(List<Child> postData) {
         mCommentAdapter.addAll(postData);
+    }
+
+    /**
+     * Save the current image in the ViewPager.
+     *
+     * @see com.antew.redditinpictures.library.dialog.SaveImageDialogFragment
+     */
+    public void handleSaveImage() {
+        SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(StringUtil.sanitizeFileName(mImage.getTitle()));
+        saveImageDialog.setTargetFragment(this, 0);
+        saveImageDialog.show(getFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
+    }
+
+    protected Uri getPostUri() {
+        return Uri.parse(mImage.getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(getActivity())));
+    }
+
+    @Override
+    public void onFinishSaveImageDialog(String filename) {
+        downloadImage(new DownloadImageEvent(mImage.getPermalink(), filename));
+    }
+
+    public void handleVote(Vote vote) {
+        if (!RedditLoginInformation.isLoggedIn()) {
+            showLogin();
+        } else {
+            PostUtil.votePost(getActivity(), mImage, vote);
+        }
+    }
+
+    protected void showLogin() {
+        // Only needs to be shown if they aren't currently logged in.
+        if (!RedditLoginInformation.isLoggedIn()) {
+            LoginDialogFragment loginFragment = LoginDialogFragment.newInstance();
+            loginFragment.show(getFragmentManager(), Constants.Dialog.DIALOG_LOGIN);
+        }
+    }
+
+    /**
+     * Get the JSON representation of the current image/post in the ViewPager to report an error.
+     *
+     * @return The JSON representation of the currently viewed object.
+     */
+    protected void reportCurrentItem() {
+        RedditService.reportPost(getActivity(), mImage);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        displayVote();
+    }
+
+    public void displayVote() {
+        displayVote(mImage.getVote());
+    }
+
+    public void displayVote(Vote vote) {
+        if (mUpvoteMenuItem == null || mDownvoteMenuItem == null) {
+            return;
+        }
+
+        switch (vote) {
+            case DOWN:
+                mUpvoteMenuItem.setImageResource(R.drawable.ic_action_upvote);
+                mDownvoteMenuItem.setImageResource(R.drawable.ic_action_downvote_highlighted);
+                break;
+
+            case UP:
+                mUpvoteMenuItem.setImageResource(R.drawable.ic_action_upvote_highlighted);
+                mDownvoteMenuItem.setImageResource(R.drawable.ic_action_downvote);
+                break;
+
+            case NEUTRAL:
+                mUpvoteMenuItem.setImageResource(R.drawable.ic_action_upvote);
+                mDownvoteMenuItem.setImageResource(R.drawable.ic_action_downvote);
+                break;
+        }
     }
 }

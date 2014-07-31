@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.animation.FadeInThenOut;
+import com.antew.redditinpictures.library.animation.PageTransformer;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment.SaveImageDialogListener;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
@@ -54,7 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-public abstract class ImageViewerActivity extends BaseFragmentActivity implements SaveImageDialogListener, SystemUiStateProvider {
+public abstract class ImageViewerActivity extends BaseFragmentActivity implements SystemUiStateProvider {
 
     /**
      * 8 is a great number! Not only is it divisible by 4, but it is also equivalent to 2 * 2 * 2 you just can't beat that!
@@ -89,11 +90,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
         }
     };
     /**
-     * The lock menu item, so we can change it between a unlocked icon and a highlighted locked
-     * icon.
-     */
-    protected MenuItem lockViewPagerItem;
-    /**
      * The images for the adapter
      */
     protected List<? extends Parcelable> mImages = null;
@@ -105,10 +101,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
      * The wrapper view
      */
     protected RelativeLayout mWrapper;
-    /**
-     * Whether swiping on the ViewPager is enabled
-     */
-    private boolean mSwipingEnabled = true;
 
     /**
      * The page in the ViewPager that was requested
@@ -186,7 +178,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
             @Override
             public void onPageSelected(int position) {
                 mRequestedPage = position;
-                updateDisplay(position);
 
                 if (!mRequestInProgress && position >= (mAdapter.getCount() - POST_LOAD_OFFSET)) {
                     reachedCloseToLastPage();
@@ -201,23 +192,9 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     }
 
     /**
-     * Update the display when the user switches pages in the ViewPager. See
-     * {@link ImageViewerActivity#getViewPagerOnPageChangeListener()}
-     *
-     * @param position
-     */
-    protected abstract void updateDisplay(int position);
-
-    /**
      * Called upon reaching the last page present in the ViewPager
      */
     public abstract void reachedCloseToLastPage();
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setSwipingState(mSwipingEnabled, false);
-    }
 
     @Override
     protected void onPause() {
@@ -228,27 +205,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     protected void onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mToggleFullscreenReceiver);
         super.onDestroy();
-    }
-
-    /**
-     * Set whether swiping is enabled on the ViewPager.
-     *
-     * @param swipingEnabled
-     *     Whether swiping should be enabled
-     * @param showMessageToUser
-     *     Whether to display a message to the user, set this to true if the user took direct action to change the state.
-     */
-    private void setSwipingState(boolean swipingEnabled, boolean showMessageToUser) {
-        if (mAdapter != null && mPager != null) {
-            mSwipingEnabled = swipingEnabled;
-            mPager.setSwipingEnabled(mSwipingEnabled);
-            if (showMessageToUser) {
-                mCrouton.setText(mSwipingEnabled ? getString(R.string.swiping_enabled) : getString(R.string.swiping_disabled));
-                FadeInThenOut.fadeInThenOut(mCrouton, 1500);
-            }
-
-            invalidateOptionsMenu();
-        }
     }
 
     public int getRequestedPage() {
@@ -271,10 +227,6 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
             mImages = savedInstanceState.getParcelableArrayList(Constants.Extra.EXTRA_ENTRIES);
         }
 
-        if (savedInstanceState.containsKey(Constants.Extra.EXTRA_IS_SWIPING_ENABLED)) {
-            mSwipingEnabled = savedInstanceState.getBoolean(Constants.Extra.EXTRA_IS_SWIPING_ENABLED);
-        }
-
         if (savedInstanceState.containsKey(Constants.Extra.EXTRA_IMAGE)) {
             mRequestedPage = savedInstanceState.getInt(Constants.Extra.EXTRA_IMAGE);
         }
@@ -283,180 +235,9 @@ public abstract class ImageViewerActivity extends BaseFragmentActivity implement
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(Constants.Extra.EXTRA_ENTRIES, (ArrayList<? extends Parcelable>) mImages);
-        outState.putBoolean(Constants.Extra.EXTRA_IS_SWIPING_ENABLED, mPager.isSwipingEnabled());
         outState.putInt(Constants.Extra.EXTRA_IMAGE, mPager.getCurrentItem());
         super.onSaveInstanceState(outState);
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.image_view_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // We save the icon for locking the view pager so that we can reference
-        // it when we receive a broadcast message to toggle the ViewPager lock state
-        lockViewPagerItem = menu.findItem(R.id.lock_viewpager);
-
-        // Update the icon depending on whether swiping is enabled or disabled
-        if (mSwipingEnabled) {
-            lockViewPagerItem.setTitle(R.string.disable_swiping);
-            lockViewPagerItem.setIcon(R.drawable.ic_action_lock_open_dark);
-        } else {
-            lockViewPagerItem.setTitle(R.string.enable_swiping);
-            lockViewPagerItem.setIcon(R.drawable.ic_action_lock_closed_dark);
-        }
-        return true;
-    }
-
-    /**
-     * Handler for when the user selects an item from the ActionBar.
-     * <p>
-     * The default functionality implements:<br>
-     * - Toggling the swipe lock on the ViewPager via toggleViewPagerLock()<br>
-     * - Sharing the post via the Android ACTION_SEND intent, the URL shared is provided by
-     * subclasses via {@link #getUrlForSharing()}<br>
-     * - Viewing the post in a Web browser (the URL is provided by subclasses from
-     * {@link #getPostUri()} <br>
-     * - Displaying a dialog to get the filename to use when saving an image, subclasses will
-     * implement {@link #onFinishSaveImageDialog(String)}
-     * </p>
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                EasyTracker.getInstance(this)
-                           .send(
-                               MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.HOME, null,
-                                                      null).build()
-                                );
-                finish();
-                return true;
-            case R.id.lock_viewpager:
-                if (mPager.isSwipingEnabled()) {
-                    EasyTracker.getInstance(this)
-                               .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
-                                                            Constants.Analytics.Action.TOGGLE_SWIPING, Constants.Analytics.Label.DISABLED,
-                                                            null).build());
-                } else {
-                    EasyTracker.getInstance(this)
-                               .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
-                                                            Constants.Analytics.Action.TOGGLE_SWIPING, Constants.Analytics.Label.ENABLED,
-                                                            null).build());
-                }
-
-                // Lock or unlock swiping in the ViewPager
-                setSwipingState(!mPager.isSwipingEnabled(), true);
-                return true;
-            case R.id.share_post:
-                EasyTracker.getInstance(this)
-                           .send(
-                               MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.SHARE_POST,
-                                                      getSubreddit(), null).build()
-                                );
-                String subject = getString(R.string.check_out_this_image);
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-                intent.putExtra(Intent.EXTRA_TEXT, subject + " " + getUrlForSharing());
-                startActivity(Intent.createChooser(intent, getString(R.string.share_using_)));
-                return true;
-            case R.id.view_post:
-                EasyTracker.getInstance(this)
-                           .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
-                                                        Constants.Analytics.Action.OPEN_POST_EXTERNAL, getSubreddit(), null).build());
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, getPostUri());
-                startActivity(browserIntent);
-                return true;
-            case R.id.save_post:
-                EasyTracker.getInstance(this)
-                           .send(
-                               MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.SAVE_POST,
-                                                      getSubreddit(), null).build()
-                                );
-                handleSaveImage();
-                return true;
-            case R.id.report_image:
-                EasyTracker.getInstance(this)
-                           .send(MapBuilder.createEvent(Constants.Analytics.Category.ACTION_BAR_ACTION,
-                                                        Constants.Analytics.Action.REPORT_POST, getSubreddit(), null).build()
-                                );
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        reportCurrentItem();
-                    }
-                }).start();
-                Toast.makeText(this, R.string.image_display_issue_reported, Toast.LENGTH_LONG).show();
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    /**
-     * Retrieve the current subreddit.
-     *
-     * @return the current subreddit
-     */
-    public abstract String getSubreddit();
-
-    /**
-     * Get the URL of the current image in the ViewPager. Used in
-     * {@link ImageViewerActivity#onOptionsItemSelected(MenuItem)}
-     *
-     * @return The URL of the current image in the ViewPager.
-     */
-    public abstract String getUrlForSharing();
-
-    /**
-     * Get the Uri for the page of the current post in the ViewPager.
-     *
-     * @return The Uri for the page
-     */
-    protected abstract Uri getPostUri();
-
-    /**
-     * Subclasses can choose how to handle the click of the 'Save' icon in the Action Bar.
-     * The default action is to pop up a dialog prompting for a filename to save the image as
-     *
-     * @see ImageViewerActivity#getFilenameForSave()
-     * @see SaveImageDialogFragment
-     */
-    public void handleSaveImage() {
-        SaveImageDialogFragment saveImageDialog = SaveImageDialogFragment.newInstance(getFilenameForSave());
-        saveImageDialog.show(getFragmentManager(), Constants.Dialog.DIALOG_GET_FILENAME);
-    }
-
-    /**
-     * Get the JSON representation of the current image/post in the ViewPager to report an error.
-     *
-     * @return The JSON representation of the currently viewed object.
-     */
-    protected abstract void reportCurrentItem();
-
-    /**
-     * Get the initial value for the filename prompt, by default it is an empty string
-     *
-     * @return The initial filename
-     */
-    public String getFilenameForSave() {
-        return "";
-    }
-
-    /**
-     * This method is expected to perform the actual saving of the image with the filename that was
-     * returned.
-     *
-     * @param filename
-     *     The filename that should be used when saving the image (without the extension)
-     */
-    @Override
-    public abstract void onFinishSaveImageDialog(String filename);
 
     public void goFullscreen() {
         EasyTracker.getInstance(this)

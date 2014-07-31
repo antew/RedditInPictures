@@ -103,8 +103,8 @@ public class RedditApi implements Parcelable, ContentValuesOperation, RedditPost
     public List<PostData> filterPosts(boolean includeNsfwImages) {
         List<PostData> entries = new ArrayList<PostData>();
 
-        for (Children c : data.getChildren()) {
-            PostData pd = c.getData();
+        for (Child c : data.getChildren()) {
+            PostData pd = (PostData) c.getData();
             if (ImageUtil.isSupportedUrl(pd.getUrl())) {
                 if (!pd.isOver_18() || includeNsfwImages) {
                     entries.add(pd);
