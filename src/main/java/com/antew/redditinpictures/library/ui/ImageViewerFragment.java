@@ -137,6 +137,12 @@ public abstract class ImageViewerFragment extends BaseFragment {
     @InjectView(R.id.sliding_layout)
     SlidingUpPanelLayout mSlidingUpPanel;
 
+    @InjectView(R.id.ll_sliding_up_panel)
+    ViewGroup mCommentsPanel;
+
+    @InjectView(R.id.ll_sliding_up_panel_menu_view)
+    ViewGroup mCommentsPanel2;
+
     @Inject
     ScreenSize mScreenSize;
 

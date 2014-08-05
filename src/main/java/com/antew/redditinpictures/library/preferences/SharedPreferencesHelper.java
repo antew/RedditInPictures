@@ -35,6 +35,7 @@ public class SharedPreferencesHelper {
     private static final String MOD_HASH          = "modHash";
     private static final String USERNAME          = "username";
     private static final String ANALYTICS_OPT_OUT = "analyticsOptOut";
+    private static final String HAS_OPENED_COMMENTS_PANEL = "hasOpenedCommentsPanel";
 
     /**
      * Save an array to {@link SharedPreferences}
@@ -188,5 +189,22 @@ public class SharedPreferencesHelper {
      */
     public static boolean getShowHighQualityImages(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.pref_load_high_quality_images), false);
+    }
+
+
+    public static void setHasOpenedCommentsSlidingPanel(Context context) {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editor.putBoolean(HAS_OPENED_COMMENTS_PANEL, true);
+        save(editor);
+    }
+
+    public static void setHasNotOpenedCommentsSlidingPanel(Context context) {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editor.putBoolean(HAS_OPENED_COMMENTS_PANEL, false);
+        save(editor);
+    }
+
+    public static boolean getHasOpenedCommentsSlidingPanel(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(HAS_OPENED_COMMENTS_PANEL, false);
     }
 }

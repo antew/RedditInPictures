@@ -100,4 +100,30 @@ public class RedditCommentAdapter extends BaseAdapter {
         addAll(postData);
     }
 
+    public Integer getNextTopLevelComment(int firstVisiblePosition) {
+        if (firstVisiblePosition >= 0 && mPostData != null && mPostData.size() > firstVisiblePosition) {
+            for (int i = firstVisiblePosition + 1; i < mPostData.size(); i++) {
+                if (mPostData.get(i).getDepth() == 0) {
+                    return i;
+                }
+            }
+        }
+
+        // no further top-level comments
+        return null;
+    }
+
+    public Integer getPreviousTopLevelComment(int firstVisiblePosition) {
+        if (firstVisiblePosition > 0 && mPostData != null && mPostData.size() > firstVisiblePosition) {
+            for (int i = firstVisiblePosition - 1; i >= 0; i--) {
+                if (mPostData.get(i).getDepth() == 0) {
+                    return i;
+                }
+            }
+        }
+
+        // no further top-level comments
+        return null;
+    }
+
 }

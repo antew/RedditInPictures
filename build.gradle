@@ -15,13 +15,13 @@
  */
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
 
   dependencies {
       classpath 'com.android.tools.build:gradle:0.12.+'
       classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.+'
-      classpath 'me.tatarka:gradle-retrolambda:2.1.0'
+      classpath 'me.tatarka:gradle-retrolambda:2.2.+'
   }
 }
 
@@ -76,7 +76,7 @@ android {
 }
 
 repositories {
-    mavenCentral()
+    jcenter()
     maven { url 'https://repo.commonsware.com.s3.amazonaws.com' }
     flatDir { dirs 'lib' }
 }
@@ -99,6 +99,9 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.6.+'
     compile 'com.sothree.slidinguppanel:library:2.0.+'
     compile 'com.commonsware.cwac:anddown:0.2.+'
+    compile 'com.jpardogo.googleprogressbar:library:1.0.+'
+    compile 'com.nhaarman.listviewanimations:library:2.6.+'
+    compile files('lib/glide-2.0.5.jar')
     compile files('lib/libGoogleAnalyticsServices.jar')
     freeCompile files('lib/admob-6.2.1.jar')
 }

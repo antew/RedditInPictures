@@ -31,4 +31,17 @@
     <color name="lesser_black">#4c4c4c</color>
     <color name="blue">#2d9fc9</color>
     <color name="light_blue">#33b5e5</color>
+
+    <color name="progress_bar_blue1">#11378F</color>
+    <color name="progress_bar_blue2">#4369BE</color>
+    <color name="progress_bar_blue3">#2650AF</color>
+    <color name="progress_bar_blue4">#91AAE4</color>
+
+    <color name="comment_depth_1">#3498db</color>
+    <color name="comment_depth_2">#9b59b6</color>
+    <color name="comment_depth_3">#e67e22</color>
+    <color name="comment_depth_4">#95a5a6</color>
+    <color name="comment_depth_5">#89C4F4</color>
+    <color name="comment_depth_6">#E26A6A</color>
+    <color name="comment_depth_7">#F22613</color>
 </resources>

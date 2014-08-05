@@ -45,4 +45,10 @@
         <item>SpacePorn</item>
     </string-array>
 
+    <integer-array name="dark_progressbar">
+        <item>@color/progress_bar_blue1</item>
+        <item>@color/progress_bar_blue2</item>
+        <item>@color/progress_bar_blue3</item>
+        <item>@color/progress_bar_blue4</item>
+    </integer-array>
 </resources>

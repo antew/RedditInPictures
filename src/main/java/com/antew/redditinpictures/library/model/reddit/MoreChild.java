@@ -14,8 +14,20 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class MoreChild implements Child<MoreData> {
+    private static final String COMMENT = " comment";
+    private static final String COMMENTS = " comments";
+
     MoreData data;
     public int depth;
+    private int[] colors = new int[] {
+            R.color.comment_depth_1,
+            R.color.comment_depth_2,
+            R.color.comment_depth_3,
+            R.color.comment_depth_4,
+            R.color.comment_depth_5,
+            R.color.comment_depth_6,
+            R.color.comment_depth_7,
+    };
 
     public static final Parcelable.Creator<MoreChild> CREATOR = new Parcelable.Creator<MoreChild>() {
 
@@ -65,9 +77,20 @@ public class MoreChild implements Child<MoreData> {
             holder = (ViewHolder) v.getTag();
         }
 
-        holder.moreComments.setText(data.count + " comments hidden");
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.moreComments.getLayoutParams();
-        params.setMargins(50 * depth, params.topMargin, params.rightMargin, params.bottomMargin);
+        if (data.count == 0) {
+            v.setVisibility(View.GONE);
+        } else {
+            // Make sure it is visible (for recycled views)
+            v.setVisibility(View.VISIBLE);
+            holder.moreComments.setText(data.count + (data.count == 1 ? COMMENT : COMMENTS) + " hidden");
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.moreComments.getLayoutParams();
+            params.setMargins(50 * depth, params.topMargin, params.rightMargin, params.bottomMargin);
+        }
+
+
+//        if (depth > 0) {
+//            holder.commentDepthIndicator.setBackgroundResource(colors[depth % colors.length]);
+//        }
         return v;
     }
 
@@ -95,6 +118,9 @@ public class MoreChild implements Child<MoreData> {
     static class ViewHolder {
         @InjectView(R.id.tv_more_comments)
         TextView moreComments;
+
+        @InjectView(R.id.more_comment_depth_indicator)
+        View commentDepthIndicator;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);

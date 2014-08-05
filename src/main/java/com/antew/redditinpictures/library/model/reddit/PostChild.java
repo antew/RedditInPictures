@@ -1,5 +1,8 @@
 package com.antew.redditinpictures.library.model.reddit;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Html;
@@ -25,6 +28,16 @@ public class PostChild implements Child<PostData> {
     private PostData data;
     public int depth;
     private String   kind;
+
+    private int[] colors = new int[] {
+        R.color.comment_depth_1,
+        R.color.comment_depth_2,
+        R.color.comment_depth_3,
+        R.color.comment_depth_4,
+        R.color.comment_depth_5,
+        R.color.comment_depth_6,
+        R.color.comment_depth_7,
+    };
 
     @Inject
     AndDown andDown;
@@ -67,6 +80,14 @@ public class PostChild implements Child<PostData> {
 
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.commentWrapper.getLayoutParams();
         params.setMargins(50 * depth, params.topMargin, params.rightMargin, params.bottomMargin);
+
+        // Due to view recycling the indicator needs to be hidden if we aren't at depth zero
+        if (depth > 0) {
+            holder.commentDepthIndicator.setVisibility(View.VISIBLE);
+            holder.commentDepthIndicator.setBackgroundResource(colors[depth % colors.length]);
+        } else {
+            holder.commentDepthIndicator.setVisibility(View.GONE);
+        }
 
         return v;
     }
@@ -128,6 +149,7 @@ public class PostChild implements Child<PostData> {
         @InjectView(R.id.tv_date)            TextView  date;
         @InjectView(R.id.tv_comment_votes)   TextView  votes;
         @InjectView(R.id.tv_comment)         TextView  comment;
+        @InjectView(R.id.comment_depth_indicator) View commentDepthIndicator;
         @InjectView(R.id.rl_comment_wrapper)
         RelativeLayout commentWrapper;
 

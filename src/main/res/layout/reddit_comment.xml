@@ -25,6 +25,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <View
+            android:id="@+id/comment_depth_indicator"
+            android:layout_width="2px"
+            android:layout_height="match_parent" />
+
         <TextView
             android:id="@+id/tv_username"
             android:layout_width="wrap_content"
@@ -35,7 +40,7 @@
             android:layout_marginRight="5dp"
             android:layout_marginTop="10dp"
             android:text="Bobjoe123"
-            android:textColor="#BBE74C3C"
+            android:textColor="#78909c"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -49,7 +54,7 @@
             android:drawableLeft="@drawable/circle_divider"
             android:drawablePadding="5dp"
             android:text="234 points"
-            android:textColor="#FF1F3A93"
+            android:textColor="#607d8b"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -62,7 +67,7 @@
             android:drawableLeft="@drawable/circle_divider"
             android:drawablePadding="5dp"
             android:text="3 hours ago"
-            android:textColor="#BB7E931F"
+            android:textColor="#546e7a"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -73,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/tv_username"
             android:layout_below="@id/tv_username"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginTop="5dp"
             android:text="Some asinine comment goes here.  Bears are only slightly less deadly than wet floors."
             android:textSize="14sp" />
