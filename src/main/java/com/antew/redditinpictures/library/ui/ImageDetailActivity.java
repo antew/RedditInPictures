@@ -15,6 +15,7 @@
  */
 package com.antew.redditinpictures.library.ui;
 
+import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -32,8 +33,10 @@ import com.antew.redditinpictures.library.database.RedditContract;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.event.DownloadImageCompleteEvent;
 import com.antew.redditinpictures.library.event.DownloadImageEvent;
+import com.antew.redditinpictures.library.event.OnBackPressedEvent;
 import com.antew.redditinpictures.library.event.RequestCompletedEvent;
 import com.antew.redditinpictures.library.event.RequestInProgressEvent;
+import com.antew.redditinpictures.library.interfaces.OnBackPressedListener;
 import com.antew.redditinpictures.library.model.Age;
 import com.antew.redditinpictures.library.model.Category;
 import com.antew.redditinpictures.library.model.reddit.LoginData;
@@ -129,6 +132,28 @@ public class ImageDetailActivity extends ImageViewerActivity
     public void onDownloadImageComplete(DownloadImageCompleteEvent event) {
         Ln.i("DownloadImageComplete - filename was: " + event.getFilename());
         Toast.makeText(this, "Image saved as " + event.getFilename(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        boolean shouldRespondToBackPress = true;
+        if (mAdapter != null) {
+            // TODO: instantiateItem seems weird here and should probably be replaced with a smarter adapter
+            // Calling getItem(pos) on the adapter will cause a new fragment to be created each time
+            // (the framework only calls it when the fragment isn't cached and needs instantiated).
+            //
+            // However, instantiateItem checks the private list of fragment's in the adapter to see if that position exist.
+            // Since the current fragment by definition exists (I hope...), we should be fine calling it with a null ViewGroup,
+            // because we will always get the cached instance.
+            OnBackPressedListener listener = (OnBackPressedListener) mAdapter.instantiateItem(null, mPager.getCurrentItem());
+            shouldRespondToBackPress = listener.shouldRespondToBackPress();
+        }
+
+        if (shouldRespondToBackPress) {
+            super.onBackPressed();
+        }
+        // otherwise the fragment has said we don't want to finish() the activity
+
     }
 
     @Override

@@ -46,9 +46,11 @@ import com.antew.redditinpictures.library.animation.Rotate3dAnimation;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.event.DownloadImageEvent;
+import com.antew.redditinpictures.library.event.OnBackPressedEvent;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.image.ImgurGalleryType;
+import com.antew.redditinpictures.library.interfaces.OnBackPressedListener;
 import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.model.reddit.Child;
@@ -91,7 +93,7 @@ import rx.schedulers.Schedulers;
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
-public class ImageDetailFragment extends ImageViewerFragment implements SaveImageDialogFragment.SaveImageDialogListener, Observer<List<Child>> {
+public class ImageDetailFragment extends ImageViewerFragment implements SaveImageDialogFragment.SaveImageDialogListener, Observer<List<Child>>, OnBackPressedListener {
 
     @InjectView(R.id.lv_post_comments)
     ListView mPostComments;
@@ -222,23 +224,19 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
-        mCommentAdapter = new RedditCommentAdapter(getActivity(), new ArrayList<Child>());
-        mAlphaInAnimationAdapter = new AlphaInAnimationAdapter(mCommentAdapter);
-        mAlphaInAnimationAdapter.setAnimationDurationMillis(10);
-        mAlphaInAnimationAdapter.setInitialDelayMillis(0);
-        mAlphaInAnimationAdapter.setAnimationDelayMillis(0);
         mAlphaInAnimationAdapter.setAbsListView(mPostComments);
         mPostComments.setAdapter(mAlphaInAnimationAdapter);
 
         mSlidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override public void onPanelSlide(View view, float v) {
+                Ln.i("onPanelSlide");
                 int newColor = (int) mArgbEvaluator.evaluate(v, R.color.post_information_background, 0xFF000000);
 //                mCommentListViewWrapper.setBackgroundColor(newColor);
                 mCommentsPanel.setBackgroundColor(newColor);
             }
-            @Override public void onPanelCollapsed(View view) { }
-            @Override public void onPanelAnchored(View view) { }
-            @Override public void onPanelHidden(View view) { }
+            @Override public void onPanelCollapsed(View view) { Ln.i("onPanelCollapsed"); }
+            @Override public void onPanelAnchored(View view) { Ln.i("onPanelAnchored"); }
+            @Override public void onPanelHidden(View view) { Ln.i("onPanelHidden"); }
 
             @Override
             public void onPanelExpanded(View view) {
@@ -268,7 +266,18 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
         Injector.inject(this);
         loadExtras();
         displayVote();
+
+        // Need this here rather than in onCreateView so that the adapter isn't recreated on orientation change
+        mCommentAdapter = new RedditCommentAdapter(getActivity(), new ArrayList<Child>());
+
+        // Animation is turned off after loading a couple of items (in onNext()), if we were to
+        // recreate the animation adapter on orientation change the animation would start again...which we don't want.
+        mAlphaInAnimationAdapter = new AlphaInAnimationAdapter(mCommentAdapter);
+        mAlphaInAnimationAdapter.setAnimationDurationMillis(10);
+        mAlphaInAnimationAdapter.setInitialDelayMillis(0);
+        mAlphaInAnimationAdapter.setAnimationDelayMillis(0);
     }
+
 
     public static List<Child> flattenList(Child child, int depth) {
         List<Child> posts = new LinkedList<Child>();
@@ -583,5 +592,15 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
                 mDownvoteMenuItem.setImageResource(R.drawable.ic_action_downvote);
                 break;
         }
+    }
+
+    @Override
+    public boolean shouldRespondToBackPress() {
+        if (mSlidingUpPanel != null && (mSlidingUpPanel.isPanelExpanded() || mSlidingUpPanel.isPanelAnchored())) {
+            mSlidingUpPanel.collapsePanel();
+            return false;
+        }
+
+        return true;
     }
 }
