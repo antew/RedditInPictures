@@ -143,7 +143,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="bottom"
-        android:background="#11000000"
+        android:background="@drawable/background_holo_dark"
         android:orientation="vertical">
 
         <!-- px for this dropshadow is intentional -->
@@ -230,6 +230,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_centerInParent="true"
+                android:visibility="gone"
                 gpb:colors="@array/dark_progressbar"
                 android:indeterminateDuration="1500"
                 gpb:type="folding_circles"/>

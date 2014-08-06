@@ -25,7 +25,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,8 +39,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import butterknife.ButterKnife;
-import butterknife.InjectView;
+
 import com.antew.redditinpictures.device.ScreenSize;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.image.Image;
@@ -56,12 +54,15 @@ import com.antew.redditinpictures.library.util.ImageDownloader;
 import com.antew.redditinpictures.library.util.ImageUtil;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
-import com.antew.redditinpictures.library.util.ViewUtil;
 import com.antew.redditinpictures.pro.R;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
 import javax.inject.Inject;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 
@@ -86,7 +87,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
     protected boolean mPauseWork          = false;
     protected String  mResolvedImageUrl   = null;
     protected Image   mResolvedImage      = null;
-    protected int   mActionBarHeight;
     protected Album mAlbum;
     protected AsyncTask<String, Void, Image> mResolveImageTask = null;
     protected SystemUiStateProvider mSystemUiStateProvider;
@@ -169,20 +169,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
     public ImageViewerFragment() {
     }
 
-    /**
-     * Set a hint to the system about whether this fragment's UI is currently visible
-     * to the user. This hint defaults to true and is persistent across fragment instance
-     * state save and restore.
-     * <p/>
-     * <p>An app may set this to false to indicate that the fragment's UI is
-     * scrolled out of visibility or is otherwise not directly visible to the user.
-     * This may be used by the system to prioritize operations such as fragment lifecycle updates
-     * or loader ordering behavior.</p>
-     *
-     * @param isVisibleToUser
-     *     true if this fragment's UI is currently visible to the user (default),
-     *     false if it is not.
-     */
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -290,12 +276,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
         MOVE_THRESHOLD = 20 * getResources().getDisplayMetrics().density;
 
-        // Calculate ActionBar height
-        TypedValue tv = new TypedValue();
-        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-            mActionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getActivity().getResources().getDisplayMetrics());
-        }
-
         try {
             mSystemUiStateProvider = (SystemUiStateProvider) getActivity();
         } catch (ClassCastException e) {
@@ -325,9 +305,16 @@ public abstract class ImageViewerFragment extends BaseFragment {
         if (shouldShowPostInformation()) {
             mPostInformationWrapper.setVisibility(View.VISIBLE);
             mPostInformationWrapper.animate().setDuration(100).y(0);
+
+            // If the panel is open we don't want to collapse it with showPanel() -
+            // which leaves just the draggable portion of the panel visible.
+            if (!mSlidingUpPanel.isPanelExpanded()) {
+                mSlidingUpPanel.showPanel();
+            }
         }
 
-        mSlidingUpPanel.showPanel();
+
+
     }
 
     public void hidePostDetails() {
@@ -336,6 +323,7 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
         // Negative y value since we want to animated it off the top of the screen
         mPostInformationWrapper.animate().setDuration(100).y(-1 * postInfoHeight);
+
         mSlidingUpPanel.hidePanel();
     }
 

@@ -18,11 +18,9 @@ package com.antew.redditinpictures.library.ui;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
-import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,7 +30,6 @@ import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -46,7 +43,6 @@ import com.antew.redditinpictures.library.animation.Rotate3dAnimation;
 import com.antew.redditinpictures.library.dialog.LoginDialogFragment;
 import com.antew.redditinpictures.library.dialog.SaveImageDialogFragment;
 import com.antew.redditinpictures.library.event.DownloadImageEvent;
-import com.antew.redditinpictures.library.event.OnBackPressedEvent;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImgurAlbumType;
 import com.antew.redditinpictures.library.image.ImgurGalleryType;
@@ -57,7 +53,6 @@ import com.antew.redditinpictures.library.model.reddit.Child;
 import com.antew.redditinpictures.library.model.reddit.Comment;
 import com.antew.redditinpictures.library.model.reddit.PostChild;
 import com.antew.redditinpictures.library.model.reddit.PostData;
-import com.antew.redditinpictures.library.model.reddit.RedditApi;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
 import com.antew.redditinpictures.library.preferences.SharedPreferencesHelper;
 import com.antew.redditinpictures.library.service.RedditService;
@@ -84,10 +79,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Observable;
 import rx.Observer;
-import rx.android.observables.AndroidObservable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -231,7 +223,6 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
             @Override public void onPanelSlide(View view, float v) {
                 Ln.i("onPanelSlide");
                 int newColor = (int) mArgbEvaluator.evaluate(v, R.color.post_information_background, 0xFF000000);
-//                mCommentListViewWrapper.setBackgroundColor(newColor);
                 mCommentsPanel.setBackgroundColor(newColor);
             }
             @Override public void onPanelCollapsed(View view) { Ln.i("onPanelCollapsed"); }
@@ -242,7 +233,7 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
             public void onPanelExpanded(View view) {
                 SharedPreferencesHelper.setHasOpenedCommentsSlidingPanel(getActivity());
                 Observable<List<Child>> postDataObservable;
-
+                mPostCommentsProgressBar.setVisibility(View.VISIBLE);
                 postDataObservable = mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
                         .flatMap(redditApis -> Observable.from(redditApis.get(1).getData().getChildren()))
                         .flatMap(child -> Observable.just(flattenList(child, 0)))
