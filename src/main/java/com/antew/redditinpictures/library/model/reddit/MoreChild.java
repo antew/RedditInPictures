@@ -6,6 +6,7 @@ import android.text.method.CharacterPickerDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,6 +22,8 @@ public class MoreChild implements Child<MoreData> {
 
     MoreData data;
     public int depth;
+    boolean requestInProgress;
+
     private int[] colors = new int[] {
             R.color.comment_depth_1,
             R.color.comment_depth_2,
@@ -79,6 +82,7 @@ public class MoreChild implements Child<MoreData> {
             holder = (ViewHolder) v.getTag();
         }
 
+        holder.moreCommentsProgressBar.setVisibility(requestInProgress ? View.VISIBLE : View.GONE);
         holder.moreComments.setText(data.count + (data.count == 1 ? COMMENT : COMMENTS) + " hidden");
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.moreComments.getLayoutParams();
         params.setMargins(50 * depth, params.topMargin, params.rightMargin, params.bottomMargin);
@@ -117,12 +121,19 @@ public class MoreChild implements Child<MoreData> {
 
     }
 
+    public void setRequestInProgress(boolean requestInProgress) {
+        this.requestInProgress = requestInProgress;
+    }
+
     static class ViewHolder {
         @InjectView(R.id.tv_more_comments)
         TextView moreComments;
 
         @InjectView(R.id.more_comment_depth_indicator)
         View commentDepthIndicator;
+
+        @InjectView(R.id.pb_more_comments)
+        ProgressBar moreCommentsProgressBar;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);

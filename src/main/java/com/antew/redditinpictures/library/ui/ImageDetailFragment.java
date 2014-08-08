@@ -286,8 +286,11 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
         mPostComments.setOnItemClickListener((parent,view,position,id) -> {
             Child c = (Child) mCommentAdapter.getItem(position);
             if (c instanceof MoreChild) {
-                MoreData data = ((MoreChild) c).getData();
+                MoreChild child = (MoreChild) c;
+                child.setRequestInProgress(true);
+                mCommentAdapter.notifyDataSetChanged();
 
+                MoreData data = child.getData();
                 mRedditService.getMoreComments(
                         "json",
                         Strings.join(",", data.getChildren()),
@@ -571,7 +574,6 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
 
         Rotate3dAnimation rotate3dAnimation = new Rotate3dAnimation(0, 180, mUpvoteMenuItem.getWidth() / 2.0f, mUpvoteMenuItem.getHeight() / 2.0f, -150.0f, false);
         rotate3dAnimation.setInterpolator(new AccelerateInterpolator());
-//        RotateAnimation rotateAnimation = new RotateAnimation(360, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotate3dAnimation.setDuration(500);
         rotate3dAnimation.setRepeatCount(0);
         ImageButton viewToAnimate = vote.equals(Vote.UP) ? mUpvoteMenuItem : mDownvoteMenuItem;
