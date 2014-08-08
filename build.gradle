@@ -78,6 +78,7 @@ android {
 repositories {
     jcenter()
     maven { url 'https://repo.commonsware.com.s3.amazonaws.com' }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     flatDir { dirs 'lib' }
 }
 
@@ -101,7 +102,10 @@ dependencies {
     compile 'com.commonsware.cwac:anddown:0.2.+'
     compile 'com.jpardogo.googleprogressbar:library:1.0.+'
     compile 'com.nhaarman.listviewanimations:library:2.6.+'
-    compile files('lib/glide-2.0.5.jar')
+    compile('com.github.bumptech.glide:library:3.3.0a-SNAPSHOT:@aar') {
+        transitive = true
+        changing = true
+    }
     compile files('lib/libGoogleAnalyticsServices.jar')
     freeCompile files('lib/admob-6.2.1.jar')
 }
