@@ -26,7 +26,7 @@ import retrofit.converter.GsonConverter;
 
 @Module(library = true, complete = false)
 public class NetworkModule {
-    private static final String REDDIT_URL = "http://www.reddit.com/r";
+    private static final String REDDIT_URL = "http://www.reddit.com";
     private static final int DISK_CACHE_SIZE = 50 * 1024 * 1024; // 50MB
     private Application application = null;
 

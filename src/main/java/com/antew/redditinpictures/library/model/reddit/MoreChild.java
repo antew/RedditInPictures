@@ -2,12 +2,14 @@ package com.antew.redditinpictures.library.model.reddit;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.method.CharacterPickerDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.antew.redditinpictures.library.util.ColoredString;
 import com.antew.redditinpictures.pro.R;
 
 import butterknife.ButterKnife;
@@ -77,26 +79,26 @@ public class MoreChild implements Child<MoreData> {
             holder = (ViewHolder) v.getTag();
         }
 
-        if (data.count == 0) {
-            v.setVisibility(View.GONE);
-        } else {
-            // Make sure it is visible (for recycled views)
-            v.setVisibility(View.VISIBLE);
-            holder.moreComments.setText(data.count + (data.count == 1 ? COMMENT : COMMENTS) + " hidden");
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.moreComments.getLayoutParams();
-            params.setMargins(50 * depth, params.topMargin, params.rightMargin, params.bottomMargin);
-        }
+        holder.moreComments.setText(data.count + (data.count == 1 ? COMMENT : COMMENTS) + " hidden");
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.moreComments.getLayoutParams();
+        params.setMargins(50 * depth, params.topMargin, params.rightMargin, params.bottomMargin);
 
-
-//        if (depth > 0) {
-//            holder.commentDepthIndicator.setBackgroundResource(colors[depth % colors.length]);
-//        }
         return v;
     }
 
     @Override
     public Type getType() {
         return Type.MORE;
+    }
+
+    @Override
+    public String getParent() {
+        return data == null ? null : data.getParentId();
+    }
+
+    @Override
+    public String getName() {
+        return data == null ? null : data.getName();
     }
 
     public void setData(MoreData data) {

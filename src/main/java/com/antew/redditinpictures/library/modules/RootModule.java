@@ -30,6 +30,7 @@ import android.util.DisplayMetrics;
 import android.view.inputmethod.InputMethodManager;
 import com.antew.redditinpictures.device.ScreenSize;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
+import com.antew.redditinpictures.library.adapter.ImageListCursorAdapter;
 import com.antew.redditinpictures.library.adapter.RedditCommentAdapter;
 import com.antew.redditinpictures.library.annotation.ForApplication;
 import com.antew.redditinpictures.library.model.reddit.Comment;
@@ -46,8 +47,8 @@ import javax.inject.Singleton;
  */
 @Module(
         library = true,
-        includes = { NetworkModule.class, CommonModule.class },
-        injects = { RedditCommentAdapter.class, PostChild.class, Comment.class }
+        includes = { NetworkModule.class, CommonModule.class, ImageModule.class },
+        injects = { RedditCommentAdapter.class, PostChild.class, Comment.class, ImageListCursorAdapter.class }
 )
 public class RootModule {
     private final RedditInPicturesApplication application;

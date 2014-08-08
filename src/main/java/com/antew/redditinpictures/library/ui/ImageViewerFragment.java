@@ -251,6 +251,12 @@ public abstract class ImageViewerFragment extends BaseFragment {
         super.onDestroy();
     }
 
+    @Override
+    public void onDestroyView() {
+        ButterKnife.reset(this);
+        super.onDestroyView();
+    }
+
     protected abstract void resolveImage();
 
     @Override
@@ -265,10 +271,8 @@ public abstract class ImageViewerFragment extends BaseFragment {
 
         final Activity act = getActivity();
 
-        LocalBroadcastManager.getInstance(act)
-                             .registerReceiver(mScoreUpdateReceiver, new IntentFilter(Constants.Broadcast.BROADCAST_UPDATE_SCORE));
-        LocalBroadcastManager.getInstance(act)
-                             .registerReceiver(mToggleFullscreenIntent, new IntentFilter(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN));
+        LocalBroadcastManager.getInstance(act).registerReceiver(mScoreUpdateReceiver, new IntentFilter(Constants.Broadcast.BROADCAST_UPDATE_SCORE));
+        LocalBroadcastManager.getInstance(act).registerReceiver(mToggleFullscreenIntent, new IntentFilter(Constants.Broadcast.BROADCAST_TOGGLE_FULLSCREEN));
 
         // Set up on our tap listener for the PhotoView which we use to toggle between fullscreen
         // and windowed mode
@@ -312,9 +316,6 @@ public abstract class ImageViewerFragment extends BaseFragment {
                 mSlidingUpPanel.showPanel();
             }
         }
-
-
-
     }
 
     public void hidePostDetails() {

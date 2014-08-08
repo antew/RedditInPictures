@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 public interface Child<T> extends Parcelable {
+
     public enum Type { POST, MORE }
 
     public T getData();
@@ -27,5 +28,7 @@ public interface Child<T> extends Parcelable {
     public void setDepth(int depth);
     public View getView(LayoutInflater inflater, View convertView);
     public Type getType();
+    public String getParent();
+    public String getName();
 
 }

@@ -1,8 +1,5 @@
 package com.antew.redditinpictures.library.model.reddit;
 
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Html;
@@ -14,7 +11,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.antew.redditinpictures.library.Injector;
-import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.commonsware.cwac.anddown.AndDown;
@@ -27,7 +23,6 @@ import butterknife.InjectView;
 public class PostChild implements Child<PostData> {
     private PostData data;
     public int depth;
-    private String   kind;
 
     private int[] colors = new int[] {
         R.color.comment_depth_1,
@@ -48,7 +43,6 @@ public class PostChild implements Child<PostData> {
 
     public PostChild(Parcel source) {
         this();
-        kind = source.readString();
         data = source.readParcelable(PostData.class.getClassLoader());
     }
 
@@ -65,7 +59,14 @@ public class PostChild implements Child<PostData> {
         }
 
         holder.username.setText(data.getAuthor());
-        holder.votes.setText(Integer.toString(data.getScore()) + " points");
+
+        // Handle subreddits that hide scores
+        if (data.isScoreHidden()) {
+            holder.votes.setText("[hidden]");
+        } else {
+            holder.votes.setText(Integer.toString(data.getScore()) + " points");
+        }
+
         holder.date.setText(
                 DateUtils.getRelativeTimeSpanString(
                         (long) data.getCreated_utc() * 1000, // startTime
@@ -76,7 +77,10 @@ public class PostChild implements Child<PostData> {
         );
         if (Strings.notEmpty(data.getBody())) {
             holder.comment.setText(Strings.trimTrailingWhitespace(Html.fromHtml(andDown.markdownToHtml(data.getBody()))));
+        } else {
+            holder.comment.setText("");
         }
+
 
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.commentWrapper.getLayoutParams();
         params.setMargins(50 * depth, params.topMargin, params.rightMargin, params.bottomMargin);
@@ -95,6 +99,16 @@ public class PostChild implements Child<PostData> {
     @Override
     public Type getType() {
         return Type.POST;
+    }
+
+    @Override
+    public String getParent() {
+        return data == null ? null : data.getParentId();
+    }
+
+    @Override
+    public String getName() {
+        return data == null ? null : data.getName();
     }
 
     public void setData(PostData data) {
@@ -126,7 +140,6 @@ public class PostChild implements Child<PostData> {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(kind);
         dest.writeParcelable(data, flags);
     }
 

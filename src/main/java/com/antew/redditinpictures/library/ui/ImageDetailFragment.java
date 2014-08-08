@@ -51,6 +51,9 @@ import com.antew.redditinpictures.library.model.ImageType;
 import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.model.reddit.Child;
 import com.antew.redditinpictures.library.model.reddit.Comment;
+import com.antew.redditinpictures.library.model.reddit.MoreChild;
+import com.antew.redditinpictures.library.model.reddit.MoreComments;
+import com.antew.redditinpictures.library.model.reddit.MoreData;
 import com.antew.redditinpictures.library.model.reddit.PostChild;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.model.reddit.RedditLoginInformation;
@@ -60,6 +63,7 @@ import com.antew.redditinpictures.library.service.RedditServiceRetrofit;
 import com.antew.redditinpictures.library.util.Ln;
 import com.antew.redditinpictures.library.util.PostUtil;
 import com.antew.redditinpictures.library.util.StringUtil;
+import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
@@ -79,7 +83,10 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
+import rx.android.observables.AndroidObservable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -99,24 +106,70 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
     @InjectView(R.id.view_post)    ImageButton mViewPostMenuItem;
     @InjectView(R.id.report_image) ImageButton mReportImageMenuItem;
 
-    @InjectView(R.id.rl_comment_listview_wrapper)
-    ViewGroup mCommentListViewWrapper;
-
     @InjectView(R.id.pb_post_comments)
     GoogleProgressBar mPostCommentsProgressBar;
 
     @Inject
     RedditServiceRetrofit mRedditService;
 
-    AlphaInAnimationAdapter mAlphaInAnimationAdapter;
+    /**
+     * Used to animate smoothly between colors
+     */
+    @Inject
+    ArgbEvaluator mArgbEvaluator;
+
+    private AlphaInAnimationAdapter mAlphaInAnimationAdapter;
 
     private RedditCommentAdapter mCommentAdapter;
 
-    private Observable<List<Child>> mCommentsObservable;
-
     private List<PostData> mAllPosts = new LinkedList<PostData>();
 
-    private ArgbEvaluator mArgbEvaluator = new ArgbEvaluator();
+    /**
+     * Observer for new comments being loaded
+     */
+    private Observable<List<Child>> mCommentsObservable;
+
+    /**
+     * Whether the sliding drawer with comments has been opened
+     */
+    private boolean mCommentsPanelHasBeenOpened;
+
+    private SlidingUpPanelLayout.PanelSlideListener slidingUpPanelListener = new SlidingUpPanelLayout.PanelSlideListener() {
+        @Override
+        public void onPanelSlide(View view, float v) {
+            int newColor = (int) mArgbEvaluator.evaluate(v, R.color.post_information_background, 0xFF000000);
+            mCommentsPanel.setBackgroundColor(newColor);
+        }
+
+        @Override public void onPanelCollapsed(View view) { Ln.i("onPanelCollapsed"); }
+        @Override public void onPanelAnchored(View view) { Ln.i("onPanelAnchored"); }
+        @Override public void onPanelHidden(View view) { Ln.i("onPanelHidden"); }
+
+        @Override
+        public void onPanelExpanded(View view) {
+            // Don't reload comments
+            if (mCommentsPanelHasBeenOpened) {
+                return;
+            }
+
+            mCommentsPanelHasBeenOpened = true;
+            SharedPreferencesHelper.setHasOpenedCommentsSlidingPanel(getActivity());
+            mPostCommentsProgressBar.setVisibility(View.VISIBLE);
+
+            mCommentsObservable = AndroidObservable.bindFragment(
+                    ImageDetailFragment.this,
+                    mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
+                            .flatMap(redditApis -> Observable.from(redditApis.get(1).getData().getChildren()))
+                            .flatMap(child -> Observable.just(flattenList(child, 0)))
+                            .map(children -> children)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .cache());
+
+            mCommentsObservable.subscribe(postList -> onNext(postList));
+        }
+
+    };
 
     /**
      * Empty constructor as per the Fragment documentation
@@ -214,35 +267,56 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
     }
 
     @Override
+    public void onDestroyView() {
+        if (mCommentsObservable != null) {
+            mCommentsObservable.unsubscribeOn(AndroidSchedulers.mainThread());
+        }
+
+        super.onDestroyView();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
         mAlphaInAnimationAdapter.setAbsListView(mPostComments);
         mPostComments.setAdapter(mAlphaInAnimationAdapter);
 
-        mSlidingUpPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-            @Override public void onPanelSlide(View view, float v) {
-                Ln.i("onPanelSlide");
-                int newColor = (int) mArgbEvaluator.evaluate(v, R.color.post_information_background, 0xFF000000);
-                mCommentsPanel.setBackgroundColor(newColor);
+        mSlidingUpPanel.setPanelSlideListener(slidingUpPanelListener);
+
+        mPostComments.setOnItemClickListener((parent,view,position,id) -> {
+            Child c = (Child) mCommentAdapter.getItem(position);
+            if (c instanceof MoreChild) {
+                MoreData data = ((MoreChild) c).getData();
+
+                mRedditService.getMoreComments(
+                        "json",
+                        Strings.join(",", data.getChildren()),
+                        data.getName(),
+                        mImage.getName()
+                )
+                .map(moreComments -> moreComments.getThings())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<List<Child>>() {
+                            @Override
+                            public void onCompleted() {
+                                Ln.i("onCompleted");
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Ln.e(e, "onError");
+                            }
+
+                            @Override
+                            public void onNext(List<Child> children) {
+                                Ln.i("Got more comments back! size = " + children.size());
+                                mCommentAdapter.replaceAtPosition(position, children);
+                            }
+                        });
+
+
             }
-            @Override public void onPanelCollapsed(View view) { Ln.i("onPanelCollapsed"); }
-            @Override public void onPanelAnchored(View view) { Ln.i("onPanelAnchored"); }
-            @Override public void onPanelHidden(View view) { Ln.i("onPanelHidden"); }
-
-            @Override
-            public void onPanelExpanded(View view) {
-                SharedPreferencesHelper.setHasOpenedCommentsSlidingPanel(getActivity());
-                Observable<List<Child>> postDataObservable;
-                mPostCommentsProgressBar.setVisibility(View.VISIBLE);
-                postDataObservable = mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
-                        .flatMap(redditApis -> Observable.from(redditApis.get(1).getData().getChildren()))
-                        .flatMap(child -> Observable.just(flattenList(child, 0)))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
-
-                postDataObservable.subscribe(postList -> onNext(postList));
-            }
-
         });
         return v;
     }
@@ -270,18 +344,18 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
     }
 
 
-    public static List<Child> flattenList(Child child, int depth) {
+    public static List<Child> flattenList(Child child) {
         List<Child> posts = new LinkedList<Child>();
-
-        child.setDepth(depth);
         posts.add(child);
 
         if (child instanceof PostChild || child instanceof Comment) {
             PostChild p = (PostChild) child;
+
+            // TODO: Switch this to use Optional<T>, it's hideous
             if (p.getData() != null && p.getData().getReplies() != null && p.getData().getReplies().getData() != null) {
                 List<Child> children = p.getData().getReplies().getData().getChildren();
                 for (Child c : children) {
-                    posts.addAll(flattenList(c, depth + 1));
+                    posts.addAll(flattenList(c));
                 }
             }
         }

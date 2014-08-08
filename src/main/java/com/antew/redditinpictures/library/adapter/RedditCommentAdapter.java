@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.antew.redditinpictures.library.Injector;
 import com.antew.redditinpictures.library.interfaces.Item;
 import com.antew.redditinpictures.library.model.reddit.Child;
+import com.antew.redditinpictures.library.model.reddit.Comment;
 import com.antew.redditinpictures.library.model.reddit.PostData;
 import com.antew.redditinpictures.library.util.AndroidUtil;
 import com.antew.redditinpictures.library.util.Ln;
@@ -35,7 +36,9 @@ import com.antew.redditinpictures.library.util.Strings;
 import com.antew.redditinpictures.pro.R;
 import com.commonsware.cwac.anddown.AndDown;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -95,9 +98,42 @@ public class RedditCommentAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void swap(List<Child> postData) {
-        this.mPostData.clear();
-        addAll(postData);
+    /**
+     * When we fetch more comments from Reddit the
+     * only indicator of their depth is by the 'parent_id'.
+     * This version of notifyDataSetChanged() figures out
+     * the correct depth for each item based on its parent.
+     *
+     */
+    @Override
+    public void notifyDataSetChanged() {
+        calculateDepthForAllChilden();
+        super.notifyDataSetChanged();
+    }
+
+    /**
+     * On Reddit child comments are linked to their parent through a 'parent_id',
+     * this method loops through all posts and sets each child's depth
+     * to its parent's depth + 1.  When displaying the comments we use
+     * the depth to set a left margin on the ListView row and give the appearance
+     * of threading.
+     *
+     * This work is done in the Adapter rather than at the caller because when
+     * you use Reddit's "load more comments (X replies)" links they aren't nested
+     * like the regular post JSON response, it's just a flat list, so it is necessary
+     * to calculate the depth for them.
+     *
+     */
+    private void calculateDepthForAllChilden() {
+        Map<String, Integer> depthMap = new HashMap<>();
+        for (Child c : mPostData) {
+            String parent = c.getParent();
+            if (depthMap.containsKey(parent)) {
+                c.setDepth(depthMap.get(parent) + 1);
+            }
+
+            depthMap.put(c.getName(), c.getDepth());
+        }
     }
 
     public Integer getNextTopLevelComment(int firstVisiblePosition) {
@@ -126,4 +162,14 @@ public class RedditCommentAdapter extends BaseAdapter {
         return null;
     }
 
+    public void replaceAtPosition(int position, List<Child> things) {
+        int currentDepth = mPostData.get(position).getDepth();
+        for (Child c : things) {
+            c.setDepth(c.getDepth() + currentDepth);
+        }
+
+        mPostData.remove(position);
+        mPostData.addAll(position, things);
+        notifyDataSetChanged();
+    }
 }
