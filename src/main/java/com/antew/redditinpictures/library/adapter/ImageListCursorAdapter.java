@@ -32,6 +32,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnLongClick;
 import com.antew.redditinpictures.library.Constants;
+import com.antew.redditinpictures.library.Injector;
 import com.antew.redditinpictures.library.imgur.ResolveAlbumCoverWorkerTask;
 import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.model.reddit.PostData;
@@ -47,6 +48,8 @@ import com.google.analytics.tracking.android.MapBuilder;
 import com.squareup.picasso.Picasso;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
 /**
  * This is used as the backing adapter for a {@link android.widget.GridView}
  *
@@ -59,6 +62,9 @@ public class ImageListCursorAdapter extends CursorAdapter {
     private Pattern mImgurAlbumPattern    = Pattern.compile("^https?://imgur.com/a/.*$");
     private Context mContext;
     private static final String SEPARATOR = " " + "\u2022" + " ";
+
+    @Inject
+    Picasso mPicasso;
 
     public interface ImageListItemMenuActionListener {
         /**
@@ -119,6 +125,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        Injector.inject(this);
         return mInflater.inflate(R.layout.image_list_item, parent, false);
     }
 
@@ -165,20 +172,20 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
         if (Strings.notEmpty(url)) {
             try {
-                Picasso.with(mContext)
-                       .load(Uri.parse(url))
-                       .placeholder(R.drawable.empty_photo)
-                       .error(R.drawable.error_photo)
-                       .fit()
-                       .centerCrop()
-                       .into(holder.imageView);
+                mPicasso.with(mContext)
+                        .load(Uri.parse(url))
+                        .placeholder(R.drawable.empty_photo)
+                        .error(R.drawable.error_photo)
+                        .fit()
+                        .centerCrop()
+                        .into(holder.imageView);
             } catch (Exception e) {
                 Ln.e(e, "Failed to load image");
-                Picasso.with(mContext)
-                       .load(R.drawable.error_photo)
-                       .fit()
-                       .centerCrop()
-                       .into(holder.imageView);
+                mPicasso.with(mContext)
+                        .load(R.drawable.error_photo)
+                        .fit()
+                        .centerCrop()
+                        .into(holder.imageView);
             }
         }
 
