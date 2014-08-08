@@ -3,12 +3,17 @@ package com.antew.redditinpictures.library.model.reddit;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MoreData implements Parcelable {
     int count;
+
+    @SerializedName("parent_id")
     String parentId;
+
     String id;
     String name;
     List<String> children;

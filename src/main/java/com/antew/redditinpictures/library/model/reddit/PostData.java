@@ -67,9 +67,13 @@ public class PostData implements Parcelable, ContentValuesOperation {
     Album      album;
     String     body;
     int        gilded;
+
+    @SerializedName("score_hidden")
     boolean    scoreHidden;
+
     RedditApi  replies;
-    @SerializedName("parentId")
+
+    @SerializedName("parent_id")
     String parentId;
 
     public int depth;
