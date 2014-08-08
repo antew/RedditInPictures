@@ -112,6 +112,7 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
     public ImageListCursorAdapter(Context context, ImageListItemMenuActionListener actionListener) {
         super(context, null, 0);
+        Injector.inject(this);
         mContext = context;
         mActionListener = actionListener;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -125,7 +126,6 @@ public class ImageListCursorAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        Injector.inject(this);
         return mInflater.inflate(R.layout.image_list_item, parent, false);
     }
 
