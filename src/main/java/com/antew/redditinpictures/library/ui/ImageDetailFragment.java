@@ -160,7 +160,7 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
                     ImageDetailFragment.this,
                     mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
                             .flatMap(redditApis -> Observable.from(redditApis.get(1).getData().getChildren()))
-                            .flatMap(child -> Observable.just(flattenList(child, 0)))
+                            .flatMap(child -> Observable.just(flattenList(child)))
                             .map(children -> children)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
