@@ -25,7 +25,7 @@
     <color name="listview_background">#ff1b1b1b</color>
     <color name="dark_gray">#FF202020</color>
     <color name="post_information_background">#99000000</color>
-    <color name="more_comments_text_color">#FF555555</color>
+    <color name="more_comments_text_color">#FF888888</color>
 
     <color name="almost_black">#303030</color>
     <color name="less_black">#3c3c3d</color>
