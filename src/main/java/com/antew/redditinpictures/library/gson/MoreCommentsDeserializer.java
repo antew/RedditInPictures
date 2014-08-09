@@ -32,6 +32,8 @@ public class MoreCommentsDeserializer implements JsonDeserializer<MoreComments> 
 
     @Override
     public MoreComments deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+        // This is called via retrofit with an observable, so let onError handle when we don't get a response, or don't get
+        // a valid response and this fails to parse to the JSON
         JsonArray listofThings = ((JsonObject) element).getAsJsonObject("json").getAsJsonObject("data").getAsJsonArray("things");
         Type childType = new TypeToken<List<Child>>(){}.getType();
         return new MoreComments(context.deserialize(listofThings, childType));

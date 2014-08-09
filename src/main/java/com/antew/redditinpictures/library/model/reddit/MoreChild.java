@@ -125,6 +125,10 @@ public class MoreChild implements Child<MoreData> {
         this.requestInProgress = requestInProgress;
     }
 
+    public boolean hasChildren() {
+        return data != null && data.getCount() > 0;
+    }
+
     static class ViewHolder {
         @InjectView(R.id.tv_more_comments)
         TextView moreComments;

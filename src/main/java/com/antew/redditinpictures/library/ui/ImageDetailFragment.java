@@ -27,9 +27,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -129,6 +126,8 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
      */
     private Observable<List<Child>> mCommentsObservable;
 
+    private boolean mMoreCommentsRequestInProgress;
+
     /**
      * Whether the sliding drawer with comments has been opened
      */
@@ -161,7 +160,7 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
                     mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
                             .flatMap(redditApis -> Observable.from(redditApis.get(1).getData().getChildren()))
                             .flatMap(child -> Observable.just(flattenList(child)))
-                            .map(children -> children)
+                            .filter(child -> (child instanceof MoreChild) ? ((MoreChild) child).hasChildren() : true)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .cache());
@@ -280,48 +279,55 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
         View v = super.onCreateView(inflater, container, savedInstanceState);
         mAlphaInAnimationAdapter.setAbsListView(mPostComments);
         mPostComments.setAdapter(mAlphaInAnimationAdapter);
-
         mSlidingUpPanel.setPanelSlideListener(slidingUpPanelListener);
 
         mPostComments.setOnItemClickListener((parent,view,position,id) -> {
             Child c = (Child) mCommentAdapter.getItem(position);
+
             if (c instanceof MoreChild) {
-                MoreChild child = (MoreChild) c;
-                child.setRequestInProgress(true);
-                mCommentAdapter.notifyDataSetChanged();
-
-                MoreData data = child.getData();
-                mRedditService.getMoreComments(
-                        "json",
-                        Strings.join(",", data.getChildren()),
-                        data.getName(),
-                        mImage.getName()
-                )
-                .map(moreComments -> moreComments.getThings())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<List<Child>>() {
-                            @Override
-                            public void onCompleted() {
-                                Ln.i("onCompleted");
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Ln.e(e, "onError");
-                            }
-
-                            @Override
-                            public void onNext(List<Child> children) {
-                                Ln.i("Got more comments back! size = " + children.size());
-                                mCommentAdapter.replaceAtPosition(position, children);
-                            }
-                        });
-
-
+                if (!mMoreCommentsRequestInProgress) {
+                    handleMoreCommentsClick((MoreChild) c, position);
+                }
             }
         });
+
         return v;
+    }
+
+    private void handleMoreCommentsClick(MoreChild child, int clickedPosition) {
+        mMoreCommentsRequestInProgress = true;
+        child.setRequestInProgress(true);
+
+        // Update the adapter to show the ProgressBar
+        // TODO: Refactor to only update the current ListItem
+        mCommentAdapter.notifyDataSetChanged();
+
+        MoreData data = child.getData();
+        mRedditService.getMoreComments("json", Strings.join(",", data.getChildren()), data.getName(), mImage.getName())
+                .flatMap(moreComments -> Observable.from(moreComments.getThings()))
+                .filter(child1 -> (child1 instanceof MoreChild) ? ((MoreChild) child1).hasChildren() : true)
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<Child>>() {
+                    @Override
+                    public void onCompleted() {
+                        Ln.i("onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mMoreCommentsRequestInProgress = false;
+                        Ln.e(e, "onError");
+                    }
+
+                    @Override
+                    public void onNext(List<Child> children) {
+                        Ln.i("Got more comments back! size = " + children.size());
+                        mCommentAdapter.replaceAtPosition(clickedPosition, children);
+                        mMoreCommentsRequestInProgress = false;
+                    }
+                });
     }
 
     /**
@@ -571,7 +577,6 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
             PostUtil.votePost(getActivity(), mImage, vote);
         }
 
-
         Rotate3dAnimation rotate3dAnimation = new Rotate3dAnimation(0, 180, mUpvoteMenuItem.getWidth() / 2.0f, mUpvoteMenuItem.getHeight() / 2.0f, -150.0f, false);
         rotate3dAnimation.setInterpolator(new AccelerateInterpolator());
         rotate3dAnimation.setDuration(500);
@@ -579,10 +584,8 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
         ImageButton viewToAnimate = vote.equals(Vote.UP) ? mUpvoteMenuItem : mDownvoteMenuItem;
         viewToAnimate.startAnimation(rotate3dAnimation);
         rotate3dAnimation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
+            @Override public void onAnimationStart(Animation animation)  { }
+            @Override public void onAnimationRepeat(Animation animation) { }
 
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -593,10 +596,6 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
                 }
             }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
         });
     }
 
@@ -616,9 +615,6 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
     protected void reportCurrentItem() {
         RedditService.reportPost(getActivity(), mImage);
     }
-
-    private Interpolator mDecelerateInterpolator = new DecelerateInterpolator();
-    private Interpolator mBounceInterpolator = new BounceInterpolator();
 
     @Override
     public void onResume() {
