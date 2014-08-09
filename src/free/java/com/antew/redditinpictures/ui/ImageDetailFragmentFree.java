@@ -25,7 +25,6 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.antew.redditinpictures.dialog.UpdateToFullVersionDialogFragment;
-import com.antew.redditinpictures.library.event.DownloadImageEvent;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.model.reddit.PostData;
@@ -38,7 +37,6 @@ import com.antew.redditinpictures.util.AdUtil;
 import com.antew.redditinpictures.util.ConstsFree;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
-import com.squareup.otto.Subscribe;
 
 public class ImageDetailFragmentFree extends ImageDetailFragment implements UpdateToFullVersionDialogFragment.UpdateToFullVersionDialogListener {
     public static final String TAG = ImageDetailFragmentFree.class.getSimpleName();
@@ -165,12 +163,6 @@ public class ImageDetailFragmentFree extends ImageDetailFragment implements Upda
     @Override
     public Class<? extends ImgurAlbumActivity> getImgurAlbumActivity() {
         return ImgurAlbumActivityFree.class;
-    }
-
-    @Subscribe
-    @Override
-    public void downloadImage(DownloadImageEvent event) {
-        super.downloadImage(event);
     }
 
     @Override

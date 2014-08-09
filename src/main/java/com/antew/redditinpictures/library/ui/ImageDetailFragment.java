@@ -23,10 +23,10 @@ import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -49,7 +49,6 @@ import com.antew.redditinpictures.library.model.Vote;
 import com.antew.redditinpictures.library.model.reddit.Child;
 import com.antew.redditinpictures.library.model.reddit.Comment;
 import com.antew.redditinpictures.library.model.reddit.MoreChild;
-import com.antew.redditinpictures.library.model.reddit.MoreComments;
 import com.antew.redditinpictures.library.model.reddit.MoreData;
 import com.antew.redditinpictures.library.model.reddit.PostChild;
 import com.antew.redditinpictures.library.model.reddit.PostData;
@@ -78,13 +77,18 @@ import javax.inject.Inject;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
+import butterknife.OnItemClick;
+import butterknife.Optional;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.android.observables.AndroidObservable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+
+import static com.antew.redditinpictures.library.Constants.Analytics.Action;
+import static com.antew.redditinpictures.library.Constants.Analytics.Category;
+import static com.antew.redditinpictures.library.Constants.Analytics.Label;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
@@ -133,6 +137,11 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
      */
     private boolean mCommentsPanelHasBeenOpened;
 
+    /**
+     * Empty constructor as per the Fragment documentation
+     */
+    public ImageDetailFragment() {}
+
     private SlidingUpPanelLayout.PanelSlideListener slidingUpPanelListener = new SlidingUpPanelLayout.PanelSlideListener() {
         @Override
         public void onPanelSlide(View view, float v) {
@@ -147,44 +156,40 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
         @Override
         public void onPanelExpanded(View view) {
             // Don't reload comments
-            if (mCommentsPanelHasBeenOpened) {
-                return;
+            if (!mCommentsPanelHasBeenOpened) {
+                loadPostComments();
             }
-
-            mCommentsPanelHasBeenOpened = true;
-            SharedPreferencesHelper.setHasOpenedCommentsSlidingPanel(getActivity());
-            mPostCommentsProgressBar.setVisibility(View.VISIBLE);
-
-            mCommentsObservable = AndroidObservable.bindFragment(
-                    ImageDetailFragment.this,
-                    mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
-                            .flatMap(redditApis -> Observable.from(redditApis.get(1).getData().getChildren()))
-                            .flatMap(child -> Observable.just(flattenList(child)))
-                            .filter(child -> (child instanceof MoreChild) ? ((MoreChild) child).hasChildren() : true)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .cache());
-
-            mCommentsObservable.subscribe(postList -> onNext(postList));
         }
-
     };
 
-    /**
-     * Empty constructor as per the Fragment documentation
-     */
-    public ImageDetailFragment() {}
+    private void loadPostComments() {
+        mCommentsPanelHasBeenOpened = true;
+        SharedPreferencesHelper.setHasOpenedCommentsSlidingPanel(getActivity());
+        mPostCommentsProgressBar.setVisibility(View.VISIBLE);
+
+        mCommentsObservable = AndroidObservable.bindFragment(
+                ImageDetailFragment.this,
+                mRedditService.getComments(mImage.getSubreddit(), mImage.getId())
+                        .flatMap(redditApis -> Observable.from(redditApis.get(1).getData().getChildren()))
+                        .flatMap(child -> Observable.just(flattenList(child)))
+                        .filter(child -> (child instanceof MoreChild) ? ((MoreChild) child).hasChildren() : true)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .cache());
+
+        mCommentsObservable.subscribe(postList -> onNext(postList));
+    }
 
     @OnClick(R.id.save_post)
     public void saveImage() {
         SharedPreferencesHelper.setHasNotOpenedCommentsSlidingPanel(getActivity());
-        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.SAVE_POST, mImage.getSubreddit());
+        track(Category.ACTION_BAR_ACTION, Action.SAVE_POST, mImage.getSubreddit());
         handleSaveImage();
     }
 
     @OnClick(R.id.share_post)
     public void sharePost() {
-        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.SHARE_POST, mImage.getSubreddit());
+        track(Category.ACTION_BAR_ACTION, Action.SHARE_POST, mImage.getSubreddit());
         String subject = getString(R.string.check_out_this_image);
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
@@ -195,7 +200,7 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
 
     @OnClick(R.id.view_post)
     public void viewPost() {
-        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.OPEN_POST_EXTERNAL, mImage.getSubreddit());
+        track(Category.ACTION_BAR_ACTION, Action.OPEN_POST_EXTERNAL, mImage.getSubreddit());
         Ln.i("View Post URL = " + mImage.getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(getActivity())));
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mImage.getFullPermalink(SharedPreferencesHelper.getUseMobileInterface(getActivity()))));
         startActivity(browserIntent);
@@ -203,19 +208,19 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
 
     @OnClick(R.id.upvote)
     public void upVote() {
-        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.POST_VOTE, Constants.Analytics.Label.UP);
+        track(Category.ACTION_BAR_ACTION, Action.POST_VOTE, Label.UP);
         handleVote(Vote.UP);
     }
 
     @OnClick(R.id.downvote)
     public void downVote() {
-        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.POST_VOTE, Constants.Analytics.Label.DOWN);
+        track(Category.ACTION_BAR_ACTION, Action.POST_VOTE, Label.DOWN);
         handleVote(Vote.DOWN);
     }
 
     @OnClick(R.id.report_image)
     public void reportImage() {
-        track(Constants.Analytics.Category.ACTION_BAR_ACTION, Constants.Analytics.Action.REPORT_POST, mImage.getSubreddit());
+        track(Category.ACTION_BAR_ACTION, Action.REPORT_POST, mImage.getSubreddit());
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -242,8 +247,12 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
     }
 
     public void track(String category, String action, String label) {
+        track(category, action, label, null);
+    }
+
+    public void track(String category, String action, String label, Long value) {
         EasyTracker.getInstance(getActivity())
-                   .send(MapBuilder.createEvent(category, action, label, null)
+                   .send(MapBuilder.createEvent(category, action, label, value)
                            .build());
     }
 
@@ -257,7 +266,6 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
      */
     public static Fragment newInstance(PostData image) {
         final ImageDetailFragment fragment = new ImageDetailFragment();
-
         final Bundle args = new Bundle();
         args.putParcelable(IMAGE_DATA_EXTRA, image);
         fragment.setArguments(args);
@@ -281,17 +289,20 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
         mPostComments.setAdapter(mAlphaInAnimationAdapter);
         mSlidingUpPanel.setPanelSlideListener(slidingUpPanelListener);
 
-        mPostComments.setOnItemClickListener((parent,view,position,id) -> {
-            Child c = (Child) mCommentAdapter.getItem(position);
-
-            if (c instanceof MoreChild) {
-                if (!mMoreCommentsRequestInProgress) {
-                    handleMoreCommentsClick((MoreChild) c, position);
-                }
-            }
-        });
-
         return v;
+    }
+
+    @OnItemClick(R.id.lv_post_comments)
+    public void handleCommentsClick(AdapterView<?> parent, View view, int position, long id) {
+        Child c = (Child) mCommentAdapter.getItem(position);
+
+        if (c instanceof MoreChild) {
+            if (!mMoreCommentsRequestInProgress) {
+                handleMoreCommentsClick((MoreChild) c, position);
+            }
+        } else if (c instanceof PostChild) {
+            mCommentAdapter.collapseChildCommentsAtPosition(position, c.getDepth());
+        }
     }
 
     private void handleMoreCommentsClick(MoreChild child, int clickedPosition) {
@@ -368,7 +379,6 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
                 }
             }
         }
-
 
         return posts;
     }
@@ -484,50 +494,24 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
                     }
                 }
 
-                if (mAlbum != null && mAlbum.getImages().size() > 1) {
-                    mBtnViewGallery.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mBtnViewGallery.setVisibility(View.VISIBLE);
-                            mBtnViewGallery.setOnClickListener(getViewGalleryOnClickListener());
-                        }
-                    });
+                if (mAlbum != null && mAlbum.getImages() != null && mAlbum.getImages().size() > 1) {
+                    mBtnViewGallery.setVisibility(View.VISIBLE);
                 }
             }
         }).start();
     }
 
-    private OnClickListener getViewGalleryOnClickListener() {
-        return new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Ln.i("View Gallery");
-                EasyTracker.getInstance(getActivity())
-                           .send(MapBuilder.createEvent(Constants.Analytics.Category.UI_ACTION, Constants.Analytics.Action.OPEN_GALLERY,
-                                                        Constants.Analytics.Label.IMGUR, (long) mAlbum.getImages().size()).build()
-                                );
-                Intent intent = new Intent(getActivity(), getImgurAlbumActivity());
-                intent.putExtra(ImgurAlbumActivity.EXTRA_ALBUM, mAlbum);
-                startActivity(intent);
-            }
-        };
+    @Optional
+    @OnClick(R.id.btn_view_gallery)
+    protected void getViewGalleryOnClickListener() {
+        track(Category.UI_ACTION, Action.OPEN_GALLERY, Label.IMGUR, (long) mAlbum.getImages().size());
+        Intent intent = new Intent(getActivity(), getImgurAlbumActivity());
+        intent.putExtra(ImgurAlbumActivity.EXTRA_ALBUM, mAlbum);
+        startActivity(intent);
     }
 
     public Class<? extends ImgurAlbumActivity> getImgurAlbumActivity() {
         return ImgurAlbumActivity.class;
-    }
-
-    @Subscribe
-    public void downloadImage(DownloadImageEvent event) {
-        Ln.e("Received downloadImage event in ImageDetailFragment!");
-        if (!mImage.getPermalink().equals(event.getUniqueId())) {
-            // One of the other fragments has been notified to download
-            // their image, ignore.
-            return;
-        }
-
-        mImageDownloader.downloadImage(mResolvedImageUrl, event.getFilename());
     }
 
     @Override
@@ -545,6 +529,7 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
         mCommentAdapter.addAll(postData);
         mPostCommentsProgressBar.setVisibility(View.GONE);
 
+        // Disable the ListView animation after 200ms
         Observable.from(mAlphaInAnimationAdapter)
                   .delay(200, TimeUnit.MILLISECONDS)
                   .subscribe(animator -> animator.setShouldAnimate(false));
@@ -567,7 +552,7 @@ public class ImageDetailFragment extends ImageViewerFragment implements SaveImag
 
     @Override
     public void onFinishSaveImageDialog(String filename) {
-        downloadImage(new DownloadImageEvent(mImage.getPermalink(), filename));
+        mImageDownloader.downloadImage(mResolvedImageUrl, filename);
     }
 
     public void handleVote(Vote vote) {
