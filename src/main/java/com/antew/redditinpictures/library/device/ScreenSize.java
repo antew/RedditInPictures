@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antew.redditinpictures.device;
+package com.antew.redditinpictures.library.device;
 
 public class ScreenSize {
     private int width;

@@ -40,7 +40,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.antew.redditinpictures.device.ScreenSize;
+import com.antew.redditinpictures.library.device.ScreenSize;
 import com.antew.redditinpictures.library.Constants;
 import com.antew.redditinpictures.library.image.Image;
 import com.antew.redditinpictures.library.image.ImageResolver;

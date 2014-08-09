@@ -28,7 +28,7 @@ import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.view.inputmethod.InputMethodManager;
-import com.antew.redditinpictures.device.ScreenSize;
+import com.antew.redditinpictures.library.device.ScreenSize;
 import com.antew.redditinpictures.library.RedditInPicturesApplication;
 import com.antew.redditinpictures.library.adapter.ImageListCursorAdapter;
 import com.antew.redditinpictures.library.adapter.RedditCommentAdapter;
