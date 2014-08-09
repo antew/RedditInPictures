@@ -17,13 +17,12 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:descendantFocusability="blocksDescendants">
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:id="@+id/rl_comment_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <View
             android:id="@+id/comment_depth_indicator"
@@ -72,7 +71,7 @@
             android:textStyle="bold" />
 
 
-        <TextView
+        <com.antew.redditinpictures.library.widget.LinkifiedTextView
             android:id="@+id/tv_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -80,7 +79,7 @@
             android:layout_below="@id/tv_username"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="5dp"
-            android:text="Some asinine comment goes here.  Bears are only slightly less deadly than wet floors."
+            android:text=""
             android:textSize="14sp" />
 
     </RelativeLayout>
